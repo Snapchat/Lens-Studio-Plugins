@@ -29,4 +29,4 @@ This directory contains a collection of plugins. These are designed to demonstra
 
 Please note that these plugins are intended for educational purposes and serve as a starting point for developing custom tools and workflows in Lens Studio using the Editor API.
 
-Please refer to the [Plugins Development](https://docs.snap.com/lens-studio/5.0.0/extending-lens-studio/plugins-development/overview) section for more information on how to get started with Lens Studio plugins.
+Please refer to the [Plugins Development](https://docs.snap.com/lens-studio/extending-lens-studio/plugins-development/overview) section for more information on how to get started with Lens Studio plugins.
