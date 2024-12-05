@@ -26,4 +26,4 @@ const params = {
     }
 };
 
-export const ColorGradientMaterialPreset = MaterialPresetFactory.createMaterialPreset(params);
+export const ColorGradientMaterialPreset = MaterialPresetFactory.createMaterialPreset(params, 'Post Effects');

@@ -57,9 +57,9 @@ export class AssetMenuItem extends CoreService {
                     this.replaceReferences(selectedAssets, pickedEntity);
                 });
             } catch (e) {
-                Editor.print(e);
-                Editor.print(e.message);
-                Editor.print(e.stack);
+                console.error(e);
+                console.error(e.message);
+                console.error(e.stack);
             }
         };
         return action;
@@ -76,7 +76,7 @@ export class AssetMenuItem extends CoreService {
     }
 
     replaceReferences(selectedAssets, pickedEntity) {
-        Editor.print("Starting references replacement...");
+        console.log("Starting references replacement...");
         const remaps = this.createRemapObject(selectedAssets, pickedEntity);
         /** @type {Editor.Model.IModel} */
         const model = this.pluginSystem.findInterface(Editor.Model.IModel);
@@ -84,7 +84,7 @@ export class AssetMenuItem extends CoreService {
         const scene = project.scene;
         //we remap all the references used in the scene
         scene.remapReferences(remaps);
-        Editor.print("References replaced");
+        console.log("References replaced");
     }
 
     createRemapObject(selectedAssets, pickedEntity) {

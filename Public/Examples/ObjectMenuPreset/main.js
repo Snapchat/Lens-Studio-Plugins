@@ -57,7 +57,7 @@ export class ObjectMenuPreset extends Preset {
             return screenImage.sceneObject;
         } else {
             //return null if the screen image was not created successfully
-            Editor.print("Failed to create screen image.");
+            console.log("Failed to create screen image.");
             return null;
         }
     }

@@ -27,4 +27,4 @@ const params = {
     }
 };
 
-export const VHSMaterialPreset = MaterialPresetFactory.createMaterialPreset(params);
+export const VHSMaterialPreset = MaterialPresetFactory.createMaterialPreset(params, 'Post Effects');

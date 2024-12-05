@@ -28,4 +28,4 @@ const params = {
     }
 };
 
-export const DitheringMaterialPreset = MaterialPresetFactory.createMaterialPreset(params);
+export const DitheringMaterialPreset = MaterialPresetFactory.createMaterialPreset(params, 'Post Effects');

@@ -12,8 +12,10 @@ import * as oAuthHelper from './services/OAuthHelper.js'
 import { logger } from './utils/FigmaUtils.js'
 import { fetchUser } from './services/FigmaApiService.js'
 
-// Only for testing
-const defaultImportNodeUrl = ''
+
+
+
+const importNodeUrl = typeof internalImportNodeUrl !== 'undefined' ? internalImportNodeUrl : '';
 
 export class FigmaImporter extends PanelPlugin {
 
@@ -380,7 +382,7 @@ export class FigmaImporter extends PanelPlugin {
             containerLayout,
             'Paste link here...',
             'Import',
-            defaultImportNodeUrl,
+            importNodeUrl,
             (url: string) => {
                 try {
                     pull(url)

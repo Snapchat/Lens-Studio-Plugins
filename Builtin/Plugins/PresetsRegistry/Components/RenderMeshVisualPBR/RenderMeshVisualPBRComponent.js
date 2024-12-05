@@ -28,7 +28,7 @@ export class RenderMeshVisualPBRComponentPreset extends Preset {
         super(pluginSystem);
     }
     async createAsync(destination) {
-        const model = super.findInterface(Editor.ModelComponentID);
+        const model = this.pluginSystem.findInterface(Editor.Model.IModel);
         return await createRenderMeshVisualPBRComponent.apply(this, [model, destination]);
     }
 }

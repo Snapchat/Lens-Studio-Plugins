@@ -60,9 +60,9 @@ export class AssetMenuPreset extends Preset {
             // returning the asset that was imported
             return importResult.primary;
         } catch (e) {
-            Editor.print(e);
-            Editor.print(e.message);
-            Editor.print(e.stack);
+            console.error(e);
+            console.error(e.message);
+            console.error(e.stack);
         }
     }
 }

@@ -24,7 +24,7 @@ const customParamsTypeToFactory = {
     'objectTrackingTexture': MaterialUtils.createObjectTrackingTexture,
 };
 
-export function createMaterialPreset(params) {
+export function createMaterialPreset(params, section = 'Materials') {
     class MaterialPreset extends Preset {
         static descriptor() {
             return {
@@ -33,7 +33,7 @@ export function createMaterialPreset(params) {
                 name: params.descriptor.name,
                 description: params.descriptor.description,
                 icon: Editor.Icon.fromFile(params.descriptor.icon),
-                section: 'Materials',
+                section: section,
                 entityType: 'Material'
             };
         }
@@ -45,7 +45,7 @@ export function createMaterialPreset(params) {
             const destination = d ? d : new Editor.Path('');
 
             try {
-                const model = super.findInterface(Editor.ModelComponentID);
+                const model = this.pluginSystem.findInterface(Editor.Model.IModel);
                 this.assetManager = model.project.assetManager;
                 this.destination = destination;
 
@@ -73,7 +73,7 @@ export function createMaterialPreset(params) {
 
                 return material;
             } catch (e) {
-                console.log(e);
+                console.error(e);
             }
 
         }

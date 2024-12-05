@@ -24,4 +24,4 @@ const params = {
     }
 };
 
-export const GaussianBlurMaterialPreset = MaterialPresetFactory.createMaterialPreset(params);
+export const GaussianBlurMaterialPreset = MaterialPresetFactory.createMaterialPreset(params, 'Post Effects');

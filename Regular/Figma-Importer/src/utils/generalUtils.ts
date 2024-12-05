@@ -117,9 +117,9 @@ export function findOrCreateOrthoCam(model: Editor.Model.IModel, sceneObject: Ed
         }
     } catch (e) {
         //@ts-expect-error - TS doesn't know about e.message or e.stack
-        Editor.print(e.message)
+        console.log(e.message)
         //@ts-expect-error - TS doesn't know about e.message or e.stack
-        Editor.print(e.stack)
+        console.log(e.stack)
     }
 
     return cameraObject

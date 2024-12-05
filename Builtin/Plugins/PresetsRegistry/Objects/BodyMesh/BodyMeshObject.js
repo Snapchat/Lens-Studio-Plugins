@@ -21,7 +21,7 @@ async function createBodyMeshObject(model, sceneObject) {
     const scene = model.project.scene;
 
     const bodyTracking3DPreset = new BodyObjectTracking3DPreset(this.pluginSystem);
-    const bodyTrackingObject = bodyTracking3DPreset.create(sceneObject);
+    const bodyTrackingObject = await bodyTracking3DPreset.createAsync(sceneObject);
 
     const bodyMeshObject = scene.addSceneObject(bodyTrackingObject);
     bodyMeshObject.name = 'Body Mesh';
@@ -47,7 +47,7 @@ export class BodyMeshObjectPreset extends Preset {
         super(pluginSystem);
     }
     async createAsync(destination) {
-        const model = super.findInterface(Editor.ModelComponentID);
+        const model = this.pluginSystem.findInterface(Editor.Model.IModel);
         return await createBodyMeshObject.call(this, model, destination);
     }
 }

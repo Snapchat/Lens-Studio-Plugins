@@ -20,7 +20,7 @@ function createObjectTrackingPreset(id, niceName) {
         }
         async createAsync(destination) {
             try {
-                const model = super.findInterface(Editor.ModelComponentID);
+                const model = this.pluginSystem.findInterface(Editor.Model.IModel);
                 const scene = model.project.scene;
 
                 const parentScreenTransform = scene.addSceneObject(destination);
@@ -37,7 +37,7 @@ function createObjectTrackingPreset(id, niceName) {
 
                 return screenImage;
             } catch (e) {
-                console.log(e);
+                console.error(e);
             }
         }
     }

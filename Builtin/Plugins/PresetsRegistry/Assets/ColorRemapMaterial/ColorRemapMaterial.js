@@ -26,4 +26,4 @@ const params = {
     }
 };
 
-export const ColorRemapMaterialPreset = MaterialPresetFactory.createMaterialPreset(params);
+export const ColorRemapMaterialPreset = MaterialPresetFactory.createMaterialPreset(params, 'Post Effects');

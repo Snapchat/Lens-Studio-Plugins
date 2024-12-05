@@ -6,10 +6,10 @@ export class ImageMarkerAssetPreset extends Preset {
         return {
             id: 'Com.Snap.ImageMarkerAssetPreset',
             interfaces: Preset.descriptor().interfaces,
-            name: 'Image Marker',
+            name: 'Image Marker From Texture',
             description: '',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/MarkerAsset.svg')),
-            section: 'General',
+            section: 'Tracking',
             entityType: 'Texture',
             dependencies: [Ui.IGui]
         };
@@ -38,7 +38,7 @@ export class ImageMarkerAssetPreset extends Preset {
 
             return imageMarker;
         } catch (e) {
-            Editor.print(e);
+            console.error(e);
         }
     }
 }

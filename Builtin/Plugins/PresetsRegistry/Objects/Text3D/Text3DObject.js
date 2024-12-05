@@ -27,7 +27,7 @@ export class Text3DObjectPreset extends Preset {
         super(pluginSystem);
     }
     async createAsync(parent) {
-        const model = super.findInterface(Editor.ModelComponentID);
+        const model = this.pluginSystem.findInterface(Editor.Model.IModel);
         const scene = model.project.scene;
         const destination = scene.addSceneObject(parent);
         const text3DObject = await createText3DObject.call(this, model, destination);

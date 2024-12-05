@@ -70,7 +70,7 @@ export async function fetchProjectFiles(projectId: string) {
         throw new Error(`Error fetching files from project: ${projectId}`)
     }
     const json = JSON.parse(response.body.toString())
-    // Editor.print(`RESPONSE FROM RES:\n\n${JSON.stringify(json, null, 2)}`)
+    // console.log(`RESPONSE FROM RES:\n\n${JSON.stringify(json, null, 2)}`)
     return json.files
 }
 

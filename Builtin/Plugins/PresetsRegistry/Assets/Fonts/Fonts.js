@@ -18,7 +18,7 @@ function createFontClass(name) {
             try {
                 const destination = d ? d : new Editor.Path('');
 
-                const model = super.findInterface(Editor.ModelComponentID);
+                const model = this.pluginSystem.findInterface(Editor.Model.IModel);
                 const assetManager = model.project.assetManager;
 
                 const resourceLoc = import.meta.resolve(`Resources/Fonts/${name}.ttf`);

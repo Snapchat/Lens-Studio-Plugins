@@ -25,4 +25,4 @@ const params = {
     }
 };
 
-export const ZoomBlurMaterialPreset = MaterialPresetFactory.createMaterialPreset(params);
+export const ZoomBlurMaterialPreset = MaterialPresetFactory.createMaterialPreset(params, 'Post Effects');

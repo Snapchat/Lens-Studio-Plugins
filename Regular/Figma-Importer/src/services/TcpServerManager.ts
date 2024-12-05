@@ -12,7 +12,7 @@ export default class TcpServerManager {
 
     constructor() {
         // Setup listeners
-        this.connections.push(this.server.onConnect.connect((socket: Network.TcpSocket) => {
+        this.server.onConnect.connect((socket: Network.TcpSocket) => {
             //save sockets to the persistent array so they dont get garbage collected
             this.sockets.push(socket)
 
@@ -24,7 +24,7 @@ export default class TcpServerManager {
                 this.onClientConnected(socket)
             }
 
-            this.connections.push(socket.onData.connect((data: object) => {
+            socket.onData.connect((data: object) => {
                 if (this.enableLogging) {
                     logger.debug(`Received data from socket: ${data}`)
                 }
@@ -32,9 +32,9 @@ export default class TcpServerManager {
                 if (this.onClientDataReceived) {
                     this.onClientDataReceived(data, socket)
                 }
-            }))
+            })
 
-            this.connections.push(socket.onEnd.connect(() => {
+            socket.onEnd.connect(() => {
                 if (this.enableLogging) {
                     logger.debug(`Socket connected to ${socket.remoteAddress.address}:${socket.remoteAddress.port} disconnected from the server.`)
                 }
@@ -42,9 +42,9 @@ export default class TcpServerManager {
                 if (this.onClientDisconnected) {
                     this.onClientDisconnected(socket)
                 }
-            }))
+            })
 
-            this.connections.push(socket.onError.connect((error: Error) => {
+            socket.onError.connect((error: Error) => {
                 if (this.enableLogging) {
                     logger.error('Socket error', error)
                 }
@@ -52,8 +52,8 @@ export default class TcpServerManager {
                 if (this.onClientSocketError) {
                     this.onClientSocketError(error, socket)
                 }
-            }))
-        }))
+            })
+        })
     }
 
     /**
@@ -77,9 +77,6 @@ export default class TcpServerManager {
      * Closes the server and disconnects all connections.
      */
     close(): void {
-        // Disconnect all the connections
-        this.connections.forEach((connection) => connection.disconnect())
-        this.connections = []
         // Close the server
         this.server.close()
     }

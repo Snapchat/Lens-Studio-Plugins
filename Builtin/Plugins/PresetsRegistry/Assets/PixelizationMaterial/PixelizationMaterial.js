@@ -22,4 +22,4 @@ const params = {
     }
 };
 
-export const PixelizationMaterialPreset = MaterialPresetFactory.createMaterialPreset(params);
+export const PixelizationMaterialPreset = MaterialPresetFactory.createMaterialPreset(params, 'Post Effects');

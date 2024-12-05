@@ -82,7 +82,7 @@ export class ScreenTransformObjectPreset extends Preset {
         super(pluginSystem);
     }
     create(destination) {
-        const model = super.findInterface(Editor.ModelComponentID);
+        const model = this.pluginSystem.findInterface(Editor.Model.IModel);
         const scene = model.project.scene;
         destination = scene.addSceneObject(destination);
         return createScreenTransformObject(model, destination);

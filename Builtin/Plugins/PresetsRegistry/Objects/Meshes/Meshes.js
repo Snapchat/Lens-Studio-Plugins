@@ -36,7 +36,7 @@ function createMeshObjectClass(name, iconPath, assetMeshPreset, assetMaterialPre
                 const transform = defaultTransform;
 
                 // Create the RenderMeshVisual
-                const model = super.findInterface(Editor.ModelComponentID);
+                const model = this.pluginSystem.findInterface(Editor.Model.IModel);
                 const scene = model.project.scene;
                 destination = scene.addSceneObject(destination);
                 const meshVisual = destination.addComponent('RenderMeshVisual');

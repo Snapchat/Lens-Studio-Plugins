@@ -24,4 +24,4 @@ const params = {
     }
 };
 
-export const HalfToneMaterialPreset = MaterialPresetFactory.createMaterialPreset(params);
+export const HalfToneMaterialPreset = MaterialPresetFactory.createMaterialPreset(params, 'Post Effects');;

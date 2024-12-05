@@ -25,4 +25,4 @@ const params = {
     }
 };
 
-export const OilPaintMaterialPreset = MaterialPresetFactory.createMaterialPreset(params);
+export const OilPaintMaterialPreset = MaterialPresetFactory.createMaterialPreset(params, 'Post Effects');

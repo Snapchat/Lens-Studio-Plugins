@@ -25,4 +25,4 @@ const params = {
     }
 };
 
-export const EdgeDetectionMaterialPreset = MaterialPresetFactory.createMaterialPreset(params);
+export const EdgeDetectionMaterialPreset = MaterialPresetFactory.createMaterialPreset(params, 'Post Effects');

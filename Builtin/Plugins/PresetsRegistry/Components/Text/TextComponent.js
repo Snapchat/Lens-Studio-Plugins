@@ -23,7 +23,7 @@ export class TextComponentPreset extends Preset {
         super(pluginSystem);
     }
     create(destination) {
-        const model = super.findInterface(Editor.ModelComponentID);
+        const model = this.pluginSystem.findInterface(Editor.Model.IModel);
         return createTextComponent(model, destination);
     }
 }

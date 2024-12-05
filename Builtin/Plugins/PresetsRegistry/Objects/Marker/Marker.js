@@ -44,7 +44,7 @@ function createMarkerObjectPreset(name) {
 
                 return markerObject;
             } catch (e) {
-                Editor.print(e);
+                console.error(e);
             }
         }
     };

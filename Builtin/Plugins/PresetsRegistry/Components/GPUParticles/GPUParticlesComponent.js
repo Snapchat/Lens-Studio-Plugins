@@ -35,7 +35,7 @@ export class GPUParticlesComponentPreset extends Preset {
     }
 
     async createAsync(destination) {
-        const model = super.findInterface(Editor.ModelComponentID);
+        const model = this.pluginSystem.findInterface(Editor.Model.IModel);
         return await createGPUParticlesComponent.call(this, model, destination);
     }
 }

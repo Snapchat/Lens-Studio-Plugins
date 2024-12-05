@@ -1,8 +1,6 @@
 // Assets
 export { BodyMeshMaterialPreset } from '../Assets/BodyMeshMaterial/BodyMeshMaterial.js';
-// TODO(madiyar): Enable once UpperBodyMesh is public
-// export { UpperBodyMeshObjectPreset } from '../Objects/UpperBodyMesh/UpperBodyMeshObject.js';
-export { ColorCorrectionMaterialPreset } from '../Assets/ColorCorrectionMaterial/ColorCorrectionMaterial.js';
+export { UpperBodyMeshObjectPreset } from '../Objects/UpperBodyMesh/UpperBodyMeshObject.js';
 export { EmptyMaterialPreset } from '../Assets/EmptyMaterial/EmptyMaterial.js';
 export { EyeColorMaterialPreset } from '../Assets/EyeColorMaterial/EyeColorMaterial.js';
 export { FaceInsetMaterialPreset } from '../Assets/FaceInsetMaterial/FaceInsetMaterial.js';
@@ -30,6 +28,8 @@ export { UberUnlitMaterialPreset } from '../Assets/UberUnlitMaterial/UberUnlitMa
 export { UnlitMaterialPreset } from '../Assets/UnlitMaterial/UnlitMaterial.js';
 export { WorldMeshMaterialPreset } from '../Assets/WorldMeshMaterial/WorldMeshMaterial.js';
 export { ImageMarkerAssetPreset } from '../Assets/MarkerAsset/MarkerAsset.js';
+export { EmptyJsonAssetPreset } from "../Assets/JsonAsset/EmptyJsonAsset.js";
+export { TsConfigPreset } from "../Assets/JsonAsset/TsConfig.js";
 // Post Effects
 export { SmoothingMaterialPreset } from '../Assets/SmoothingMaterial/SmoothingMaterial.js';
 export { AnalogTVMaterialPreset } from '../Assets/AnalogTVMaterial/AnalogTVMaterial.js';
@@ -75,6 +75,7 @@ export { FaceMaskObjectPreset } from '../Objects/FaceMask/FaceMaskObject.js';
 export { FaceMeshObjectPreset, HeadMeshObjectPreset } from '../Objects/FaceMesh/FaceMeshObject.js';
 export { FaceRetouchObjectPreset } from '../Objects/FaceRetouch/FaceRetouchObject.js';
 export { GPUParticlesObjectPreset } from '../Objects/GPUParticles/GPUParticlesObject.js';
+export { GPUParticlesTrailsObjectPreset } from '../Objects/GPUParticlesTrails/GPUParticlesTrailsObject.js';
 export { OrthographicCameraObjectPreset } from '../Objects/OrthographicCamera/OrthographicCameraObject.js';
 export { WorldMeshObjectPreset } from '../Objects/WorldMesh/WorldMeshObject.js';
 export { OverlayCameraObjectPreset } from '../Objects/OverlayCamera/OverlayCameraObjectPreset.js';
@@ -87,9 +88,7 @@ export { TextObjectPreset } from '../Objects/Text/TextObject.js';
 export { Text3DObjectPreset } from '../Objects/Text3D/Text3DObject.js';
 export { HeadBindingObjectPreset } from '../Objects/HeadBinding/HeadBindingObject.js';
 export * from '../Objects/ObjectTracking/ObjectTracking.js';
-export { HandObjectTracking3DPreset, BodyObjectTracking3DPreset } from '../Objects/ObjectTracking3D/ObjectTracking3D.js';
-// TODO(madiyar): Enable once UpperBodyMesh is public
-// export { UpperBodyObjectTracking3DPreset } from '../Objects/ObjectTracking3D/ObjectTracking3D.js';
+export { HandObjectTracking3DPreset, BodyObjectTracking3DPreset, UpperBodyObjectTracking3DPreset } from '../Objects/ObjectTracking3D/ObjectTracking3D.js';
 export { TypeScriptFileObjectPreset, JavaScriptFileObjectPreset } from '../Components/Script/ScriptComponent.js';
 export { CustomLocationObjectPreset } from '../Objects/LocationAR/CustomLocation.js';
 export * from '../Objects/Marker/Marker.js';
@@ -97,4 +96,5 @@ export * from '../Objects/Meshes/Meshes.js';
 export * from '../Objects/Physics/Physics.js';
 export { PhysicsWorldObjectPreset } from '../Objects/PhysicsWorld/PhysicsWorld.js';
 export * from '../Objects/PostEffect/PostEffectObject.js';
+export * from '../Objects/ColorCorrection/ColorCorrectionObject.js';
 export * from '../Objects/ComponentOnly/ComponentOnlyObject.js';

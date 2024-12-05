@@ -11,8 +11,8 @@ import * as Utils from 'LensStudio:Utils@1.0.js';
  * An asset importer generator function which a preset can call.
  * You can duplicate this function, and modify the file that is imported.
  *
- * We export our creator function so that it can be used to create a component. 
- * See: Components/ScriptComponent for an example. 
+ * We export our creator function so that it can be used to create a component.
+ * See: Components/ScriptComponent for an example.
  *
  * @param {Editor.Model.IModel} model The model which provides access to Asset Manager
  * @param {Editor.Path} destination The path where this asset will be imported to.
@@ -29,7 +29,7 @@ export async function createBehaviorAsset(model, destination) {
  * @param {string} id The preset id.
  * @param {string} name The preset `Add New` name.
  * @param {(model:Editor.Model.IModel, destination:Editor.Path)=>Editor.Assets.Asset} generator fn that creates the asset.
- * @returns 
+ * @returns
  */
 function createScriptAssetPreset(id, name, generator) {
     class JsAssetPreset extends Preset {
@@ -47,13 +47,13 @@ function createScriptAssetPreset(id, name, generator) {
         async createAsync(destination) {
             try {
                 const model = this.pluginSystem.findInterface(Editor.Model.IModel);
-                return await generator.apply(this, [model, destination]);      
+                return await generator.apply(this, [model, destination]);
             } catch (e) {
-                Editor.print(e)
-            }  
+                console.error(e)
+            }
         }
     }
-    
+
     return JsAssetPreset;
 }
 

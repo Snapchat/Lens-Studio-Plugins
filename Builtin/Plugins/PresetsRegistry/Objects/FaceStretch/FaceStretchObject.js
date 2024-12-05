@@ -32,7 +32,7 @@ export class FaceStretchObjectPreset extends Preset {
         super(pluginSystem);
     }
     create(destination) {
-        const model = super.findInterface(Editor.ModelComponentID);
+        const model = this.pluginSystem.findInterface(Editor.Model.IModel);
         return createFaceStretchObject(model, destination);
     }
 }

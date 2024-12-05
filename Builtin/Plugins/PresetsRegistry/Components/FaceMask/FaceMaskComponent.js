@@ -26,7 +26,7 @@ export class FaceMaskComponentPreset extends Preset {
         super(pluginSystem);
     }
     async createAsync(destination) {
-        const model = super.findInterface(Editor.ModelComponentID);
+        const model = this.pluginSystem.findInterface(Editor.Model.IModel);
         return await createFaceMaskComponent.call(this, model, destination);
     }
 }

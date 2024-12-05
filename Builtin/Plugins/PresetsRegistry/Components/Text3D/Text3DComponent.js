@@ -14,7 +14,7 @@ export async function createText3DComponent(model, destinationObject) {
 export class Text3DComponentPreset extends Preset {
     static descriptor() {
         return {
-            id: 'Com.Snap.TextComponentPreset',
+            id: 'Com.Snap.Text3DComponentPreset',
             interfaces: Preset.descriptor().interfaces,
             name: 'Text3D',
             description: '',
@@ -27,7 +27,7 @@ export class Text3DComponentPreset extends Preset {
         super(pluginSystem);
     }
     async createAsync(destination) {
-        const model = super.findInterface(Editor.ModelComponentID);
+        const model = this.pluginSystem.findInterface(Editor.Model.IModel);
         return await createText3DComponent.call(this, model, destination);
     }
 }

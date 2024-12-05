@@ -59,7 +59,7 @@ export class HeadBindingObjectPreset extends Preset {
     }
 
     async createAsync(destination) {
-        const model = super.findInterface(Editor.ModelComponentID);
+        const model = this.pluginSystem.findInterface(Editor.Model.IModel);
         const headBindingObject = createHeadBindingObject(model, destination);
         await createFaceOccluder.apply(this, [model, headBindingObject]);
         return headBindingObject;

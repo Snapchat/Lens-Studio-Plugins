@@ -55,7 +55,7 @@ export class CustomLocationObjectPreset extends Preset {
         super(pluginSystem);
     }
     async createAsync(destination) {
-        const model = super.findInterface(Editor.ModelComponentID);
+        const model = this.pluginSystem.findInterface(Editor.Model.IModel);
         const scene = model.project.scene;
         destination = scene.addSceneObject(destination);
         const assetManager = model.project.assetManager;
@@ -71,15 +71,20 @@ export class CustomLocationObjectPreset extends Preset {
         const locationMeshMaterial = await locationMeshMaterialPreset.createAsync(new Editor.Path(''));
 
         const history = model.project.history;
+        let rootLocatedAtObject = null;
         history.executeAsGroup('Set Custom Location', () => {
             // add custom location asset, location mesh and vertexColor material
             const locationAsset = assetManager.createNativeAsset('Location', 'Custom Location Asset [Input ID]', new Editor.Path(''));
             locationAsset.locationType = Editor.Assets.LocationType.Custom;
+            // Add a default location ID so that the preset doesn't produce errors when first added
+            const locationId = "ZDB3WPGEL6BA";
+            console.log(`Setting Custom Location ID to: ${locationId} by default. Please update to your own custom location ID.`);
+            locationAsset.locationId = locationId;
             const locationMesh = assetManager.createNativeAsset('LocationMesh', 'Custom Location Mesh', new Editor.Path(''));
             locationMesh.location = locationAsset;
 
             // add locatedAt
-            const rootLocatedAtObject = destination;
+            rootLocatedAtObject = destination;
             rootLocatedAtObject.name = 'Custom Location';
             const locatedAtComponent = rootLocatedAtObject.addComponent('LocatedAtComponent');
             locatedAtComponent.location = locationAsset;

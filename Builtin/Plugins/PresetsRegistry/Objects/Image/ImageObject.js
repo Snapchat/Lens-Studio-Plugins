@@ -17,7 +17,7 @@ export class ImageObjectPreset extends Preset {
         super(pluginSystem);
     }
     async createAsync(destination) {
-        const model = super.findInterface(Editor.ModelComponentID);
+        const model = this.pluginSystem.findInterface(Editor.Model.IModel);
         const image = model.project.scene.createSceneObject('Image');
         if (destination !== null) {
             image.setParent(destination, undefined);

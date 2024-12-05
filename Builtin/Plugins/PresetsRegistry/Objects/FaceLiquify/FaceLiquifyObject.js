@@ -48,7 +48,7 @@ export class FaceLiquifyObjectPreset extends Preset {
         super(pluginSystem);
     }
     create(destination) {
-        const model = super.findInterface(Editor.ModelComponentID);
+        const model = this.pluginSystem.findInterface(Editor.Model.IModel);
         return createFaceLiquifyObject(model, destination);
     }
 }

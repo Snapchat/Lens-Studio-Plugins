@@ -57,7 +57,7 @@ export default class TcpServerManager {
             this.sockets.push(socket);
 
             if (this.enableLogging) {
-                Editor.print(`Incoming connection from ${socket.remoteAddress.address}:${socket.remoteAddress.port}`);
+                console.log(`Incoming connection from ${socket.remoteAddress.address}:${socket.remoteAddress.port}`);
             }
 
             if (this.onClientConnected) {
@@ -66,7 +66,7 @@ export default class TcpServerManager {
 
             this.connections.push(socket.onData.connect((data) => {
                 if (this.enableLogging) {
-                    Editor.print(`Received data from socket: ${data}`);
+                    console.log(`Received data from socket: ${data}`);
                 }
 
                 if (this.onClientDataReceived) {
@@ -76,7 +76,7 @@ export default class TcpServerManager {
 
             this.connections.push(socket.onEnd.connect(() => {
                 if (this.enableLogging) {
-                    Editor.print(`Socket connected to ${socket.remoteAddress.address}:${socket.remoteAddress.port} disconnected from the server.`);
+                    console.log(`Socket connected to ${socket.remoteAddress.address}:${socket.remoteAddress.port} disconnected from the server.`);
                 }
 
                 if (this.onClientDisconnected) {
@@ -86,7 +86,7 @@ export default class TcpServerManager {
 
             this.connections.push(socket.onError.connect((error) => {
                 if (this.enableLogging) {
-                    Editor.print(`Socket error: ${error}`);
+                    console.log(`Socket error: ${error}`);
                 }
 
                 if (this.onClientSocketError) {
@@ -107,9 +107,9 @@ export default class TcpServerManager {
         localhostAddr.port = port;
         try {
             this.server.listen(localhostAddr);
-            Editor.print(`Server started at ${address}:${port}`);
+            console.log(`Server started at ${address}:${port}`);
         } catch (e) {
-            Editor.print("Failed to start the server: " + e);
+            console.log("Failed to start the server: " + e);
         }
     }
 

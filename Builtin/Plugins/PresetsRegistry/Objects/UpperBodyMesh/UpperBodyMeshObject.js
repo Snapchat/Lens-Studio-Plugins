@@ -11,8 +11,8 @@ async function createUpperBodyMeshComponent(model, destinationObject) {
 
     // Add Material
     // TODO(madiyar): Do we need upper body mesh material ?
-    const bodyMeshMaterialPreset = new PBRMaterialPreset(this.pluginSystem);
-    renderMeshVisual.materials = [await bodyMeshMaterialPreset.createAsync()];
+    const upperBodyMeshMaterialPreset = new PBRMaterialPreset(this.pluginSystem);
+    renderMeshVisual.materials = [await upperBodyMeshMaterialPreset.createAsync()];
 
     // Add Mesh
     renderMeshVisual.mesh = assetManager.createNativeAsset('UpperBodyMesh', 'Upper Body Mesh', new Editor.Path(''));
@@ -26,10 +26,10 @@ async function createUpperBodyMeshObject(model, sceneObject) {
     const headMeshObjectPreset = new HeadMeshObjectPreset(this.pluginSystem);
     await headMeshObjectPreset.createAsync(sceneObject);
 
-    const bodyTracking3DPreset = new UpperBodyObjectTracking3DPreset(this.pluginSystem);
-    const bodyTrackingObject = bodyTracking3DPreset.create(sceneObject);
+    const upperBodyTracking3DPreset = new UpperBodyObjectTracking3DPreset(this.pluginSystem);
+    const upperBodyTrackingObject = await upperBodyTracking3DPreset.createAsync(sceneObject);
 
-    const upperBodyMeshObject = scene.addSceneObject(bodyTrackingObject);
+    const upperBodyMeshObject = scene.addSceneObject(upperBodyTrackingObject);
     upperBodyMeshObject.name = 'Upper Body Mesh';
 
     await createUpperBodyMeshComponent.call(this, model, upperBodyMeshObject);

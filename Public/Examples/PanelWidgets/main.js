@@ -20,11 +20,6 @@ export class PanelWidgets extends PanelPlugin {
     constructor(pluginSystem) {
         super(pluginSystem);
         this.pluginSystem = pluginSystem;
-        /**
-         * @type {Editor.Connection[]}
-         * @description The connections array to store all the connections, so they do not get garbage collected
-         */
-        this.connections = [];
     }
 
 
@@ -42,9 +37,9 @@ export class PanelWidgets extends PanelPlugin {
         const demoTabBar = Ui.TabBar.create(mainWidget);
 
         // Create a connection to change the index of the stacked widget when the tab is changed
-        this.connections.push(demoTabBar.onCurrentChange.connect((index) => {
+        demoTabBar.onCurrentChange.connect((index) => {
             demoStackedWidget.currentIndex = index;
-        }));
+        });
 
         // Add tabs
 
@@ -109,13 +104,13 @@ export class PanelWidgets extends PanelPlugin {
 
         radioButtonGroup.addButton(radioBtnGroupChildB, 1);
 
-        this.connections.push(clickButton.onClick.connect(() => {
+        clickButton.onClick.connect(() => {
             clickButton.text = "Clicked";
-        }));
-        this.connections.push(iconButton.onClick.connect(() => {
+        });
+        iconButton.onClick.connect(() => {
             iconButton.text = "Clicked";
             iconButton.setIconWithMode(Editor.Icon.fromFile(new Editor.Path(import.meta.resolve("Resources/BoxMesh.svg"))), Ui.IconMode.Regular);
-        }));
+        });
 
         buttonGridLayout.addWidget(clickButton);
         buttonGridLayout.addWidget(iconButton);
@@ -144,25 +139,25 @@ export class PanelWidgets extends PanelPlugin {
         textEditArea.placeholderText = "Enter text here...";
         textEditArea.foregroundRole = Ui.ColorRole.PlaceholderText;
         textEditArea.setFixedHeight(Ui.Sizes.TextEditHeight);
-        this.connections.push(textEditArea.onTextChange.connect(() => {
+        textEditArea.onTextChange.connect(() => {
             textEditLabel.text = "Your input: " + textEditArea.plainText;
-        }));
+        });
         const lineEditField = Ui.LineEdit.create(widget);
         lineEditField.placeholderText = "Enter text here...";
         lineEditField.foregroundRole = Ui.ColorRole.PlaceholderText;
-        this.connections.push(lineEditField.onTextChange.connect((text) => {
+        lineEditField.onTextChange.connect((text) => {
             lineEditLabel.text = "Your input: " + text;
-        }));
+        });
 
         const clearButton = Ui.PushButton.create(widget);
         clearButton.text = "Clear";
         clearButton.foregroundRole = Ui.ColorRole.Button;
-        this.connections.push(clearButton.onClick.connect(() => {
+        clearButton.onClick.connect(() => {
             textEditArea.plainText = "";
             lineEditField.text = "";
             lineEditLabel.text = "";
             textEditLabel.text = "";
-        }));
+        });
 
         textEditTabLayout.addWidget(lineEditField);
         textEditTabLayout.addWidget(lineEditLabel);
@@ -184,13 +179,13 @@ export class PanelWidgets extends PanelPlugin {
             const checkBox = Ui.CheckBox.create(checkBoxTabWidget);
             checkBox.setFixedHeight(Ui.Sizes.MenuItemHeight);
             checkBox.text = "Option " + i;
-            this.connections.push(checkBox.onToggle.connect((checked) => {
+            checkBox.onToggle.connect((checked) => {
                 if (checked) {
                     checkBox.text = "Option " + i + " Checked!";
                 } else {
                     checkBox.text = "Option " + i;
                 }
-            }));
+            });
             checkBoxTabLayout.addWidget(checkBox);
         }
 
@@ -220,14 +215,14 @@ export class PanelWidgets extends PanelPlugin {
         startButton.text = "Start";
         stopButton.text = "Stop";
 
-        this.connections.push(startButton.onClick.connect(() => {
+        startButton.onClick.connect(() => {
             statusIndicator.visible = true;
             statusIndicator.start();
-        }));
-        this.connections.push(stopButton.onClick.connect(() => {
+        });
+        stopButton.onClick.connect(() => {
             statusIndicator.stop();
             statusIndicator.visible = false;
-        }));
+        });
 
         statusIndicatorTabLayout.addStretch(0);
         statusIndicatorTabLayout.addWidget(startButton);
@@ -255,9 +250,9 @@ export class PanelWidgets extends PanelPlugin {
         const dialog = gui.createDialog();
         dialog.windowTitle = "Sample Dialog";
         dialog.resize(200, 200);
-        this.connections.push(openDialogButton.onClick.connect(() => {
+        openDialogButton.onClick.connect(() => {
             dialog.show();
-        }));
+        });
         dialogTabLayout.addWidget(openDialogButton);
         dialogTabWidget.layout = dialogTabLayout;
         stackedWidget.addWidget(dialogTabWidget);
@@ -340,20 +335,20 @@ export class PanelWidgets extends PanelPlugin {
         progressBarTabLayout.addWidget(progressBar);
         progressBarTabLayout.addWidget(cancelButton);
         progressBarTabWidget.layout = progressBarTabLayout;
-        this.connections.push(cancelButton.onClick.connect(() => {
+        cancelButton.onClick.connect(() => {
             // Return to the previous stacked widget which has the start button
             // The number here is the index of the start button tab
             stackedWidget.currentIndex = 8;
-        }));
+        });
         stackedWidget.addWidget(progressBarTabWidget);
 
-        this.connections.push(processStartButton.onClick.connect(() => {
+        processStartButton.onClick.connect(() => {
             // Advance to the next stacked widget, which displays the progress bar in action
             stackedWidget.currentIndex = 9;
             progressBar.maximum = 0;
             progressBar.minimum = 0;
             progressBar.value = 0;
-        }));
+        });
     }
 
     createWebViewTab(tabBar, stackedWidget, widget) {

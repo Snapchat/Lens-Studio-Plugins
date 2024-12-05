@@ -16,7 +16,7 @@ export default class Utils {
             image.stretchMode = Editor.Components.StretchMode.Fit;
             return image;
         } catch (e) {
-            Editor.print(e.message  + " " + e.stack);
+            console.error(e.message  + " " + e.stack);
         }
     }
 
@@ -63,14 +63,14 @@ export default class Utils {
      * @returns {Editor.Model.SceneObject|null} - The orthographic camera object if found, or null if not found.
      */
     static getOrthoCameraObject(model) {
-        Editor.print("Checking scene for orthographic cameras");
+        console.log("Checking scene for orthographic cameras");
         const scene = model.project.scene;
         let cameraObject = null;
         scene.rootSceneObjects.forEach(element => {
             element.components.forEach(component => {
                 //@ts-expect-error
                 if (component.getTypeName() == "Camera" && component.cameraType == Editor.Components.CameraType.Orthographic) {
-                    Editor.print("Found orthographic camera");
+                    console.log("Found orthographic camera");
                     cameraObject = element;
                 }
             });
@@ -79,7 +79,7 @@ export default class Utils {
     }
 
     static createOrthoCamera(scene, sceneObject) {
-        Editor.print("Creating new orthographic camera");
+        console.log("Creating new orthographic camera");
         const camera = sceneObject.addComponent("Camera");
         camera.renderLayer = Editor.Model.LayerSet.fromId(Editor.Model.LayerId.Ortho);
         camera.cameraType = Editor.Components.CameraType.Orthographic;
@@ -90,12 +90,12 @@ export default class Utils {
 
     // Creates a screen image based on the provided model and scene object.
     static async createScreenImage(model, sceneObject) {
-        Editor.print("Creating screen image");
+        console.log("Creating screen image");
         let addScreenRegion = true;
 
         sceneObject.getParent().components.forEach(component => {
             if (component.getTypeName() == "ScreenTransform") {
-                Editor.print("Scene object has a screen transform");
+                console.log("Scene object has a screen transform");
                 addScreenRegion = false;
             }
         });
@@ -119,13 +119,13 @@ export default class Utils {
             tr.position = new vec3(0, 0, -1);
             screenTransformComponent.transform = tr;
             //add the image component to the screen image object
-            Editor.print("Adding image component to screen image object");
+            console.log("Adding image component to screen image object");
             const image = Utils.addImageComponent(assetManager, screenImageObject);
             return image;
         } else {
             sceneObject.name = "Screen Image";
             sceneObject.layer = Editor.Model.LayerId.Ortho;
-            Editor.print("Adding image component to screen object");
+            console.log("Adding image component to screen object");
             const image = Utils.addImageComponent(assetManager, sceneObject);
             return image;
         }

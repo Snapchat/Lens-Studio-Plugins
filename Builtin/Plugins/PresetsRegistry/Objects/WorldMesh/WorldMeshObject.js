@@ -17,7 +17,7 @@ export class WorldMeshObjectPreset extends Preset {
         super(pluginSystem);
     }
     async createAsync(parent) {
-        const model = super.findInterface(Editor.ModelComponentID);
+        const model = this.pluginSystem.findInterface(Editor.Model.IModel);
         const scene = model.project.scene;
         parent = scene.addSceneObject(parent);
         parent.name = 'World Mesh';

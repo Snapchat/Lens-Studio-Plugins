@@ -30,4 +30,4 @@ function createSimpleScriptPreset(name, relativeLsoPath, description) {
 }
 
 export const TweenManagerHelperScriptPreset = createSimpleScriptPreset('Tween', '../../Assets/LSOs/TweenManager.lso', 'Allows you to add simple animations to objects in your Lens.');
-export const MakeupHelperScriptPreset = createSimpleScriptPreset('Makeup', '../../Assets/LSOs/Makeup.lso', 'Allows you to add and customize makeup to apply on the user.');
+export const MakeupHelperScriptPreset = createSimpleScriptPreset('Makeup', '../../Assets/LSOs/Makeup.lspkg', 'Allows you to add and customize makeup to apply on the user.');

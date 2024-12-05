@@ -74,7 +74,7 @@ export class ObjectMenuItem extends CoreService {
 
     // Start function in CoreService is called when Lens Studio starts and the plugin is loaded
     start() {
-        Editor.print("Starting Ungroup Action core service");
+        console.log("Starting Ungroup Action core service");
         /** @type {Editor.IContextActionRegistry} */
         const actionsRegistry = this.pluginSystem.findInterface(Editor.IContextActionRegistry);
         // We need to hold the references to the actions to prevent them from being garbage collected

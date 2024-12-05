@@ -1,7 +1,7 @@
 import { Preset } from 'LensStudio:Preset';
 import * as Utils from 'LensStudio:Utils@1.0.js';
 
-export function createHandTracking3D(model, sceneObject) {
+async function createHandTracking3D(model, sceneObject) {
     const scene = model.project.scene;
     const assetManager = model.project.assetManager;
 
@@ -32,7 +32,7 @@ export function createHandTracking3D(model, sceneObject) {
     return handTracking3DObject;
 }
 
-export function createBodyTracking3D(model, sceneObject) {
+async function createBodyTracking3D(model, sceneObject) {
     const scene = model.project.scene;
     const assetManager = model.project.assetManager;
 
@@ -50,7 +50,7 @@ export function createBodyTracking3D(model, sceneObject) {
     return bodyTracking3DObject;
 }
 
-export function createUpperBodyTracking3D(model, sceneObject) {
+async function createUpperBodyTracking3D(model, sceneObject) {
     const scene = model.project.scene;
     const assetManager = model.project.assetManager;
 
@@ -84,9 +84,9 @@ function createObjectTracking3DPreset(id, name, iconPath, createFn) {
         constructor(pluginSystem) {
             super(pluginSystem);
         }
-        create(destination) {
-            const model = super.findInterface(Editor.ModelComponentID);
-            return createFn(model, destination);
+        async createAsync(destination) {
+            const model = this.pluginSystem.findInterface(Editor.Model.IModel);
+            return await createFn.call(this, model, destination);
         }
     }
     return ObjectTracking3DPreset;
@@ -94,5 +94,4 @@ function createObjectTracking3DPreset(id, name, iconPath, createFn) {
 
 export const HandObjectTracking3DPreset = createObjectTracking3DPreset('Hand', 'Hand Tracking 3D', 'Resources/HandTracking3DAsset.svg', createHandTracking3D);
 export const BodyObjectTracking3DPreset = createObjectTracking3DPreset('Body', 'Body Tracking 3D', 'Resources/BodyTracking3DAsset.svg', createBodyTracking3D);
-// TODO(madiyar): replace with a proper icon
-export const UpperBodyObjectTracking3DPreset = createObjectTracking3DPreset('Upper Body', 'Upper Body Tracking 3D', 'Resources/BodyTracking3DAsset.svg', createUpperBodyTracking3D);
+export const UpperBodyObjectTracking3DPreset = createObjectTracking3DPreset('Upper Body', 'Upper Body Tracking 3D', 'Resources/UpperBodyTracking3DAsset.svg', createUpperBodyTracking3D);

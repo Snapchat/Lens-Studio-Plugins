@@ -39,4 +39,4 @@ const params = {
     }
 };
 
-export const AnalogTVMaterialPreset = MaterialPresetFactory.createMaterialPreset(params);
+export const AnalogTVMaterialPreset = MaterialPresetFactory.createMaterialPreset(params, 'Post Effects');

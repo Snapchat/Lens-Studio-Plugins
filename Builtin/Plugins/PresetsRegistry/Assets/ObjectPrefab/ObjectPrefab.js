@@ -5,7 +5,7 @@ export class ObjectPrefabPreset extends Preset {
         return {
             id: 'Com.Snap.ObjectPrefabPreset',
             interfaces: Preset.descriptor().interfaces,
-            dependencies: [Editor.ModelComponentID],
+            dependencies: [Editor.Model.IModel],
             name: 'Object Prefab',
             description: '',
             icon: Editor.Icon.fromFile(import.meta.resolve('../Resources/ObjectPrefab.svg')),
@@ -17,7 +17,7 @@ export class ObjectPrefabPreset extends Preset {
         super(pluginSystem);
     }
     create(destination) {
-        const model = super.findInterface(Editor.ModelComponentID);
+        const model = this.pluginSystem.findInterface(Editor.Model.IModel);
         const assetManager = model.project.assetManager;
 
         const prefab = assetManager.createNativeAsset('ObjectPrefab', 'ObjectPrefab', destination);

@@ -32,24 +32,24 @@ export class GitStatusCat extends CoreService {
 
     executeGitStatus() {
         if (!this.projectPath) {
-            Editor.print("Project path not found");
+            console.log("Project path not found");
             return;
         }
 
         const myEnv = app.env;
-        Editor.print(`Project path: ${this.projectPath}`);
+        console.log(`Project path: ${this.projectPath}`);
         // If you wish to override the PATH environment variable, you can do it like this:
         // myEnv.PATH = '/path/to/your/bin'
         const options = { cwd: this.projectPath, timeout: 5000, env: myEnv };
         const result = spawnSync("git", ["status", "--porcelain"], options);
 
         if (result.exitCode !== 0) {
-            Editor.print(`Git status failed: ${result.stderr}`);
+            console.log(`Git status failed: ${result.stderr}`);
             return;
         }
 
         const cat = makeASCII(result);
-        Editor.print(cat);
+        console.log(cat);
     }
 
     start() {

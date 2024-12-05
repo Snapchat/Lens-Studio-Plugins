@@ -24,4 +24,4 @@ const params = {
     }
 };
 
-export const ShakeMaterialPreset = MaterialPresetFactory.createMaterialPreset(params);
+export const ShakeMaterialPreset = MaterialPresetFactory.createMaterialPreset(params, 'Post Effects');

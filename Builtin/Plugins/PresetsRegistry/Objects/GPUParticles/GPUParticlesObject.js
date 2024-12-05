@@ -19,7 +19,7 @@ export class GPUParticlesObjectPreset extends Preset {
     }
 
     async createAsync(destination) {
-        const model = super.findInterface(Editor.ModelComponentID);
+        const model = this.pluginSystem.findInterface(Editor.Model.IModel);
         const scene = model.project.scene;
         destination = scene.addSceneObject(destination);
         destination.name = 'GPU Particles';

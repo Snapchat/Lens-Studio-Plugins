@@ -22,4 +22,4 @@ const params = {
     }
 };
 
-export const SmoothingMaterialPreset = MaterialPresetFactory.createMaterialPreset(params);
+export const SmoothingMaterialPreset = MaterialPresetFactory.createMaterialPreset(params, 'Post Effects');

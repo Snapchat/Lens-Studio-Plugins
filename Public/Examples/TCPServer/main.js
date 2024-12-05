@@ -19,15 +19,15 @@ class Interlocutor {
 
             Network.performHttpRequest(request, function(response) {
                 if (response.statusCode !== 200) {
-                    Editor.print("Error: " + response.statusCode + " " + response.body);
+                    console.error("Error: " + response.statusCode + " " + response.body);
                     return;
                 }
-                Editor.print("Status Code: " + response.statusCode);
-                Editor.print("Response: " + response.body);
+                console.log("Status Code: " + response.statusCode);
+                console.log("Response: " + response.body);
             });
         } catch (error) {
             //@ts-expect-error
-            Editor.print("Error while probing server: " + error.message);
+            console.error("Error while probing server: " + error.message);
         }
     }
 
@@ -40,7 +40,7 @@ class Interlocutor {
             socket.write(formHttpResponse(200, "OK", "HELLO FROM SERVER"));
         } catch (error) {
             //@ts-expect-error
-            Editor.print("Error while greeting back: " + error.message);
+            console.log("Error while greeting back: " + error.message);
         }
 
         /**
@@ -90,18 +90,18 @@ export class TcpServerDemo extends CoreService {
 
         // Setup event listeners
         this.tcpServer.onClientConnected = (socket) => {
-            Editor.print(`Client connected from ${socket.remoteAddress.address}:${socket.remoteAddress.port}`);
+            console.log(`Client connected from ${socket.remoteAddress.address}:${socket.remoteAddress.port}`);
         };
         this.tcpServer.onClientDataReceived = (data, socket) => {
-            Editor.print(`Received data from ${socket.remoteAddress.address}:${socket.remoteAddress.port}: ${data}`);
+            console.log(`Received data from ${socket.remoteAddress.address}:${socket.remoteAddress.port}: ${data}`);
             // Send back a response to our client
             Interlocutor.greetBack(socket);
         };
         this.tcpServer.onClientDisconnected = (socket) => {
-            Editor.print(`Client at ${socket.remoteAddress.address}:${socket.remoteAddress.port} disconnected from the server.`);
+            console.log(`Client at ${socket.remoteAddress.address}:${socket.remoteAddress.port} disconnected from the server.`);
         };
         this.tcpServer.onClientSocketError = (error, socket) => {
-            Editor.print(`Socket error: ${error}`);
+            console.log(`Socket error: ${error}`);
         };
 
         // Probe the server

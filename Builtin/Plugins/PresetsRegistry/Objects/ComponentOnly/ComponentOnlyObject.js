@@ -18,7 +18,7 @@ function createComponentOnlyObject(componentName, niceName, iconPath, group) {
         }
         async createAsync(selectedObject) {
             try {
-                const model = super.findInterface(Editor.ModelComponentID);
+                const model = this.pluginSystem.findInterface(Editor.Model.IModel);
                 const scene = model.project.scene;
 
                 // Create a new object with the component.
@@ -33,7 +33,7 @@ function createComponentOnlyObject(componentName, niceName, iconPath, group) {
 
                 return newObject;
             } catch (e) {
-                console.log(e);
+                console.error(e);
             }
 
         }

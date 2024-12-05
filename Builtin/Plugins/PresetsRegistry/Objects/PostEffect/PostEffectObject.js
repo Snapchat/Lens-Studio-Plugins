@@ -1,6 +1,5 @@
 import { Preset } from 'LensStudio:Preset';
 
-import { ColorCorrectionMaterialPreset } from '../../Assets/ColorCorrectionMaterial/ColorCorrectionMaterial.js';
 import { AnalogTVMaterialPreset } from '../../Assets/AnalogTVMaterial/AnalogTVMaterial.js';
 import { ColorGradientMaterialPreset } from '../../Assets/ColorGradientMaterial/ColorGradientMaterial.js';
 import { ColorRemapMaterialPreset } from '../../Assets/ColorRemapMaterial/ColorRemapMaterial.js';
@@ -44,7 +43,7 @@ function createPostEffectClass(name, assetMaterialPreset) {
             }
 
             // Create the PostEffectVisual
-            const model = super.findInterface(Editor.ModelComponentID);
+            const model = this.pluginSystem.findInterface(Editor.Model.IModel);
             const scene = model.project.scene;
             destination = scene.addSceneObject(destination);
             const posteffectVisual = destination.addComponent('PostEffectVisual');
@@ -58,7 +57,6 @@ function createPostEffectClass(name, assetMaterialPreset) {
     return PostEffectObjectPreset;
 }
 
-export const PostEffectPreset = createPostEffectClass('Post Effect', ColorCorrectionMaterialPreset);
 export const AnalogTVPreset = createPostEffectClass('Analog TV', AnalogTVMaterialPreset);
 export const ColorGradientPreset = createPostEffectClass('Color Gradient', ColorGradientMaterialPreset);
 export const ColorRemapPreset = createPostEffectClass('Color Remap', ColorRemapMaterialPreset);

@@ -33,7 +33,7 @@ function createScriptComponentPreset(id, name, iconPath, createFn, entityType) {
             super(pluginSystem);
         }
         async createAsync(parent) {
-            const model = super.findInterface(Editor.ModelComponentID);
+            const model = this.pluginSystem.findInterface(Editor.Model.IModel);
 
             let destination = parent;
 

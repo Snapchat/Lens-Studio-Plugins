@@ -33,4 +33,4 @@ const params = {
     }
 };
 
-export const DistortionMaterialPreset = MaterialPresetFactory.createMaterialPreset(params);
+export const DistortionMaterialPreset = MaterialPresetFactory.createMaterialPreset(params, 'Post Effects');

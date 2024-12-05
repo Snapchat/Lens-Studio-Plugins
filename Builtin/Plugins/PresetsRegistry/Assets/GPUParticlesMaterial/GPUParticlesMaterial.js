@@ -5,9 +5,9 @@ const params = {
         'id': 'Com.Snap.MaterialPreset.GPUParticlesMaterialPreset',
         'name': 'GPU Particles',
         'description': '',
-        'icon': import.meta.resolve('Resources/GPUParticles.svg')
+        'icon': import.meta.resolve('../Resources/GPUParticles.svg')
     },
-    graph_path: import.meta.resolve('Resources/gpu_particles.ss_graph'),
+    graph_path: import.meta.resolve('../Resources/gpu_particles.ss_graph'),
     custom_defines: [
         'LIFETIMEMINMAX',
         'ENABLE_FACE_TEX',
