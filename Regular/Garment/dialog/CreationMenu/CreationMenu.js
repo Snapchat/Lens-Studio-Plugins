@@ -1,6 +1,6 @@
 import * as Ui from 'LensStudio:Ui';
 
-import { createGuidelinesWidget } from '../utils.js';
+import { createGuidelinesWidget, createTermsWidget } from '../utils.js';
 import { SettingsDescriptor } from './SettingsDescriptor.js';
 import { PromptPicker, createPromptPicker } from './Controls/PromptPicker.js';
 import { ClothSelection, createClothSelection } from './Controls/ClothSelection.js';
@@ -129,10 +129,8 @@ export class CreationMenu {
 
         this.menuLayout.addWidget(titleWidget);
 
-        // Guidelines
-        const guidelines = createGuidelinesWidget(this.menu);
-
-        this.menuLayout.addWidget(guidelines);
+        this.menuLayout.addWidget(createGuidelinesWidget(this.menu));
+        this.menuLayout.addWidget(createTermsWidget(this.menu));
 
         const createControl = (scheme) => {
             switch (scheme.class) {

@@ -10,7 +10,7 @@ const params = {
     graph_path: import.meta.resolve('Resources/text_3d.ss_graph'),
     custom_defines: [
         'DROPLIST_FRONT_CAP_MODE 2',
-        'DDROPLIST_BACK_CAP_MODE 2',
+        'DROPLIST_BACK_CAP_MODE 2',
         'DROPLIST_OUTER_EDGE_MODE 1',
         'DROPLIST_INNER_EDGE_MODE 1'
     ],

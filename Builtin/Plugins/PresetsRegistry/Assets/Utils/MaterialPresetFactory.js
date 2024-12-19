@@ -49,10 +49,9 @@ export function createMaterialPreset(params, section = 'Materials') {
                 this.assetManager = model.project.assetManager;
                 this.destination = destination;
 
-                const material = this.assetManager.createNativeAsset('Material', params.descriptor.name, destination);
-
                 const absGraphPath = new Editor.Path(params.graph_path);
                 const pass = await Utils.findOrCreateAsync(this.assetManager, absGraphPath, destination);
+                const material = this.assetManager.createNativeAsset('Material', params.descriptor.name, destination);
                 this.passInfo = material.addPass(pass);
 
                 if (params.custom_defines) {
