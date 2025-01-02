@@ -5,6 +5,7 @@ import app from '../../application/app.js';
 import { DIALOG_HEIGHT } from '../GarmentDialog.js';
 import { createErrorIcon } from '../utils.js';
 import { GeneratorState } from '../../generator/generator.js';
+import { logEventAssetImport } from '../../application/analytics.js';
 
 const PREVIEW_IMAGE_WIDTH = 320;
 const PREVIEW_IMAGE_HEIGHT = 480;
@@ -278,6 +279,17 @@ export class Preview {
         this.importToProjectButton.visible = true;
     }
 
+    onImportClicked() {
+        app.log('Importing Garment to the project...', { 'enabled': true, 'progressBar': true });
+        app.importer.import(app.generator.textureBytes, app.generator.maskBytes).then(() => {
+            logEventAssetImport("SUCCESS");
+            app.log('Garment has been imported succesfully.');
+        }).catch((error) => {
+            logEventAssetImport("FAILED");
+            app.log('Failed to import Garment, please try again.');
+        });
+    }
+
     createFooter(parent) {
         this.footer = Ui.Widget.create(parent);
         this.footer.setFixedHeight(65);
@@ -293,14 +305,7 @@ export class Preview {
         this.importToProjectButton.setIconWithMode(Editor.Icon.fromFile(importImagePath), Ui.IconMode.MonoChrome);
         this.importToProjectButton.primary = true;
 
-        this.connections.push(this.importToProjectButton.onClick.connect(function() {
-            app.log('Importing Garment to the project...', { 'enabled': true, 'progressBar': true });
-            app.importer.import(app.generator.textureBytes, app.generator.maskBytes).then(() => {
-                app.log('Garment has been imported succesfully.');
-            }).catch((error) => {
-                app.log('Failed to import Garment, please try again.');
-            });
-        }.bind(this)));
+        this.connections.push(this.importToProjectButton.onClick.connect(() => this.onImportClicked()));
 
         footerLayout.addStretch(0);
         footerLayout.addWidgetWithStretch(this.importToProjectButton, 0, Ui.Alignment.AlignTop);

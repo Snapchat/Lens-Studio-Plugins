@@ -8,6 +8,7 @@ import { ClothSelection, createClothSelection } from './Controls/ClothSelection.
 import { GeneratorState } from '../../generator/generator.js';
 
 import app from '../../application/app.js';
+import { logEventAssetCreation } from '../../application/analytics.js';
 
 const editImagePath = import.meta.resolve('../Resources/lens_studio_ai.svg');
 
@@ -69,6 +70,46 @@ export class CreationMenu {
         return this.header;
     }
 
+    async onGenerationRequested() {
+        let origin = "";
+        if (app.generator.state == GeneratorState.Idle) {
+            origin = "NEW";
+        } else {
+            origin = "REGENERATE";
+        }
+
+        await app.generator.generate({
+            "prompt": this.controls["promptPicker"].value + " " + this.controls["garmentType"].value.toLowerCase(),
+            "garmentType": this.controls["garmentType"].backendValue
+        });
+
+        let garmnetTypeToLog = "";
+
+        switch (this.controls["garmentType"].backendValue) {
+            case 'hoodie':
+                garmnetTypeToLog = "HOODIE";
+                break;
+            case 'sweater':
+                garmnetTypeToLog = "SWEATER";
+                break;
+            case 't-shirt':
+                garmnetTypeToLog = "T_SHIRT";
+                break;
+            case 'dress-suit':
+                garmnetTypeToLog = "DRESS_SUIT";
+                break;
+            case 'bomber-jacket':
+                garmnetTypeToLog = "BOMBER";
+                break;
+        }
+
+        if (app.generator.state == GeneratorState.Success) {
+            logEventAssetCreation("SUCCESS", garmnetTypeToLog, origin);
+        } else {
+            logEventAssetCreation("FAILED", garmnetTypeToLog, origin);
+        }
+    }
+
     createFooter(parent) {
         this.footer = Ui.Widget.create(parent);
         this.footer.setFixedHeight(65);
@@ -85,10 +126,7 @@ export class CreationMenu {
         this.generateButton.setIconWithMode(Editor.Icon.fromFile(editImagePath), Ui.IconMode.MonoChrome);
 
         this.connections.push(this.generateButton.onClick.connect(function() {
-            app.generator.generate({
-                "prompt": this.controls["promptPicker"].value + " " + this.controls["garmentType"].value.toLowerCase(),
-                "garmentType": this.controls["garmentType"].backendValue
-            });
+            this.onGenerationRequested();
         }.bind(this)));
 
         app.generator.stateChanged.on(GeneratorState.Any, () => {

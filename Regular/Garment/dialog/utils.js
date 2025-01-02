@@ -1,5 +1,9 @@
 import * as Ui from 'LensStudio:Ui';
 import { getHintFactory } from './Hints/HintFactory.js';
+import { logEventLinkOpen } from '../application/analytics.js';
+
+const termsLink = 'https://www.snap.com/terms/generative-lens-tools';
+const guidelinesLink = 'https://docs.snap.com/lens-studio/platform-solutions/snap-ml/garment-generation-in-ls';
 
 const infoImage = Ui.Pixmap.create(import.meta.resolve('Resources/info.svg'));
 
@@ -90,10 +94,11 @@ function createCalloutWidget(parent, text) {
 
     frameLayout.addWidget(info);
 
-    const guidelinesLabel = Ui.Label.create(frame);
+    const guidelinesLabel = Ui.ClickableLabel.create(frame);
     guidelinesLabel.text = text;
     guidelinesLabel.wordWrap = true;
     guidelinesLabel.openExternalLinks = true;
+    guidelinesLabel.onClick.connect(() => logEventLinkOpen(guidelinesLink));
 
     frameLayout.addWidgetWithStretch(guidelinesLabel, 1, Ui.Alignment.Default);
 
@@ -102,14 +107,13 @@ function createCalloutWidget(parent, text) {
 }
 
 export function createTermsWidget(parent) {
-    const termsLink = 'https://www.snap.com/terms/generative-lens-tools';
     const urlString = Ui.getUrlString('Generative Lens Tools Terms', termsLink);
 
     return createCalloutWidget(parent, 'By using the feature, you agree to our ' + urlString)
 }
 
 export function createGuidelinesWidget(parent) {
-    const guidelinesLink = 'https://docs.snap.com/lens-studio/platform-solutions/snap-ml/garment-generation-in-ls';
+    const guidelinesLink = 'https://developers.snap.com/lens-studio/features/genai-suite/garment-generation';
     const urlString = Ui.getUrlString('guidelines', guidelinesLink);
 
     return createCalloutWidget(parent, 'Check our ' + urlString + ' for examples, prompting best practices and usage guidelines.');

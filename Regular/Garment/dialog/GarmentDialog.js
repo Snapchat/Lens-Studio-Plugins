@@ -1,7 +1,6 @@
 import * as Ui from 'LensStudio:Ui';
 
-import app from '../application/app.js';
-
+import { logEventOpen } from '../application/analytics.js';
 import { CreationMenu } from './CreationMenu/CreationMenu.js';
 import { Preview } from './Preview/Preview.js';
 
@@ -77,6 +76,7 @@ export class GarmentDialog {
     }
 
     init() {
+        logEventOpen();
         this.creationMenu.init();
         this.preview.init();
 
