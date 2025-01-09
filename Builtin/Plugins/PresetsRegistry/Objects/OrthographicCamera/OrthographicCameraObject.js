@@ -50,10 +50,6 @@ export function findOrCreateOrthoCam(model, sceneObject) {
     if (!cameraObject) {
         cameraObject = scene.addSceneObject(null); // Add object to top level without parent.
         createOrthographicCameraObject(model, cameraObject);
-    }
-
-    // Make sure there's a canvas on ortho cam so users can easily change units.
-    if (!cameraObject.getComponent('Canvas')) {
         createCanvasComponent(cameraObject);
     }
 

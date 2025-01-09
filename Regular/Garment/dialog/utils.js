@@ -82,7 +82,7 @@ export function createErrorIcon(parent) {
     return createIcon(parent, Ui.Pixmap.create(import.meta.resolve('Resources/error_icon.svg')));
 }
 
-function createCalloutWidget(parent, text) {
+function createCalloutWidget(parent, text, link) {
     const frame = Ui.CalloutFrame.create(parent);
 
     const frameLayout = Ui.BoxLayout.create();
@@ -98,7 +98,7 @@ function createCalloutWidget(parent, text) {
     guidelinesLabel.text = text;
     guidelinesLabel.wordWrap = true;
     guidelinesLabel.openExternalLinks = true;
-    guidelinesLabel.onClick.connect(() => logEventLinkOpen(guidelinesLink));
+    guidelinesLabel.onClick.connect(() => logEventLinkOpen(link));
 
     frameLayout.addWidgetWithStretch(guidelinesLabel, 1, Ui.Alignment.Default);
 
@@ -109,14 +109,13 @@ function createCalloutWidget(parent, text) {
 export function createTermsWidget(parent) {
     const urlString = Ui.getUrlString('Generative Lens Tools Terms', termsLink);
 
-    return createCalloutWidget(parent, 'By using the feature, you agree to our ' + urlString)
+    return createCalloutWidget(parent, 'By using the feature, you agree to our ' + urlString, termsLink)
 }
 
 export function createGuidelinesWidget(parent) {
-    const guidelinesLink = 'https://developers.snap.com/lens-studio/features/genai-suite/garment-generation';
     const urlString = Ui.getUrlString('guidelines', guidelinesLink);
 
-    return createCalloutWidget(parent, 'Check our ' + urlString + ' for examples, prompting best practices and usage guidelines.');
+    return createCalloutWidget(parent, 'Check our ' + urlString + ' for examples, prompting best practices and usage guidelines.', guidelinesLink);
 }
 
 export function getRandomPrompt() {
