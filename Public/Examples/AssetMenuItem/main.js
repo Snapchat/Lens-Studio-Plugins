@@ -19,7 +19,6 @@ export class AssetMenuItem extends CoreService {
      */
     constructor(pluginSystem) {
         super(pluginSystem);
-        this.pluginSystem = pluginSystem;
     }
 
     createAssetAction(context) {
@@ -106,7 +105,7 @@ export class AssetMenuItem extends CoreService {
     // Start function in CoreService is called when Lens Studio starts and the plugin is loaded.
     start() {
         // Get the action registry component through the component ID.
-        const actionsRegistry = this.pluginSystem.findInterface(Editor.IContextActionRegistry.interfaceID);
+        const actionsRegistry = this.pluginSystem.findInterface(Editor.IContextActionRegistry);
         // We need to hold the references to the actions to prevent them from being garbage collected.
         this.guard = [];
         this.guard.push(actionsRegistry.registerAction((context) => this.createAssetAction(context)));

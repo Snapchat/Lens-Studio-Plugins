@@ -21,7 +21,6 @@ export class AssetMenuPreset extends Preset {
      */
     constructor(pluginSystem) {
         super(pluginSystem);
-        this.pluginSystem = pluginSystem;
     }
 
     /**

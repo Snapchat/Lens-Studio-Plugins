@@ -59,7 +59,6 @@ export class FigmaImporter extends PanelPlugin {
     constructor(pluginSystem: Editor.PluginSystem) {
         super(pluginSystem)
 
-        this.pluginSystem = pluginSystem
         const model = pluginSystem.findInterface(Editor.Model.IModel) as Editor.Model.IModel
         const assetManager = model.project.assetManager
         const scene = model.project.scene
@@ -425,7 +424,7 @@ export class FigmaImporter extends PanelPlugin {
 
     createProgressBarDialog() {
         try {
-            const gui = this.pluginSystem.findInterface(Ui.IGui.interfaceID) as Ui.Gui
+            const gui = this.pluginSystem.findInterface(Ui.IGui) as Ui.Gui
 
             const dialog = gui.createDialog()
 

@@ -23,7 +23,6 @@ export class ObjectMenuPreset extends Preset {
      */
     constructor(pluginSystem) {
         super(pluginSystem);
-        this.pluginSystem = pluginSystem;
         // Flags
         this.image = null;
         this.material = null;

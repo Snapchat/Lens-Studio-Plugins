@@ -18,7 +18,6 @@ export class ObjectMenuItem extends CoreService {
      */
     constructor(pluginSystem) {
         super(pluginSystem);
-        this.pluginSystem = pluginSystem;
     }
 
     // In the ungroup method

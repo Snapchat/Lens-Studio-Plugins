@@ -19,7 +19,6 @@ export class PanelWidgets extends PanelPlugin {
      */
     constructor(pluginSystem) {
         super(pluginSystem);
-        this.pluginSystem = pluginSystem;
     }
 
 
@@ -245,7 +244,7 @@ export class PanelWidgets extends PanelPlugin {
         /**
          * @type {Ui.Gui}
          */
-        const guiComponent = this.pluginSystem.findInterface(Ui.IGui.interfaceID);
+        const guiComponent = this.pluginSystem.findInterface(Ui.IGui);
         const gui = guiComponent;
         const dialog = gui.createDialog();
         dialog.windowTitle = "Sample Dialog";

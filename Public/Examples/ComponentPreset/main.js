@@ -22,7 +22,6 @@ export class ComponentPreset extends Preset {
      */
     constructor(pluginSystem) {
         super(pluginSystem);
-        this.pluginSystem = pluginSystem;
     }
 
     /**
