@@ -1,4 +1,5 @@
 // Assets
+export { BeautyMaterialPreset } from '../Assets/ColorCorrectionMaterial/ColorCorrectionMaterial.js';
 export { BodyMeshMaterialPreset } from '../Assets/BodyMeshMaterial/BodyMeshMaterial.js';
 export { UpperBodyMeshObjectPreset } from '../Objects/UpperBodyMesh/UpperBodyMeshObject.js';
 export { EmptyMaterialPreset } from '../Assets/EmptyMaterial/EmptyMaterial.js';
