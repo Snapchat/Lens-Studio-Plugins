@@ -12,7 +12,7 @@ export class TsConfigPreset extends Preset {
             name: 'TS Config',
             description: '',
             icon: Editor.Icon.fromFile(import.meta.resolve('../Resources/JsonFile.svg')),
-            section: 'General',
+            section: 'Scripting',
             entityType: 'JsonAsset'
         };
     }

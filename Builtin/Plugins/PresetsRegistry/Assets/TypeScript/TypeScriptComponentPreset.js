@@ -12,7 +12,7 @@ export class TypeScriptComponentPreset extends Preset {
             name: 'TypeScript File',
             description: '',
             icon: Editor.Icon.fromFile(import.meta.resolve('../Resources/TypeScript.svg')),
-            section: 'General',
+            section: 'Scripting',
             entityType: 'TypeScriptAsset'
         };
     }

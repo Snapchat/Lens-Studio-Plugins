@@ -40,7 +40,7 @@ function createScriptAssetPreset(id, name, generator) {
                 name: name,
                 description: 'Allows you to set up trigger and response for various Lens behaviors using dropdowns.',
                 icon: Editor.Icon.fromFile(import.meta.resolve('../Resources/HelperScript.svg')),
-                section: 'General',
+                section: 'Scripting',
                 entityType: 'JavaScriptAsset'
             };
         }

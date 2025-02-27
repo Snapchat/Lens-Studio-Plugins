@@ -13,7 +13,7 @@ export class JavaScriptPreset extends Preset {
             name: 'JavaScript File',
             description: '',
             icon: Editor.Icon.fromFile(import.meta.resolve('../Resources/JavaScript.svg')),
-            section: 'General',
+            section: 'Scripting',
             entityType: 'JavaScriptAsset'
         };
     }

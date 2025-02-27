@@ -21,7 +21,6 @@ export { ObjectSegmentationMaterialPreset } from '../Assets/ObjectSegmentationMa
 export { OccluderMaterialPreset } from '../Assets/OccluderMaterial/OccluderMaterial.js';
 export { PBRMaterialPreset } from '../Assets/PBRMaterial/PBRMaterial.js';
 export { SimplePBRMaterialPreset } from '../Assets/SimplePBRMaterial/SimplePBRMaterial.js';
-export { SpectaclesDepthMaterialPreset } from '../Assets/SpectaclesDepthMaterial/SpectaclesDepthMaterial.js';
 export { Text3DMaterialPreset } from '../Assets/Text3DMaterial/Text3DMaterial.js';
 export { UberDiffuseMaterialPreset } from '../Assets/UberDiffuseMaterial/UberDiffuseMaterial.js';
 export { UberPBRMaterialPreset } from '../Assets/UberPBRMaterial/UberPBRMaterial.js';
