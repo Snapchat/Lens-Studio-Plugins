@@ -25,6 +25,7 @@ export async function executeHttpGetRequest(url: string, isFigmaRequest: boolean
         }
         return new Promise((resolve, reject) => {
             try {
+                //@ts-expect-error - the api is still in effect
                 Network.performHttpRequest(request, function (response: Network.HttpResponse) {
                     resolve(response)
                 })

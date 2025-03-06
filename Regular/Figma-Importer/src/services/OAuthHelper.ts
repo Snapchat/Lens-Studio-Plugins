@@ -1,22 +1,25 @@
 import * as Network from 'LensStudio:Network'
 import * as Shell from 'LensStudio:Shell'
 import TcpServerMan from './TcpServerManager.js'
-import { sha256 } from '../ext_libs/sha256.js'
-import { Base64UrlSafe } from '../ext_libs/base64.js'
+// import { sha256 } from '../ext_libs/sha256.js'
 import { logger } from '../utils/FigmaUtils.js'
+import { myEncodeURIComponent } from '../utils/myEncodeURIComponent.js'
+import { stringToBase64 } from '../utils/base64.js'
+
+//Update: Per Figma's request, we have updated the oauth flow. updated date: 2025-02-20
 
 const addr = {
-    serverAddr: 'http://127.0.0.1',
+    serverAddr: "http://127.0.0.1",
     serverPort: 8080,
-    codeTradeInUrl: 'https://www.figma.com/api/oauth/token',
+    codeTradeInUrl: 'https://api.figma.com/v1/oauth/token',
     permissionPageUrl: 'https://www.figma.com/oauth',
 }
 
 //those are static values that should not be changed
-const client_secret = Object.freeze('FIHf7QJ7deE8GxKQuIXrzPWhntAJUK') // in the OAuth PKCE flow, the client secret is considered known to the public.
-const client_id = Object.freeze('sqElujdLVPvHXOuU7xJqPF')
+const CLIENT_SECRET = Object.freeze('FIHf7QJ7deE8GxKQuIXrzPWhntAJUK') // in the OAuth PKCE flow, the client secret is considered known to the public.
+const CLIENT_ID = Object.freeze('sqElujdLVPvHXOuU7xJqPF')
 
-function tradeInCodeForAccessToken(client_id: string, client_secret: string, code: string, codeVerifier: string): Promise<any> {
+function tradeInCodeForAccessToken(client_id: string, client_secret: string, code: string/* , codeVerifier: string */): Promise<any> {
     return new Promise((resolve, reject) => {
         const tradeInRequest = makeTradeinRequestBody(
             addr.codeTradeInUrl,
@@ -24,14 +27,15 @@ function tradeInCodeForAccessToken(client_id: string, client_secret: string, cod
             client_id,
             client_secret,
             `${addr.serverAddr}:${addr.serverPort}`,
-            code,
-            codeVerifier)
+            code/* ,
+            codeVerifier */)
         try {
-            Network.performHttpRequest(tradeInRequest, (response: any) => {
+            //@ts-expect-error - the api is still in effect
+            Network.performHttpRequest(tradeInRequest, (response: Network.HttpResponse) => {
+                // Check for a successful response
                 if (response.statusCode !== 200) {
                     reject(new Error('HTTP Error: ' + response.statusCode))
                 } else {
-                    // logger.logMessage('Request success! Status code: ' + response.statusCode + '  content type: ' + response.contentType)
                     const json = JSON.parse(response.body.toString())
                     resolve(json)
                 }
@@ -44,24 +48,52 @@ function tradeInCodeForAccessToken(client_id: string, client_secret: string, cod
 
 function makeTradeinRequestBody(url: string,
     method: Network.HttpRequest.Method,
-    client_id: string, client_secret: string, redirect_uri: string, code: string,
-    codeVerifier: string) {
+    // TODO: PKCE process disabled due to technical issues.
+    // We are currently under a time crunch and will reimplement this when releasing the new version of the plugin before the DDL.
+    client_id: string, client_secret: string, redirect_uri: string, code: string/* ,
+    codeVerifier: string */) {
     const request = new Network.HttpRequest()
     request.url = url
     request.method = method
-    request.body = `client_id=${client_id}&client_secret=${client_secret}&code_verifier=${codeVerifier}&redirect_uri=${redirect_uri}&code=${code}&grant_type=authorization_code`
+
+    // Encode credentials for Basic Auth
+    const credentials = `${client_id}:${client_secret}`
+    const encodedCredentials = stringToBase64(credentials)
+
+    // Set headers with Basic authentication
+    request.headers = {
+        'Authorization': `Basic ${encodedCredentials}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+    }
+
+    const bodyParams = [
+        // TODO: PKCE process disabled due to technical issues.
+        // We are currently under a time crunch and will reimplement this when releasing the new version of the plugin before the DDL.
+        // `code_verifier=${codeVerifier}`,
+        `redirect_uri=${myEncodeURIComponent(redirect_uri)}`,
+        `code=${code}`,
+        `grant_type=authorization_code`
+    ]
+
+    request.body = bodyParams.join('&')
+
     return request
 }
 
 function parseCodeFromGETRequest(str: string) {
+    const lines = str.split('\n')
+    const firstLine = lines[0]
+
+    if (!firstLine) throw new Error('No first line found in the request')
+    if (!firstLine.includes('GET')) throw new Error('No GET request found in the request')
 
     // Define regular expressions to extract code and state
     const codeRegex = /code=([^&]+)/
-    const stateRegex = /state=([^ ]+)/
+    const stateRegex = /state=([^&\s]+)/
 
     // Extract code and state using regular expressions
-    const codeMatch = str.match(codeRegex)
-    const stateMatch = str.match(stateRegex)
+    const codeMatch = firstLine.match(codeRegex)
+    const stateMatch = firstLine.match(stateRegex)
 
     if (codeMatch && stateMatch) {
         const code = codeMatch[1]
@@ -83,66 +115,134 @@ function randomStringGenerator(length: number) {
     return result
 }
 
+/**
+ * Generates a complete HTML page.
+ *
+ * @param title - The title for the HTML page.
+ * @param message - The message displayed in the page body.
+ * @returns The HTML content as a string.
+ */
+function getHtmlTemplate(title: string, message: string): string {
+    return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>${title}</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            font-size: 1rem;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <p>${message}</p>
+</body>
+</html>
+`.trim()
+}
+
+// Define HTML templates to be used in different scenarios.
+const HTMLTemplates = {
+    stateMismatch: getHtmlTemplate("Error", "State mismatch. Please try again."),
+    missingAuthCode: getHtmlTemplate("Error", "Authentication code missing. Please try again."),
+    authSuccess: getHtmlTemplate("Success", "Authentication successful, you can close this page now."),
+    authFailure: getHtmlTemplate("Error", "Authentication failed. Please try again.<br>If the problem persists, contact the developer."),
+}
+
 export function startOAuth() {
-
     const state = randomStringGenerator(10)
-    const codeVerifier = generateCodeVerifier()
-    const codeChallenge = generateCodeChallenge(codeVerifier)
+    // TODO: PKCE process disabled due to technical issues.
+    // We are currently under a time crunch and will reimplement this when releasing the new version of the plugin before the DDL.
+    // const codeVerifier = generateCodeVerifier()
+    // const codeChallenge = generateCodeChallenge(codeVerifier)    
+    try {
+        Shell.openUrl(addr.permissionPageUrl, {
+            redirect_uri: `${addr.serverAddr}:${addr.serverPort}`,
+            client_id: CLIENT_ID,
+            response_type: 'code',
+            scope: 'files:read',
+            state: state,
+            // TODO: PKCE process disabled due to technical issues.
+            // We are currently under a time crunch and will reimplement this when releasing the new version of the plugin before the DDL.
+            // code_challenge: codeChallenge,
+            // code_challenge_method: 'S256',
+        })
+    } catch (e) {
+        console.error(e)
+    }
 
-    //1. Open a browser window to the Figma OAuth URL
-    Shell.openUrl(addr.permissionPageUrl, {
-        'redirect_uri': `${addr.serverAddr}:${addr.serverPort}`,
-        'client_id': client_id,
-        'response_type': 'code',
-        'scope': 'files:read',
-        'state': state,
-        'code_challenge': codeChallenge,
-    })
-
-    //2. Wait for the user to authenticate and get redirected to the redirect_uri
     const tcpServer = new TcpServerMan()
     tcpServer.enableLogging = true
 
     return new Promise((resolve, reject) => {
         tcpServer.onClientDataReceived = async (data, socket) => {
+            try {
+                const dataStr = data.toString()
 
-            logger.debug(JSON.stringify(data.toString(), null, 4))
-            //getting the code from the request
-            const { code: authCode, state: remoteState } = parseCodeFromGETRequest(data.toString())
-            if (state !== remoteState) {
-                throw new Error('State mismatch')
-            }
-            socket.write(formHttpResponse(200, 'OK', authCode ? 'Authentication successful, you can close this page now' : 'Authentication failed, please try again'))
-
-            if (!authCode) {
-                logger.warn('No code found in the request')
-                reject(new Error('No code found in the request'))
-            } else {
-                if (!client_id || !client_secret) {
-                    logger.warn('No client_id or client_secret found')
-                    reject(new Error('No client_id or client_secret found'))
-                } else {
-                    //final step, trade in the code for an access token
-                    const json = await tradeInCodeForAccessToken(client_id, client_secret, authCode, codeVerifier)
-                    if (!json) {
-                        reject(new Error('No json response from tradeInCodeForAccessToken'))
-                    } else {
-                        logger.info('Access token received successfully')
-                        resolve(json)
-                    }
+                if (dataStr.includes('GET') && dataStr.includes('favicon.ico')) {
+                    socket.close()
+                    return
                 }
+
+                let parsed
+                try {
+                    parsed = parseCodeFromGETRequest(dataStr)
+                } catch (parseError) {
+                    // If the request is not valid for OAuth, close the connection.
+                    socket.close()
+                    return
+                }
+
+                const { code: authCode, state: remoteState } = parsed
+
+                if (state.trim() !== remoteState.trim()) {
+                    socket.write(formHttpResponse(200, 'OK', HTMLTemplates.stateMismatch))
+                    throw new Error('State mismatch')
+                }
+
+                if (!authCode) {
+                    socket.write(formHttpResponse(200, 'OK', HTMLTemplates.missingAuthCode))
+                    throw new Error('Missing authentication code')
+                }
+
+                try {
+                    const tokenResponse = await tradeInCodeForAccessToken(
+                        CLIENT_ID,
+                        CLIENT_SECRET,
+                        authCode
+                    )
+                    logger.info('Access token received successfully')
+
+                    // Send success page
+                    socket.write(formHttpResponse(200, 'OK', HTMLTemplates.authSuccess))
+                    resolve(tokenResponse)
+                } catch (exchangeError) {
+                    // Send error page on token exchange failure
+                    socket.write(formHttpResponse(200, 'OK', HTMLTemplates.authFailure))
+                    throw exchangeError
+                }
+            } catch (error) {
+                reject(error)
+            } finally {
+                socket.close()
             }
-            socket.destroy()
         }
 
         tcpServer.onClientConnected = () => {
-            //close the server immediately after the first connection to avoid repeated requests
             tcpServer.close()
         }
 
         tcpServer.start(addr.serverAddr, addr.serverPort)
     })
 }
+
 
 // return web page with a message
 function formHttpResponse(statusCode: number, statusText: string, content: string) {
@@ -154,21 +254,20 @@ function formHttpResponse(statusCode: number, statusText: string, content: strin
     return response
 }
 
-function generateCodeVerifier() {
-    const length = 128
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~'
-    let result = ''
-    for (let i = 0; i < length; i++) {
-        result += characters.charAt(Math.floor(Math.random() * characters.length))
-    }
-    return result
-}
+// function generateCodeVerifier() {
+//     const length = 128
+//     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~'
+//     let result = ''
+//     for (let i = 0; i < length; i++) {
+//         result += characters.charAt(Math.floor(Math.random() * characters.length))
+//     }
+//     return result
+// }
 
-//Generates a random code verifier string   .
-function generateCodeChallenge(codeVerifier: string) {
-    //@ts-expect-error not sure the lib is correct
-    const hash = sha256.array(codeVerifier)
-    const encoder = new Base64UrlSafe()
-    const codeChallenge = encoder.encode(hash)
-    return codeChallenge
-}
+// //Generates a random code verifier string   .
+// function generateCodeChallenge(codeVerifier: string) {
+//     const hash = sha256.array(codeVerifier)
+//     // const encoder = new Base64UrlSafe()
+//     const codeChallenge = stringToBase64(hash)
+//     return codeChallenge
+// }

@@ -1,4 +1,3 @@
-//@ts-expect-error waiting for .d.ts to catch up
 import { PanelPlugin } from 'LensStudio:PanelPlugin'
 import * as Ui from 'LensStudio:Ui'
 import FigmaFileAgent from './services/FigmaFileAgent.js'
@@ -15,7 +14,7 @@ import { fetchUser } from './services/FigmaApiService.js'
 
 
 
-const importNodeUrl = typeof internalImportNodeUrl !== 'undefined' ? internalImportNodeUrl : '';
+const importNodeUrl = typeof internalImportNodeUrl !== 'undefined' ? internalImportNodeUrl : ''
 
 export class FigmaImporter extends PanelPlugin {
 
@@ -40,16 +39,14 @@ export class FigmaImporter extends PanelPlugin {
             dialogResizeHeight: 50,
         })
 
-    signals: Editor.Connection[] = []
-    pluginSystem: Editor.PluginSystem
+    signals: Editor.ScopedConnection[] = []
 
-    private readonly version = '1.0.8'
+    private readonly version = '1.1.11'
 
     static descriptor() {
         const name = 'Figma Importer'
         return {
             id: 'Com.Snap.Scripts.' + name,
-            interfaces: PanelPlugin.descriptor().interfaces,
             name: name,
             //TODO: add dependencies property back
             description: 'Import your figma designs into Lens Studio',
@@ -139,7 +136,10 @@ export class FigmaImporter extends PanelPlugin {
             return mainWidget
         } catch (e) {
             logger.error('', e)
+            // Ensure a widget is always returned
+            return Ui.Widget.create(parent)
         }
+
     }
 
     createConfigurationPanel() {

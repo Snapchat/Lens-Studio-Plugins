@@ -2,17 +2,17 @@ import * as Network from 'LensStudio:Network'
 import { logger } from '../utils/FigmaUtils.js'
 export default class TcpServerManager {
     private server: Network.TcpServer = Network.TcpServer.create()
-    private connections: Editor.Connection[] = []
-    private sockets: Network.TcpSocket[] = []
-    public onClientConnected: ((socket: Network.TcpSocket) => void) | null = null
+    private connections: Editor.ScopedConnection[] = []
+    private sockets: Network.BaseSocket[] = []
+    public onClientConnected: ((socket: Network.BaseSocket) => void) | null = null
     public onClientDataReceived: ((data: any, socket: Network.TcpSocket) => void) | null = null
-    public onClientDisconnected: ((socket: Network.TcpSocket) => void) | null = null
-    public onClientSocketError: ((error: any, socket: Network.TcpSocket) => void) | null = null
+    public onClientDisconnected: ((socket: Network.BaseSocket) => void) | null = null
+    public onClientSocketError: ((error: any, socket: Network.BaseSocket) => void) | null = null
     public enableLogging: boolean = false
 
     constructor() {
         // Setup listeners
-        this.server.onConnect.connect((socket: Network.TcpSocket) => {
+        this.server.onConnect.connect((socket: Network.BaseSocket) => {
             //save sockets to the persistent array so they dont get garbage collected
             this.sockets.push(socket)
 
@@ -30,7 +30,7 @@ export default class TcpServerManager {
                 }
 
                 if (this.onClientDataReceived) {
-                    this.onClientDataReceived(data, socket)
+                    this.onClientDataReceived(data, socket as Network.TcpSocket)
                 }
             })
 
@@ -44,13 +44,13 @@ export default class TcpServerManager {
                 }
             })
 
-            socket.onError.connect((error: Error) => {
+            socket.onError.connect((errorCode: number) => {
                 if (this.enableLogging) {
-                    logger.error('Socket error', error)
+                    logger.error('Socket error', errorCode)
                 }
 
                 if (this.onClientSocketError) {
-                    this.onClientSocketError(error, socket)
+                    this.onClientSocketError(new Error(`Socket error code: ${errorCode}`), socket)
                 }
             })
         })

@@ -36,7 +36,7 @@ export function logEventAssetCreation(status, preset, origin) {
         "preset": preset,
         "settings": "",
         "origin": origin,
-        "inputFormat": "PROMPT_TEXT"
+        "input_format": "PROMPT_TEXT"
     };
 
     logEvent(eventData);

@@ -9,7 +9,7 @@
     "allowJs": true,
     "lib": ["es2019"],
     "types": [],
-    "baseUrl": "../Cache/TypeScript/Src"
+    "baseUrl": "../Cache/TypeScript/Src/Assets"
   },
   "exclude": [
     "node_modules/typescript/lib/lib.dom.d.ts"

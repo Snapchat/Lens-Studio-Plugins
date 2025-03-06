@@ -91,6 +91,7 @@ export function findOrCreateOrthoCam(model: Editor.Model.IModel, sceneObject: Ed
 
     // If still have not found any, make a new one.
     if (!cameraObject) {
+        //@ts-expect-error - the .d.ts is not up to date
         cameraObject = scene.addSceneObject(null) // Add object to top level without parent.
         createOrthographicCameraObject(model, cameraObject)
     }
