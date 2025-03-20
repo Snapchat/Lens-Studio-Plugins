@@ -22,7 +22,6 @@ export class CanvasComponentPreset extends Preset {
     static descriptor() {
         return {
             id: 'Com.Snap.CanvasComponentPreset',
-            interfaces: Preset.descriptor().interfaces,
             name: 'Canvas',
             description: '',
             icon: Editor.Icon.fromFile(import.meta.resolve('../../Objects/ComponentOnly/Resources/Canvas.svg')),

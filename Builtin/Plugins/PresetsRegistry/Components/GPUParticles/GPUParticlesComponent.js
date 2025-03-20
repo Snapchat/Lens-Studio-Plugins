@@ -21,7 +21,6 @@ export class GPUParticlesComponentPreset extends Preset {
     static descriptor() {
         return {
             id: 'Com.Snap.GPUParticlesComponentPreset',
-            interfaces: Preset.descriptor().interfaces,
             name: 'GPU Particles',
             description: '',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/GPUParticles.svg')),

@@ -5,7 +5,6 @@ export class ImageMarkerAssetPreset extends Preset {
     static descriptor() {
         return {
             id: 'Com.Snap.ImageMarkerAssetPreset',
-            interfaces: Preset.descriptor().interfaces,
             name: 'Image Marker From Texture',
             description: '',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/MarkerAsset.svg')),

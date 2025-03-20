@@ -36,7 +36,6 @@ function createScriptAssetPreset(id, name, generator) {
         static descriptor() {
             return {
                 id: `Com.Snap.${id}`,
-                interfaces: Preset.descriptor().interfaces,
                 name: name,
                 description: 'Allows you to set up trigger and response for various Lens behaviors using dropdowns.',
                 icon: Editor.Icon.fromFile(import.meta.resolve('../Resources/HelperScript.svg')),

@@ -6,7 +6,6 @@ export class ScreenTextObjectPreset extends Preset {
     static descriptor() {
         return {
             id: 'Com.Snap.ScreenTextObjectPreset',
-            interfaces: Preset.descriptor().interfaces,
             name: 'Screen Text',
             description: '',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/ScreenText.svg')),

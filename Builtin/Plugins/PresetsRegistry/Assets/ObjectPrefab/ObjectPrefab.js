@@ -4,7 +4,6 @@ export class ObjectPrefabPreset extends Preset {
     static descriptor() {
         return {
             id: 'Com.Snap.ObjectPrefabPreset',
-            interfaces: Preset.descriptor().interfaces,
             dependencies: [Editor.Model.IModel],
             name: 'Object Prefab',
             description: '',

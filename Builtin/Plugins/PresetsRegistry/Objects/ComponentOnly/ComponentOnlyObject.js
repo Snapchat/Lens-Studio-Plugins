@@ -5,7 +5,6 @@ function createComponentOnlyObject(componentName, niceName, iconPath, group) {
         static descriptor() {
             return {
                 id: `Com.Snap.${componentName}ObjectPreset`,
-                interfaces: Preset.descriptor().interfaces,
                 name: niceName,
                 description: '',
                 icon: Editor.Icon.fromFile(import.meta.resolve(iconPath)),

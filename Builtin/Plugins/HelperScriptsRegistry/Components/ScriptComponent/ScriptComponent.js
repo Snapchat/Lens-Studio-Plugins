@@ -10,12 +10,12 @@ import { createBehaviorAsset } from '../../Assets/Scripts/Scripts.js';
 /**
  * Calls an asset importer to get a reference to an asset, which it then
  * adds to a ScriptComponent on the passed in object.
- * 
+ *
  * You can duplicate this function, and modify the asset importer function.
  * Usually the importer function is defined in the Assets/Scripts folder.
  *
- * We export our function so that it can be used to create an object. 
- * See: Objects/ScriptObject for an example. 
+ * We export our function so that it can be used to create an object.
+ * See: Objects/ScriptObject for an example.
  *
  * @param {Editor.Model.IModel} model The model which provides access to the scene's Asset Browser.
  * @param {Editor.Model.SceneObject} destinationObject The scene object which the new component should be added to.
@@ -42,7 +42,6 @@ function createScriptComponentPreset(id, name, iconPath, createFn, entityType) {
         static descriptor() {
             return {
                 id: `Com.Snap.JsComponentPreset.${id}`,
-                interfaces: Preset.descriptor().interfaces,
                 name: name,
                 description: 'Allows you to set up trigger and response for various Lens behaviors using dropdowns.',
                 icon: Editor.Icon.fromFile(import.meta.resolve(iconPath)),

@@ -25,7 +25,6 @@ export class FaceImageObjectPreset extends Preset {
     static descriptor() {
         return {
             id: 'Com.Snap.FaceImageObjectPreset',
-            interfaces: Preset.descriptor().interfaces,
             name: 'Face Image',
             description: '',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/FaceImage.svg')),

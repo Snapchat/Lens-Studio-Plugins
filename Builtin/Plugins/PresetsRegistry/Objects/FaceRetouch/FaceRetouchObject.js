@@ -18,7 +18,6 @@ export class FaceRetouchObjectPreset extends Preset {
     static descriptor() {
         return {
             id: 'Com.Snap.FaceRetouchObjectPreset',
-            interfaces: Preset.descriptor().interfaces,
             name: 'Face Retouch',
             description: '',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/FaceRetouch.svg')),

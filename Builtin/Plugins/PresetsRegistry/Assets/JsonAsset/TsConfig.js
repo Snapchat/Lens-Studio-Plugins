@@ -8,7 +8,6 @@ export class TsConfigPreset extends Preset {
     static descriptor() {
         return {
             id: 'Com.Snap.JsonAssetPreset.TsConfig',
-            interfaces: Preset.descriptor().interfaces,
             name: 'TS Config',
             description: '',
             icon: Editor.Icon.fromFile(import.meta.resolve('../Resources/JsonFile.svg')),

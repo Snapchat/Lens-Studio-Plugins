@@ -7,7 +7,6 @@ export class PanelWidgets extends PanelPlugin {
     static descriptor() {
         return {
             id: "LS.Plugin.Example.PanelWidgets",
-            interfaces: PanelPlugin.descriptor().interfaces,
             name: "Panel Widgets Demo",
             description: "A panel plugin showcasing demos of all the available widgets",
             dependencies: [Ui.IGui]

@@ -7,7 +7,6 @@ function createMarkerObjectPreset(name) {
         static descriptor() {
             return {
                 id: `Com.Snap.${name}MarkerObjectPreset`,
-                interfaces: Preset.descriptor().interfaces,
                 name: `${name} Marker`,
                 description: '',
                 icon: Editor.Icon.fromFile(import.meta.resolve(`Resources/${name} Marker.svg`)),

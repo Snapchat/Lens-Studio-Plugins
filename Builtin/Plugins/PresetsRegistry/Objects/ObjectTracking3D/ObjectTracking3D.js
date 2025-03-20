@@ -73,7 +73,6 @@ function createObjectTracking3DPreset(id, name, iconPath, createFn) {
         static descriptor() {
             return {
                 id: `Com.Snap.${id}ObjectTracking3DPreset`,
-                interfaces: Preset.descriptor().interfaces,
                 name: name,
                 description: '',
                 icon: Editor.Icon.fromFile(import.meta.resolve(iconPath)),

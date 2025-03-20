@@ -8,7 +8,6 @@ export class EmptyJsonAssetPreset extends Preset {
     static descriptor() {
         return {
             id: 'Com.Snap.JsonAssetPreset.EmptyJson',
-            interfaces: Preset.descriptor().interfaces,
             name: 'Empty JSON',
             description: '',
             icon: Editor.Icon.fromFile(import.meta.resolve('../Resources/JsonFile.svg')),

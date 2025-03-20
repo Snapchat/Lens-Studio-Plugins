@@ -9,7 +9,6 @@ export class JavaScriptPreset extends Preset {
     static descriptor() {
         return {
             id: 'Com.Snap.JavaScriptPreset',
-            interfaces: Preset.descriptor().interfaces,
             name: 'JavaScript File',
             description: '',
             icon: Editor.Icon.fromFile(import.meta.resolve('../Resources/JavaScript.svg')),

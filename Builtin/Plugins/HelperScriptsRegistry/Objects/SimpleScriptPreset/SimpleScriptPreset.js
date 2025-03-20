@@ -5,7 +5,6 @@ function createSimpleScriptPreset(name, relativeLsoPath, description) {
         static descriptor() {
             return {
                 id: `Com.Snap.SimpleScriptPresets.${name}`,
-                interfaces: Preset.descriptor().interfaces,
                 name: name,
                 description: description,
                 icon: Editor.Icon.fromFile(import.meta.resolve('../../Assets/Resources/HelperScript.svg')),

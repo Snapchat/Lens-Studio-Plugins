@@ -1,6 +1,6 @@
 /**
  * This preset allows you to register a preset to the `+` menu of the `Scene Hierarchy` panel which includes a component.
- * It relies on another preset, which adds the component itself. 
+ * It relies on another preset, which adds the component itself.
  * See: Components/ScriptComponent
  */
 
@@ -8,11 +8,11 @@ import { Preset } from 'LensStudio:Preset';
 import { BehaviorComponentPreset } from '../../Components/ScriptComponent/ScriptComponent.js'
 
 /**
- * Adds a preset to the `Scene Hierarchy`'s `+` menu, which adds an object and calls a preset to add new script component on it. 
- * 
+ * Adds a preset to the `Scene Hierarchy`'s `+` menu, which adds an object and calls a preset to add new script component on it.
+ *
  * Relies on another preset to add the script component.
  * For example: Components/ScriptComponent
- * 
+ *
  * @param {string} id The preset id
  * @param {string} name The name of the preset to be added to the `Add New Component` menu
  * @param {string} iconPath The path to the preset's item icon
@@ -25,7 +25,6 @@ function createJsObjectPreset(id, name, iconPath, objectName, ComponentPreset) {
         static descriptor() {
             return {
                 id: `Com.Snap.JsObjectPreset.${id}`,
-                interfaces: Preset.descriptor().interfaces,
                 name: name,
                 description: 'Allows you to set up trigger and response for various Lens behaviors using dropdowns.',
                 icon: Editor.Icon.fromFile(import.meta.resolve(iconPath)),

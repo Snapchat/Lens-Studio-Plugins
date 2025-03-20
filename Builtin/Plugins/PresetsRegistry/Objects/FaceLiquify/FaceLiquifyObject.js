@@ -36,7 +36,6 @@ export class FaceLiquifyObjectPreset extends Preset {
     static descriptor() {
         return {
             id: 'Com.Snap.FaceLiquifyObjectPreset',
-            interfaces: Preset.descriptor().interfaces,
             name: 'Face Liquify',
             description: '',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/FaceLiquify.svg')),

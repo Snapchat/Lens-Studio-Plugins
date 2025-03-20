@@ -29,7 +29,6 @@ export function createMaterialPreset(params, section = 'Materials') {
         static descriptor() {
             return {
                 id: params.descriptor.id,
-                interfaces: Preset.descriptor().interfaces,
                 name: params.descriptor.name,
                 description: params.descriptor.description,
                 icon: Editor.Icon.fromFile(params.descriptor.icon),

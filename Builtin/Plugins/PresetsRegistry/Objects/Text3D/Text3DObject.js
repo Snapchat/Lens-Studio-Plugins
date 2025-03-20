@@ -15,7 +15,6 @@ export class Text3DObjectPreset extends Preset {
     static descriptor() {
         return {
             id: 'Com.Snap.Text3DObjectPreset',
-            interfaces: Preset.descriptor().interfaces,
             name: 'Text3D',
             description: '',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/Text3D.svg')),

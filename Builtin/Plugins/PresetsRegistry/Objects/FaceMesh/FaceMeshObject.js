@@ -50,7 +50,6 @@ function createSpecialMeshObject(id, name, iconPath, headMeshMode) {
         static descriptor() {
             return {
                 id: `Com.Snap.${id}ObjectPreset`,
-                interfaces: Preset.descriptor().interfaces,
                 name: name,
                 description: '',
                 icon: Editor.Icon.fromFile(import.meta.resolve(iconPath)),

@@ -16,7 +16,6 @@ export class ImageComponentPreset extends Preset {
     static descriptor() {
         return {
             id: 'Com.Snap.ImageComponentPreset',
-            interfaces: Preset.descriptor().interfaces,
             name: 'Image',
             description: '',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/Image.svg')),

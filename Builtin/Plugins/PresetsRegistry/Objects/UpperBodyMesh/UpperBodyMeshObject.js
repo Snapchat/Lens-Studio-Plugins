@@ -41,7 +41,6 @@ export class UpperBodyMeshObjectPreset extends Preset {
     static descriptor() {
         return {
             id: 'Com.Snap.UpperBodyMeshObjectPreset',
-            interfaces: Preset.descriptor().interfaces,
             name: 'Upper Body Mesh',
             description: '',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/UpperBodyMesh.svg')),

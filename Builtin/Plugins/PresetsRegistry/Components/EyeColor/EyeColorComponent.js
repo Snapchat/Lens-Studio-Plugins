@@ -14,7 +14,6 @@ export class EyeColorComponentPreset extends Preset {
     static descriptor() {
         return {
             id: 'Com.Snap.EyeColorComponentPreset',
-            interfaces: Preset.descriptor().interfaces,
             name: 'Eye Color',
             description: '',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/EyeColor.svg')),

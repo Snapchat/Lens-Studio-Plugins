@@ -8,7 +8,6 @@ export class TypeScriptComponentPreset extends Preset {
     static descriptor() {
         return {
             id: 'Com.Snap.TypeScriptComponentPreset',
-            interfaces: Preset.descriptor().interfaces,
             name: 'TypeScript File',
             description: '',
             icon: Editor.Icon.fromFile(import.meta.resolve('../Resources/TypeScript.svg')),

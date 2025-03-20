@@ -13,7 +13,6 @@ function createMeshObjectClass(name, iconPath, assetMeshPreset, assetMaterialPre
         static descriptor() {
             return {
                 id: `Com.Snap.MeshObjectPreset.${name}`,
-                interfaces: Preset.descriptor().interfaces,
                 name: name,
                 description: '',
                 icon: Editor.Icon.fromFile(import.meta.resolve(iconPath)),

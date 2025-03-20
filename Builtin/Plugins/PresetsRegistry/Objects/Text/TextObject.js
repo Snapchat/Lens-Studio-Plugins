@@ -12,7 +12,6 @@ export class TextObjectPreset extends Preset {
     static descriptor() {
         return {
             id: 'Com.Snap.TextObjectPreset',
-            interfaces: Preset.descriptor().interfaces,
             name: 'Text',
             description: '',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/Text.svg')),

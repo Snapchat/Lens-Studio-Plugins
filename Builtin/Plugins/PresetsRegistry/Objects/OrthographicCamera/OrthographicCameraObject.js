@@ -79,7 +79,6 @@ export class OrthographicCameraObjectPreset extends Preset {
     static descriptor() {
         return {
             id: 'Com.Snap.OrthographicCameraObjectPreset',
-            interfaces: Preset.descriptor().interfaces,
             name: 'Orthographic Camera',
             description: '',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/Camera.svg')),

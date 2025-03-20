@@ -6,7 +6,6 @@ function createMeshClass(name) {
         static descriptor() {
             return {
                 id: `Com.Snap.MeshPreset.${name}`,
-                interfaces: Preset.descriptor().interfaces,
                 name: name,
                 description: '',
                 icon: Editor.Icon.fromFile(import.meta.resolve('../Resources/Mesh.svg')),

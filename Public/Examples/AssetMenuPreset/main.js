@@ -5,7 +5,6 @@ export class AssetMenuPreset extends Preset {
     static descriptor() {
         return {
             id: "LS.Plugin.Example.AssetMenuPreset",
-            interfaces: Preset.descriptor().interfaces,
             name: "GLTF Asset Preset",
             description: "Asset Preset for importing a GLTF file",
             icon: Editor.Icon.fromFile(new Editor.Path(import.meta.resolve("./icon.svg"))),

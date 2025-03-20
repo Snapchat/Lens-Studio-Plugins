@@ -46,7 +46,6 @@ export class HeadBindingObjectPreset extends Preset {
     static descriptor() {
         return {
             id: 'Com.Snap.HeadBindingPreset',
-            interfaces: Preset.descriptor().interfaces,
             name: 'Head Binding',
             description: '',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/HeadBinding.svg')),

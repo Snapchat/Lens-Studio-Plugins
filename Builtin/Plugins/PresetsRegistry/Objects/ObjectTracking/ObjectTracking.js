@@ -7,7 +7,6 @@ function createObjectTrackingPreset(id, niceName) {
         static descriptor() {
             return {
                 id: `Com.Snap.ObjectTrackingPreset.${id}`,
-                interfaces: Preset.descriptor().interfaces,
                 name: niceName,
                 description: '',
                 icon: Editor.Icon.fromFile(import.meta.resolve('Resources/ObjectTracking.svg')),

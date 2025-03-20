@@ -35,7 +35,6 @@ export class BodyMeshObjectPreset extends Preset {
     static descriptor() {
         return {
             id: 'Com.Snap.BodyMeshObjectPreset',
-            interfaces: Preset.descriptor().interfaces,
             name: 'Full Body Mesh',
             description: '',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/FullBodyMesh.svg')),

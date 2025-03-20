@@ -6,7 +6,6 @@ export class ScreenImageObjectPreset extends Preset {
     static descriptor() {
         return {
             id: 'Com.Snap.ScreenImageObjectPreset',
-            interfaces: Preset.descriptor().interfaces,
             name: 'Screen Image',
             description: '',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/ScreenImage.svg')),

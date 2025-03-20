@@ -6,7 +6,6 @@ function createPhysicsObjectClass(name, iconPath, meshPreset, shapeType) {
         static descriptor() {
             return {
                 id: `Com.Snap.PhysicsObjectPreset.${name}`,
-                interfaces: Preset.descriptor().interfaces,
                 name: name,
                 description: '',
                 icon: Editor.Icon.fromFile(import.meta.resolve(iconPath)),
@@ -25,7 +24,7 @@ function createPhysicsObjectClass(name, iconPath, meshPreset, shapeType) {
                 // Add mesh
                 const meshObjectPreset = new meshPreset(this.pluginSystem);
                 destination = await meshObjectPreset.createAsync(destination);
-                
+
                 destination.name = name;
 
                 // Add matching physics collider

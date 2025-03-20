@@ -16,7 +16,6 @@ export class RenderMeshVisualPBRComponentPreset extends Preset {
     static descriptor() {
         return {
             id: 'Com.Snap.RenderMeshVisualPBRPreset',
-            interfaces: Preset.descriptor().interfaces,
             name: 'Render Mesh Visual (PBR)',
             description: '',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/RenderMeshVisual.svg')),

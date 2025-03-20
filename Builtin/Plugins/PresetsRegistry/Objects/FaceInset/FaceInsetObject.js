@@ -23,7 +23,6 @@ export class FaceInsetObjectPreset extends Preset {
     static descriptor() {
         return {
             id: 'Com.Snap.FaceInsetObjectPreset',
-            interfaces: Preset.descriptor().interfaces,
             name: 'Face Inset',
             description: '',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/FaceInset.svg')),

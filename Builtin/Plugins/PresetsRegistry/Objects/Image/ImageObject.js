@@ -5,7 +5,6 @@ export class ImageObjectPreset extends Preset {
     static descriptor() {
         return {
             id: 'Com.Snap.ImageObjectPreset',
-            interfaces: Preset.descriptor().interfaces,
             name: 'Image',
             description: '',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/Image.svg')),

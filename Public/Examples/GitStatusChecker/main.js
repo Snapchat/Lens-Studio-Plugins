@@ -8,7 +8,6 @@ export class GitStatusCat extends CoreService {
     static descriptor() {
         return {
             id: "LS.Plugin.Example.GitStatusChecker",
-            interfaces: CoreService.descriptor().interfaces,
             name: "Git Status Cat",
             description: "A plugin that checks the git status of the current project",
             dependencies: [Editor.Model.IModel]

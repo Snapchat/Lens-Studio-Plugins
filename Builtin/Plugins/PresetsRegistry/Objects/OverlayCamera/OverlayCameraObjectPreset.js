@@ -15,7 +15,6 @@ export class OverlayCameraObjectPreset extends Preset {
     static descriptor() {
         return {
             id: 'Com.Company.OverlayCameraObjectPreset',
-            interfaces: Preset.descriptor().interfaces,
             name: 'Overlay Camera',
             description: 'Overlay Camera Preset',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/OverlayCamera.svg')),

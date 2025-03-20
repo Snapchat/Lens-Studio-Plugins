@@ -4,7 +4,6 @@ export class PhysicsWorldObjectPreset extends Preset {
     static descriptor() {
         return {
             id: `Com.Snap.PhysicsObjectPreset.World`,
-            interfaces: Preset.descriptor().interfaces,
             name: 'Physics World',
             description: '',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/Physics_World.svg')),

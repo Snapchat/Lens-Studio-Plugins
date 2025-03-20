@@ -18,7 +18,6 @@ export class FaceMaskObjectPreset extends Preset {
     static descriptor() {
         return {
             id: 'Com.Snap.FaceMaskObjectPreset',
-            interfaces: Preset.descriptor().interfaces,
             name: 'Face Mask',
             description: '',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/FaceMask.svg')),

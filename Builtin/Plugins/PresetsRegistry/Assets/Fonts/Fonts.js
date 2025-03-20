@@ -6,7 +6,6 @@ function createFontClass(name) {
         static descriptor() {
             return {
                 id: `Com.Snap.FontPreset.${name}`,
-                interfaces: Preset.descriptor().interfaces,
                 name: name,
                 description: '',
                 icon: Editor.Icon.fromFile(new Editor.Path(import.meta.resolve('./Resources/Font.svg'))),

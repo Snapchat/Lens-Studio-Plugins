@@ -6,7 +6,6 @@ export class ObjectMenuItem extends CoreService {
     static descriptor() {
         return {
             id: "LS.Plugin.Example.ObjectMenuItem",
-            interfaces: CoreService.descriptor().interfaces,
             name: "Ungroup",
             description: "Adds an Ungroup action to the context menu of Scene Objects in the Scene Hierarchy for ungrouping a scene object hierarchy",
             dependencies: [Editor.IContextActionRegistry]

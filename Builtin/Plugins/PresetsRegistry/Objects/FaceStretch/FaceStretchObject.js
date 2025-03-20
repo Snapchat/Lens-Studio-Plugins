@@ -20,7 +20,6 @@ export class FaceStretchObjectPreset extends Preset {
     static descriptor() {
         return {
             id: 'Com.Snap.FaceStretchObjectPreset',
-            interfaces: Preset.descriptor().interfaces,
             name: 'Face Stretch',
             description: '',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/FaceStretch.svg')),

@@ -14,7 +14,6 @@ export class ScreenRegionObjectPreset extends Preset {
     static descriptor() {
         return {
             id: 'Com.Snap.ScreenRegionObjectPreset',
-            interfaces: Preset.descriptor().interfaces,
             name: 'Screen Region',
             description: '',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/ScreenRegion.svg')),

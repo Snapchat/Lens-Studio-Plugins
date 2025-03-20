@@ -6,7 +6,6 @@ export class GPUParticlesTrailsObjectPreset extends Preset {
     static descriptor() {
         return {
             id: 'Com.Snap.GPUParticlesTrailsObjectPreset',
-            interfaces: Preset.descriptor().interfaces,
             name: 'GPU Particles Trails',
             description: 'Adds a GPU Particles object to the scene which uses Trails settings',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/GPUParticles.svg')),

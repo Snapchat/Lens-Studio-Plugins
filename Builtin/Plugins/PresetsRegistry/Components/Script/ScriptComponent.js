@@ -21,7 +21,6 @@ function createScriptComponentPreset(id, name, iconPath, createFn, entityType) {
         static descriptor() {
             return {
                 id: `Com.Snap.${id}ScriptComponentPreset`,
-                interfaces: Preset.descriptor().interfaces,
                 name: name,
                 description: '',
                 icon: Editor.Icon.fromFile(import.meta.resolve(iconPath)),

@@ -11,7 +11,6 @@ export class TextComponentPreset extends Preset {
     static descriptor() {
         return {
             id: 'Com.Snap.TextComponentPreset',
-            interfaces: Preset.descriptor().interfaces,
             name: 'Text',
             description: '',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/Text.svg')),

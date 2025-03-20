@@ -6,7 +6,6 @@ export class ComponentPreset extends Preset {
     static descriptor() {
         return {
             id: "LS.Plugin.Example.ComponentPreset",
-            interfaces: Preset.descriptor().interfaces,
             name: "UI Button Preset",
             description: "Component Preset for adding a UI Button",
             icon: Editor.Icon.fromFile(new Editor.Path(import.meta.resolve("./icon.svg"))),

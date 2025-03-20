@@ -49,7 +49,6 @@ function createColorCorrectionClass(name, assetMaterialPreset) {
         static descriptor() {
             return {
                 id: `Com.Snap.ColorCorrectionObjectPreset.${name}`,
-                interfaces: Preset.descriptor().interfaces,
                 name: name,
                 description: '',
                 icon: Editor.Icon.fromFile(import.meta.resolve('Resources/PostEffect.svg')),

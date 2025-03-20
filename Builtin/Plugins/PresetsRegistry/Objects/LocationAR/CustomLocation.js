@@ -43,7 +43,6 @@ export class CustomLocationObjectPreset extends Preset {
     static descriptor() {
         return {
             id: 'Com.Snap.CustomLocationObjectPreset',
-            interfaces: Preset.descriptor().interfaces,
             name: 'Custom Location',
             description: 'Adds a Custom Location',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/LocationAsset.svg')),

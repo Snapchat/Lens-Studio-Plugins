@@ -5,7 +5,6 @@ export class WorldMeshObjectPreset extends Preset {
     static descriptor() {
         return {
             id: 'Com.Snap.WorldMeshObjectPreset',
-            interfaces: Preset.descriptor().interfaces,
             name: 'World Mesh',
             description: 'Adds a World Mesh, which dynamically changes to the surfaces seen in the camera',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/WorldMesh.svg')),

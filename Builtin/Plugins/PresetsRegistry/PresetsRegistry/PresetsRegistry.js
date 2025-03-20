@@ -3,6 +3,7 @@ export { BeautyMaterialPreset } from '../Assets/ColorCorrectionMaterial/ColorCor
 export { BodyMeshMaterialPreset } from '../Assets/BodyMeshMaterial/BodyMeshMaterial.js';
 export { UpperBodyMeshObjectPreset } from '../Objects/UpperBodyMesh/UpperBodyMeshObject.js';
 export { EmptyMaterialPreset } from '../Assets/EmptyMaterial/EmptyMaterial.js';
+export { EmptyGSMaterialPreset } from '../Assets/GaussianSplattingMaterial/GSMaterial.js';
 export { EyeColorMaterialPreset } from '../Assets/EyeColorMaterial/EyeColorMaterial.js';
 export { FaceInsetMaterialPreset } from '../Assets/FaceInsetMaterial/FaceInsetMaterial.js';
 export { FaceMaskMaterialPreset } from '../Assets/FaceMaskMaterial/FaceMaskMaterial.js';

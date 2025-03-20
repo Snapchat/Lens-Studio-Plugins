@@ -7,7 +7,6 @@ export class ObjectMenuPreset extends Preset {
     static descriptor() {
         return {
             id: "LS.Plugin.Example.ObjectMenuPreset",
-            interfaces: Preset.descriptor().interfaces,
             name: "Screen Image Preset",
             description: "Preset for adding a Screen Image to the Scene Hierarchy",
             icon: Editor.Icon.fromFile(new Editor.Path(import.meta.resolve("./icon.svg"))),

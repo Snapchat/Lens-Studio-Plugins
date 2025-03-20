@@ -70,7 +70,6 @@ export class ScreenTransformObjectPreset extends Preset {
     static descriptor() {
         return {
             id: 'Com.Snap.ScreenTransformObjectPreset',
-            interfaces: Preset.descriptor().interfaces,
             name: 'Screen Transform',
             description: '',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/ScreenTransform.svg')),

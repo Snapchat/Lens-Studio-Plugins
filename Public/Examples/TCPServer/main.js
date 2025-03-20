@@ -65,7 +65,6 @@ export class TcpServerDemo extends CoreService {
     static descriptor() {
         return {
             id: "LS.Plugin.Example.TcpServerDemo",
-            interfaces: CoreService.descriptor().interfaces,
             name: "TCP Server Demo",
             description: "A demo plugin that creates a TCP server",
             dependencies: []

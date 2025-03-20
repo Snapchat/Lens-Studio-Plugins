@@ -6,7 +6,6 @@ function createEnvironmentMapClass(name, niceName) {
         static descriptor() {
             return {
                 id: `Com.Snap.EnvironmentMap.${name}`,
-                interfaces: Preset.descriptor().interfaces,
                 name: niceName,
                 description: '',
                 icon: Editor.Icon.fromFile(import.meta.resolve('Resources/HDRTexture.svg')),

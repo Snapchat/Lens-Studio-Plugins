@@ -7,7 +7,6 @@ export class AssetMenuItem extends CoreService {
     static descriptor() {
         return {
             id: "LS.Plugin.Example.AssetMenuItem",
-            interfaces: CoreService.descriptor().interfaces,
             name: "Replace References",
             description: "Adds a Replace action to the context menu of items in the Asset Browser for replacing references in the active scene to selected assets",
             dependencies: [Editor.IContextActionRegistry, Editor.IEntityPicker, Editor.Model.IModel]
