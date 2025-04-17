@@ -37,7 +37,7 @@ export class Text3DObjectPreset extends Preset {
                 return component.isOfType('ScreenTransform') || component.isOfType('Canvas');
             });
 
-            if (parentComponentsWithST.length >= 0) {
+            if (parentComponentsWithST.length > 0) {
                 destination.addComponent('ScreenTransform');
             }
         }
