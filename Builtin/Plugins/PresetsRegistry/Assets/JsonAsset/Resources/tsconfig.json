@@ -9,13 +9,17 @@
     "allowJs": true,
     "lib": ["es2019"],
     "types": [],
-    "baseUrl": "../Cache/TypeScript/Src/Assets"
+    "paths": {
+      "*" : ["../Packages", "../Cache/TypeScript/Src/Assets/*", "../Cache/TypeScript/Src/Packages/*"]
+    }
   },
   "exclude": [
     "node_modules/typescript/lib/lib.dom.d.ts"
   ],
   "include": [
     "../Cache/TypeScript/lib/LensifyTS/Declarations/**/*.d.ts",
-    "./**/*.ts"
+    "../Assets/**/*.ts",
+    "../Packages/**/*.ts",
+    "../Cache/TypeScript/Src/**/*.ts"
   ]
 }
