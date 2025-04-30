@@ -13,7 +13,9 @@ export class GarmentDialog {
         this.height = DIALOG_HEIGHT;
 
         this.dialog = dialog;
-        this.dialog.resize(this.width, this.height);
+        this.dialog.setFixedWidth(this.width);
+        this.dialog.setFixedHeight(this.height);
+        this.dialog.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
 
         this.creationMenu = new CreationMenu();
         this.preview = new Preview();
