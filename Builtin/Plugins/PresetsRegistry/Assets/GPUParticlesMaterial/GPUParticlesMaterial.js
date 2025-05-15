@@ -13,6 +13,11 @@ const params = {
         'ENABLE_FACE_TEX',
         'ALPHAMINMAX',
         'BASETEXTURE',
+        'MESHTYPE 0',
+        'rotationSpace 0',
+        'ALIGN_TO_CAMERA 0',
+        'ALIGN_PARTICLES_TO_OPTION 0',
+        'TRAILBEHAVIOR 0'
     ],
     pass_info: {
         'instanceCount': 100,
