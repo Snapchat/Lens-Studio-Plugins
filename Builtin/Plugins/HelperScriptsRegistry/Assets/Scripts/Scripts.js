@@ -20,7 +20,7 @@ import * as Utils from 'LensStudio:Utils@1.0.js';
  */
 export async function createBehaviorAsset(model, destination) {
     const assetManager = model.project.assetManager;
-    const absFilePath = import.meta.resolve('./Resources/Behavior.js');
+    const absFilePath = import.meta.resolve('./Resources/Behavior.lsc');
     return await Utils.findOrCreateAsync(assetManager, absFilePath, destination);
 }
 

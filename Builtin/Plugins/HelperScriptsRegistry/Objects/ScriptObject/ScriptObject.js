@@ -60,4 +60,4 @@ function createJsObjectPreset(id, name, iconPath, objectName, ComponentPreset) {
  * Create the presets we can register to the plugin.
  * You can duplicate such lines with a different preset to add another object preset.
  */
-export const BehaviorObjectPreset = createJsObjectPreset('behavior', 'Behavior', '../../Assets/Resources/HelperScript.svg', 'Behavior', BehaviorComponentPreset)
+export const BehaviorObjectPreset = createJsObjectPreset('behavior', 'Behavior', '../../Assets/Resources/Behavior.svg', 'Behavior', BehaviorComponentPreset)

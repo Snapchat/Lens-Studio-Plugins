@@ -2,7 +2,7 @@ import * as Ui from 'LensStudio:Ui';
 import { getHintFactory } from './Hints/HintFactory.js';
 import { logEventLinkOpen } from '../application/analytics.js';
 
-const termsLink = 'https://www.snap.com/terms/generative-lens-tools';
+const termsLink = 'https://www.snap.com/terms/lens-studio-license-agreement';
 const guidelinesLink = 'https://developers.snap.com/lens-studio/features/genai-suite/garment-generation';
 
 const infoImage = Ui.Pixmap.create(import.meta.resolve('Resources/info.svg'));

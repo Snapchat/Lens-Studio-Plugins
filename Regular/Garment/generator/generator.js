@@ -3,7 +3,7 @@ import { me, versions, acceptTerms, generateGarment } from "./api.js";
 import app from "../application/app.js";
 import { Storage } from "../application/storage.js";
 
-const autoAcceptedTerms = ['terms1v1', 'terms2v1'];
+const autoAcceptedTerms = ['ls_terms_1'];
 
 export const GeneratorState = {
     "Uninitialized": 0,
@@ -65,7 +65,7 @@ export class Generator {
 
                 user = JSON.parse(user.body.toString());
 
-                for (const [term, accepted] of Object.entries(user.acceptedTerms)) {
+                for (const [term, accepted] of Object.entries(user.termsAccepted)) {
                     if (!accepted) {
                         if (autoAcceptedTerms.includes(term)) {
                             acceptTerms(term, (response) => {
