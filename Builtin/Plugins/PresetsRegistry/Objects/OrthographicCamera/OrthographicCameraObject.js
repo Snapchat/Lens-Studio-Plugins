@@ -60,7 +60,7 @@ export function createOrthographicCameraObject(model, sceneObject) {
     const scene = model.project.scene;
     const camera = sceneObject.addComponent('Camera');
     camera.cameraType = Editor.Components.CameraType.Orthographic;
-    camera.renderTarget = scene.renderOutput;
+    camera.renderTarget = scene.captureTarget;
     camera.renderOrder = scene.mainCamera.renderOrder + 1;
     camera.renderLayer = Editor.Model.LayerSet.fromId(Editor.Model.LayerId.Ortho);
     camera.size = 20.0;

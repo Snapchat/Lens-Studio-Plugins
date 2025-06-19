@@ -32,7 +32,7 @@ function findOrCreateDeviceTracking(scene) {
         const cameraObject = scene.createSceneObject('Perspective Camera');
         const camera = cameraObject.addComponent('Camera');
         camera.cameraType = Editor.Components.CameraType.Perspective;
-        camera.renderTarget = scene.renderOutput;
+        camera.renderTarget = scene.captureTarget;
         const deviceTracking = cameraObject.addComponent('DeviceTracking');
         deviceTracking.deviceTrackingMode = Editor.Components.DeviceTrackingMode.World;
         return deviceTracking;

@@ -1,0 +1,5 @@
+{
+    "main": "main.js",
+    "permissions": ["filesystem"],
+    "name": "Instantiator - Asset Package"
+}

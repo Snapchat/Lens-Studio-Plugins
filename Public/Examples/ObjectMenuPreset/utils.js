@@ -83,7 +83,7 @@ export default class Utils {
         const camera = sceneObject.addComponent("Camera");
         camera.renderLayer = Editor.Model.LayerSet.fromId(Editor.Model.LayerId.Ortho);
         camera.cameraType = Editor.Components.CameraType.Orthographic;
-        camera.renderTarget = scene.renderOutput;
+        camera.renderTarget = scene.captureTarget;
         sceneObject.name = "Orthographic Camera";
         return sceneObject;
     }

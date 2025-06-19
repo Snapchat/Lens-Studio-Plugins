@@ -7,9 +7,9 @@ import { myEncodeURIComponent } from '../utils/myEncodeURIComponent.js'
 import { stringToBase64 } from '../utils/base64.js'
 
 //Update: Per Figma's request, we have updated the oauth flow. updated date: 2025-02-20
-
+const LOCALHOST_ADDRESS = "127.0.0.1";
 const addr = {
-    serverAddr: "http://127.0.0.1",
+    serverAddr: `http://${LOCALHOST_ADDRESS}`,
     serverPort: 8080,
     codeTradeInUrl: 'https://api.figma.com/v1/oauth/token',
     permissionPageUrl: 'https://www.figma.com/oauth',
@@ -161,7 +161,7 @@ export function startOAuth() {
     // TODO: PKCE process disabled due to technical issues.
     // We are currently under a time crunch and will reimplement this when releasing the new version of the plugin before the DDL.
     // const codeVerifier = generateCodeVerifier()
-    // const codeChallenge = generateCodeChallenge(codeVerifier)    
+    // const codeChallenge = generateCodeChallenge(codeVerifier)
     try {
         Shell.openUrl(addr.permissionPageUrl, {
             redirect_uri: `${addr.serverAddr}:${addr.serverPort}`,
@@ -239,7 +239,7 @@ export function startOAuth() {
             tcpServer.close()
         }
 
-        tcpServer.start(addr.serverAddr, addr.serverPort)
+        tcpServer.start(LOCALHOST_ADDRESS, addr.serverPort)
     })
 }
 
