@@ -65,15 +65,12 @@ export class Generator {
 
                 user = JSON.parse(user.body.toString());
 
-                for (const [term, accepted] of Object.entries(user.termsAccepted)) {
-                    if (!accepted) {
-                        if (autoAcceptedTerms.includes(term)) {
-                            acceptTerms(term, (response) => {
-                                this.verificationFlow();
-                            });
-                        } else {
-                            this.changeState(GeneratorState.RequestedTermsAndConditions);
-                        }
+                for (const terms of autoAcceptedTerms) {
+                    if (!user.termsAccepted.includes(terms)) {
+                        acceptTerms(terms, (response) => {
+                            this.verificationFlow();
+                        });
+
                         return;
                     }
                 }
