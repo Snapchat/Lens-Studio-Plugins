@@ -15,6 +15,7 @@ const SEPARATOR = "__";
  *         const prefab =  setupScriptInterface.getAssetManager().getFileMeta(prefabFile).primaryAsset;
  *         let sceneObject = setupScriptInterface.getScene().instantiatePrefab(prefab, null);
  *         setupScriptInterface.getUtils().addToMainCamera(project.scene, sceneObject);
+ *         return sceneObject;
  *     } catch (e) {
  *         console.log(e, "Couldn't add asset to scene automatically, please add prefab to scene")
  *     }
@@ -42,7 +43,7 @@ export class PackageInstantiator extends AssetInstantiator {
             // @ts-ignore 
             const instantiatePackage = createFunctionObject(nativePackageDescriptor.setupScript.code, "defaultAssetInstantiatorFunc");
             let result = instantiatePackage(asset, scene, target, this);
-            return result;
+            return InstantiatorUtils.toPrefabableArray(result);
         }
         //  If no setup script exists:
         // Iterate through all prefabs included in the package.
@@ -55,14 +56,20 @@ export class PackageInstantiator extends AssetInstantiator {
             let files = FileSystem.readDir(fullPath, { recursive: false });
             // special case for packages that have prefabs that need to be added to scene in common way
             const prefabFiles = files.filter(file => file.extension == 'prefab');
+            let result = [];
             for (let i = 0; i < prefabFiles.length; i++) {
                 try {
-                    this.instantiatePrefabWithPrefix(prefabFiles[i], asset.fileMeta.sourcePath.parent, model);
+                    const sceneObject = this.instantiatePrefabWithPrefix(prefabFiles[i], asset.fileMeta.sourcePath.parent, model);
+                    if (sceneObject) {
+                        result.push(sceneObject);
+                    }
                 }
                 catch (e) {
                     console.log("Error instantiating prefab:", prefabFiles[i], e);
                 }
             }
+            // If no prefabs were instantiated or no setup script exists, return an empty array
+            return InstantiatorUtils.toPrefabableArray(result);
         }
     }
     instantiatePrefabWithPrefix(prefabFile, folderPath, model) {
@@ -71,6 +78,7 @@ export class PackageInstantiator extends AssetInstantiator {
         const assetManager = model.project.assetManager;
         //@ts-ignore
         const scene = model.project.scene;
+        let sceneObject = null;
         if (prefix != undefined) {
             let matched = false;
             const prefabFilePath = folderPath.appended(prefabFile);
@@ -93,14 +101,13 @@ export class PackageInstantiator extends AssetInstantiator {
                     break; // Exit the inner loop for this prefab, but continue processing other prefabs
                 }
             }
-            if (!matched) {
-                //console.log("No matching prefix found for prefab:", prefabFile.fileNameBase);
-            }
         }
+        return sceneObject;
     }
     // Implementation of SetupScriptInterface
     defaultInstantiate(asset, scene, target) {
         // we don't instantiate package by default, just import
+        return null; // Return null or an empty array if no instantiation is needed
     }
     getAssetManager() {
         // Retrieve the asset manager from the plugin system's model

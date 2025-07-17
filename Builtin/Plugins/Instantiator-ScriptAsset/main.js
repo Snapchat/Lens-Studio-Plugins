@@ -10,7 +10,10 @@ import * as InstantiatorUtils from './utils/InstantiatorUtils.js';
 * return function instantiate(asset, scene, target, instantiator) {
 *     try {
 *         const screenTransform = instantiator.getUtils().createScreenTransformObject(scene, target);
-*         const scriptComponent = instantiator.defaultInstantiate(asset, scene, screenTransform.sceneObject);
+*         const sceneObject = screenTransform.sceneObject;
+*         const scriptComponent = sceneObject.addComponent("ScriptComponent") as Editor.Components.ScriptComponent;
+*         scriptComponent.scriptAsset = asset; // Assign the script asset to the component
+*         sceneObject.name = asset.name; // Set the name of the SceneObject
 *         // configure anchors for the screen transform
 *         let anchors = new Editor.Rect();
 *         anchors.left = 0;
@@ -25,13 +28,11 @@ import * as InstantiatorUtils from './utils/InstantiatorUtils.js';
 *         offset.top = BUTTONSIZE.y / 2;
 *         offset.bottom = -BUTTONSIZE.y / 2;
 *         screenTransform.offset = offset;
-*
 *         let constraints = screenTransform.constraints
 *         constraints.fixedWidth = true;
 *         constraints.fixedHeight = true;
-*
 *         screenTransform.constraints = constraints;
-*         return scriptComponent;
+*         return sceneObject; // Return the created SceneObject
 *     } catch (e) {
 *         console.error("Error instantiating UIButton: ", e)
 *         return null
@@ -56,17 +57,17 @@ export class ScriptInstantiator extends AssetInstantiator {
         // This script should return a function that takes the asset, scene, target, instantiatorPlugin, and utils as parameters.
         // This function will be responsible for instantiating the asset in the scene.
         // Function should return Component or SceneObject that was created.
+        let result;
         if (rootAsset != null && rootAsset.setupScript != undefined && rootAsset.setupScript.code.length > 0) {
             console.log("Executing setup script for asset: ", asset.name);
             // @ts-ignore 
             const instantiateScript = createFunctionObject(rootAsset.setupScript.code, "defaultAssetInstantiatorFunc");
-            const result = instantiateScript(asset, scene, target, this);
-            return result;
+            result = instantiateScript(asset, scene, target, this);
         }
         else {
-            const result = this.defaultInstantiate(asset, scene, target);
-            return result;
+            result = this.defaultInstantiate(asset, scene, target);
         }
+        return InstantiatorUtils.toPrefabableArray(result);
     }
     // begin of SetupScriptInterface implementation
     // default instantiation for scripts and custom components
@@ -76,8 +77,8 @@ export class ScriptInstantiator extends AssetInstantiator {
         if (target == null) {
             target = scene.createSceneObject(asset.name);
         }
-        const result = this.createScriptComponent(target, asset);
-        return result;
+        const scriptComponent = this.createScriptComponent(target, asset);
+        return scriptComponent;
     }
     getAssetManager() {
         const model = this.pluginSystem.findInterface(Editor.Model.IModel);

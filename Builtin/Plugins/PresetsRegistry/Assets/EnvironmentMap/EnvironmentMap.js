@@ -10,20 +10,26 @@ function createEnvironmentMapClass(name, niceName) {
                 description: '',
                 icon: Editor.Icon.fromFile(import.meta.resolve('Resources/HDRTexture.svg')),
                 section: 'Textures',
-                entityType: 'Texture'
+                entityType: 'Texture',
+                pathsToImport: [import.meta.resolve(`Resources/${name}`)]
             };
         }
-        async createAsync(d) {
+        async createAsync(destination = new Editor.Path(''), importSettings = null) {
             try {
-                const destination = d ? d : new Editor.Path('');
-
                 const model = this.pluginSystem.findInterface(Editor.Model.IModel);
                 const assetManager = model.project.assetManager;
 
                 const resourceLoc = import.meta.resolve(`Resources/${name}`);
                 const absResourcePath = new Editor.Path(resourceLoc);
 
-                return await Utils.findOrCreateAsync(assetManager, absResourcePath, destination);
+                if (!importSettings)
+                    return await Utils.findOrCreateAsync(assetManager, absResourcePath, destination);
+
+                importSettings = importSettings[0];
+                if (!importSettings.isCancelled())
+                    return await Utils.findOrCreateAsync(assetManager, absResourcePath, destination, importSettings);
+
+                return null;
             } catch (e) {
                 console.log(`${e.message}\n${e.stack}`);
             }

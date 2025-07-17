@@ -64,3 +64,22 @@ export function createScreenTransformObject(scene, target) {
     const screenTransform = sceneObject.addComponent("ScreenTransform");
     return screenTransform;
 }
+/**
+ * Checks if the given value is a valid result.
+ * @param value - The value to check.
+ * @returns True if the value is a valid result, false otherwise.
+ */
+export function isValidResult(value) {
+    return value !== null && value !== undefined && value.isOfType != undefined && value.isOfType("Prefabable");
+}
+/**
+ * Converts custom instantiator result to an array of Prefabable objects.
+ * @param value - The value to convert to an array of Prefabable objects.
+ * @returns An array of Prefabable objects.
+ */
+export function toPrefabableArray(value) {
+    if (!Array.isArray(value)) {
+        value = [value];
+    }
+    return value.filter((item) => isValidResult(item));
+}
