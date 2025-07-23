@@ -85,7 +85,7 @@ export class PackageInstantiator extends AssetInstantiator {
             const prefab = assetManager.getFileMeta(prefabFilePath);
             for (const [key, values] of Object.entries(PREFIX)) {
                 if (values.some(value => prefix.includes(value))) {
-                    const sceneObject = scene.instantiatePrefab(prefab.primaryAsset, null);
+                    sceneObject = scene.instantiatePrefab(prefab.primaryAsset, null);
                     sceneObject.name = sceneObjectName;
                     //Add the instantiated scene object to the scene based on the prefix
                     if (key === "screen_hierarchy") {

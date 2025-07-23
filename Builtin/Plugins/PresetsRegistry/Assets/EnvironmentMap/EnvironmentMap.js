@@ -26,7 +26,7 @@ function createEnvironmentMapClass(name, niceName) {
                     return await Utils.findOrCreateAsync(assetManager, absResourcePath, destination);
 
                 importSettings = importSettings[0];
-                if (!importSettings.isCancelled())
+                if (!importSettings.aborted)
                     return await Utils.findOrCreateAsync(assetManager, absResourcePath, destination, importSettings);
 
                 return null;
