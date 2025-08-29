@@ -1,0 +1,5 @@
+{
+    "main": "main.js",
+    "name": "Remote Service Gateway Token",
+    "permissions": ["snap_auth_token", "network", "secure_local_storage"]
+}

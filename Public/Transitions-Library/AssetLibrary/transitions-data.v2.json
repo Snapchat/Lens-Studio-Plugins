@@ -1,0 +1,891 @@
+{
+    "categories": [
+        {
+            "name": "Camera Effects",
+            "entities": [
+                {
+                    "name": "Polaroid",
+                    "iconName": "Polaroid Image",
+                    "moviePreviewName": "Polaroid Video",
+                    "id": "21tXDdCvSwwhzws36pcCWu",
+                    "keyWords": "retro frame exposure blur photo polaroid"
+                },
+                {
+                    "name": "Cinematic Flare",
+                    "iconName": "Cinematic flare Image",
+                    "moviePreviewName": "Cinematic flare Video",
+                    "id": "2ucPkaJ8KtMxoKnQmorMYC",
+                    "keyWords": "Cinematic flare camera effects"
+                },
+                {
+                    "name": "Bright Flare",
+                    "iconName": "Bright flare Image",
+                    "moviePreviewName": "Bright flare Video",
+                    "id": "4FkGvLWkneWb3D4o5TzICd",
+                    "keyWords": "bokeh bright flare camera effects"
+                },
+                {
+                    "name": "Blue Flare",
+                    "iconName": "Blue flare Image",
+                    "moviePreviewName": "Blue flare Video",
+                    "id": "2OOG64Ywu0NyRJpEzvovAv",
+                    "keyWords": "blue flare camera effects"
+                },
+                {
+                    "name": "Blur Flares",
+                    "iconName": "Blur flares Image",
+                    "moviePreviewName": "Blur flares Video",
+                    "id": "16BJ2LX5D5Tq0ArFk28Dda",
+                    "keyWords": "bokeh flare blur camera effects"
+                },
+                {
+                    "name": "Film Scale",
+                    "iconName": "Film scale Image",
+                    "moviePreviewName": "Film scale Video",
+                    "id": "1lEiixFx2I0TdnHXRbISkn",
+                    "keyWords": "film flare scale camera effects"
+                },
+                {
+                    "name": "Green Flare",
+                    "iconName": "Green flare Image",
+                    "moviePreviewName": "Green flare Video",
+                    "id": "63aAAWmOhnoCn4pOjJ2plP",
+                    "keyWords": "bokeh green flare camera effects"
+                },
+                {
+                    "name": "Long Exposure Blur",
+                    "iconName": "Long exposure blur Image",
+                    "moviePreviewName": "Long exposure blur Video",
+                    "id": "4ERZB7UdwWSfvqAim4zr1b",
+                    "keyWords": "bokeh flare blur long exposure camera effects"
+                },
+                {
+                    "name": "Summer Flare",
+                    "iconName": "Summer flare Image",
+                    "moviePreviewName": "Summer flare Video",
+                    "id": "6qFX0K2uByzF1ezuFSm2r2",
+                    "keyWords": "summer flare camera effects"
+                },
+                {
+                    "name": "Old Film",
+                    "iconName": "Old film Image",
+                    "moviePreviewName": "Old film Video",
+                    "id": "7mNYIiuB5AH2PvVTzSuC3f",
+                    "keyWords": "film flare camera effects"
+                },
+                {
+                    "name": "Vintage Film",
+                    "iconName": "Vintage film Image",
+                    "moviePreviewName": "Vintage film Video",
+                    "id": "30OaJMUFG7HQQ1xszkO0E6",
+                    "keyWords": "film vintage camera effects"
+                },
+                {
+                    "name": "Galaxy Blur",
+                    "iconName": "Galaxy blur Image",
+                    "moviePreviewName": "Galaxy blur Video",
+                    "id": "1D6L5bsNh87OPiuoAMexV9",
+                    "keyWords": "bokeh rays blur camera effects"
+                },
+                {
+                    "name": "Blur and Bokeh",
+                    "iconName": "Blur bokeh Image",
+                    "moviePreviewName": "Blur bokeh Video",
+                    "id": "4D8dHGOJyF6f7udHtMmSzw",
+                    "keyWords": "bokeh blur scale camera effects"
+                },
+                {
+                    "name": "Blur and Hearts",
+                    "iconName": "Blur hearts Image",
+                    "moviePreviewName": "Blur hearts Video",
+                    "id": "6vZo6gFdNiAMp5vKdDio7T",
+                    "keyWords": "bokeh blur hearts camera effects"
+                },
+                {
+                    "name": "Modern Film",
+                    "iconName": "Modern film Image",
+                    "moviePreviewName": "Modern film Video",
+                    "id": "42iyXjagnnrxJELbqXRuID",
+                    "keyWords": "film flare camera effects"
+                },
+                {
+                    "name": "Purple Flare",
+                    "iconName": "Purple flare Image",
+                    "moviePreviewName": "Purple flare Video",
+                    "id": "65vDwYSKDbHarBrJlKvo72",
+                    "keyWords": "bokeh flare purple camera effects"
+                }
+            ]
+        },
+        {
+            "name": "Motion",
+            "entities": [
+                {
+                    "name": "Deceleration",
+                    "iconName": "Deceleration Image",
+                    "moviePreviewName": "Deceleration Video",
+                    "id": "7EtSg0J5yEJpICNuNtZAFq",
+                    "keyWords": "swirl rotation deceleration motion"
+                },
+                {
+                    "name": "Exponential Scroll",
+                    "iconName": "Exponential scroll Image",
+                    "moviePreviewName": "Exponential scroll Video",
+                    "id": "1ICWi4jJGQ7hyQRO7mRHyG",
+                    "keyWords": "horizontal blur scroll exponential motion"
+                },
+                {
+                    "name": "Exponential Zoom",
+                    "iconName": "Exponential zoom Image",
+                    "moviePreviewName": "Exponential zoom Video",
+                    "id": "2KiBFv0mgwX9QNWUtvB2MJ",
+                    "keyWords": "zoom exponential motion"
+                },
+                {
+                    "name": "Horizontal Lens",
+                    "iconName": "Horizontal lens Image",
+                    "moviePreviewName": "Horizontal lens Video",
+                    "id": "6QkJPV8np6UK1YBoBGXCLr",
+                    "keyWords": "horizontal blur scroll lens motion"
+                },
+                {
+                    "name": "Horizontal Scroll",
+                    "iconName": "Horizontal scroll Image",
+                    "moviePreviewName": "Horizontal scroll Video",
+                    "id": "WgSOJUZnKMDKXpAAu6juo",
+                    "keyWords": "horizontal blur scroll motion"
+                },
+                {
+                    "name": "Swirl",
+                    "iconName": "Swirl Image",
+                    "moviePreviewName": "Swirl Video",
+                    "id": "3nssPyL4waFSvUeATAbWOV",
+                    "keyWords": "swirl blur motion"
+                },
+                {
+                    "name": "Swirl Lens",
+                    "iconName": "Swirl lens Image",
+                    "moviePreviewName": "Swirl lens Video",
+                    "id": "1wXHEBnvp15IN6v9ZeeMhW",
+                    "keyWords": "swirl scroll lens motion"
+                },
+                {
+                    "name": "TV Screen Zoom",
+                    "iconName": "TV screen zoom Image",
+                    "moviePreviewName": "TV screen zoom Video",
+                    "id": "7KehJIj6YPGAUHyemITKv8",
+                    "keyWords": "zoom in TV blur motion"
+                },
+                {
+                    "name": "Vertical Gallery",
+                    "iconName": "Vertical gallery Image",
+                    "moviePreviewName": "Vertical gallery Video",
+                    "id": "6i0dwFh6Kc67gNiXx1Z3Sw",
+                    "keyWords": "vertical gallery scroll motion"
+                },
+                {
+                    "name": "Vertical Motion",
+                    "iconName": "Vertical motion Image",
+                    "moviePreviewName": "Vertical motion Video",
+                    "id": "4LZQj7rKf8lkgR9cboCVzK",
+                    "keyWords": "vertical blur motion"
+                },
+                {
+                    "name": "Vertical Pages Scroll",
+                    "iconName": "Vertical pages scroll Image",
+                    "moviePreviewName": "Vertical pages scroll Video",
+                    "id": "2kmeCEYRiEn75glCX0V7rm",
+                    "keyWords": "vertical pages scroll motion"
+                },
+                {
+                    "name": "Vertical Scroll",
+                    "iconName": "Vertical scroll Image",
+                    "moviePreviewName": "Vertical scroll Video",
+                    "id": "cLTR3obfHzxN2veLxy5ts",
+                    "keyWords": "vertical scroll motion"
+                },
+                {
+                    "name": "Vortex",
+                    "iconName": "Vortex Image",
+                    "moviePreviewName": "Vortex Video",
+                    "id": "4cOdttNv7s8FNu1m0mfSyT",
+                    "keyWords": "vortex swirl blur exponential motion"
+                },
+                {
+                    "name": "Zoom Bounce",
+                    "iconName": "Zoom bounce Image",
+                    "moviePreviewName": "Zoom bounce Video",
+                    "id": "2jDuzRJsZzs41pJkTLD0Dm",
+                    "keyWords": "zoom bounce motion"
+                },
+                {
+                    "name": "Zoom In",
+                    "iconName": "Zoom in Image",
+                    "moviePreviewName": "Zoom in Video",
+                    "id": "3q6QcBszuAaav1zbwhhbGe",
+                    "keyWords": "zoom in blur motion"
+                }
+            ]
+        },
+        {
+            "name": "Overlay",
+            "entities": [
+                {
+                    "name": "Flash Curtain",
+                    "iconName": "Flash curtain Image",
+                    "moviePreviewName": "Flash curtain Video",
+                    "id": "4uzrXa0nyeXdRfTIokabt4",
+                    "keyWords": "Flash overlay curtain"
+                },
+                {
+                    "name": "Flash Twist",
+                    "iconName": "Flash twist Image",
+                    "moviePreviewName": "Flash twist Video",
+                    "id": "2rw38IqRsgwxFNqJVRgokJ",
+                    "keyWords": "flash twist overlay"
+                },
+                {
+                    "name": "Glitch Twist",
+                    "iconName": "Glitch twist Image",
+                    "moviePreviewName": "Glitch twist Video",
+                    "id": "7GPaxJ1qBBywx6vwBULcat",
+                    "keyWords": "glitch overlay twist"
+                },
+                {
+                    "name": "Glow Curtain",
+                    "iconName": "Glow Curtain Image",
+                    "moviePreviewName": "Glow Curtain Video",
+                    "id": "7j3DuuS148f6ystHCiqVlp",
+                    "keyWords": "glow vertical overlay curtain"
+                },
+                {
+                    "name": "Glow Wave",
+                    "iconName": "Glow wave Image",
+                    "moviePreviewName": "Glow wave Video",
+                    "id": "17BSkdloFIOsBsqODL89Go",
+                    "keyWords": "glow wave overlay"
+                },
+                {
+                    "name": "Light Flow",
+                    "iconName": "Light flow Image",
+                    "moviePreviewName": "Light flow Video",
+                    "id": "1pc9olQLQjvOfXIuU61o2N",
+                    "keyWords": "glow light overlay"
+                },
+                {
+                    "name": "Neon Line",
+                    "iconName": "Neon line Image",
+                    "moviePreviewName": "Neon line Video",
+                    "id": "TQoB1cNTeLtGy3gwnbKxJ",
+                    "keyWords": "neon vertical overlay"
+                },
+                {
+                    "name": "Neon Streak",
+                    "iconName": "Neon streak Image",
+                    "moviePreviewName": "Neon streak Video",
+                    "id": "2oORdbADyG9lOJHhUlkOA2",
+                    "keyWords": "vivid wave neon streak overlay"
+                },
+                {
+                    "name": "Neon Twist",
+                    "iconName": "Neon twist Image",
+                    "moviePreviewName": "Neon twist Video",
+                    "id": "7mwk2ns1vFCmoIIC8R9HoZ",
+                    "keyWords": "glow wave overlay twist"
+                },
+                {
+                    "name": "Pixel Flow",
+                    "iconName": "Pixel flow Image",
+                    "moviePreviewName": "Pixel flow Video",
+                    "id": "42FJKOCvcC1UMEccZnMYWO",
+                    "keyWords": "pixel wave overlay"
+                },
+                {
+                    "name": "Pixel Wave",
+                    "iconName": "Pixel wave Image",
+                    "moviePreviewName": "Pixel wave Video",
+                    "id": "sVzW0SM8jxMw8zVz8n1oD",
+                    "keyWords": "pixel wave overlay"
+                },
+                {
+                    "name": "Radial Twist",
+                    "iconName": "Radial twist Image",
+                    "moviePreviewName": "Radial twist Video",
+                    "id": "5NDjn2KaLkowSmsba9MnR",
+                    "keyWords": "radial spiral twist overlay"
+                },
+                {
+                    "name": "Vivid Wave",
+                    "iconName": "Vivid wave Image",
+                    "moviePreviewName": "Vivid wave Video",
+                    "id": "6wGKegoczfe4o6akRksUhL",
+                    "keyWords": "vivid wave overlay"
+                },
+                {
+                    "name": "Wave Flow",
+                    "iconName": "Wave flow Image",
+                    "moviePreviewName": "Wave flow Video",
+                    "id": "5KuyY8Roi6mLuqZ4vYN5ix",
+                    "keyWords": "wave flow blue overlay"
+                },
+                {
+                    "name": "Wave Trail",
+                    "iconName": "Wave trail Image",
+                    "moviePreviewName": "Wave trail Video",
+                    "id": "3p7z3WztOyuN1lgHqB3adJ",
+                    "keyWords": "trail wave overlay"
+                }
+            ]
+        },
+        {
+            "name": "Cartoon",
+            "entities": [
+                {
+                    "name": "Artistic Explosion",
+                    "iconName": "Artistic explosion Image",
+                    "moviePreviewName": "Artistic explosion Video",
+                    "id": "KARNucCnJjqKniObdUGtu",
+                    "keyWords": "cartoon explosion artistic magic liquid"
+                },
+                {
+                    "name": "Cartoon Explosion",
+                    "iconName": "Cartoon explosion Image",
+                    "moviePreviewName": "Cartoon explosion Video",
+                    "id": "39Kxldv1kkwjCJItS1fugt",
+                    "keyWords": "cartoon explosion smoke bump"
+                },
+                {
+                    "name": "Cartoon Fire",
+                    "iconName": "Cartoon fire Image",
+                    "moviePreviewName": "Cartoon fire Video",
+                    "id": "5xUPMfImqfEwnGCb5jTZMS",
+                    "keyWords": "cartoon fire flame burn hot"
+                },
+                {
+                    "name": "Cartoon Flares",
+                    "iconName": "Cartoon flares Image",
+                    "moviePreviewName": "Cartoon flares Video",
+                    "id": "7t9SORTsZsPEP3nhakOdfA",
+                    "keyWords": "cartoon flare artistic flash light"
+                },
+                {
+                    "name": "Cartoon Lightnings",
+                    "iconName": "Cartoon lightnings Image",
+                    "moviePreviewName": "Cartoon lightnings Video",
+                    "id": "2WoxfoLMJiuVh8qWHHULBq",
+                    "keyWords": "cartoon lightnings lightning light flash"
+                },
+                {
+                    "name": "Cartoon Water",
+                    "iconName": "Cartoon water Image",
+                    "moviePreviewName": "Cartoon water Video",
+                    "id": "44lIjI78dkxhkFLrnNy48u",
+                    "keyWords": "cartoon liquid water"
+                },
+                {
+                    "name": "Energy Ball",
+                    "iconName": "Energy ball Image",
+                    "moviePreviewName": "Energy ball Video",
+                    "id": "4BUOMKWGRPtt5oNcXNwMOp",
+                    "keyWords": "cartoon energy blue flash bump explosion"
+                },
+                {
+                    "name": "Lightning Strikes",
+                    "iconName": "Lightning strikes Image",
+                    "moviePreviewName": "Lightning strikes Video",
+                    "id": "591K0HsqnAHLRh0TXz2k2a",
+                    "keyWords": "cartoon lightning strikes energy flash"
+                },
+                {
+                    "name": "Magic Explosion",
+                    "iconName": "Magic explosion Image",
+                    "moviePreviewName": "Magic explosion Video",
+                    "id": "6qpmEogH4OcdA528pxMk4S",
+                    "keyWords": "cartoon smoke blue magic explosion"
+                },
+                {
+                    "name": "Ocean Wave",
+                    "iconName": "Ocean wave Image",
+                    "moviePreviewName": "Ocean wave Video",
+                    "id": "139wag7ZFDM1w4kpYsAF7j",
+                    "keyWords": "cartoon ocean sea wave water liquid"
+                },
+                {
+                    "name": "Outline Smoke",
+                    "iconName": "Outline smoke Image",
+                    "moviePreviewName": "Outline smoke Video",
+                    "id": "5ziB8xxgKbDx4vVt5zZ9MZ",
+                    "keyWords": "cartoon explosion outline smoke"
+                },
+                {
+                    "name": "Purple Explosion",
+                    "iconName": "Purple explosion Image",
+                    "moviePreviewName": "Purple explosion Video",
+                    "id": "5KIk4cbrkkSt8FRyblJgbw",
+                    "keyWords": "cartoon explosion purple"
+                },
+                {
+                    "name": "Rainbow Waterfall",
+                    "iconName": "Rainbow waterfall Image",
+                    "moviePreviewName": "Rainbow waterfall Video",
+                    "id": "5ivg0MRsMVWGgbIhpwKnhn",
+                    "keyWords": "cartoon rainbow waterfall"
+                },
+                {
+                    "name": "Shooting Star",
+                    "iconName": "Shooting star Image",
+                    "moviePreviewName": "Shooting star Video",
+                    "id": "7bbeuVs7dvDvS0F54Ge9FX",
+                    "keyWords": "cartoon stars meteors"
+                },
+                {
+                    "name": "Stop Motion Clouds",
+                    "iconName": "Stop motion clouds Image",
+                    "moviePreviewName": "Stop motion clouds Video",
+                    "id": "7Mwww0GiEN7ECflyHmayCY",
+                    "keyWords": "cartoon clouds outline smoke"
+                }
+            ]
+        },
+        {
+            "name": "Distortion",
+            "entities": [
+                {
+                    "name": "Blur Transition",
+                    "iconName": "Blur transition Image",
+                    "moviePreviewName": "Blur transition Video",
+                    "id": "2LbPUCCKPDYH3jBgtBz4mz",
+                    "keyWords": "blur distortion exponential"
+                },
+                {
+                    "name": "Brightness Distortion",
+                    "iconName": "Brightness distortion Image",
+                    "moviePreviewName": "Brightness distortion Video",
+                    "id": "v4ik8PFOCRjYZcmbvsJsa",
+                    "keyWords": "brightness distortion"
+                },
+                {
+                    "name": "Broken Ice",
+                    "iconName": "Broken ice Image",
+                    "moviePreviewName": "Broken ice Video",
+                    "id": "4pFJrLyLUOFngr6Cq84mDZ",
+                    "keyWords": "broken ice distortion"
+                },
+                {
+                    "name": "Caustics Outline",
+                    "iconName": "Caustics outline Image",
+                    "moviePreviewName": "Caustics outline Video",
+                    "id": "462czXhKknWiCEgDt7XIhJ",
+                    "keyWords": "caustics distortion outline"
+                },
+                {
+                    "name": "Cells Distortion",
+                    "iconName": "Cells distortion Image",
+                    "moviePreviewName": "Cells distortion Video",
+                    "id": "6W6rE73KKdGWsLGL4L2FVs",
+                    "keyWords": "cell distortion"
+                },
+                {
+                    "name": "Crooked Mirror",
+                    "iconName": "Crooked mirror Image",
+                    "moviePreviewName": "Crooked mirror Video",
+                    "id": "5DmJIAxophXiP1wGsSxCRk",
+                    "keyWords": "mirror distortion sphere"
+                },
+                {
+                    "name": "Fisheye Distortion",
+                    "iconName": "Fisheye distortion Image",
+                    "moviePreviewName": "Fisheye distortion Video",
+                    "id": "7wT95Lh4vr2h9NQ0iSaacA",
+                    "keyWords": "fisheye distortion lens effects"
+                },
+                {
+                    "name": "Flame Distortion",
+                    "iconName": "Flame distortion Image",
+                    "moviePreviewName": "Flame distortion Video",
+                    "id": "5SdRzR0Wj6Rho3PKenOe2v",
+                    "keyWords": "flame distortion chromatic aberration"
+                },
+                {
+                    "name": "Glitch Distortion",
+                    "iconName": "Glitch distortion Image",
+                    "moviePreviewName": "Glitch distortion Video",
+                    "id": "2oHTbMawHKmnv6nmgS2uxm",
+                    "keyWords": "glitch distortion exponential"
+                },
+                {
+                    "name": "Glitch Stripes",
+                    "iconName": "Glitch stripes Image",
+                    "moviePreviewName": "Glitch stripes Video",
+                    "id": "WX8W7d87TBrwYNX88x88I",
+                    "keyWords": "glitch distortion stripes"
+                },
+                {
+                    "name": "Hexagon",
+                    "iconName": "Hexagon Image",
+                    "moviePreviewName": "Hexagon Video",
+                    "id": "1WxJL5YrDVe4NsyO4aYYbG",
+                    "keyWords": "hexagon distortion"
+                },
+                {
+                    "name": "Liquid Distortion",
+                    "iconName": "Liquid distortion Image",
+                    "moviePreviewName": "Liquid distortion Video",
+                    "id": "1Bw5kgrkurVEyIQ9sUIbc8",
+                    "keyWords": "liquid distortion pattern"
+                },
+                {
+                    "name": "Organic Distortion",
+                    "iconName": "Organic distortion Image",
+                    "moviePreviewName": "Organic distortion Video",
+                    "id": "32bMNdqKQv0JtF6j0u7f5h",
+                    "keyWords": "organic distortion"
+                },
+                {
+                    "name": "Sphere Distortion",
+                    "iconName": "Sphere distortion Image",
+                    "moviePreviewName": "Sphere distortion Video",
+                    "id": "2tzfq3Ps6DEltc7X7NQVCP",
+                    "keyWords": "fisheye distortion zoom sphere"
+                },
+                {
+                    "name": "Subtle Distortion",
+                    "iconName": "Subtle distortion Image",
+                    "moviePreviewName": "Subtle distortion Video",
+                    "id": "7kxfeJICctutI91CtXaRT4",
+                    "keyWords": "subtle distortion chromatic aberration"
+                }
+            ]
+        },
+        {
+            "name": "Scan",
+            "entities": [
+                {
+                    "name": "Blue Scanner",
+                    "iconName": "Blue Scanner Image",
+                    "moviePreviewName": "Blue Scanner Video",
+                    "id": "12AsoCsYslIrYAyVjEh5Qb",
+                    "keyWords": "scanner blue scan line"
+                },
+                {
+                    "name": "Comics Scanner",
+                    "iconName": "Comics Scanner Image",
+                    "moviePreviewName": "Comics Scanner Video",
+                    "id": "1G9pgCXh1mrnbszjFK0B31",
+                    "keyWords": "scanner comics scan line bright"
+                },
+                {
+                    "name": "Depth Reveal",
+                    "iconName": "Depth reveal Image",
+                    "moviePreviewName": "Depth reveal Video",
+                    "id": "NspDAyz5Wx71q2G0ZaoOz",
+                    "keyWords": "depth scan line segmentation reveal"
+                },
+                {
+                    "name": "Digital Numbers",
+                    "iconName": "Digital numbers Image",
+                    "moviePreviewName": "Digital numbers Video",
+                    "id": "71ZYE10W2jFZ0BPPonDUFG",
+                    "keyWords": "depth digital numbers segmentation"
+                },
+                {
+                    "name": "Digital Zoom",
+                    "iconName": "Digital zoom Image",
+                    "moviePreviewName": "Digital zoom Video",
+                    "id": "7IcdpCbraOMaSkeT1V5qWw",
+                    "keyWords": "depth digital numbers zoom scanner segmentation"
+                },
+                {
+                    "name": "Dots Scanner",
+                    "iconName": "Dots Scanner Image",
+                    "moviePreviewName": "Dots Scanner Video",
+                    "id": "3OKZsDw22jNkA1gUEC7BxZ",
+                    "keyWords": "scanner dots scan line bright"
+                },
+                {
+                    "name": "Pink Dots Scanner",
+                    "iconName": "Pink Dots Scanner Image",
+                    "moviePreviewName": "Pink Dots Scanner Video",
+                    "id": "4m1I9KWwfuIWTCKoYq5Rbj",
+                    "keyWords": "scanner dots pink scan line"
+                },
+                {
+                    "name": "Purple Grid Scanner",
+                    "iconName": "Purple Grid Scanner Image",
+                    "moviePreviewName": "Purple Grid Scanner Video",
+                    "id": "44xLJ3LZ6u1nehq8QmgUwy",
+                    "keyWords": "scanner grid purple scan line"
+                },
+                {
+                    "name": "Purple Scanner",
+                    "iconName": "Purple Scanner Image",
+                    "moviePreviewName": "Purple Scanner Video",
+                    "id": "40cNxFxMWFmiYBNoaAhNV7",
+                    "keyWords": "scanner purple scan line rainbow"
+                },
+                {
+                    "name": "Reflection Scanner",
+                    "iconName": "Reflection Scanner Image",
+                    "moviePreviewName": "Reflection Scanner Video",
+                    "id": "79lOMwcxRKciD2O2p6yM66",
+                    "keyWords": "scanner trails reflection scan line"
+                },
+                {
+                    "name": "Ripple Glow",
+                    "iconName": "Ripple Glow Image",
+                    "moviePreviewName": "Ripple Glow Video",
+                    "id": "AEUXEgKLMJEf5h929KYmh",
+                    "keyWords": "scanner ripple center scan line"
+                },
+                {
+                    "name": "Shockwave Scan",
+                    "iconName": "Shockwave Scan Image",
+                    "moviePreviewName": "Shockwave Scan Video",
+                    "id": "29mzlng9f9iUl0ZVSRSGdg",
+                    "keyWords": "scanner shockwave center scan line"
+                },
+                {
+                    "name": "Stained Glass Scanner",
+                    "iconName": "Stained Glass Scanner Image",
+                    "moviePreviewName": "Stained Glass Scanner Video",
+                    "id": "5RAY9DoPt3iwqUnrgqTDq2",
+                    "keyWords": "scanner glass scan line"
+                },
+                {
+                    "name": "Teleportation",
+                    "iconName": "Teleportation Image",
+                    "moviePreviewName": "Teleportation Video",
+                    "id": "479Vix5nNQiTeh5WY634BH",
+                    "keyWords": "teleportation scanner depth blur segmentation"
+                },
+                {
+                    "name": "Yellow Scanner",
+                    "iconName": "Yellow Scanner Image",
+                    "moviePreviewName": "Yellow Scanner Video",
+                    "id": "3As0CNP8ouRsIsJaspor0s",
+                    "keyWords": "scanner yellow scan line"
+                }
+            ]
+        },
+        {
+            "name": "Nature",
+            "entities": [
+                {
+                    "name": "Autumn leaves",
+                    "iconName": "Autumn leaves Image",
+                    "moviePreviewName": "Autumn leaves Video",
+                    "id": "1BxRSOGp1oabo3YCqURJPS",
+                    "keyWords": "Autumn leaves blur nature"
+                },
+                {
+                    "name": "Liquid metal",
+                    "iconName": "Liquid metal Image",
+                    "moviePreviewName": "Liquid metal Video",
+                    "id": "5CkpwkowYZE2zGJJNcWfrB",
+                    "keyWords": "Liquid metal nature"
+                },
+                {
+                    "name": "Underwater",
+                    "iconName": "Underwater Image",
+                    "moviePreviewName": "Underwater Video",
+                    "id": "5KoqKaBIahiY3gskkbYzUB",
+                    "keyWords": "underwater nature water"
+                },
+                {
+                    "name": "Frozen",
+                    "iconName": "Frozen Image",
+                    "moviePreviewName": "Frozen Video",
+                    "id": "53fuGYYAgIu0UyZFj1dad",
+                    "keyWords": "frozen nature"
+                },
+                {
+                    "name": "Fire",
+                    "iconName": "Fire Image",
+                    "moviePreviewName": "Fire Video",
+                    "id": "38Mh8WcOSeL2u1qr3oWHVJ",
+                    "keyWords": "fire nature ash flames"
+                },
+                {
+                    "name": "Rain",
+                    "iconName": "Rain Image",
+                    "moviePreviewName": "Rain Video",
+                    "id": "4Ia2cMDlUjrV3petxmAYzg",
+                    "keyWords": "rain drops nature"
+                },
+                {
+                    "name": "Snow",
+                    "iconName": "Snow Image",
+                    "moviePreviewName": "Snow Video",
+                    "id": "6TYA93fLp0l0oV77xbXqB6",
+                    "keyWords": "snow winter nature"
+                },
+                {
+                    "name": "Thunderstorm",
+                    "iconName": "Thunderstorm Image",
+                    "moviePreviewName": "Thunderstorm Video",
+                    "id": "3xRRbXJ8xC1IqRK8pGBQG9",
+                    "keyWords": "lightnings thunderstorm nature"
+                },
+                {
+                    "name": "Smoke",
+                    "iconName": "Smoke Image",
+                    "moviePreviewName": "Smoke Video",
+                    "id": "7fTZmiJIfHtTNjUZGL3hA1",
+                    "keyWords": "smoke nature"
+                },
+                {
+                    "name": "Sand",
+                    "iconName": "Sand Image",
+                    "moviePreviewName": "Sand Video",
+                    "id": "5mK5us5fZkrgJuh6vzpI4r",
+                    "keyWords": "sand nature"
+                },
+                {
+                    "name": "Sun",
+                    "iconName": "Sun Image",
+                    "moviePreviewName": "Sun Video",
+                    "id": "4BT65RMcZaRaije7HP7zGs",
+                    "keyWords": "Sun bokeh flare nature"
+                },
+                {
+                    "name": "Ink",
+                    "iconName": "Ink Image",
+                    "moviePreviewName": "Ink Video",
+                    "id": "6pxW4MdeswFvAiHwkLz2uj",
+                    "keyWords": "ink watercolor nature"
+                },
+                {
+                    "name": "Star orbit",
+                    "iconName": "Star orbit Image",
+                    "moviePreviewName": "Star orbit Video",
+                    "id": "5u9rUz6m6leJHnWcJlCjsz",
+                    "keyWords": "star trails nature"
+                },
+                {
+                    "name": "Knitted",
+                    "iconName": "Knitted Image",
+                    "moviePreviewName": "Knitted Video",
+                    "id": "5fwaZ2fAqGI0c5vRzypCHA",
+                    "keyWords": "knitted pattern nature"
+                },
+                {
+                    "name": "Colorful explosion",
+                    "iconName": "Colorful explosion Image",
+                    "moviePreviewName": "Colorful explosion Video",
+                    "id": "2LboouK9kqu8lMotQpccW",
+                    "keyWords": "colorful explosion nature"
+                }
+            ]
+        },
+        {
+            "name": "Fast Transitions",
+            "entities": [
+                {
+                    "name": "Universal flare",
+                    "iconName": "Universal flare Image",
+                    "moviePreviewName": "Universal flare Video",
+                    "id": "3ugSHjnIJdHUeObxdLGbyJ",
+                    "keyWords": "universal flare"
+                },
+                {
+                    "name": "Stretch",
+                    "iconName": "Stretch Image",
+                    "moviePreviewName": "Stretch Video",
+                    "id": "3sVi7zuDJ3ZXwYDRESP5eo",
+                    "keyWords": "universal blur"
+                },
+                {
+                    "name": "Flash and stars",
+                    "iconName": "Flash and stars Image",
+                    "moviePreviewName": "Flash and stars Video",
+                    "id": "rGxmn4I4bPZf2CltrHfrL",
+                    "keyWords": "flash stars zoom"
+                },
+                {
+                    "name": "Flash and snow",
+                    "iconName": "Flash and snow Image",
+                    "moviePreviewName": "Flash and snow Video",
+                    "id": "2DQCNMuc7VUx8nAmJW8yaO",
+                    "keyWords": "flash snow zoom"
+                },
+                {
+                    "name": "Next page",
+                    "iconName": "Next page Image",
+                    "moviePreviewName": "Next page Video",
+                    "id": "5sK8c9S3nRCntMAgZMKgjd",
+                    "keyWords": "scroll page fast"
+                },
+                {
+                    "name": "Fast blur",
+                    "iconName": "Fast blur Image",
+                    "moviePreviewName": "Fast blur Video",
+                    "id": "6ZHlZVLc3PHLHUoXEYvVQi",
+                    "keyWords": "universal blur"
+                },
+                {
+                    "name": "Photo album",
+                    "iconName": "Photo album Image",
+                    "moviePreviewName": "Photo album Video",
+                    "id": "7gRc9fjpxjO2hNM6YeDiIP",
+                    "keyWords": "photo album page"
+                },
+                {
+                    "name": "Retro film",
+                    "iconName": "Retro film Image",
+                    "moviePreviewName": "Retro film Video",
+                    "id": "3XAWeKnyntdlrAAPjCIATX",
+                    "keyWords": "film retro flare bokeh scratches lines"
+                },
+                {
+                    "name": "Fast warp",
+                    "iconName": "Fast warp Image",
+                    "moviePreviewName": "Fast warp Video",
+                    "id": "6Bq5qXOZpQ86MQFYclkPbw",
+                    "keyWords": "warp fisheye zoom"
+                },
+                {
+                    "name": "Fast wave",
+                    "iconName": "Fast wave Image",
+                    "moviePreviewName": "Fast wave Video",
+                    "id": "7iKhe9f2skqSvZIEVoZOvC",
+                    "keyWords": "wave fast purple"
+                },
+                {
+                    "name": "Lens flare",
+                    "iconName": "Lens flare Image",
+                    "moviePreviewName": "Lens flare Video",
+                    "id": "6GrQla3IuFqFk8hfZXw8lH",
+                    "keyWords": "lens flare"
+                },
+                {
+                    "name": "Fire flame",
+                    "iconName": "Fire flame Image",
+                    "moviePreviewName": "Fire flame Video",
+                    "id": "5p7gBdAsRIXHrC9ZdRZ6ie",
+                    "keyWords": "fire flame"
+                },
+                {
+                    "name": "Fast glitch",
+                    "iconName": "Fast glitch Image",
+                    "moviePreviewName": "Fast glitch Video",
+                    "id": "7LBijPAJV1Zvdj98aw2ej8",
+                    "keyWords": "glitch universal"
+                },
+                {
+                    "name": "Light overlay",
+                    "iconName": "Light overlay Image",
+                    "moviePreviewName": "Light overlay Video",
+                    "id": "3MSdrOQDTHfwDSdXUCnWk5",
+                    "keyWords": "light overlay"
+                },
+                {
+                    "name": "Exposed film",
+                    "iconName": "Exposed film Image",
+                    "moviePreviewName": "Exposed film Video",
+                    "id": "3XxrfxqOdZB3pSF3KFMzll",
+                    "keyWords": "film exposed flare bokeh scratches"
+                }
+            ]
+        }
+    ]
+}

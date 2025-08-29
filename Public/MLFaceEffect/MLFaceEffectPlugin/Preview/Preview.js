@@ -1,0 +1,69 @@
+import * as Ui from 'LensStudio:Ui';
+
+import { PreviewMenu } from './PreviewMenu.js';
+import { AssetPreview } from './AssetPreview.js';
+
+export class Preview {
+    constructor(onStateChanged) {
+        this.previewMenu = new PreviewMenu(onStateChanged, this.reset.bind(this));
+        this.assetPreview = new AssetPreview(onStateChanged);
+
+        this.currentPreviewMenuState = PreviewMenuState.PreviewMenu;
+        this.onStateChanged = onStateChanged;
+        this.connections = [];
+    }
+
+    reset() {
+        this.assetPreview.reset();
+    }
+
+    stop() {
+        this.assetPreview.reset();
+    }
+
+    updatePreview(state) {
+        this.previewMenu.updatePreview(state);
+        this.assetPreview.updatePreview(state);
+        this.state = state;
+        this.currentPreviewMenuState = PreviewMenuState.PreviewMenu;
+        this.menuWidget.currentIndex = this.currentPreviewMenuState;
+    }
+
+    create(parent) {
+        this.widget = new Ui.Widget(parent);
+        const layout = new Ui.BoxLayout();
+        layout.setDirection(Ui.Direction.LeftToRight);
+
+        this.menuWidget = new Ui.StackedWidget(this.widget);
+
+        this.menuWidget.addWidget(this.previewMenu.create(this.menuWidget));
+        this.menuWidget.currentIndex = this.currentPreviewMenuState;
+
+        this.menuWidget.setFixedWidth(320);
+        this.menuWidget.setFixedHeight(620);
+
+        this.menuWidget.setContentsMargins(0, 0, 0, 0);
+
+        this.assetPreviewWidget = this.assetPreview.create(this.widget);
+
+        layout.addWidget(this.menuWidget);
+        const separator = new Ui.Separator(Ui.Orientation.Vertical, Ui.Shadow.Plain, this.widget);
+        separator.setFixedWidth(Ui.Sizes.SeparatorLineWidth);
+
+        layout.addWidget(separator);
+        layout.addWidget(this.assetPreviewWidget);
+
+        layout.setContentsMargins(0, 0, 0, 0);
+        layout.spacing = 0;
+
+        this.widget.layout = layout;
+
+        return this.widget;
+    }
+}
+
+const PreviewMenuState = {
+    PreviewMenu: 0,
+    ChangeGeometryMenu: 1,
+    RetextureMenu: 2
+};

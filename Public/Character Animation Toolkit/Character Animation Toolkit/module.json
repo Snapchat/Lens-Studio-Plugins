@@ -1,0 +1,5 @@
+{
+    "main": "main.js",
+    "permissions": ["snap_auth_token", "network", "filesystem", "asset_library"],
+    "name": "Character Animation Toolkit"
+}

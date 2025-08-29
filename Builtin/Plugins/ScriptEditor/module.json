@@ -1,0 +1,5 @@
+{
+    "name": "Script Editor",
+    "main": "main.js",
+    "permissions": [ "network", "filesystem"]
+}

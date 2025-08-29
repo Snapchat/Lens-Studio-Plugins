@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <title>Lens Studio Script Editor</title>
+    <link rel="stylesheet" href="./editor_style.css">
+</head>
+<div id="navigation-container">
+    <div id="scroll-indicator-container">
+        <div id="scroll-indicator"></div>
+    </div>
+    <div id="tab-bar"></div>
+</div>
+<div id="container"></div>
+<script src="../utils/navigation/tabBar.js"></script>
+
+<script src="../monaco-editor/min/vs/loader.js"></script>
+<script type="module">
+    import {initializeCompletionProvider, setCompletionData} from '../utils/files/completion.js';
+    import {FileManager} from '../utils/files/fileManager.js';
+    import {NetworkManager} from "../utils/network/network.js";
+    import {EDITOR_EVENTS, FILE_EVENTS} from "../lib/Resources/Common.js";
+
+    let editor;
+    let isInitialSetupComplete = false;
+    let productType = '';
+
+    const navigationContainer = document.getElementById('navigation-container');
+    const tabBarElement = document.getElementById('tab-bar');
+    const scrollIndicator = document.getElementById('scroll-indicator');
+    initializeTabScroller(navigationContainer, tabBarElement, scrollIndicator);
+
+    require.config({
+        paths: {'vs': window.location.origin + '/monaco-editor/min/vs'}
+    });
+
+    require(['vs/editor/editor.main'], function () {
+        window.addEventListener('keydown', (e) => {
+            if (!editor) {
+                return;
+            }
+
+            const isMac = productType === 'macos';
+            const isModifierPressed = isMac ? e.metaKey : e.ctrlKey;
+
+            if (isModifierPressed) {
+                switch (e.key.toLowerCase()) {
+                    case 's':
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        if (fileManager.currentFile && fileManager.currentFile.hasChanges) {
+                            networkManager.notify(EDITOR_EVENTS.SAVE_SCRIPT_CONTENT, {
+                                content: fileManager.currentFile.model.getValue(),
+                                filePath: fileManager.currentFile.filePath
+                            });
+
+                            fileManager.currentFile.hasChanges = false;
+                            fileManager.currentFile.originalContent = fileManager.currentFile.model.getValue();
+                            fileManager.renderTabs();
+                            fileManager.notifyOnUnsavedStateChange();
+                        }
+                        break;
+                }
+            }
+        }, true);
+
+        monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
+            noSemanticValidation: false,
+            noSyntaxValidation: false,
+            diagnosticCodesToIgnore: [80001, 80002, 7016] // suggestions related to export that override LS functionality. Additional overrides should be added here
+        });
+
+        monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+            noSemanticValidation: false,
+            noSyntaxValidation: false,
+            codeActions: false,
+        });
+
+        const sharedCompilerOptions = {
+            target: monaco.languages.typescript.ScriptTarget.ES2019,
+            experimentalDecorators: true,
+            moduleResolution: monaco.languages.typescript.ModuleResolutionKind.Classic,
+            module: monaco.languages.typescript.ModuleKind.CommonJS,
+            allowJs: true,
+            lib: ["es2019"],
+            types: [],
+            skipDefaultLibCheck: true,
+            allowNonTsExtensions: true,
+        };
+
+        monaco.languages.typescript.javascriptDefaults.setCompilerOptions(sharedCompilerOptions);
+        monaco.languages.typescript.typescriptDefaults.setCompilerOptions(sharedCompilerOptions);
+
+        editor = monaco.editor.create(document.getElementById('container'), {
+            model: null,
+            language: 'javascript',
+            theme: 'vs-dark',
+            automaticLayout: true,
+            readOnly: true,
+            readOnlyMessage: {value: 'Initializing...'}
+        });
+        window.editor = editor;
+
+        monaco.editor.onDidCreateEditor(newEditor => {
+            newEditor.onDidChangeModel(() => {
+                newEditor.updateOptions({readOnly: true, readOnlyMessage: {value: null}});
+            });
+        });
+
+        monaco.editor.registerEditorOpener({
+            openCodeEditor(source, resource, selectionOrPosition) {
+                const originalPath = resource.path;
+                const correctedPath = originalPath.substring(1);
+
+                const fileToOpen = Array.from(fileManager.openFiles.values()).find(f => f.filePath === correctedPath) ||
+                    Array.from(fileManager.backgroundFiles.values()).find(f => f.filePath === correctedPath) ||
+                    Array.from(fileManager.openFiles.values()).find(f => f.model === source) ||
+                    Array.from(fileManager.backgroundFiles.values()).find(f => f.model === source);
+
+                if (fileToOpen) {
+                    fileManager.openAndSwitchToFile(fileToOpen.filePath, selectionOrPosition, fileToOpen.componentId);
+                } else {
+                    console.error("Cannot switch to file:", correctedPath);
+                }
+
+                return true;
+            }
+        });
+
+        const networkManager = new NetworkManager()
+        const fileManager = new FileManager(editor, tabBarElement, networkManager);
+        initializeCompletionProvider(monaco, fileManager);
+
+        window.addEventListener('beforeunload', () => {
+            try {
+                if (fileManager) {
+                    fileManager.cleanup();
+                }
+                if (networkManager) {
+                    networkManager.isPermanentlyClosing = true;
+                    if (networkManager.reconnectTimerId) {
+                        clearTimeout(networkManager.reconnectTimerId);
+                    }
+                }
+            } catch (e) {
+                console.error("Error during beforeunload cleanup:", e);
+            }
+        });
+
+        const messageHandlers = {
+            onConnecting: () => editor.updateOptions({readOnly: true, readOnlyMessage: {value: 'Connecting...'}}),
+            onOpen: () => {
+                editor.updateOptions({readOnly: false});
+                if (!isInitialSetupComplete) {
+                    networkManager.notify(EDITOR_EVENTS.EDITOR_READY);
+                }
+            },
+            onClose: () => editor.updateOptions({
+                readOnly: true,
+                readOnlyMessage: {value: 'Disconnected. Reconnecting...'}
+            }),
+            onConnectionError: (msg) => editor.setValue(msg),
+
+            [EDITOR_EVENTS.PLATFORM_INFO]: (payload) => {
+                if (payload && payload.productType) {
+                    productType = payload.productType;
+                }
+            },
+            [FILE_EVENTS.SAVE_ALL_FILES]: () => {
+                fileManager.saveAllUnsavedFiles();
+            },
+            [FILE_EVENTS.DISCARD_ALL_FILES]: () => {
+                fileManager.discardAllUnsavedFiles();
+            },
+            createDefinitionFiles: (payload) => {
+                if (isInitialSetupComplete) return;
+
+                const {files, generatedTypeMap, projectScripts} = payload;
+
+                if (files && files.length > 0) {
+                    files.forEach(file => {
+                        monaco.languages.typescript.javascriptDefaults.addExtraLib(file.content, `file:///${file.path}`);
+                        monaco.languages.typescript.typescriptDefaults.addExtraLib(file.content, `file:///${file.path}`);
+                        fileManager.createDefinitionFile(file.path, file.content);
+                    });
+
+                    setCompletionData({
+                        typeMap: generatedTypeMap,
+                        scripts: projectScripts,
+                    });
+
+                    isInitialSetupComplete = true;
+                    networkManager.notify('editorFullyLoaded');
+
+                } else {
+                    console.error("Received empty or invalid declaration files from server.");
+                    if (!isInitialSetupComplete) {
+                        isInitialSetupComplete = true;
+                        networkManager.notify('editorFullyLoaded');
+                    }
+                }
+            },
+            activeFileChanged: (payload) => {
+                fileManager.openAndSwitchToFile(payload.filePath, null, payload.componentId);
+            },
+            loadDependency: (payload) => {
+                fileManager.loadDependency(payload.filePath, payload.componentId);
+            },
+            fileRenamed: (payload) => {
+                fileManager.handleFileRename(payload.componentId, payload.newFilePath, payload.newOriginalFilePath);
+            },
+            fileDeleted: (payload) => {
+                fileManager.handleFileDelete(payload.componentId);
+            },
+            fileContentChanged: (payload) => {
+                fileManager.handleFileContentChange(payload.componentId);
+            },
+            updateFileReadOnlyStatus: (payload) => {
+                fileManager.updateFileReadOnlyStatus(payload.componentId);
+            }
+        };
+
+        networkManager.initialize(messageHandlers);
+    });
+</script>

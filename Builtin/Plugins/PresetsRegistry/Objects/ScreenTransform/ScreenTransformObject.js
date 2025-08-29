@@ -6,7 +6,7 @@ export function createScreenTransformComponent(model, sceneObject) {
     const screenTransform = sceneObject.addComponent('ScreenTransform');
     screenTransform.transform = new Editor.Transform(new vec3(0, 0, 0), new vec3(0, 0, 0), new vec3(1, 1, 1));
     sceneObject.name = 'Screen Transform';
-    sceneObject.layer = sceneObject.getParent().layer;
+    sceneObject.layers = sceneObject.getParent().layers;
     return screenTransform;
 }
 

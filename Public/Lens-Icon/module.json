@@ -1,0 +1,4 @@
+{
+  "main": "main.js",
+  "permissions": ["snap_auth_token", "network", "filesystem"]
+}

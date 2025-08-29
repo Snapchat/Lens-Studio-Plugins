@@ -28,11 +28,11 @@ export class PanelWidgets extends PanelPlugin {
      * @returns {Ui.Widget} The created widget.
      */
     createWidget(parent) {
-        const mainWidget = Ui.Widget.create(parent);
-        const mainLayout = Ui.BoxLayout.create();
+        const mainWidget = new Ui.Widget(parent);
+        const mainLayout = new Ui.BoxLayout();
         mainLayout.setDirection(Ui.Direction.TopToBottom);
-        const demoStackedWidget = Ui.StackedWidget.create(mainWidget);
-        const demoTabBar = Ui.TabBar.create(mainWidget);
+        const demoStackedWidget = new Ui.StackedWidget(mainWidget);
+        const demoTabBar = new Ui.TabBar(mainWidget);
 
         // Create a connection to change the index of the stacked widget when the tab is changed
         demoTabBar.onCurrentChange.connect((index) => {
@@ -68,35 +68,35 @@ export class PanelWidgets extends PanelPlugin {
 
     createButtonTab(tabBar, stackedWidget, widget) {
         tabBar.addTab("Button");
-        const buttonTabWidget = Ui.Widget.create(widget);
-        const buttonTabLayout = Ui.BoxLayout.create();
+        const buttonTabWidget = new Ui.Widget(widget);
+        const buttonTabLayout = new Ui.BoxLayout();
         buttonTabLayout.setDirection(Ui.Direction.TopToBottom);
-        const buttonGridLayout = Ui.GridLayout.create();
+        const buttonGridLayout = new Ui.GridLayout();
         // Click button
-        const clickButton = Ui.PushButton.create(buttonTabWidget);
+        const clickButton = new Ui.PushButton(buttonTabWidget);
         clickButton.text = "Click";
         // Primary button
-        const primaryButton = Ui.PushButton.create(buttonTabWidget);
+        const primaryButton = new Ui.PushButton(buttonTabWidget);
         primaryButton.text = "Primary";
         primaryButton.primary = true;
         // Disabled button
-        const disabledButton = Ui.PushButton.create(buttonTabWidget);
+        const disabledButton = new Ui.PushButton(buttonTabWidget);
         disabledButton.text = "Disabled";
         disabledButton.enabled = false;
         // Icon button
-        const iconButton = Ui.PushButton.create(buttonTabWidget);
+        const iconButton = new Ui.PushButton(buttonTabWidget);
         iconButton.text = "Click";
         iconButton.setIconWithMode(Editor.Icon.fromFile(new Editor.Path(import.meta.resolve("Resources/Image.svg"))), Ui.IconMode.MonoChrome);
         // Radio button group
-        const radioButtonGroup = Ui.RadioButtonGroup.create(buttonTabWidget);
+        const radioButtonGroup = new Ui.RadioButtonGroup(buttonTabWidget);
 
-        const radioBtnGroupChildA = Ui.RadioButton.create(radioButtonGroup);
+        const radioBtnGroupChildA = new Ui.RadioButton(radioButtonGroup);
         radioBtnGroupChildA.toolTip = "Option A";
         radioBtnGroupChildA.setIcon(Editor.Icon.fromFile(new Editor.Path(import.meta.resolve("Resources/Image.svg"))));
 
         radioButtonGroup.addButton(radioBtnGroupChildA, 0);
 
-        const radioBtnGroupChildB = Ui.PushButton.create(radioButtonGroup);
+        const radioBtnGroupChildB = new Ui.PushButton(radioButtonGroup);
         radioBtnGroupChildB.toolTip = "Option B";
         radioBtnGroupChildB.setIcon(Editor.Icon.fromFile(new Editor.Path(import.meta.resolve("Resources/Image.svg"))));
 
@@ -125,29 +125,29 @@ export class PanelWidgets extends PanelPlugin {
 
     createTextEditTab(tabBar, stackedWidget, widget) {
         tabBar.addTab("TextEdit");
-        const textEditTabWidget = Ui.Widget.create(widget);
-        const textEditTabLayout = Ui.BoxLayout.create();
+        const textEditTabWidget = new Ui.Widget(widget);
+        const textEditTabLayout = new Ui.BoxLayout();
         textEditTabLayout.setDirection(Ui.Direction.TopToBottom);
-        const lineEditLabel = Ui.Label.create(widget);
+        const lineEditLabel = new Ui.Label(widget);
         lineEditLabel.foregroundRole = Ui.ColorRole.BrightText;
-        const textEditLabel = Ui.Label.create(widget);
+        const textEditLabel = new Ui.Label(widget);
         textEditLabel.foregroundRole = Ui.ColorRole.BrightText;
 
-        const textEditArea = Ui.TextEdit.create(widget);
+        const textEditArea = new Ui.TextEdit(widget);
         textEditArea.placeholderText = "Enter text here...";
         textEditArea.foregroundRole = Ui.ColorRole.PlaceholderText;
         textEditArea.setFixedHeight(Ui.Sizes.TextEditHeight);
         textEditArea.onTextChange.connect(() => {
             textEditLabel.text = "Your input: " + textEditArea.plainText;
         });
-        const lineEditField = Ui.LineEdit.create(widget);
+        const lineEditField = new Ui.LineEdit(widget);
         lineEditField.placeholderText = "Enter text here...";
         lineEditField.foregroundRole = Ui.ColorRole.PlaceholderText;
         lineEditField.onTextChange.connect((text) => {
             lineEditLabel.text = "Your input: " + text;
         });
 
-        const clearButton = Ui.PushButton.create(widget);
+        const clearButton = new Ui.PushButton(widget);
         clearButton.text = "Clear";
         clearButton.foregroundRole = Ui.ColorRole.Button;
         clearButton.onClick.connect(() => {
@@ -170,11 +170,11 @@ export class PanelWidgets extends PanelPlugin {
 
     createCheckBoxTab(tabBar, stackedWidget, widget) {
         tabBar.addTab("CheckBox");
-        const checkBoxTabWidget = Ui.Widget.create(widget);
-        const checkBoxTabLayout = Ui.BoxLayout.create();
+        const checkBoxTabWidget = new Ui.Widget(widget);
+        const checkBoxTabLayout = new Ui.BoxLayout();
         checkBoxTabLayout.setDirection(Ui.Direction.TopToBottom);
         for (let i = 0; i < 5; i++) {
-            const checkBox = Ui.CheckBox.create(checkBoxTabWidget);
+            const checkBox = new Ui.CheckBox(checkBoxTabWidget);
             checkBox.setFixedHeight(Ui.Sizes.MenuItemHeight);
             checkBox.text = "Option " + i;
             checkBox.onToggle.connect((checked) => {
@@ -187,12 +187,12 @@ export class PanelWidgets extends PanelPlugin {
             checkBoxTabLayout.addWidget(checkBox);
         }
 
-        const checkBoxScrollWidget = Ui.Widget.create(checkBoxTabWidget);
+        const checkBoxScrollWidget = new Ui.Widget(checkBoxTabWidget);
         checkBoxScrollWidget.layout = checkBoxTabLayout;
-        const checkBoxScrollArea = Ui.VerticalScrollArea.create(checkBoxTabWidget);
+        const checkBoxScrollArea = new Ui.VerticalScrollArea(checkBoxTabWidget);
         checkBoxScrollArea.setWidget(checkBoxScrollWidget);
         checkBoxScrollArea.setFixedHeight((Ui.Sizes.MenuItemHeight + Ui.Sizes.CheckboxPadding) * 5);
-        const checkBoxScrollLayout = Ui.BoxLayout.create();
+        const checkBoxScrollLayout = new Ui.BoxLayout();
         checkBoxScrollLayout.setDirection(Ui.Direction.TopToBottom);
         checkBoxScrollLayout.addWidget(checkBoxScrollArea);
 
@@ -202,14 +202,14 @@ export class PanelWidgets extends PanelPlugin {
 
     createStatusIndicatorTab(tabBar, stackedWidget, widget) {
         tabBar.addTab("StatusIndicator");
-        const statusIndicatorTabWidget = Ui.Widget.create(widget);
-        const statusIndicatorTabLayout = Ui.BoxLayout.create();
+        const statusIndicatorTabWidget = new Ui.Widget(widget);
+        const statusIndicatorTabLayout = new Ui.BoxLayout();
         statusIndicatorTabLayout.setDirection(Ui.Direction.TopToBottom);
-        const statusIndicator = Ui.StatusIndicator.create("Progressing", statusIndicatorTabWidget);
+        const statusIndicator = new Ui.StatusIndicator("Progressing", statusIndicatorTabWidget);
         statusIndicator.visible = false;
         statusIndicator.setSizePolicy(Ui.SizePolicy.Policy.Ignored, Ui.SizePolicy.Policy.Ignored);
-        const startButton = Ui.PushButton.create(statusIndicatorTabWidget);
-        const stopButton = Ui.PushButton.create(statusIndicatorTabWidget);
+        const startButton = new Ui.PushButton(statusIndicatorTabWidget);
+        const stopButton = new Ui.PushButton(statusIndicatorTabWidget);
         startButton.text = "Start";
         stopButton.text = "Stop";
 
@@ -234,10 +234,10 @@ export class PanelWidgets extends PanelPlugin {
 
     createDialogTab(tabBar, stackedWidget, widget) {
         tabBar.addTab("Dialog");
-        const dialogTabWidget = Ui.Widget.create(widget);
-        const dialogTabLayout = Ui.BoxLayout.create();
+        const dialogTabWidget = new Ui.Widget(widget);
+        const dialogTabLayout = new Ui.BoxLayout();
         dialogTabLayout.setDirection(Ui.Direction.TopToBottom);
-        const openDialogButton = Ui.PushButton.create(dialogTabWidget);
+        const openDialogButton = new Ui.PushButton(dialogTabWidget);
         openDialogButton.text = "Open a dialog";
         openDialogButton.foregroundRole = Ui.ColorRole.Button;
         /**
@@ -259,13 +259,13 @@ export class PanelWidgets extends PanelPlugin {
     createComboBoxTab(tabBar, stackedWidget, widget) {
         tabBar.addTab("ComboBox");
         // Create a new widget
-        const comboBoxTabWidget = Ui.Widget.create(widget);
+        const comboBoxTabWidget = new Ui.Widget(widget);
         // Create a new layout for the new widget
-        const comboBoxTabLayout = Ui.BoxLayout.create();
+        const comboBoxTabLayout = new Ui.BoxLayout();
         // Set the direction of the new layout
         comboBoxTabLayout.setDirection(Ui.Direction.TopToBottom);
         // Create a new combobox widget
-        const comboBox = Ui.ComboBox.create(comboBoxTabWidget);
+        const comboBox = new Ui.ComboBox(comboBoxTabWidget);
         comboBox.addIconItem(Editor.Icon.fromFile(new Editor.Path(import.meta.resolve("Resources/Image.svg"))), "Option 1");
         comboBox.addItem("Option 2");
         comboBox.addItem("Option 3");
@@ -281,18 +281,18 @@ export class PanelWidgets extends PanelPlugin {
 
     createImageGridTab(tabBar, stackedWidget, widget) {
         tabBar.addTab("Image Grid");
-        const imageGridTabWidget = Ui.Widget.create(widget);
-        const imageGridTabLayout = Ui.BoxLayout.create();
-        const image = Ui.Pixmap.create(new Editor.Path(import.meta.resolve("Resources/Image.svg")));
-        const boxMesh = Ui.Pixmap.create(new Editor.Path(import.meta.resolve("Resources/BoxMesh.svg")));
+        const imageGridTabWidget = new Ui.Widget(widget);
+        const imageGridTabLayout = new Ui.BoxLayout();
+        const image = new Ui.Pixmap(new Editor.Path(import.meta.resolve("Resources/Image.svg")));
+        const boxMesh = new Ui.Pixmap(new Editor.Path(import.meta.resolve("Resources/BoxMesh.svg")));
         image.resize(64, 64);
         boxMesh.resize(64, 64);
-        const imageView1 = Ui.ImageView.create(imageGridTabWidget);
+        const imageView1 = new Ui.ImageView(imageGridTabWidget);
         imageView1.pixmap = image;
-        const imageView2 = Ui.ImageView.create(imageGridTabWidget);
+        const imageView2 = new Ui.ImageView(imageGridTabWidget);
         imageView2.pixmap = boxMesh;
 
-        const separator = Ui.Separator.create(Ui.Orientation.Vertical, Ui.Shadow.Plain, imageGridTabWidget);
+        const separator = new Ui.Separator(Ui.Orientation.Vertical, Ui.Shadow.Plain, imageGridTabWidget);
         imageGridTabLayout.addStretch(0);
         imageGridTabLayout.addWidgetWithStretch(imageView1, 0, Ui.Alignment.AlignCenter);
         imageGridTabLayout.addStretch(0);
@@ -313,22 +313,22 @@ export class PanelWidgets extends PanelPlugin {
      */
     createProgressBarTab(tabBar, stackedWidget, widget) {
         tabBar.addTab("ProgressBar");
-        const progressBarStartTabWidget = Ui.Widget.create(widget);
-        const progressBarStartTabLayout = Ui.BoxLayout.create();
+        const progressBarStartTabWidget = new Ui.Widget(widget);
+        const progressBarStartTabLayout = new Ui.BoxLayout();
         progressBarStartTabLayout.setDirection(Ui.Direction.TopToBottom);
-        const processStartButton = Ui.PushButton.create(progressBarStartTabWidget);
+        const processStartButton = new Ui.PushButton(progressBarStartTabWidget);
         processStartButton.text = "Process Start";
         processStartButton.foregroundRole = Ui.ColorRole.Button;
         progressBarStartTabLayout.addWidget(processStartButton);
         progressBarStartTabWidget.layout = progressBarStartTabLayout;
         stackedWidget.addWidget(progressBarStartTabWidget);
 
-        const progressBarTabWidget = Ui.Widget.create(widget);
-        const progressBarTabLayout = Ui.BoxLayout.create();
+        const progressBarTabWidget = new Ui.Widget(widget);
+        const progressBarTabLayout = new Ui.BoxLayout();
         progressBarTabLayout.setDirection(Ui.Direction.TopToBottom);
-        const cancelButton = Ui.PushButton.create(progressBarTabWidget);
+        const cancelButton = new Ui.PushButton(progressBarTabWidget);
         cancelButton.text = "Cancel";
-        const progressBar = Ui.ProgressBar.create(progressBarTabWidget);
+        const progressBar = new Ui.ProgressBar(progressBarTabWidget);
         progressBar.setFixedHeight(Ui.Sizes.ProgressBarHeight);
         progressBarTabLayout.addWidget(progressBar);
         progressBarTabLayout.addWidget(cancelButton);
@@ -352,11 +352,11 @@ export class PanelWidgets extends PanelPlugin {
     createWebViewTab(tabBar, stackedWidget, widget) {
         tabBar.addTab("WebView");
 
-        const webViewTabWidget = Ui.Widget.create(widget);
-        const webViewTabLayout = Ui.BoxLayout.create();
+        const webViewTabWidget = new Ui.Widget(widget);
+        const webViewTabLayout = new Ui.BoxLayout();
         webViewTabLayout.setDirection(Ui.Direction.TopToBottom);
 
-        const webView = Ui.WebEngineView.create(webViewTabWidget);
+        const webView = new Ui.WebEngineView(webViewTabWidget);
         webView.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Expanding);
         webView.load("https://docs.snap.com/lens-studio/home");
 

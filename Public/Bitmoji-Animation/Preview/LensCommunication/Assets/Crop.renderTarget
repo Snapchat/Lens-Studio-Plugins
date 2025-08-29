@@ -1,0 +1,13 @@
+- !<RenderTarget/e094e3ca-4eae-4a83-afa8-bc6ed9bb563c>
+  PackagePath: ""
+  UseScreenResolution: false
+  Resolution:
+    x: 128
+    y: 56
+  AntialiasingMode: MSAA
+  AntialiasingQuality: Ultra
+  MSAAStrategy: OnlyWhenRequired
+  ClearColorOption: None
+  ClearColor: {x: 0.000000, y: 0.000000, z: 0.000000, w: 0.000000}
+  InputTexture: !<reference> 00000000-0000-0000-0000-000000000000
+  DepthBuffer: ForceOn

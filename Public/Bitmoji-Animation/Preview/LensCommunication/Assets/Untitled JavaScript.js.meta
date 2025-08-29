@@ -1,0 +1,51 @@
+- !<AssetImportMetadata/250a7a3a-47c4-4a49-9c5a-725998e17aca>
+  ImportedAssetIds:
+    JavaScriptAsset: !<reference> e5defae0-42ce-49f9-8020-2a4bf3b1d079
+  ImporterName: JavaScriptAssetImporter
+  PrimaryAsset: !<reference> e5defae0-42ce-49f9-8020-2a4bf3b1d079
+  PackageType: NotAPackage
+  PackagePolicy: CannotBeUnpacked
+  AssetDataMap:
+    JavaScriptAsset: !<own> 3a41afa3-439e-494c-a2bd-627d7b61150a
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings/8038307b-e0ef-4e44-ae0b-14013e02d900>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<ScriptAssetData/3a41afa3-439e-494c-a2bd-627d7b61150a>
+  SvgIcon: ""
+  Description: ""
+  InternalVersion: 0
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  ComponentUid: 00000000-0000-0000-0000-000000000000
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  CurrentVisibility: Editable
+  MaxVisibility: Editable
+  ScriptInputsHidden:
+    animParent: false
+    cropTexture: false
+    deviceCameraTexture: false
+    loading: false
+    parent: false
+    remoteAsset: false
+    staticBitmojiImage: false
+    texture: false
+  ScriptTypesHidden:
+    {}
+  DefaultScriptInputs:
+    - text: !<reference.Text> 00000000-0000-0000-0000-000000000000
+      mesh: !<reference.RenderMesh> 00000000-0000-0000-0000-000000000000
+      texture: !<reference.Texture> 00000000-0000-0000-0000-000000000000
+      remoteAsset: !<reference.RemoteMediaModule> 00000000-0000-0000-0000-000000000000
+      parent: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      animParent: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      loading: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      staticBitmojiImage: !<reference.Image> 00000000-0000-0000-0000-000000000000
+      deviceCameraTexture: !<reference.Texture> 00000000-0000-0000-0000-000000000000
+      bitmojiImage: !<reference.Image> 00000000-0000-0000-0000-000000000000
+      cropTexture: !<reference.Texture> 00000000-0000-0000-0000-000000000000
+  ScriptTypes:
+    -
+      {}

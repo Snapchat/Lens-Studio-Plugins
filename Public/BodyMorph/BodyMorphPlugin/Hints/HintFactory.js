@@ -1,0 +1,91 @@
+import * as Ui from 'LensStudio:Ui';
+
+export const HintID = {
+    'intensity': 0,
+    'prompt': 1,
+    'image': 2,
+    'text_reference': 3,
+    'headless': 4
+};
+
+const hintScheme = {
+    [HintID.intensity] : {
+        'image_width': 256,
+        'image_height': 86,
+        'image_path': new Editor.Path(import.meta.resolve('./Resources/intensity_hint.png')),
+        'title': 'Intensity',
+        'text': 'Higher value - more deformation on the shape.'
+    },
+    [HintID.prompt]: {
+        'title': 'Prompt',
+        'text': 'Describe the object you want to generate with separated keywords, ' +
+        'including the color, pose, facial expression etc. The words at the start ' +
+        'have the most influence. Add special words like “high“, ' +
+        '“quality”, “low poly” to achieve a better result.'
+    },
+    [HintID.image]: {
+        'title': 'Image Reference',
+        'text': `Provide an image reference emphasizing the body generator you want to generate.`
+    },
+    [HintID.text_reference]: {
+        'title': 'Text Reference',
+        'text': 'Provide additional context on how you want to change the image.'
+    },
+    [HintID.headless]: {
+        'title': "Remove Head",
+        'text': 'Generate a costume only, without the head covered.',
+        'image_width': 256,
+        'image_height': 128,
+        'image_path': new Editor.Path(import.meta.resolve('./Resources/headless_hint.png')),
+    }
+};
+
+class HintFactory {
+    createHint(parent, id) {
+        const image_width = hintScheme[id].image_width;
+        const image_height = hintScheme[id].image_height;
+        const image_path = hintScheme[id].image_path;
+        const title = hintScheme[id].title;
+        const text = hintScheme[id].text;
+
+        const layout = new Ui.BoxLayout();
+        layout.setDirection(Ui.Direction.TopToBottom);
+
+        const content = new Ui.Widget(parent);
+
+        if (image_path) {
+            const imageView = new Ui.ImageView(content);
+
+            const image = new Ui.Pixmap(image_path);
+
+            image.resize(image_width * 2, image_height * 2);
+
+            imageView.pixmap = image;
+            imageView.setFixedWidth(image_width);
+            imageView.setFixedHeight(image_height);
+            imageView.scaledContents = true;
+
+            layout.addWidget(imageView);
+        }
+
+        const header = new Ui.Label(content);
+        header.text = title;
+        header.fontRole = Ui.FontRole.TitleBold;
+
+        const desc = new Ui.Label(content);
+        desc.text = text;
+        desc.wordWrap = true;
+
+        layout.addWidget(header);
+        layout.addWidget(desc);
+
+        content.layout = layout;
+        return content;
+    }
+}
+
+const hintFactory = new HintFactory();
+
+export function getHintFactory() {
+    return hintFactory;
+}

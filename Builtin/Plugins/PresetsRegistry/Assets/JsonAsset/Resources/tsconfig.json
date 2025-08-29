@@ -9,7 +9,7 @@
     "lib": ["es2019"],
     "types": [],
     "paths": {
-      "*" : ["../Packages", "../Cache/TypeScript/Src/Assets/*", "../Cache/TypeScript/Src/Packages/*"]
+      "*" : ["./*", "../Packages/*", "../Cache/TypeScript/Src/Packages/*"]
     }
   },
   "exclude": [
@@ -17,8 +17,8 @@
   ],
   "include": [
     "../Cache/TypeScript/lib/LensifyTS/Declarations/**/*.d.ts",
-    "../Assets/**/*.ts",
+    "./**/*.ts",
     "../Packages/**/*.ts",
-    "../Cache/TypeScript/Src/**/*.ts"
+    "../Cache/TypeScript/Src/Packages/**/*.ts"
   ]
 }

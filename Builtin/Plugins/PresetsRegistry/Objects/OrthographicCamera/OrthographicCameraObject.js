@@ -59,10 +59,11 @@ export function findOrCreateOrthoCam(model, sceneObject) {
 export function createOrthographicCameraObject(model, sceneObject) {
     const scene = model.project.scene;
     const camera = sceneObject.addComponent('Camera');
+    const layerSet = Editor.Model.LayerSet.fromId(Editor.Model.LayerId.Ortho);
     camera.cameraType = Editor.Components.CameraType.Orthographic;
     camera.renderTarget = scene.captureTarget;
     camera.renderOrder = scene.mainCamera.renderOrder + 1;
-    camera.renderLayer = Editor.Model.LayerSet.fromId(Editor.Model.LayerId.Ortho);
+    camera.renderLayer = layerSet;
     camera.size = 20.0;
     camera.near = -1.0;
     camera.far = 200.0;
@@ -70,7 +71,7 @@ export function createOrthographicCameraObject(model, sceneObject) {
     sceneObject.localTransform = new Editor.Transform(new vec3(-120, 0, 40),
         new vec3(0, 0, 0),
         new vec3(1, 1, 1));
-    sceneObject.layer = Editor.Model.LayerId.Ortho;
+    sceneObject.layers = layerSet;
 
     return sceneObject;
 }

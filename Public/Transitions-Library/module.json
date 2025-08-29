@@ -1,0 +1,5 @@
+{
+  "name": "Transitions Library",
+  "main": "main.js",
+  "permissions": ["filesystem", "asset_library", "network"]
+}

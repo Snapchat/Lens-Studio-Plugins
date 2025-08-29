@@ -1,0 +1,2 @@
+export const BITMOJI_AL_ID = "77pMkoqQPt5MSnQYdckogW";
+export const BITMOJI_3D_COMPONENT_UID = "0005e0cc-4592-ac28-0000-000000067b6a";

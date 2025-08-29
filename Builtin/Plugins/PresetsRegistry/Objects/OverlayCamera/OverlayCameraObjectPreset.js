@@ -6,7 +6,7 @@ function createOverlayRenderTarget(project) {
     const assetManager = project.assetManager;
     const renderTarget = assetManager.createNativeAsset('RenderTarget', 'Overlay Render Target', new Editor.Path(''));
 
-    scene.renderOverlayOutput = renderTarget;
+    scene.liveOverlayTarget = renderTarget;
 
     return renderTarget;
 }

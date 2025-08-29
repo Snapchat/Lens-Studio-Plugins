@@ -1,0 +1,23 @@
+<svg width="254" height="254" viewBox="0 0 254 254" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_4461_587)">
+<circle cx="121.5" cy="31.5" r="24" fill="white" stroke="white"/>
+<path d="M117 76L97 142" stroke="white" stroke-width="46"/>
+<path d="M46 26L47.4659 30.0138C57.5516 57.6293 83.8184 76 113.218 76H126" stroke="white" stroke-width="27" stroke-linecap="round"/>
+<path d="M218.483 98.6731L216.156 95.6243C198.358 72.3148 167.917 62.5709 139.892 71.213L127.733 74.9623" stroke="white" stroke-width="27" stroke-linecap="round"/>
+<path d="M44.0563 215L42.9898 206.369C38.4875 169.933 62.901 136.208 98.9214 129.107L102 128.5" stroke="white" stroke-width="27" stroke-linecap="round"/>
+<path d="M111 128.5L112.14 139.195C115.436 170.101 142.48 192.933 173.5 191V191" stroke="white" stroke-width="27" stroke-linecap="round"/>
+<rect x="132" y="134" width="115" height="115" rx="35" fill="url(#paint0_linear_4461_587)" stroke="#3C414B" stroke-width="10"/>
+<path d="M209.586 184.47C205.652 181.754 201.098 178.934 196.323 176.273C190.922 173.262 185.549 170.627 180.816 168.654C180.742 168.624 180.559 168.55 180.267 168.434C177.183 167.207 173.673 168.672 172.426 171.706C172.228 172.187 172.096 172.691 172.032 173.206C171.362 178.582 171 185.017 171 191.649C171 197.963 171.328 204.098 171.938 209.311C172.349 212.835 175.586 215.363 179.167 214.957C179.682 214.899 180.189 214.78 180.676 214.604C181.72 214.226 182.285 214.018 182.37 213.981C186.709 212.096 191.505 209.71 196.323 207.024C201.593 204.087 206.594 200.958 210.788 197.986C214.251 195.532 215.037 190.781 212.543 187.373C212.276 187.008 211.976 186.667 211.648 186.355C210.478 185.24 209.791 184.612 209.586 184.47Z" fill="#3C414B"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_4461_587" x1="257.896" y1="187.45" x2="121.104" y2="187.45" gradientUnits="userSpaceOnUse">
+<stop stop-color="#E48DC2"/>
+<stop offset="0.333333" stop-color="#FFB36C"/>
+<stop offset="0.666667" stop-color="#FCE94E"/>
+<stop offset="1" stop-color="#B8F3E0"/>
+</linearGradient>
+<clipPath id="clip0_4461_587">
+<rect width="254" height="254" fill="white" transform="translate(0 254) rotate(-90)"/>
+</clipPath>
+</defs>
+</svg>

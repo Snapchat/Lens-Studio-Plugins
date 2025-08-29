@@ -1,0 +1,5 @@
+{
+    "name": "WebSocket-Demo",
+    "main": "main.js",
+    "permissions": ["network", "filesystem"]
+}

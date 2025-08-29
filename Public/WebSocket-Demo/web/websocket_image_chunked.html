@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Demo with Image Upload</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        button, input[type="file"], input[type="text"] {
+            margin: 10px 5px 10px 0;
+            padding: 5px 10px;
+        }
+        #output {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        #imagePreview, .uploadedImage {
+            max-width: 200px;
+            max-height: 200px;
+            margin-top: 10px;
+        }
+        #uploadedImagesContainer {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .imageWrapper {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>WebSocket Demo</h1>
+    <button id="connectBtn">Connect</button>
+    <button id="closeConnectionBtn" disabled>Close Connection</button>
+    <button id="resetBtn" disabled>Reset</button>
+    <div id="output"></div>
+
+    <h2>Send Message</h2>
+    <input type="text" id="messageInput" placeholder="Type your message here" disabled>
+    <button id="sendMessageBtn" disabled>Send Message</button>
+
+    <h2>Request Data</h2>
+    <button id="requestDataBtn" disabled>Request Data from Server</button>
+
+    <h2>Upload Image</h2>
+    <input type="file" id="fileInput" accept=".png,.jpg,.jpeg" disabled>
+    <input type="text" id="imageName" placeholder="Image name" disabled>
+    <button id="uploadBtn" disabled>Upload Image</button>
+    <img id="imagePreview" style="display:none;" alt="Image preview">
+
+    <h2>Uploaded Images</h2>
+    <div id="uploadedImagesContainer"></div>
+
+    <script>
+        let socket;
+        const CHUNK_SIZE = 50000; // Adjust this value as needed
+
+        function appendToOutput(message) {
+            const output = document.getElementById('output');
+            const messageElement = document.createElement('div');
+            messageElement.textContent = message;
+            output.appendChild(messageElement);
+            output.scrollTop = output.scrollHeight;
+        }
+
+        function sendJsonMessage(messageType, data = {}) {
+            if (socket && socket.readyState === WebSocket.OPEN) {
+                const message = JSON.stringify({
+                    messageType: messageType,
+                    ...data
+                });
+                socket.send(message);
+                appendToOutput(`Sent ${messageType} message`);
+            } else {
+                appendToOutput("WebSocket not connected");
+            }
+        }
+
+        function initWebSocket() {
+            socket = new WebSocket('ws://127.0.0.1:3000');
+
+            socket.onopen = function(event) {
+                appendToOutput("WebSocket connection established");
+                enableButtons(true);
+            };
+
+            socket.onmessage = function(event) {
+                appendToOutput("Received from server: " + event.data);
+            };
+
+            socket.onclose = function(event) {
+                appendToOutput("WebSocket connection closed");
+                enableButtons(false);
+            };
+
+            socket.onerror = function(error) {
+                appendToOutput("WebSocket error: " + error.message);
+                enableButtons(false);
+            };
+        }
+
+        function enableButtons(connected) {
+            document.getElementById('connectBtn').disabled = connected;
+            document.getElementById('closeConnectionBtn').disabled = !connected;
+            document.getElementById('resetBtn').disabled = !connected;
+            document.getElementById('sendMessageBtn').disabled = !connected;
+            document.getElementById('requestDataBtn').disabled = !connected;
+            document.getElementById('fileInput').disabled = !connected;
+            document.getElementById('imageName').disabled = !connected;
+            document.getElementById('uploadBtn').disabled = !connected;
+            document.getElementById('messageInput').disabled = !connected;
+        }
+
+        document.getElementById('connectBtn').addEventListener('click', initWebSocket);
+
+        document.getElementById('closeConnectionBtn').addEventListener('click', function() {
+            sendJsonMessage('closeConnection');
+            socket.close();
+        });
+
+        document.getElementById('resetBtn').addEventListener('click', function() {
+            // Clear all inputs
+            document.getElementById('messageInput').value = '';
+            document.getElementById('fileInput').value = '';
+            document.getElementById('imageName').value = '';
+
+            // Clear output
+            document.getElementById('output').innerHTML = '';
+
+            // Hide image preview
+            document.getElementById('imagePreview').style.display = 'none';
+
+            // Clear uploaded images
+            document.getElementById('uploadedImagesContainer').innerHTML = '';
+
+            appendToOutput("All cleared. WebSocket connection maintained.");
+        });
+
+        document.getElementById('sendMessageBtn').addEventListener('click', function() {
+            const messageContent = document.getElementById('messageInput').value;
+            if (messageContent) {
+                sendJsonMessage('regularMessage', { content: messageContent });
+                document.getElementById('messageInput').value = ''; // Clear the input after sending
+            } else {
+                appendToOutput("Please enter a message to send");
+            }
+        });
+
+        document.getElementById('requestDataBtn').addEventListener('click', function() {
+            sendJsonMessage('dataRequest');
+        });
+
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('imagePreview').src = e.target.result;
+                    document.getElementById('imagePreview').style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('uploadBtn').addEventListener('click', function() {
+            const fileInput = document.getElementById('fileInput');
+            const imageName = document.getElementById('imageName').value.trim();
+
+            if (fileInput.files.length > 0 && imageName) {
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    const base64 = e.target.result.split(',')[1]; // Get the base64 part
+                    const chunks = [];
+                    for (let i = 0; i < base64.length; i += CHUNK_SIZE) {
+                        chunks.push(base64.slice(i, i + CHUNK_SIZE));
+                    }
+
+                    sendImageChunks(imageName, chunks, 0);
+
+                    displayUploadedImage(imageName, URL.createObjectURL(file));
+
+                    // Clear the inputs after starting the upload
+                    fileInput.value = '';
+                    document.getElementById('imageName').value = '';
+                    document.getElementById('imagePreview').style.display = 'none';
+                };
+
+                reader.readAsDataURL(file);
+            } else {
+                appendToOutput("Please select a file and enter an image name");
+            }
+        });
+
+        function sendImageChunks(imageName, chunks, chunkIndex) {
+            if (chunkIndex >= chunks.length) {
+                sendJsonMessage('imageUploadComplete', { name: imageName });
+                return;
+            }
+
+            sendJsonMessage('imageChunk', {
+                name: imageName,
+                chunkIndex: chunkIndex,
+                totalChunks: chunks.length,
+                data: chunks[chunkIndex]
+            });
+
+            // Send next chunk after a short delay
+            setTimeout(() => sendImageChunks(imageName, chunks, chunkIndex + 1), 50);
+        }
+
+        function displayUploadedImage(name, src) {
+            const container = document.getElementById('uploadedImagesContainer');
+            const wrapper = document.createElement('div');
+            wrapper.className = 'imageWrapper';
+
+            const img = document.createElement('img');
+            img.src = src;
+            img.alt = name;
+            img.className = 'uploadedImage';
+
+            const caption = document.createElement('p');
+            caption.textContent = name;
+
+            wrapper.appendChild(img);
+            wrapper.appendChild(caption);
+            container.appendChild(wrapper);
+        }
+    </script>
+</body>
+</html>

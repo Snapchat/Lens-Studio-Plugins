@@ -1,0 +1,44 @@
+/*!
+ * glTF 2.0 TypeScript type definitions
+ */
+export const BYTE = 5120;
+export const UNSIGNED_BYTE = 5121;
+export const SHORT = 5122;
+export const UNSIGNED_SHORT = 5123;
+export const UNSIGNED_INT = 5125;
+export const FLOAT = 5126;
+export const SCALAR = "SCALAR";
+export const VEC2 = "VEC2";
+export const VEC3 = "VEC3";
+export const VEC4 = "VEC4";
+export const MAT2 = "MAT2";
+export const MAT3 = "MAT3";
+export const MAT4 = "MAT4";
+export const POINTS = 0;
+export const LINES = 1;
+export const LINE_LOOP = 2;
+export const LINE_STRIP = 3;
+export const TRIANGLES = 4;
+export const TRIANGLE_STRIP = 5;
+export const TRIANGLE_FAN = 6;
+export const ARRAY_BUFFER = 34962;
+export const ELEMENT_ARRAY_BUFFER = 34963;
+export const NEAREST = 9728;
+export const LINEAR = 9729;
+export const NEAREST_MIPMAP_NEAREST = 9984;
+export const LINEAR_MIPMAP_NEAREST = 9985;
+export const NEAREST_MIPMAP_LINEAR = 9986;
+export const LINEAR_MIPMAP_LINEAR = 9987;
+export const REPEAT = 10497;
+export const CLAMP_TO_EDGE = 33071;
+export const MIRRORED_REPEAT = 33648;
+export const POSITION = "POSITION";
+export const NORMAL = "NORMAL";
+export const TANGENT = "TANGENT";
+export const TEXCOORD_0 = "TEXCOORD_0";
+export const TEXCOORD_1 = "TEXCOORD_1";
+export const TEXCOORD_2 = "TEXCOORD_2";
+export const TEXCOORD_3 = "TEXCOORD_3";
+export const COLOR_0 = "COLOR_0";
+export const JOINTS_0 = "JOINTS_0";
+export const WEIGHTS_0 = "WEIGHTS_0";

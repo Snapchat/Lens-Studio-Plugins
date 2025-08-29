@@ -1,0 +1,18 @@
+<svg width="144" height="144" viewBox="0 0 144 144" xmlns="http://www.w3.org/2000/svg">
+  <!-- Define the mask -->
+  <mask id="invertedCorners">
+    <!-- Full opaque background -->
+    <rect width="144" height="144" fill="white"/>
+    <!-- Transparent inner square -->
+    <rect x="0" y="8" width="144" height="128" fill="black"/>
+    <rect x="8" y="0" width="128" height="144" fill="black"/>
+    <!-- Transparent rounded corners to create the "cutout" effect -->
+    <rect x="0" y="0" width="16" height="16" rx="8" ry="8" fill="black" />
+    <rect x="128" y="0" width="16" height="16" rx="8" ry="8" fill="black" />
+    <rect x="0" y="128" width="16" height="16" rx="8" ry="8" fill="black" />
+    <rect x="128" y="128" width="16" height="16" rx="8" ry="8" fill="black" />
+  </mask>
+
+  <!-- Apply the mask to a colored background -->
+  <rect width="144" height="144" fill="#363d45" mask="url(#invertedCorners)"/>
+</svg>

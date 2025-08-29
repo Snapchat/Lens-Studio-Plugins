@@ -1,0 +1,5 @@
+{
+    "name": "Export Mesh to GLB",
+    "main": "dist/main.js",
+    "permissions": ["filesystem"]
+}

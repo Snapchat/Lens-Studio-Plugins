@@ -22,7 +22,7 @@ import { createBehaviorAsset } from '../../Assets/Scripts/Scripts.js';
  * @returns {Editor.Components.ScriptComponent}
  */
 export async function createBehaviorComponent(model, destinationObject) {
-    const scriptAsset = await createBehaviorAsset(model, new Editor.Path(''));
+    const scriptAsset = await createBehaviorAsset(model, new Editor.Path('../Packages'));
     const scriptComponent = destinationObject.addComponent('ScriptComponent');
     scriptComponent.scriptAsset = scriptAsset;
     return scriptComponent;

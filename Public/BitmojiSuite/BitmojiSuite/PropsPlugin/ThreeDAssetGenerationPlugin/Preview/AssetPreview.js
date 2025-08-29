@@ -1,0 +1,451 @@
+import * as Ui from 'LensStudio:Ui';
+
+import { importToProject, createGenerationErrorWidget, createGennerationInProgressWidget } from '../utils.js';
+import { deleteAsset, getAsset } from '../api.js';
+import { ImportDialog } from './ImportDialog.js';
+
+import app from '../../application/app.js';
+
+import * as LensBasedEditorView from 'LensStudio:LensBasedEditorView';
+import { logEventAssetImport } from '../../application/analytics.js';
+
+export class AssetPreview {
+    constructor(onStateChanged) {
+        this.isDeinitialized = false;
+        this.connections = [];
+        this.asset_id = null;
+        this.onStateChanged = onStateChanged;
+        this.importDialog = new ImportDialog(this.onImportToProject.bind(this));
+
+        this.interactive_preview_input = new LensBasedEditorView.ImageInput();
+        this.interactive_preview_input.file = import.meta.resolve("./Resources/background.png")
+        this.interactive_preview_input.fps = 30;
+        this.interactive_preview_input.paused = false;
+
+        this.ignoredTypes = [
+            "ScriptComponent",
+            "AnimationPlayer",
+            "AnimationMixer",
+            "Animation",
+            "AudioComponent",
+            "AudioListenerComponent",
+            "ColocatedTrackingComponent",
+            "DeviceLocationTrackingComponent",
+            "DeviceTracking",
+            "LocatedAtComponent",
+            "ManipulateComponent",
+            "MarkerTrackingComponent",
+            "ObjectTracking",
+            "ObjectTracking3D",
+            "VFXComponent",
+            "MLComponent",
+            "InteractionComponent",
+            "MaskingComponent",
+            "BodyComponent",
+            "ColliderComponent",
+            "ConstraintComponent",
+        ];
+    }
+
+    onImportToProject(settings) {
+        this.importDialog.close();
+
+        if (this.asset_id) {
+            app.log('Importing 3D Asset to the project...', { 'progressBar': true });
+
+            getAsset(this.asset_id, (data) => {
+                if (this.isDeinitialized) {
+                    return;
+                }
+                if (data) {
+                    let url = null;
+                    let lspkgUrl = null;
+                    data.results.forEach((result) => {
+                        if (result.polycount === settings.polycount && result.textureSize === settings.textureSize) {
+                            url = result.lsUrl;
+                            lspkgUrl = result.lspkgLsUrl;
+                        }
+                    });
+
+                    if (lspkgUrl) {
+                        importToProject(lspkgUrl, function(success) {
+                            logEventAssetImport(success ? "SUCCESS" : "FAILED", settings.preset);
+                            app.log(success ? '3D Asset is succesfully imported to the project' : 'Import failed, please try again');
+                            this.updatePreview(this.state);
+                        }.bind(this), "lspkg")
+                    } else if (url) {
+                        try {
+                            importToProject(url, function(success) {
+                                logEventAssetImport(success ? "SUCCESS" : "FAILED", settings.preset);
+                                app.log(success ? '3D Asset is succesfully imported to the project' : 'Import failed, please try again');
+                                this.updatePreview(this.state);
+                            }.bind(this), "lsc");
+                        } catch (error) {
+                            logEventAssetImport("FAILED", settings.preset);
+                            app.log('Something went wrong during importing 3D Asset to the project, please try again.');
+                            this.updatePreview(this.state);
+                        }
+                    } else {
+                        logEventAssetImport("PREPARING", settings.preset);
+                        app.log('Files for import are still preparing. Please, try again in few seconds.');
+                    }
+                } else {
+                logEventAssetImport("FAILED", settings.preset);
+                    app.log('Something went wrong during importing 3D Asset to the project, please try again.');
+                }
+            });
+        } else {
+            logEventAssetImport("FAILED", settings.preset);
+            app.log('Something went wrong during importing 3D Asset to the project, please try again.');
+        }
+    }
+
+    deleteAsset(id) {
+        app.log('Deleting 3D asset...', { 'progressBar': true });
+
+        deleteAsset(id, function(response) {
+            if (this.isDeinitialized) {
+                return;
+            }
+            this.deletionDialog.close();
+
+            if (response.statusCode == 204) {
+                this.onStateChanged({
+                    'screen': 'default',
+                    'needsUpdate': true,
+                    'exclude_id': id
+                });
+
+                app.log('3D Asset has been deleted.');
+            } else {
+                this.onStateChanged({
+                    'screen': 'default',
+                    'needsUpdate': true,
+                });
+
+                app.log('3D Asset could not be deleted. Please, try again.');
+            }
+        }.bind(this));
+    }
+
+    loadInteractivePreview() {
+        const loadingOptions = {
+            lens: import.meta.resolve("./Resources/interactive_preview_lbe.zip"),
+            input: this.interactive_preview_input,
+            ignoredTypes: this.ignoredTypes,
+            useOverlayOutput: false
+        };
+
+        if (this.interactivePreview.isLoaded) {
+            this.interactivePreview.reload(loadingOptions);
+        } else {
+            this.interactivePreview.load(loadingOptions);
+        }
+    }
+
+    init() {
+        this.loadInteractivePreview();
+
+        this.onProjectChangedConnection = app.findInterface(Editor.Model.IModel).onProjectChanged.connect(() => {
+            this.loadInteractivePreview();
+        });
+    }
+
+    createPreview(parent) {
+        this.preview = new Ui.Widget(parent);
+        this.preview.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Expanding);
+        this.preview.autoFillBackground = true;
+        this.preview.backgroundRole = Ui.ColorRole.Dark;
+
+        const layout = new Ui.BoxLayout();
+        layout.setDirection(Ui.Direction.LeftToRight);
+        layout.setContentsMargins(0, 0, 0, 0);
+
+        this.previewImage = new Ui.MovieView(this.preview);
+        this.previewImage.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Expanding);
+        this.previewImage.animated = true;
+        this.previewImage.visible = false;
+
+        this.interactivePreview = LensBasedEditorView.create(this.pluginSystem, this.preview);
+        this.interactivePreview.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Expanding);
+
+        this.interactivePreview.onStateChanged.connect((state) => {
+            if (state == LensBasedEditorView.State.Running && this.delayedMessage) {
+                this.interactivePreview.postMessage(this.delayedMessage);
+            }
+        });
+
+        this.interactivePreview.onMessage.connect((message) => {
+            if (message.data.event_type) {
+                if (message.data.event_type == "start") {
+                    this.interactivePreview.postMessage(this.delayedMessage);
+                }
+            }
+        });
+
+        this.interactivePreview.visible = false;
+
+        layout.addWidget(this.previewImage);
+        layout.addWidget(this.interactivePreview);
+
+        this.preview.layout = layout;
+
+        return this.preview;
+    }
+
+    updatePreview(state) {
+        this.state = state;
+        this.delayedMessage = null;
+
+        if (state.object_url) {
+            this.objectUrl = state.object_url;
+        }
+
+        if (state.status) {
+            this.status = state.status;
+            this.importToProjectButton.enabled = (this.status === 'SUCCESS');
+            if (this.status === 'FAILED' || this.status === 'UNSAFE') {
+                this.stackedWidget.currentIndex = 1;
+                if (this.status === 'UNSAFE') {
+                    app.log('This asset violates our community guidelines and should be deleted.', { 'enabled': true });
+                }
+            } else {
+                if (state.glb_preview_url) {
+                    this.interactivePreview.visible = true;
+                    this.stackedWidget.currentIndex = 0;
+                    this.delayedMessage = {
+                        "event_type": "updateMesh",
+                        "url": state.glb_preview_url
+                    };
+
+                    if (this.interactivePreview.isLoaded) {
+                        this.interactivePreview.postMessage(this.delayedMessage);
+                    } else {
+                        this.loadInteractivePreview();
+                    }
+                } else if (state.preview_image) {
+                    this.previewImage.visible = true;
+                    this.stackedWidget.currentIndex = 0;
+                    state.preview_image.resize(480, 480);
+                    this.previewImage.movie = state.preview_image;
+                } else {
+                    this.stackedWidget.currentIndex = 2;
+                }
+            }
+        } else {
+            this.importToProjectButton.enabled = false;
+        }
+
+        if (state.asset_id) {
+            this.asset_id = state.asset_id;
+        } else {
+            this.asset_id = null;
+        }
+
+        this.showFooter();
+    }
+
+    reset(stopInterativePreivew) {
+        this.delayedMessage = null;
+
+        if (stopInterativePreivew) {
+            if (this.onProjectChangedConnection) {
+                this.onProjectChangedConnection.disconnect();
+            }
+
+            this.interactivePreview.unload();
+        } else if (this.interactivePreview.isLoaded) {
+            this.interactivePreview.postMessage({
+                "event_type": "reset"
+            });
+        } else {
+            this.delayedMessage = {
+                "event_type": "reset"
+            };
+            this.interactivePreview.reload();
+        }
+
+
+        this.asset_id = null;
+        this.importToProjectButton.enabled = false;
+
+        this.previewImage.visible = false;
+        this.interactivePreview.visible = false;
+    }
+
+    createDeletionDialog() {
+        // Deletion dialog
+        const gui = app.gui;
+
+        this.deletionDialog = gui.createDialog();
+        this.deletionDialog.windowTitle = 'Delete 3D Asset';
+
+        this.deletionDialog.resize(460, 140);
+
+        const boxLayout1 = new Ui.BoxLayout();
+        boxLayout1.setDirection(Ui.Direction.TopToBottom);
+
+        const captionWidget = new Ui.Widget(this.deletionDialog);
+        const captionLayout = new Ui.BoxLayout();
+        captionLayout.setDirection(Ui.Direction.LeftToRight);
+
+        const alertWidget = new Ui.ImageView(captionWidget);
+
+        const alertImagePath = new Editor.Path(import.meta.resolve('../Resources/alert.png'));
+        const alertImage = new Ui.Pixmap(alertImagePath);
+
+        alertWidget.setFixedWidth(56);
+        alertWidget.setFixedHeight(56);
+        alertWidget.scaledContents = true;
+        alertWidget.pixmap = alertImage;
+
+        const textWidget = new Ui.Widget(captionWidget);
+        const textLayout = new Ui.BoxLayout();
+        textLayout.setDirection(Ui.Direction.TopToBottom);
+
+        const headerLabel = new Ui.Label(textWidget);
+        const paragraphLabel = new Ui.Label(textWidget);
+
+        headerLabel.text = 'Delete the 3D asset?';
+        headerLabel.fontRole = Ui.FontRole.TitleBold;
+        paragraphLabel.text = 'This will delete this 3D asset permanently. You cannot undo this action.';
+
+        textLayout.setContentsMargins(0, 0, 0, 0);
+        textLayout.addWidget(headerLabel);
+        textLayout.addWidget(paragraphLabel);
+
+        textWidget.layout = textLayout;
+
+        alertWidget.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
+        textWidget.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Fixed);
+
+        captionLayout.addWidget(alertWidget);
+        captionLayout.addWidget(textWidget);
+        captionWidget.layout = captionLayout;
+
+        const buttonsWidget = new Ui.Widget(this.deletionDialog);
+        const buttonsLayout = new Ui.BoxLayout();
+        buttonsLayout.setDirection(Ui.Direction.LeftToRight);
+
+        const cancelButton = new Ui.PushButton(buttonsWidget);
+        const deleteButton = new Ui.PushButton(buttonsWidget);
+
+        cancelButton.text = 'Cancel';
+        deleteButton.text = 'Delete';
+        deleteButton.primary = true;
+
+        this.connections.push(cancelButton.onClick.connect(function() {
+            this.deletionDialog.close();
+        }.bind(this)));
+
+        this.connections.push(deleteButton.onClick.connect(function() {
+            this.deleteAsset(this.asset_id);
+        }.bind(this)));
+
+        buttonsLayout.addStretch(0);
+        buttonsLayout.addWidget(cancelButton);
+        buttonsLayout.addWidget(deleteButton);
+
+        buttonsWidget.layout = buttonsLayout;
+
+        boxLayout1.addWidget(captionWidget);
+        boxLayout1.addStretch(0);
+        boxLayout1.addWidget(buttonsWidget);
+
+        this.deletionDialog.layout = boxLayout1;
+
+        return this.deletionDialog;
+    }
+
+    hideFooter() {
+        this.deleteButton.visible = false;
+        this.importToProjectButton.visible = false;
+    }
+
+    showFooter() {
+        this.deleteButton.visible = true;
+        this.importToProjectButton.visible = true;
+    }
+
+    createFooter(parent) {
+        this.footer = new Ui.Widget(parent);
+        this.footer.setFixedHeight(65);
+
+        const footerLayout = new Ui.BoxLayout();
+        footerLayout.setDirection(Ui.Direction.LeftToRight);
+        footerLayout.setContentsMargins(8, 12, 8, 8);
+
+        this.deleteButton = new Ui.PushButton(this.footer);
+        this.deleteButton.text = '';
+        const deleteImagePath = new Editor.Path(import.meta.resolve('../Resources/delete.svg'));
+        this.deleteButton.setIconWithMode(Editor.Icon.fromFile(deleteImagePath), Ui.IconMode.MonoChrome);
+
+        this.dialog = this.createDeletionDialog();
+
+        this.connections.push(this.deleteButton.onClick.connect(function() {
+            this.dialog.show();
+            app.log('', { 'enabled': false });
+        }.bind(this)));
+
+        // Import To Project button
+        this.importToProjectButton = new Ui.PushButton(this.footer);
+        this.importToProjectButton.text = 'Import to Project';
+        const importImagePath = new Editor.Path(import.meta.resolve('../Resources/import.svg'));
+        this.importToProjectButton.setIconWithMode(Editor.Icon.fromFile(importImagePath), Ui.IconMode.MonoChrome);
+        this.importToProjectButton.primary = true;
+
+        this.connections.push(this.importToProjectButton.onClick.connect(function() {
+            this.importDialog.show();
+        }.bind(this)));
+
+        footerLayout.addWidgetWithStretch(this.deleteButton, 0, Ui.Alignment.AlignTop);
+        footerLayout.addStretch(0);
+        footerLayout.addWidgetWithStretch(this.importToProjectButton, 0, Ui.Alignment.AlignTop);
+
+        this.footer.layout = footerLayout;
+        return this.footer;
+    }
+
+    create(parent) {
+        this.widget = new Ui.Widget(parent);
+        this.widget.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Expanding);
+        this.layout = new Ui.BoxLayout();
+        this.layout.setDirection(Ui.Direction.TopToBottom);
+        this.layout.setContentsMargins(0, 0, 0, 0);
+
+        this.stackedWidget = new Ui.StackedWidget(this.widget);
+        this.stackedWidget.setContentsMargins(0, 0, 0, 0);
+        this.stackedWidget.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Expanding);
+
+        this.stackedWidget.addWidget(this.createPreview(this.widget));
+        this.stackedWidget.addWidget(createGenerationErrorWidget(this.widget));
+        this.stackedWidget.addWidget(createGennerationInProgressWidget(this.widget));
+
+        this.stackedWidget.currentIndex = 0;
+
+        this.layout.addWidget(this.stackedWidget);
+
+        const separator = new Ui.Separator(Ui.Orientation.Horizontal, Ui.Shadow.Plain, this.widget);
+        separator.setFixedHeight(Ui.Sizes.SeparatorLineWidth);
+        this.layout.addWidget(separator);
+
+        this.layout.addWidget(this.createFooter(this.widget));
+
+        this.layout.spacing = 0;
+        this.widget.layout = this.layout;
+
+        return this.widget;
+    }
+
+    findInterface(interfaceID) {
+        return this.pluginSystem.findInterface(interfaceID);
+    }
+
+    deinit() {
+        this.isDeinitialized = true;
+        if (this.interactivePreview && this.interactivePreview.isLoaded) {
+            this.interactivePreview.unload();
+        }
+        this.interactivePreview = null;
+    }
+}
