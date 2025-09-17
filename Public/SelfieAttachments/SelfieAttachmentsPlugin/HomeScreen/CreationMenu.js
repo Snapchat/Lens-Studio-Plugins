@@ -3,6 +3,7 @@ import * as Ui from 'LensStudio:Ui';
 import { createGuidelinesWidget, createTermsWidget } from '../utils.js';
 import { buildAssetData } from '../Effects/EffectFactory.js';
 import { PromptPicker, createPromptPicker } from '../Effects/Controls/PromptPicker.js';
+import { ImageReferencePicker, createImageReferencePicker } from '../Effects/Controls/ImageReferencePicker.js';
 import { SpinBox, createSpinBox } from '../Effects/Controls/SpinBox.js';
 import { SettingsDescriptor } from '../Effects/SettingsDescriptor.js';
 import { createAsset } from '../api.js';
@@ -32,6 +33,7 @@ export class CreationMenu {
 
     stop() {
         this.stopped = true;
+        this.controls['seedPicker'].random();
         this.reset({
             'screen': 'default'
         });
@@ -46,6 +48,7 @@ export class CreationMenu {
             this.sideState = 'draft_mesh';
         } else {
             this.controls['promptPicker'].value = '';
+            this.controls['imageReferencePicker'].value = [];
             this.generateButton.text = 'Generate Previews';
             this.generateButton.enabled = false;
             this.generateButton.primary = true;
@@ -60,7 +63,7 @@ export class CreationMenu {
 
         const data = buildAssetData(controls);
 
-        let inputFormat = "INPUT_PROMPT";
+        let inputFormat = controls["imageReferencePicker"].value.length > 0 ? "PROMPT_IMAGE" : "PROMPT_TEXT";
 
         createAsset(data, (response) => {
             if (response.statusCode == 200) {
@@ -159,7 +162,7 @@ export class CreationMenu {
     }
 
     checkInputs() {
-        this.generateButton.enabled = this.controls["promptPicker"].value.length > 0 && !this.stopped;
+        this.generateButton.enabled = (this.controls["promptPicker"].value.length > 0 || this.controls["imageReferencePicker"].value.length > 0) && !this.stopped;
     }
 
     createMenu(parent) {
@@ -196,6 +199,9 @@ export class CreationMenu {
             switch (scheme.class) {
                 case PromptPicker:
                     this.controls[scheme.name] = createPromptPicker(scheme);
+                    break;
+                case ImageReferencePicker:
+                    this.controls[scheme.name] = createImageReferencePicker(scheme);
                     break;
                 case SpinBox:
                     this.controls[scheme.name] = createSpinBox(scheme);
@@ -256,6 +262,11 @@ export class CreationMenu {
         });
 
         this.controls['promptPicker'].addOnValueChanged((value) => {
+            this.checkInputs();
+            app.log('', { 'enabled': false });
+        });
+
+        this.controls['imageReferencePicker'].addOnValueChanged((value) => {
             this.checkInputs();
             app.log('', { 'enabled': false });
         });

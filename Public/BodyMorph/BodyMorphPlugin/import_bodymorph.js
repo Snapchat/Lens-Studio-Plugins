@@ -33,11 +33,13 @@ export async function importBodymorph(filePath, tmp) {
 
     const rootObject = findOrCreateCameraObject(scene, null);
 
-    let packageRoot = await assetManager.importExternalFileAsync(filePath, new Editor.Path('/'), Editor.Model.ResultType.Unpacked);
+    let packageRoot = await assetManager.importExternalFileAsync(filePath, new Editor.Path('/'), Editor.Model.ResultType.Packed);
 
-    for (let i = 0; i < packageRoot.files.length; i++) {
-        if (packageRoot.files[i].primaryAsset.type === "ObjectPrefab" && packageRoot.files[i].primaryAsset.name === "Body Morph") {
-            scene.instantiatePrefab(packageRoot.files[i].primaryAsset, rootObject)
+    let nativePackageItems = packageRoot.files[0].getNativePackageItems(Editor.Model.AssetImportMetadata.PackageIterate.Shallow);
+
+    for (let i = 0; i < nativePackageItems.length; i++) {
+        if (nativePackageItems[i].primaryAsset.type === "ObjectPrefab" && nativePackageItems[i].primaryAsset.name === "Body Morph") {
+            scene.instantiatePrefab(nativePackageItems[i].primaryAsset, rootObject)
         }
     }
 

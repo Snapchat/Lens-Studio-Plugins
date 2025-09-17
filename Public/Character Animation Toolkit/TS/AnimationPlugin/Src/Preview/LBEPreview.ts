@@ -1,3 +1,4 @@
+// @ts-nocheck
 import {Widget} from "../components/common/widgets/widget.js";
 import * as LensBasedEditorView from 'LensStudio:LensBasedEditorView';
 import {State} from 'LensStudio:LensBasedEditorView';

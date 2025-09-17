@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as Ui from "LensStudio:Ui";
 import { ColorRole } from "LensStudio:Ui";
 import { Gallery } from "./Gallery.js";
@@ -75,9 +76,9 @@ export class EffectGallery {
         imageView.pixmap = new Ui.Pixmap(import.meta.resolve('./Resources/init.svg'));
         imageView.move(310, 104);
         const label = new Ui.Label(widget);
-        label.text = '<center>' + 'You don’t have any Pre-Generated Effect.' + '</center>';
-        label.setFixedWidth(280);
-        label.move(260, 274);
+        label.text = '<center>' + 'You don’t have any generated effects yet. Try creating a new one!' + '</center>';
+        label.setFixedWidth(360);
+        label.move(220, 274);
         const createNewButton = new Ui.PushButton(widget);
         createNewButton.text = 'Create New';
         createNewButton.primary = true;

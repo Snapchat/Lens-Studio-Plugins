@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Widget } from "../components/common/widgets/widget.js";
 import { VBoxLayout } from "../components/common/layouts/vBoxLayout.js";
 import * as Ui from "LensStudio:Ui";
@@ -6,12 +7,15 @@ import { AnimationLibrary } from "./AnimationLibrary.js";
 import { TextPromptMode } from "./TextPromptMode.js";
 import { CaptureFromVideoMode } from "./CaptureFromVideoMode.js";
 import { MenuTemplate } from "./MenuTemplate.js";
+import { UploadAnimationMode } from "./UploadAnimationMode.js";
+import { dependencyContainer, DependencyKeys } from "../DependencyContainer.js";
 export class Menu {
     constructor() {
         this.connections = [];
         this.animationLibrary = new AnimationLibrary();
         this.textPromptMode = new TextPromptMode(this.animationLibrary);
         this.captureFromVideoMode = new CaptureFromVideoMode(this.animationLibrary);
+        this.uploadAnimationMode = new UploadAnimationMode(this.animationLibrary);
         this.menuTemplate = new MenuTemplate();
     }
     create(parent) {
@@ -35,6 +39,9 @@ export class Menu {
             this.changeStackedWidgetIndex(this, 0);
         }, this.goToGalleryPage.bind(this)));
         this.menuStackedWidget.addWidget(this.captureFromVideoMode.create(menuWidget.toNativeWidget(), () => {
+            this.changeStackedWidgetIndex(this, 0);
+        }, this.goToGalleryPage.bind(this)));
+        this.menuStackedWidget.addWidget(this.uploadAnimationMode.create(menuWidget.toNativeWidget(), () => {
             this.changeStackedWidgetIndex(this, 0);
         }, this.goToGalleryPage.bind(this)));
         this.menuStackedWidget.currentIndex = 0;
@@ -69,6 +76,13 @@ export class Menu {
     }
     changeStackedWidgetIndex(_this, idx) {
         if (_this.menuStackedWidget) {
+            const preview = dependencyContainer.get(DependencyKeys.Preview);
+            if (idx === 1) {
+                preview.onLibraryShown();
+            }
+            else {
+                preview.onLibraryHidden();
+            }
             _this.menuStackedWidget.currentIndex = idx;
         }
     }
@@ -77,8 +91,11 @@ export class Menu {
         if (val === 1) {
             this.animationLibrary.setReturnFunction(this.goToTextPromptPage.bind(this));
         }
-        else {
+        else if (val === 2) {
             this.animationLibrary.setReturnFunction(this.goToCaptureFromVideoPage.bind(this));
+        }
+        else if (val === 3) {
+            this.animationLibrary.setReturnFunction(this.goToUploadFilePage.bind(this));
         }
         this.changeStackedWidgetIndex(this, 1);
     }
@@ -87,6 +104,9 @@ export class Menu {
     }
     goToCaptureFromVideoPage() {
         this.changeStackedWidgetIndex(this, 3);
+    }
+    goToUploadFilePage() {
+        this.changeStackedWidgetIndex(this, 4);
     }
     createButtons(parent) {
         const buttonsWidget = new Ui.Widget(parent);
@@ -104,13 +124,15 @@ export class Menu {
         buttonsLayout2.spacing = Ui.Sizes.Padding;
         const textPromptButton = this.createButton(buttonsWidget, "textPromptMenuButton.svg", "textPromptMenuButton_h.svg", 135, 2, this.changeStackedWidgetIndex);
         const captureFromVideoButton = this.createButton(buttonsWidget, "captureFromVideoMenuButton.svg", "captureFromVideoMenuButton_h.svg", 135, 3, this.changeStackedWidgetIndex);
-        const chooseFromLibraryButton = this.createButton(buttonsWidget, "animationLibraryMenuButton.svg", "animationLibraryMenuButton_h.svg", 278, 1, () => {
+        const uploadAnimationButton = this.createButton(buttonsWidget, "uploadAnimationMenuButton.svg", "uploadAnimationMenuButton_h.svg", 135, 4, this.changeStackedWidgetIndex);
+        const chooseFromLibraryButton = this.createButton(buttonsWidget, "animationLibraryMenuButton.svg", "animationLibraryMenuButton_h.svg", 135, 1, () => {
             this.animationLibrary.setReturnFunction(() => {
                 this.changeStackedWidgetIndex(this, 0);
             });
             this.changeStackedWidgetIndex(this, 1);
         });
         buttonsLayout1.addWidget(chooseFromLibraryButton);
+        buttonsLayout1.addWidget(uploadAnimationButton);
         buttonsLayout1.addStretch(0);
         buttonsLayout2.addWidget(textPromptButton);
         buttonsLayout2.addWidget(captureFromVideoButton);

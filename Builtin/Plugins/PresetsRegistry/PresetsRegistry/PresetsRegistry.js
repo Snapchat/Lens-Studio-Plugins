@@ -31,6 +31,7 @@ export { WorldMeshMaterialPreset } from '../Assets/WorldMeshMaterial/WorldMeshMa
 export { ImageMarkerAssetPreset } from '../Assets/MarkerAsset/MarkerAsset.js';
 export { EmptyJsonAssetPreset } from "../Assets/JsonAsset/EmptyJsonAsset.js";
 export { TsConfigPreset } from "../Assets/JsonAsset/TsConfig.js";
+export { MarkdownAssetPreset } from "../Assets/MarkdownAsset/MarkdownAssetPreset.js";
 // Post Effects
 export { SmoothingMaterialPreset } from '../Assets/SmoothingMaterial/SmoothingMaterial.js';
 export { AnalogTVMaterialPreset } from '../Assets/AnalogTVMaterial/AnalogTVMaterial.js';
@@ -49,6 +50,7 @@ export { VHSMaterialPreset } from '../Assets/VHSMaterial/VHSMaterial.js';
 
 export * from '../Assets/Meshes/Meshes.js';
 export * from '../Assets/Fonts/Fonts.js';
+export { DefaultCustomCodePreset } from '../Assets/CustomCodeNodeAssets/CustomCodeNodeAssets.js';
 export { JavaScriptPreset } from '../Assets/Script/JavaScriptPreset.js';
 export { ObjectPrefabPreset } from '../Assets/ObjectPrefab/ObjectPrefab.js';
 export { TypeScriptComponentPreset } from '../Assets/TypeScript/TypeScriptComponentPreset.js';

@@ -158,7 +158,7 @@ export class DraftMeshPreview {
     generateAsset(asset_id, driving_image_id) {
         this.ctaButton.enabled = false;
         app.log('Creating new asset...', { 'progressBar': true });
-        let inputFormat = "INPUT_PROMPT";
+        let inputFormat = "PROMPT_TEXT";
         let settings = this.parentScreen == "preview" ? "UPDATE_EXISTING" : "NEW";
 
         continueGeneration(asset_id, driving_image_id, (response) => {

@@ -87,7 +87,7 @@ export class IconGenerator {
     createWidget(parent) {
         this.widget = new Ui.Widget(parent);
 
-        this.widget.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
+        this.widget.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Expanding);
 
         const layout = new Ui.BoxLayout();
         layout.setDirection(Ui.Direction.TopToBottom);

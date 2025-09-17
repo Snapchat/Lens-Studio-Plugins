@@ -1,115 +1,58 @@
+// @ts-nocheck
 /**
  * @module Editor Scripting
- * @version 5.3.0
- * For Snapchat Version: 13.15
+ * @version 5.0.12
+ * For Snapchat Version: 12.86
  */
-/**
- * Remove the interval calls.
- */
-declare function clearInterval(timeout: Timeout): void
 
-/**
- * Cancels the timeout.
- */
-declare function clearTimeout(timeout: Timeout): void
-
-/**
- * Repeatedly call `callback` every `delayMs` milliseconds.
- */
 declare function setInterval(callback: () => void, delayMs: number): Timeout
 
-/**
- * Call `callback` after `delayMs` milliseconds.
- */
+declare function clearInterval(timeout: Timeout): void
+
 declare function setTimeout(callback: () => void, delayMs: number): Timeout
 
+declare function clearTimeout(timeout: Timeout): void
+
 declare namespace global {
-    /**
-     * Provides access to the plugin's {@link SecureLocalStorage}.
-     */
     let secureLocalStorage: SecureLocalStorage
 
 }
 
-declare abstract class Base64 {
-
-    protected constructor()
-
+interface Base64 {
 }
 declare namespace Base64 {
-    export function decode(value: string): Uint8Array
-
     export function encode(data: Uint8Array): string
 
-
-}
-
-declare abstract class console {
-
-    protected constructor()
-
-}
-declare namespace console {
-    export function debug(...data: any[]): void
-
-    export function error(...data: any[]): void
-
-    export function info(...data: any[]): void
-
-    export function log(...data: any[]): void
-
-    export function trace(...data: any[]): void
-
-    export function warn(...data: any[]): void
+    export function decode(value: string): Uint8Array
 
 
 }
 
-/**
- * Namespace that provides access to the components of Lens Studio.
-
- * @example
- * ```js
- * // Get the model component
- * const model = this.pluginSystem.findInterface(Editor.Model.IModel);
- * // Get the AssetManager in the current project (e.g. to import file).
- * const assetManager = model.project.assetManager;
- * ```
- */
-declare abstract class Editor {
-
-    protected constructor()
-
+interface Editor {
 }
 declare namespace Editor {
-    export function createAnimationClip(scene: Editor.Assets.Scene): Editor.AnimationClip
-
     /**
-     * @beta
+     * @unreleased
      */
-    export function isNull(object: any): boolean
-
-
+    export function isNull(object: unknown): boolean
 }
 
 declare namespace Editor {
     namespace Alignment {
         /**
-         * The options for horizontal alignment, for example when using {@link Editor.Components.BaseMeshVisual}
-
-         * @beta
+         * @unreleased
          */
         enum Horizontal {
             /**
-             * @beta
+             * @unreleased
              */
             Left,
             /**
-             * @beta
+             * @unreleased
              */
             Center,
             /**
-             * @beta
+             * @unreleased
              */
             Right
         }
@@ -121,21 +64,19 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Alignment {
         /**
-         * The options for vertical alignment, for example when using {@link Editor.Components.BaseMeshVisual}
-
-         * @beta
+         * @unreleased
          */
         enum Vertical {
             /**
-             * @beta
+             * @unreleased
              */
             Bottom,
             /**
-             * @beta
+             * @unreleased
              */
             Center,
             /**
-             * @beta
+             * @unreleased
              */
             Top
         }
@@ -145,166 +86,19 @@ declare namespace Editor {
 }
 
 declare namespace Editor {
-    /**
-     * @beta
-     */
-    abstract class AnimationClip extends Editor.Model.EntityStructure {
-
-        protected constructor()
-
-        /**
-         * @beta
-         */
-        animation: Editor.Assets.AnimationAsset
-
-        /**
-         * @beta
-         */
-        begin: number
-
-        /**
-         * @beta
-         */
-        blendMode: Editor.AnimationLayerBlendMode
-
-        /**
-         * @beta
-         */
-        disabled: boolean
-
-        /**
-         * @beta
-         */
-        end: number
-
-        /**
-         * @beta
-         */
-        name: string
-
-        /**
-         * @beta
-         */
-        playbackMode: Editor.PlaybackMode
-
-        /**
-         * @beta
-         */
-        playbackSpeed: number
-
-        /**
-         * @beta
-         */
-        reversed: boolean
-
-        /**
-         * @beta
-         */
-        scaleMode: Editor.AnimationLayerScaleMode
-
-        /**
-         * @beta
-         */
-        weight: number
-
-    }
-
-}
-
-declare namespace Editor {
-    /**
-     * @beta
-     */
-    enum AnimationLayerBlendMode {
-        /**
-         * @beta
-         */
-        Default,
-        /**
-         * @beta
-         */
-        Additive
-    }
-
-}
-
-declare namespace Editor {
-    /**
-     * @beta
-     */
-    enum AnimationLayerScaleMode {
-        /**
-         * @beta
-         */
-        Multiply,
-        /**
-         * @beta
-         */
-        Additive
-    }
-
-}
-
-declare namespace Editor {
     namespace Assets {
         /**
-         * @beta
-         */
-        abstract class AnimationAsset extends Editor.Assets.Asset {
-
-            protected constructor()
-
-            /**
-             * @readonly
-
-             * @beta
-             */
-            duration: number
-
-            /**
-             * @readonly
-
-             * @beta
-             */
-            fps: number
-
-            /**
-             * @readonly
-
-             * @beta
-             */
-            frames: number
-
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Assets {
-        /**
-         * The aliasing mode of {@link Editor.Assets.RenderTarget}.
-
-         * @beta
+         * @unreleased
          */
         enum AntialiasingMode {
             /**
-             * Whether no aliasing should happen.
-
-             * @beta
+             * @unreleased
              */
             Disabled,
             /**
-             * Whether MSAA should be used.
-
-             * @beta
+             * @unreleased
              */
-            MSAA,
-            /**
-             * @beta
-             */
-            TAA
+            MSAA
         }
 
     }
@@ -314,69 +108,23 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * @beta
+         * @unreleased
          */
-        enum AntialiasingQuality {
+        interface Asset extends Editor.Model.Entity {
             /**
-             * @beta
-             */
-            Low,
-            /**
-             * @beta
-             */
-            Medium,
-            /**
-             * @beta
-             */
-            High,
-            /**
-             * @beta
-             */
-            Ultra,
-            /**
-             * @beta
-             */
-            Default
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Assets {
-        /**
-         * An asset in Lens Studio.
-
-         * @beta
-         */
-        abstract class Asset extends Editor.Model.Entity {
-
-            protected constructor()
-
-            /**
-             * @readonly
-
-             * @beta
-             */
-            cacheFile: Editor.Path
-
-            /**
-             * @readonly
-
-             * @beta
-             */
-            fileMeta: Editor.Model.AssetImportMetadata
-
-            /**
-             * The name of the asset.
+             * @unreleased
 
              * @readonly
-
-             * @beta
              */
             name: string
 
+            /**
+             * @unreleased
+
+             * @readonly
+             */
+            fileMeta: Editor.Model.AssetImportMetadata
+
         }
 
     }
@@ -386,189 +134,187 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * The blendmode of a {@link Editor.Assets.PassInfo}.
-
-         * @beta
+         * @unreleased
          */
         enum BlendMode {
             /**
-             * @beta
+             * @unreleased
              */
             Disabled,
             /**
-             * @beta
+             * @unreleased
              */
             Normal,
             /**
-             * @beta
+             * @unreleased
              */
             Multiply,
             /**
-             * @beta
+             * @unreleased
              */
             MultiplyLegacy,
             /**
-             * @beta
+             * @unreleased
              */
             Add,
             /**
-             * @beta
+             * @unreleased
              */
             AddLegacy,
             /**
-             * @beta
+             * @unreleased
              */
             PremultipliedAlpha,
             /**
-             * @beta
+             * @unreleased
              */
             Glass,
             /**
-             * @beta
+             * @unreleased
              */
             ColoredGlass,
             /**
-             * @beta
+             * @unreleased
              */
             AlphaTest,
             /**
-             * @beta
+             * @unreleased
              */
             AlphaToCoverage,
             /**
-             * @beta
+             * @unreleased
              */
             Screen,
             /**
-             * @beta
+             * @unreleased
              */
             Min,
             /**
-             * @beta
+             * @unreleased
              */
             Max,
             /**
-             * @beta
+             * @unreleased
              */
             PremultipliedAlphaAuto,
             /**
-             * @beta
+             * @unreleased
              */
             Custom,
             /**
-             * @beta
+             * @unreleased
              */
             Darken,
             /**
-             * @beta
+             * @unreleased
              */
             ColorBurn,
             /**
-             * @beta
+             * @unreleased
              */
             Lighten,
             /**
-             * @beta
+             * @unreleased
              */
             ColorDodge,
             /**
-             * @beta
+             * @unreleased
              */
             Overlay,
             /**
-             * @beta
+             * @unreleased
              */
             SoftLight,
             /**
-             * @beta
+             * @unreleased
              */
             HardLight,
             /**
-             * @beta
+             * @unreleased
              */
             VividLight,
             /**
-             * @beta
+             * @unreleased
              */
             LinearLight,
             /**
-             * @beta
+             * @unreleased
              */
             PinLight,
             /**
-             * @beta
+             * @unreleased
              */
             HardMix,
             /**
-             * @beta
+             * @unreleased
              */
             Diff,
             /**
-             * @beta
+             * @unreleased
              */
             Exclusion,
             /**
-             * @beta
+             * @unreleased
              */
             Subtract,
             /**
-             * @beta
+             * @unreleased
              */
             Hue,
             /**
-             * @beta
+             * @unreleased
              */
             Saturation,
             /**
-             * @beta
+             * @unreleased
              */
             Color,
             /**
-             * @beta
+             * @unreleased
              */
             Luminosity,
             /**
-             * @beta
+             * @unreleased
              */
             Average,
             /**
-             * @beta
+             * @unreleased
              */
             Negation,
             /**
-             * @beta
+             * @unreleased
              */
             HardReflect,
             /**
-             * @beta
+             * @unreleased
              */
             HardGlow,
             /**
-             * @beta
+             * @unreleased
              */
             HardPhoenix,
             /**
-             * @beta
+             * @unreleased
              */
             Realistic,
             /**
-             * @beta
+             * @unreleased
              */
             Division,
             /**
-             * @beta
+             * @unreleased
              */
             Bright,
             /**
-             * @beta
+             * @unreleased
              */
             Forgray,
             /**
-             * @beta
+             * @unreleased
              */
             NotBright,
             /**
-             * @beta
+             * @unreleased
              */
             Intense
         }
@@ -580,57 +326,27 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * @beta
-         */
-        abstract class BodyTracking3DAsset extends Editor.Assets.Object3DAsset {
-
-            protected constructor()
-
-            /**
-             * @beta
-             */
-            trackHand: boolean
-
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Assets {
-        /**
-         * How a Render Target should be cleared every frame {@link Editor.Assets.RenderTarget}.
-
-         * @beta
+         * @unreleased
          */
         enum ClearColorOption {
             /**
-             * The Render Target is not cleared at all.
-
-             * @beta
+             * @unreleased
              */
             None,
             /**
-             * The last texture in the render pipeline will be used.
-
-             * @beta
+             * @unreleased
              */
             BackgroundTexture,
             /**
-             * The specified color will be used for every pixel at the beginning of the frame.
-
-             * @beta
+             * @unreleased
              */
             CustomColor,
             /**
-             * The specified texture will replace the Render Target at the beginning of the frame. For example, the texture might be the {@link Editor.Assets.DeviceCameraTexture}.
-
-             * @beta
+             * @unreleased
              */
             CustomTexture,
             /**
-             * @beta
+             * @unreleased
              */
             LegacyClearColorEnable
         }
@@ -642,25 +358,19 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * @beta
+         * @unreleased
          */
         enum CullMode {
             /**
-             * Cull the front face of a mesh.
-
-             * @beta
+             * @unreleased
              */
             Front,
             /**
-             * Cull the back face of a mesh.
-
-             * @beta
+             * @unreleased
              */
             Back,
             /**
-             * Cull both the fron and back face of a mesh.
-
-             * @beta
+             * @unreleased
              */
             FrontAndBack
         }
@@ -672,21 +382,19 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * The depth buffer strategy of a {@link Editor.Assets.RenderTarget}.
-
-         * @beta
+         * @unreleased
          */
         enum DepthBufferStrategy {
             /**
-             * @beta
+             * @unreleased
              */
             Auto,
             /**
-             * @beta
+             * @unreleased
              */
             ForceOff,
             /**
-             * @beta
+             * @unreleased
              */
             ForceOn
         }
@@ -698,41 +406,39 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * How a {@link Editor.Assets.PassInfo} should determine its depth compared to others.
-
-         * @beta
+         * @unreleased
          */
         enum DepthFunction {
             /**
-             * @beta
+             * @unreleased
              */
             Never,
             /**
-             * @beta
+             * @unreleased
              */
             Less,
             /**
-             * @beta
+             * @unreleased
              */
             Equal,
             /**
-             * @beta
+             * @unreleased
              */
             LessEqual,
             /**
-             * @beta
+             * @unreleased
              */
             Greater,
             /**
-             * @beta
+             * @unreleased
              */
             NotEqual,
             /**
-             * @beta
+             * @unreleased
              */
             GreaterEqual,
             /**
-             * @beta
+             * @unreleased
              */
             Always
         }
@@ -744,14 +450,9 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * A native asset that provides the texture from the camera feed. Import with {@link Editor.Model.AssetManager.createNativeAsset}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class DeviceCameraTexture extends Editor.Assets.Texture {
-
-            protected constructor()
-
+        interface DeviceCameraTexture extends Editor.Assets.Texture {
         }
 
     }
@@ -761,33 +462,28 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * A native asset that provides a cropped region of the input texture, calculated based on face position. Import with {@link Editor.Model.AssetManager.createNativeAsset}.   Learn more in {@link "Lens Scripting".Built-In.FaceCropTextureProvider}
-
-         * @beta
+         * @unreleased
          */
-        abstract class FaceCropTexture extends Editor.Assets.Texture {
-
-            protected constructor()
-
+        interface FaceCropTexture extends Editor.Assets.Texture {
             /**
-             * @beta
+             * @unreleased
              */
             faceCenterMouthWeight: number
 
             /**
-             * @beta
+             * @unreleased
              */
             faceIndex: number
 
             /**
-             * @beta
-             */
-            inputTexture: Editor.Assets.Texture
-
-            /**
-             * @beta
+             * @unreleased
              */
             scale: vec2
+
+            /**
+             * @unreleased
+             */
+            inputTexture: Editor.Assets.Texture
 
         }
 
@@ -798,109 +494,63 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * A native asset that provides a 3D mesh of the user's face. Import with {@link Editor.Model.AssetManager.createNativeAsset}.   Learn more in the Face Mesh guide.
-
-         * @beta
+         * @unreleased
          */
-        abstract class FaceMesh extends Editor.Assets.RenderMesh {
-
-            protected constructor()
-
+        interface FaceMesh extends Editor.Assets.RenderMesh {
             /**
-             * @beta
+             * @unreleased
              */
-            earGeometryEnabled: boolean
+            faceIndex: number
 
             /**
-             * @beta
-             */
-            expressionMultiplier: number
-
-            /**
-             * @beta
-             */
-            externalMesh: Editor.Assets.FileMesh
-
-            /**
-             * @beta
-             */
-            externalMeshMapUV: Editor.Assets.VertexAttribute
-
-            /**
-             * @beta
-             */
-            externalScale: number
-
-            /**
-             * @beta
-             */
-            eyeCornerGeometryEnabled: boolean
-
-            /**
-             * @beta
-             */
-            eyeGeometryEnabled: boolean
-
-            /**
-             * @beta
+             * @unreleased
              */
             faceGeometryEnabled: boolean
 
             /**
-             * @beta
+             * @unreleased
              */
-            faceIndex: number
+            eyeGeometryEnabled: boolean
 
             /**
-             * @beta
+             * @unreleased
+             */
+            eyeCornerGeometryEnabled: boolean
+
+            /**
+             * @unreleased
              */
             mouthGeometryEnabled: boolean
 
             /**
-             * @beta
+             * @unreleased
              */
             skullGeometryEnabled: boolean
 
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Assets {
-        /**
-         * An asset for 3D meshes.
-
-         * @beta
-         */
-        abstract class FileMesh extends Editor.Assets.RenderMesh {
-
-            protected constructor()
-
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Assets {
-        /**
-         * An asset for textures.
-
-         * @beta
-         */
-        abstract class FileTexture extends Editor.Assets.Texture {
-
-            protected constructor()
-
             /**
-             * @readonly
-
-             * @beta
+             * @unreleased
              */
-            fileInfo: Editor.Assets.FileTextureInfo
+            earGeometryEnabled: boolean
+
+            /**
+             * @unreleased
+             */
+            externalMesh: Editor.Assets.FileMesh
+
+            /**
+             * @unreleased
+             */
+            externalScale: number
+
+            /**
+             * @unreleased
+             */
+            expressionMultiplier: number
+
+            /**
+             * @unreleased
+             */
+            externalMeshMapUV: Editor.Assets.VertexAttribute
 
         }
 
@@ -911,19 +561,9 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * @beta
+         * @unreleased
          */
-        abstract class FileTexture2DArray extends Editor.Assets.Asset {
-
-            protected constructor()
-
-            /**
-             * @readonly
-
-             * @beta
-             */
-            fileInfo: Editor.Assets.FileTextureInfo3D
-
+        interface FileMesh extends Editor.Assets.RenderMesh {
         }
 
     }
@@ -933,91 +573,22 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * @beta
+         * @unreleased
          */
-        abstract class FileTexture3D extends Editor.Assets.Asset {
-
-            protected constructor()
-
+        interface FileTexture extends Editor.Assets.Texture {
             /**
+             * @unreleased
+
              * @readonly
-
-             * @beta
-             */
-            fileInfo: Editor.Assets.FileTextureInfo3D
-
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Assets {
-        /**
-         * @beta
-         */
-        abstract class FileTextureCubemap extends Editor.Assets.Asset {
-
-            protected constructor()
-
-            /**
-             * @readonly
-
-             * @beta
-             */
-            fileInfo: Editor.Assets.FileTextureInfo3D
-
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Assets {
-        /**
-         * @beta
-         */
-        abstract class FileTextureInfo extends Editor.Model.EntityStructure {
-
-            protected constructor()
-
-            /**
-             * @readonly
-
-             * @beta
-             */
-            height: number
-
-            /**
-             * @readonly
-
-             * @beta
              */
             width: number
 
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Assets {
-        /**
-         * @beta
-         */
-        abstract class FileTextureInfo3D extends Editor.Assets.FileTextureInfo {
-
-            protected constructor()
-
             /**
-             * @readonly
+             * @unreleased
 
-             * @beta
+             * @readonly
              */
-            depth: number
+            height: number
 
         }
 
@@ -1028,21 +599,19 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * How a texture should be sampled.
-
-         * @beta
+         * @unreleased
          */
         enum FilteringMode {
             /**
-             * @beta
+             * @unreleased
              */
             Nearest,
             /**
-             * @beta
+             * @unreleased
              */
             Bilinear,
             /**
-             * @beta
+             * @unreleased
              */
             Trilinear
         }
@@ -1054,14 +623,9 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * Settings used with {@link Editor.Components.Text} and {@link Editor.Components.Text3D}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class Font extends Editor.Assets.Asset {
-
-            protected constructor()
-
+        interface Font extends Editor.Assets.Asset {
         }
 
     }
@@ -1071,17 +635,15 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * The same entity as in Lens Scripting.  @see {link Editor.Assets.PassInfo}.
-
-         * @beta
+         * @unreleased
          */
         enum FrustumCullMode {
             /**
-             * @beta
+             * @unreleased
              */
             Auto,
             /**
-             * @beta
+             * @unreleased
              */
             Extend
         }
@@ -1093,27 +655,9 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * An asset that contains Gaussian Splats and is used in conjunction with the GaussianSplattingVisual component. It is part of a system that renders Gaussian Splats.
+         * @unreleased
          */
-        abstract class GaussianSplattingAsset extends Editor.Assets.Asset {
-
-            protected constructor()
-
-            /**
-             * Flips X and Y axis of the asset.
-             */
-            flipXY: boolean
-
-            /**
-             * Places pivot of the asset to the center of its bounding box.
-             */
-            recenter: boolean
-
-            /**
-             * Applies a scale multiplier to the asset's transform.
-             */
-            scale: number
-
+        interface HairDataAsset extends Editor.Assets.Asset {
         }
 
     }
@@ -1123,33 +667,11 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * A native asset that provides data for {@link "Lens Scripting".Built-In.HairVisual}. Import with {@link Editor.Model.AssetManager.createNativeAsset}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class HairDataAsset extends Editor.Assets.Asset {
-
-            protected constructor()
-
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Assets {
-        /**
-         * A native asset that provides data for {@link "Lens Scripting".Built-In.HandTracking3DAsset}. Import with {@link Editor.Model.AssetManager.createNativeAsset}.
-
-         * @beta
-         */
-        abstract class HandTracking3DAsset extends Editor.Assets.Object3DAsset {
-
-            protected constructor()
-
+        interface HandTracking3DAsset extends Editor.Assets.Object3DAsset {
             /**
-             * @beta
+             * @unreleased
              */
             handType: Editor.Assets.HandTracking3DHandType
 
@@ -1162,17 +684,15 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * Used with {Editor.Assets.HandTracking3DAsset}.
-
-         * @beta
+         * @unreleased
          */
         enum HandTracking3DHandType {
             /**
-             * @beta
+             * @unreleased
              */
             Right,
             /**
-             * @beta
+             * @unreleased
              */
             Left
         }
@@ -1184,31 +704,11 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * A {@link "Lens Scripting".Built-In.MarkerAsset} for use with {@link Editor.Components.MarkerTrackingComponent}
-
-         * @beta
-
-         * @example
-         * ```js
-         * // Create the asset
-         * const imageMarker = assetManager.createNativeAsset('ImageMarker', 'Image Marker [EDIT_ME]', destination);
-
-         * // Ask user for the file they want to use as image marker
-         * import * as Ui from 'LensStudio:Ui';
-         * const gui = pluginSystem.findInterface(Ui.IGui);
-         * const filename = gui.dialogs.selectFileToOpen({ 'caption': 'Select image for the marker', 'filter': '*.png *.jpeg *.jpg' }, '')
-
-         * // Import the image, and use it as the marker's texture
-         * const importedTextureMeta = await assetManager.importExternalFileAsync(filename, destination, Editor.Model.ResultType.Auto);
-         * imageMarker.texture = importedTextureMeta.primary;
-         * ```
+         * @unreleased
          */
-        abstract class ImageMarker extends Editor.Assets.MarkerAsset {
-
-            protected constructor()
-
+        interface ImageMarker extends Editor.Assets.MarkerAsset {
             /**
-             * @beta
+             * @unreleased
              */
             texture: Editor.Assets.FileTexture
 
@@ -1221,17 +721,9 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * A script asset that is written in JavaScript.
-
-         * @beta
-
-         * @example
-         * #script-assetshttps://docs.snap.com/lens-studio/5.0.0/essential-skills/scripting/scripting-introduction
+         * @unreleased
          */
-        abstract class JavaScriptAsset extends Editor.Assets.ScriptAsset {
-
-            protected constructor()
-
+        interface JavaScriptAsset extends Editor.Assets.ScriptAsset {
         }
 
     }
@@ -1240,27 +732,21 @@ declare namespace Editor {
 
 declare namespace Editor {
     namespace Assets {
-        /**
-         * A native asset that provides data for {@link "Lens Scripting".Built-In.LocationAsset}. Import with {@link Editor.Model.AssetManager.createNativeAsset}.
-         */
-        abstract class Location extends Editor.Assets.Asset {
-
-            protected constructor()
-
+        interface Location extends Editor.Assets.Asset {
             /**
-             * @beta
+             * @unreleased
              */
             displayName: string
 
             /**
-             * @beta
-             */
-            locationId: string
-
-            /**
-             * @beta
+             * @unreleased
              */
             locationType: Editor.Assets.LocationType
+
+            /**
+             * @unreleased
+             */
+            locationId: string
 
         }
 
@@ -1271,16 +757,11 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * A native asset that provides data for {@link "Lens Scripting".Built-In.LocationAsset}. Import with {@link Editor.Model.AssetManager.createNativeAsset}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class LocationMesh extends Editor.Assets.RenderMesh {
-
-            protected constructor()
-
+        interface LocationMesh extends Editor.Assets.RenderMesh {
             /**
-             * @beta
+             * @unreleased
              */
             location: Editor.Assets.Location
 
@@ -1293,37 +774,35 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * Used with {Editor.Assets.Location}.
-
-         * @beta
+         * @unreleased
          */
         enum LocationType {
             /**
-             * @beta
+             * @unreleased
              */
             Snap,
             /**
-             * @beta
+             * @unreleased
              */
             Custom,
             /**
-             * @beta
+             * @unreleased
              */
             World,
             /**
-             * @beta
+             * @unreleased
              */
             Tile,
             /**
-             * @beta
+             * @unreleased
              */
             RelativeTile,
             /**
-             * @beta
+             * @unreleased
              */
             Proxy,
             /**
-             * @beta
+             * @unreleased
              */
             NativeAR
         }
@@ -1335,16 +814,11 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * A native asset that provides information for Marker tracking. Learn more at {@link "Lens Scripting".Built-In.MarkerAsset}. Import with {@link Editor.Model.AssetManager.createNativeAsset}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class MarkerAsset extends Editor.Assets.Asset {
-
-            protected constructor()
-
+        interface MarkerAsset extends Editor.Assets.Asset {
             /**
-             * @beta
+             * @unreleased
              */
             height: number
 
@@ -1357,21 +831,16 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * A native asset that provides information for visual objects rendering. Learn more at {@link "Lens Scripting".Built-In.Material}. Import with {@link Editor.Model.AssetManager.createNativeAsset}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class Material extends Editor.Assets.Asset {
-
-            protected constructor()
-
+        interface Material extends Editor.Assets.Asset {
             /**
-             * @beta
+             * @unreleased
              */
             addPass(pass: Editor.Assets.Pass): Editor.Assets.PassInfo
 
             /**
-             * @beta
+             * @unreleased
              */
             passInfos: Editor.Assets.PassInfo[]
 
@@ -1384,14 +853,9 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * A native asset that provides information for visual objects rendering. Learn more at {@link "Lens Scripting".Built-In.MLAsset}. Import with {@link Editor.Model.AssetManager.createNativeAsset}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class MLAsset extends Editor.Assets.Asset {
-
-            protected constructor()
-
+        interface MLAsset extends Editor.Assets.Asset {
         }
 
     }
@@ -1401,15 +865,15 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * @beta
+         * @unreleased
          */
         enum MSAAStrategy {
             /**
-             * @beta
+             * @unreleased
              */
             Default,
             /**
-             * @beta
+             * @unreleased
              */
             OnlyWhenRequired
         }
@@ -1421,48 +885,9 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * @beta
+         * @unreleased
          */
-        abstract class NativePackageDescriptor extends Editor.Assets.Asset {
-
-            protected constructor()
-
-            /**
-             * @readonly
-
-             * @beta
-             */
-            componentId: Editor.Uuid
-
-            /**
-             * @beta
-             */
-            description: string
-
-            /**
-             * @readonly
-
-             * @beta
-             */
-            exportId: Editor.Uuid
-
-            /**
-             * @beta
-             */
-            icon: Editor.Icon
-
-            /**
-             * @readonly
-
-             * @beta
-             */
-            packageName: string
-
-            /**
-             * @beta
-             */
-            version: Editor.Assets.Version
-
+        interface Object3DAsset extends Editor.Assets.Asset {
         }
 
     }
@@ -1472,84 +897,48 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * A native asset that provides information for visual objects rendering. Learn more at {@link "Lens Scripting".Built-In.Object3DAsset}. Import with {@link Editor.Model.AssetManager.createNativeAsset}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class Object3DAsset extends Editor.Assets.Asset {
-
-            protected constructor()
-
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Assets {
-        /**
-         * Base class for entities which has object and component relationship such as {@link Editor.Assets.Scene} and {@link Editor.Assets.ObjectPrefab}.
-
-         * @beta
-         */
-        abstract class ObjectOwner extends Editor.Assets.Asset {
-
-            protected constructor()
-
+        interface ObjectOwner extends Editor.Assets.Asset {
             /**
-             * Adds a scene object to the entity.
-
-             * @beta
+             * @unreleased
              */
-            addSceneObject(parent: Editor.Model.SceneObject): Editor.Model.SceneObject
+            addSceneObject(parent: Editor.Model.SceneObject | null): Editor.Model.SceneObject
 
             /**
-             * Creates a scene object to the entity.
-
-             * @beta
+             * @unreleased
              */
             createSceneObject(name: string): Editor.Model.SceneObject
 
             /**
-             * Find components on the entity.
-
-             * @beta
+             * @unreleased
              */
-            findComponents(entityType: string): Editor.Components.Component[]
+            reparentSceneObject(object: Editor.Model.SceneObject, newParent: Editor.Model.SceneObject, position: number): void
 
             /**
-             * Get the index of `object` within the list of all the root objects.
-
-             * @beta
+             * @unreleased
              */
             getRootObjectIndex(object: Editor.Model.SceneObject): number
 
             /**
-             * Reparent the scene object to another scene object. You can use this to reparent objects to the root (i.e. pass in `null`).
-
-             * @beta
+             * @unreleased
              */
-            reparentSceneObject(object: Editor.Model.SceneObject, newParent: Editor.Model.SceneObject, position?: number): void
+            findComponents(entityType: string): Editor.Components.Component[]
 
             /**
-             * A list of scene objects which is a direct child of this entity.
+             * @unreleased
 
              * @readonly
-
-             * @beta
-             */
-            rootSceneObjects: Editor.Model.SceneObject[]
-
-            /**
-             * A list of scene objects which is a child of this entity.
-
-             * @readonly
-
-             * @beta
              */
             sceneObjects: Editor.Model.SceneObject[]
 
+            /**
+             * @unreleased
+
+             * @readonly
+             */
+            rootSceneObjects: Editor.Model.SceneObject[]
+
         }
 
     }
@@ -1559,31 +948,16 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * A native asset that provides information for visual objects rendering. Learn more at {@link "Lens Scripting".Built-In.ObjectPrefab}. Import with {@link Editor.Model.AssetManager.createNativeAsset}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class ObjectPrefab extends Editor.Assets.ObjectOwner {
-
-            protected constructor()
-
+        interface ObjectPrefab extends Editor.Assets.ObjectOwner {
             /**
-             * @beta
-             */
-            lazyLoading: boolean
+             * @unreleased
 
-            /**
              * @readonly
-
-             * @beta
              */
             prefabInstances: Editor.Model.SceneObject[]
 
-            /**
-             * @beta
-             */
-            retainAssets: boolean
-
         }
 
     }
@@ -1593,29 +967,11 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * A native asset that provides information for object tracking texture. Learn more at {@link "Lens Scripting".Built-In.ObjectTrackingTextureProvider}. Import with {@link Editor.Model.AssetManager.createNativeAsset}.
-
-         * @beta
-
-         * @example
-         * ```js
-         * const model = pluginSystem.findInterface(Editor.Model.IModel);
-         * const assetManager = model.project.assetManager;
-
-         * const destination new Editor.Path('');
-         * const trackingType = Editor.Assets.ObjectTrackingTextureType.Nails;
-
-         * const result = assetManager.createNativeAsset('ObjectTrackingTexture', 'Object Tracking Texture', destination);
-         * result.trackingType = trackingType;
-         * const objectTrackingTexParam = new Editor.Assets.TextureParameter(objectTrackingTexImage.id);
-         * ```
+         * @unreleased
          */
-        abstract class ObjectTrackingTexture extends Editor.Assets.Texture {
-
-            protected constructor()
-
+        interface ObjectTrackingTexture extends Editor.Assets.Texture {
             /**
-             * @beta
+             * @unreleased
              */
             trackingType: Editor.Assets.ObjectTrackingTextureType
 
@@ -1628,17 +984,15 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * Used with {@link Editor.Assets.ObjectTrackingTexture}.
-
-         * @beta
+         * @unreleased
          */
         enum ObjectTrackingTextureType {
             /**
-             * @beta
+             * @unreleased
              */
             Hand,
             /**
-             * @beta
+             * @unreleased
              */
             Nails
         }
@@ -1650,29 +1004,9 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * A native asset that provides information for visual objects rendering. Learn more at {@link "Lens Scripting".Built-In.Pass}.
-
-         * @beta
-
-         * @example
-         * ```js
-         * // Get access to the project's assetManager
-         * const model = pluginSystem.findInterface(Editor.Model.IModel);
-         * const assetManager = model.project.assetManager;
-
-         * // Locate the shader pass we want to import
-         * const resourceLoc = import.meta.resolve('Resources/myMesh.ss_graph');
-         * const absGraphPath = new Editor.Path(resourceLoc);
-
-         * // Import the shader pass
-         * const meta = await assetManager.importExternalFileAsync(absolutePath, new Editor.Path(''), Editor.Model.ResultType.Packed);
-         * // You can set meta.primary on a Material asset to use it.
-         * ```
+         * @unreleased
          */
-        abstract class Pass extends Editor.Assets.Asset {
-
-            protected constructor()
-
+        interface Pass extends Editor.Assets.Asset {
         }
 
     }
@@ -1682,188 +1016,68 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * The {@link Editor.Assets.Pass} on a {@link Editor.Assets.Material}.
-
-         * @beta
-
-         * @example
-         * ```js
-         * // Import built in helpers
-         * import * as Utils from 'LensStudio:Utils@1.0.js';
-
-         * // In the plugin create function
-         * const model = pluginSystem.findInterface(Editor.Model.IModel);
-         * const assetManager = model.project.assetManager;
-         * const destination = destination;
-
-         * const material = const assetManager.createNativeAsset('Material', 'Material Name', destination);
-
-         * const absGraphPath = new Editor.Path(params.graph_path);
-         * const pass = await Utils.findOrCreateAsync(assetManager, absGraphPath, destination);
-         * const passInfo = material.addPass(pass);
-         * ```
+         * @unreleased
          */
-        abstract class PassInfo extends Editor.Model.Entity {
-
-            protected constructor()
-
+        interface PassInfo extends Editor.Model.Entity {
             /**
-             * @beta
+             * @unreleased
              */
             getPropertyNames(): string[]
 
             /**
-             * @beta
-             */
-            blendMode: Editor.Assets.BlendMode
-
-            /**
-             * @beta
-             */
-            colorMask: any
-
-            /**
-             * @beta
-             */
-            cullMode: Editor.Assets.CullMode
-
-            /**
-             * @beta
+             * @unreleased
              */
             defines: string[]
 
             /**
-             * @beta
-             */
-            depthFunction: Editor.Assets.DepthFunction
-
-            /**
-             * @beta
-             */
-            depthTest: boolean
-
-            /**
-             * @beta
+             * @unreleased
              */
             depthWrite: boolean
 
             /**
-             * @beta
+             * @unreleased
              */
-            frustumCulling: Editor.Assets.FrustumCullMode
+            depthTest: boolean
 
             /**
-             * @beta
+             * @unreleased
              */
-            instanceCount: number
+            depthFunction: Editor.Assets.DepthFunction
 
             /**
-             * @beta
+             * @unreleased
+             */
+            twoSided: boolean
+
+            /**
+             * @unreleased
+             */
+            cullMode: Editor.Assets.CullMode
+
+            /**
+             * @unreleased
+             */
+            blendMode: Editor.Assets.BlendMode
+
+            /**
+             * @unreleased
              */
             polygonOffset: vec2
 
             /**
-             * @beta
+             * @unreleased
              */
-            twoSided: boolean
+            frustumCulling: Editor.Assets.FrustumCullMode
 
-        }
+            /**
+             * @unreleased
+             */
+            instanceCount: number
 
-    }
-
-}
-
-declare namespace Editor {
-    namespace Assets {
-        namespace Physics {
-            abstract class Filter extends Editor.Assets.Asset {
-
-                protected constructor()
-
-                includeDynamic: boolean
-
-                includeIntangible: boolean
-
-                includeStatic: boolean
-
-                onlyLayers: Editor.Model.LayerSet
-
-                skipLayers: Editor.Model.LayerSet
-
-            }
-
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Assets {
-        namespace Physics {
-            abstract class LevelsetColliderAsset extends Editor.Assets.Asset {
-
-                protected constructor()
-
-            }
-
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Assets {
-        namespace Physics {
-            abstract class Matter extends Editor.Assets.Asset {
-
-                protected constructor()
-
-                dynamicBounciness: number
-
-                friction: number
-
-                rollingFriction: number
-
-                spinningFriction: number
-
-                staticBounciness: number
-
-            }
-
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Assets {
-        namespace Physics {
-            abstract class WorldSettingsAsset extends Editor.Assets.Asset {
-
-                protected constructor()
-
-                getLayersCollidable(layerNumberA: number, layerNumberB: number): boolean
-
-                absoluteSpeedLimit: number
-
-                defaultFilter: Editor.Assets.Physics.Filter
-
-                defaultMatter: Editor.Assets.Physics.Matter
-
-                gravity: vec3
-
-                relativeSpeedLimit: number
-
-                simulationRate: number
-
-                slowDownStep: number
-
-                slowDownTime: number
-
-            }
+            /**
+             * @unreleased
+             */
+            colorMask: vec4
 
         }
 
@@ -1874,14 +1088,11 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * @beta
+         * @unreleased
          */
-        abstract class RemoteMLAsset extends Editor.Assets.MLAsset {
-
-            protected constructor()
-
+        interface RemoteMLAsset extends Editor.Assets.MLAsset {
             /**
-             * @beta
+             * @unreleased
              */
             deviceDependentAssetId: string
 
@@ -1894,29 +1105,9 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * A mesh asset to be used with a {@link "Lens Scripting".Built-In.RenderMeshVisual}
-
-         * @beta
-
-         * @example
-         * ```js
-         * // Get access to the project's assetManager
-         * const model = pluginSystem.findInterface(Editor.Model.IModel);
-         * const assetManager = model.project.assetManager;
-
-         * // Locate the mesh we want to import
-         * const resourceLoc = import.meta.resolve('Resources/myMesh.mesh');
-         * const absGraphPath = new Editor.Path(resourceLoc);
-
-         * // Import the mesh
-         * const meta = await assetManager.importExternalFileAsync(absolutePath, new Editor.Path(''), Editor.Model.ResultType.Packed);
-         * // You can set meta.primary on a Mesh Component to use it.
-         * ```
+         * @unreleased
          */
-        abstract class RenderMesh extends Editor.Assets.Asset {
-
-            protected constructor()
-
+        interface RenderMesh extends Editor.Assets.Asset {
         }
 
     }
@@ -1926,53 +1117,48 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * A native asset that provides the target for a camera to provide its output to. Import with {@link Editor.Model.AssetManager.createNativeAsset}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class RenderTarget extends Editor.Assets.Texture {
-
-            protected constructor()
-
+        interface RenderTarget extends Editor.Assets.Texture {
             /**
-             * @beta
+             * @unreleased
              */
-            antialiasingMode: Editor.Assets.AntialiasingMode
+            useScreenResolution: boolean
 
             /**
-             * @beta
-             */
-            clearColor: vec4
-
-            /**
-             * @beta
-             */
-            clearColorOption: Editor.Assets.ClearColorOption
-
-            /**
-             * @beta
-             */
-            depthBuffer: Editor.Assets.DepthBufferStrategy
-
-            /**
-             * @beta
-             */
-            inputTexture: Editor.Assets.Texture
-
-            /**
-             * @beta
-             */
-            msaaStrategy: Editor.Assets.MSAAStrategy
-
-            /**
-             * @beta
+             * @unreleased
              */
             resolution: Editor.Size
 
             /**
-             * @beta
+             * @unreleased
              */
-            useScreenResolution: boolean
+            antialiasingMode: Editor.Assets.AntialiasingMode
+
+            /**
+             * @unreleased
+             */
+            msaaStrategy: Editor.Assets.MSAAStrategy
+
+            /**
+             * @unreleased
+             */
+            depthBuffer: Editor.Assets.DepthBufferStrategy
+
+            /**
+             * @unreleased
+             */
+            clearColorOption: Editor.Assets.ClearColorOption
+
+            /**
+             * @unreleased
+             */
+            inputTexture: Editor.Assets.Texture
+
+            /**
+             * @unreleased
+             */
+            clearColor: vec4
 
         }
 
@@ -1983,36 +1169,33 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * @beta
+         * @unreleased
          */
-        abstract class Sampler {
-
-            protected constructor()
-
+        interface Sampler {
             /**
-             * @beta
+             * @unreleased
              */
             filteringMode: Editor.Assets.FilteringMode
 
             /**
-             * @beta
-             */
-            mipmapsEnabled: boolean
-
-            /**
-             * @beta
+             * @unreleased
              */
             wrapModeU: Editor.Assets.WrapMode
 
             /**
-             * @beta
+             * @unreleased
              */
             wrapModeV: Editor.Assets.WrapMode
 
             /**
-             * @beta
+             * @unreleased
              */
             wrapModeW: Editor.Assets.WrapMode
+
+            /**
+             * @unreleased
+             */
+            mipmapsEnabled: boolean
 
         }
 
@@ -2023,59 +1206,42 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * The entity which will be coverted into the Lens scene during project export. This scene will contan and own all objects and components in the Lens. This entity can be accessed via the current project’s `model.project.scene`.
-
-         * @beta
+         * @unreleased
          */
-        abstract class Scene extends Editor.Assets.ObjectOwner {
-
-            protected constructor()
-
+        interface Scene extends Editor.Assets.ObjectOwner {
             /**
-             * Instantiate a prefab as a child of `parent` under this entity.
-
-             * @beta
+             * @unreleased
              */
-            instantiatePrefab(prefab: Editor.Assets.ObjectPrefab, parent: Editor.Model.SceneObject | null): Editor.Model.SceneObject
+            instantiatePrefab(prefab: Editor.Assets.ObjectPrefab, parent: Editor.Model.SceneObject): Editor.Model.SceneObject
 
             /**
-             * This list of layers that exists within this scene.
-
-             * @readonly
-
-             * @beta
-             */
-            layers: Editor.Model.Layers
-
-            /**
-             * The camera that renders `renderOutput`.
-
-             * @readonly
-
-             * @beta
-             */
-            mainCamera: Editor.Components.Camera
-
-            /**
-             * The {@link Editor.Assets.RenderTarget} which this scene will be rendered to.  See {@link "Lens Scripting".Built-In.ScriptScene}.
-
-             * @beta
+             * @unreleased
              */
             renderOutput: Editor.Assets.RenderTarget
 
             /**
-             * The overlay {@link Editor.Assets.RenderTarget} which this scene will be rendered to. This will shown at full resolution to the device which opens the Lens.
+             * @unreleased
+             */
+            renderPreviewOutput: Editor.Assets.RenderTarget
 
-             * @beta
+            /**
+             * @unreleased
              */
             renderOverlayOutput: Editor.Assets.RenderTarget
 
             /**
-             * The preview {@link Editor.Assets.RenderTarget} which this scene will be rendered to.  See {@link "Lens Scripting".Built-In.ScriptScene}.
+             * @unreleased
 
-             * @beta
+             * @readonly
              */
-            renderPreviewOutput: Editor.Assets.RenderTarget
+            mainCamera: Editor.Components.Camera
+
+            /**
+             * @unreleased
+
+             * @readonly
+             */
+            layers: Editor.Model.Layers
 
         }
 
@@ -2086,98 +1252,47 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * Script Assets are text files that contain the code you write for your Lens. Scripts are written in Javascript or TypeScript.
-
-         * @beta
-
-         * @example
-         * ```js
-         * ///@input string stringToPrint = "Print this on Tap"
-         * //@input int testIntProperty = 7
-         * //@input int[] testIntArray = {1, 2, 3}
-
-         * scriptAsset.stringToPrint = "New String";
-         * scriptAsset.testIntProperty = 9;
-         * scriptAsset.testIntArray = [4,5,6];
-
-         * // set icon
-         * const buffer = Editor.FileSystem.readTextAll(path to svg file)
-         * const newIcon = Editor.Icon.setIconFromSVGData(buffer)
-         * scriptAsset.icon = newIcon;
-         * // getIcon
-         * const icon = scriptAsset.icon
-
-         * // set description
-         * scriptAsset.description = "helloWorld"
-         * // get description
-         * const desc = scriptAsset.description
-
-         * // hide input
-         * scriptAsset.setScriptInputHidden("myInputName", true);
-
-         * // unhide input
-         * scriptAsset.setScriptInputHidden("myInputName", true);
-
-         * // check visibility of input
-         * scriptAsset.isScriptInputHidden("myInputName");
-         * ```
+         * @unreleased
          */
-        abstract class ScriptAsset extends Editor.Assets.Asset {
-
-            protected constructor()
-
+        interface ScriptAsset extends Editor.Assets.Asset {
             /**
-             * Returns true if the script inpput is hidden from the scene.
-
-             * @beta
+             * @unreleased
              */
             isScriptInputHidden(inputName: string): boolean
 
             /**
-             * Used when you'd like to hide inputs from users in the scene.
-
-             * @beta
+             * @unreleased
              */
             setScriptInputHidden(inputName: string, hidden: boolean): void
 
             /**
-             * Id associated with the script asset.
+             * @unreleased
 
              * @readonly
-
-             * @beta
-             */
-            componentId: Editor.Uuid
-
-            /**
-             * Description associated with the script asset
-
-             * @beta
-             */
-            description: string
-
-            /**
-             * Export id associated with the script asset.
-
-             * @readonly
-
-             * @beta
              */
             exportId: Editor.Uuid
 
             /**
-             * Icon associated with the script asset.
+             * @unreleased
 
-             * @beta
+             * @readonly
              */
-            icon: Editor.Icon
+            componentId: Editor.Uuid
 
             /**
-             * Version associated with the script asset.
-
-             * @beta
+             * @unreleased
              */
             version: Editor.Assets.Version
+
+            /**
+             * @unreleased
+             */
+            description: string
+
+            /**
+             * @unreleased
+             */
+            icon: Editor.Icon
 
         }
 
@@ -2189,27 +1304,15 @@ declare namespace Editor {
     namespace Assets {
         namespace ScriptTypes {
             /**
-             * Used to set the vislbity of script assets on export.
-
-             * @beta
-
-             * @example
-             * ```js
-             * scriptAsset.setVisiblity(Editor.Assets.ScriptTypes.Visibility.Locked)
-             * scriptAsset.setVisiblity(Editor.Assets.ScriptTypes.Visibility.Editable)
-             * ```
+             * @unreleased
              */
             enum Visibility {
                 /**
-                 * Sets the visiblity to locked, meaning changes cannot be made to asset.
-
-                 * @beta
+                 * @unreleased
                  */
                 Locked,
                 /**
-                 * Sets the visiblity to editable, meaning changes can be made to asset.
-
-                 * @beta
+                 * @unreleased
                  */
                 Editable
             }
@@ -2223,45 +1326,28 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * A native asset that provides information for segmentation texture. Import with {@link Editor.Model.AssetManager.createNativeAsset}.
-
-         * @beta
-
-         * @example
-         * ```js
-         * const model = pluginSystem.findInterface(Editor.Model.IModel);
-         * const assetManager = model.project.assetManager;
-
-         * const destination new Editor.Path('');
-         * const segmentationType = Editor.Assets.SegmentationType.PortraitHair;
-
-         * const result = assetManager.createNativeAsset('SegmentationTexture', 'Segmentation Texture', destination);
-         * result.segmentationType = segmentationType;
-         * ```
+         * @unreleased
          */
-        abstract class SegmentationTexture extends Editor.Assets.Texture {
-
-            protected constructor()
-
+        interface SegmentationTexture extends Editor.Assets.Texture {
             /**
-             * @beta
+             * @unreleased
              */
-            feathering: number
+            segmentationType: Editor.Assets.SegmentationType
 
             /**
-             * @beta
+             * @unreleased
              */
             invertMask: boolean
 
             /**
-             * @beta
+             * @unreleased
              */
-            refineEdge: boolean
+            feathering: number
 
             /**
-             * @beta
+             * @unreleased
              */
-            segmentationType: Editor.Assets.SegmentationType
+            refineEdge: boolean
 
         }
 
@@ -2272,57 +1358,55 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * Built in segmentation textures to be used with {@link Editor.Assets.SegmentationTexture}.
-
-         * @beta
+         * @unreleased
          */
         enum SegmentationType {
             /**
-             * @beta
+             * @unreleased
              */
             PortraitSegmentation,
             /**
-             * @beta
+             * @unreleased
              */
             PortraitHair,
             /**
-             * @beta
+             * @unreleased
              */
             PortraitSkin,
             /**
-             * @beta
+             * @unreleased
              */
             PortraitShoulder,
             /**
-             * @beta
+             * @unreleased
              */
             PortraitFace,
             /**
-             * @beta
+             * @unreleased
              */
             PortraitHead,
             /**
-             * @beta
+             * @unreleased
              */
             Sky,
             /**
-             * @beta
+             * @unreleased
              */
             Body,
             /**
-             * @beta
+             * @unreleased
              */
             UpperGarment,
             /**
-             * @beta
+             * @unreleased
              */
             LowerGarment,
             /**
-             * @beta
+             * @unreleased
              */
             FullGarment,
             /**
-             * @beta
+             * @unreleased
              */
             Footwear
         }
@@ -2334,14 +1418,9 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * A native asset that can be used with {@link "Lens Scripting".Built-In.MarkerTrackingComponent} Learn more at {@link "Lens Scripting".Built-In.SnapcodeMarkerProvider}. Import with {@link Editor.Model.AssetManager.createNativeAsset}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class SnapcodeMarker extends Editor.Assets.MarkerAsset {
-
-            protected constructor()
-
+        interface SnapcodeMarker extends Editor.Assets.MarkerAsset {
         }
 
     }
@@ -2351,29 +1430,9 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * A 2D texture asset.
-
-         * @beta
-
-         * @example
-         * ```js
-         * // Get access to the project's assetManager
-         * const model = this.pluginSystem.findInterface(Editor.Model.IModel);
-         * const assetManager = model.project.assetManager;
-
-         * // Locate the shader pass we want to import
-         * const resourceLoc = import.meta.resolve('Resources/image.jpeg');
-         * const absGraphPath = new Editor.Path(resourceLoc);
-
-         * // Import the shader pass
-         * const meta = await assetManager.importExternalFileAsync(absolutePath, new Editor.Path(''), Editor.Model.ResultType.Packed);
-         * // You can set meta.primary on a pass asset to use it.
-         * ```
+         * @unreleased
          */
-        abstract class Texture extends Editor.Assets.Asset {
-
-            protected constructor()
-
+        interface Texture extends Editor.Assets.Asset {
         }
 
     }
@@ -2383,21 +1442,21 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * @beta
+         * @unreleased
          */
         class TextureParameter {
             /**
-             * @beta
+             * @unreleased
              */
             constructor(id: Editor.Uuid)
 
             /**
-             * @beta
+             * @unreleased
              */
             id: Editor.Uuid
 
             /**
-             * @beta
+             * @unreleased
              */
             sampler: Editor.Assets.Sampler
 
@@ -2410,43 +1469,26 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * Used to set the version of script assets.
-
-         * @beta
-
-         * @example
-         * ```js
-         * scriptAsset.version.major = 3;
-         * scriptAsset.version.minor  = 2;
-         * scriptAsset.version.patch = 1;
-         * ```
+         * @unreleased
          */
         class Version {
             /**
-             * scriptAsset.version = new Editor.Assets.Version(1,2,3);
-
-             * @beta
+             * @unreleased
              */
             constructor(major: number, minor: number, patch: number)
 
             /**
-             * Major version number.
-
-             * @beta
+             * @unreleased
              */
             major: number
 
             /**
-             * Minor version number.
-
-             * @beta
+             * @unreleased
              */
             minor: number
 
             /**
-             * Patch version number.
-
-             * @beta
+             * @unreleased
              */
             patch: number
 
@@ -2459,45 +1501,43 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * Used witih {@link Editor.Assets.FaceMesh}
-
-         * @beta
+         * @unreleased
          */
         enum VertexAttribute {
             /**
-             * @beta
+             * @unreleased
              */
             Position,
             /**
-             * @beta
+             * @unreleased
              */
             Normal,
             /**
-             * @beta
+             * @unreleased
              */
             Tangent,
             /**
-             * @beta
+             * @unreleased
              */
             Color,
             /**
-             * @beta
+             * @unreleased
              */
             Texcoord0,
             /**
-             * @beta
+             * @unreleased
              */
             Texcoord1,
             /**
-             * @beta
+             * @unreleased
              */
             Texcoord2,
             /**
-             * @beta
+             * @unreleased
              */
             Texcoord3,
             /**
-             * @beta
+             * @unreleased
              */
             BoneData
         }
@@ -2509,38 +1549,38 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-         * Options for what value is returned when a fetch falls outside the bounds of a texture.
+         * @unreleased
 
+         * @description Options for what value is returned when a fetch falls outside the bounds of a texture.
 
-         * @beta
          */
         enum WrapMode {
             /**
-             * Texture coordinates will be clamped between 0 and 1.
+             * @unreleased
 
+             * @description Texture coordinates will be clamped between 0 and 1.
 
-             * @beta
              */
             ClampToEdge,
             /**
-             * Between -1 and 1, the texture is mirrored across the 0 axis. The image is repeated outside of that range.
+             * @unreleased
 
+             * @description Between -1 and 1, the texture is mirrored across the 0 axis. The image is repeated outside of that range.
 
-             * @beta
              */
             MirroredRepeat,
             /**
-             * Wrap to the other side of the texture, effectively ignoring the integer part of the number to keep only the fractional part of the texture coordinate.
+             * @unreleased
 
+             * @description Wrap to the other side of the texture, effectively ignoring the integer part of the number to keep only the fractional part of the texture coordinate.
 
-             * @beta
              */
             Repeat,
             /**
-             * Outside the range of 0 to 1, texture coordinates return the value specified by the borderColor property.
+             * @unreleased
 
+             * @description Outside the range of 0 to 1, texture coordinates return the value specified by the borderColor property.
 
-             * @beta
              */
             ClampToBorderColor
         }
@@ -2550,61 +1590,19 @@ declare namespace Editor {
 }
 
 declare namespace Editor {
-    enum Axis {
-        X,
-        Y,
-        Z
-    }
-
-}
-
-declare namespace Editor {
     /**
-     * @beta
+     * @unreleased
      */
-    abstract class Buffer {
-
-        protected constructor()
-
+    interface Buffer {
         /**
-         * @beta
-         */
-        toBytes(): Uint8Array
-
-        /**
-         * @beta
+         * @unreleased
          */
         toString(): string
 
-    }
-
-}
-
-declare namespace Editor {
-    namespace Components {
         /**
-         * @beta
+         * @unreleased
          */
-        abstract class AnimationPlayer extends Editor.Components.Component {
-
-            protected constructor()
-
-            /**
-             * @beta
-             */
-            animationClips: Editor.AnimationClip[]
-
-            /**
-             * @beta
-             */
-            autoplay: boolean
-
-            /**
-             * @beta
-             */
-            clipRangeType: Editor.Components.ClipRangeType
-
-        }
+        toBytes(): Uint8Array
 
     }
 
@@ -2613,33 +1611,28 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * Settings used with {@link "Lens Scripting".Built-In.Text}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class BackgroundSettings extends Editor.Model.EntityStructure {
-
-            protected constructor()
-
+        interface BackgroundSettings extends Editor.Components.EntityStructure {
             /**
-             * @beta
-             */
-            cornerRadius: number
-
-            /**
-             * @beta
+             * @unreleased
              */
             enabled: boolean
 
             /**
-             * @beta
+             * @unreleased
              */
             fill: Editor.Components.TextFill
 
             /**
-             * @beta
+             * @unreleased
              */
             margins: Editor.Rect
+
+            /**
+             * @unreleased
+             */
+            cornerRadius: number
 
         }
 
@@ -2650,20 +1643,18 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * Settings used with {@link Editor.Components.Head} to set position on the face.
-
-         * @beta
+         * @unreleased
          */
         class BarycentricVertex {
             constructor()
 
             /**
-             * @beta
+             * @unreleased
              */
             indices: number[]
 
             /**
-             * @beta
+             * @unreleased
              */
             weights: number[]
 
@@ -2676,43 +1667,38 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * The same entity as in Lens Scripting.  @see {@link "Lens Scripting".Built-In.BaseMeshVisual}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class BaseMeshVisual extends Editor.Components.Visual {
-
-            protected constructor()
-
+        interface BaseMeshVisual extends Editor.Components.Visual {
             /**
-             * @beta
-             */
-            horizontalAlignment: Editor.Alignment.Horizontal
-
-            /**
-             * @beta
-             */
-            meshShadowMode: Editor.Components.MeshShadowMode
-
-            /**
-             * @beta
-             */
-            shadowColor: vec4
-
-            /**
-             * @beta
-             */
-            shadowDensity: number
-
-            /**
-             * @beta
+             * @unreleased
              */
             stretchMode: Editor.Components.StretchMode
 
             /**
-             * @beta
+             * @unreleased
              */
             verticalAlignment: Editor.Alignment.Vertical
+
+            /**
+             * @unreleased
+             */
+            horizontalAlignment: Editor.Alignment.Horizontal
+
+            /**
+             * @unreleased
+             */
+            meshShadowMode: Editor.Components.MeshShadowMode
+
+            /**
+             * @unreleased
+             */
+            shadowColor: vec4
+
+            /**
+             * @unreleased
+             */
+            shadowDensity: number
 
         }
 
@@ -2723,105 +1709,100 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * The same entity as in Lens Scripting.  @see {@link "Lens Scripting".Built-In.Camera}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class Camera extends Editor.Components.RenderLayerOwner {
-
-            protected constructor()
-
+        interface Camera extends Editor.Components.RenderLayerOwner {
             /**
-             * @beta
-             */
-            aspect: number
-
-            /**
-             * @beta
-             */
-            aspectPreset: Editor.Components.CameraAspectPreset
-
-            /**
-             * @beta
-             */
-            cameraType: Editor.Components.CameraType
-
-            /**
-             * @beta
-             */
-            clearColor: Editor.Components.CameraClearColor
-
-            /**
-             * @beta
-             */
-            clearDepth: Editor.Components.CameraClearDepth
-
-            /**
-             * @beta
-             */
-            depthMode: Editor.Components.CameraDepthBufferMode
-
-            /**
-             * @beta
-             */
-            deviceProperty: Editor.Components.CameraDeviceProperty
-
-            /**
-             * @beta
-             */
-            far: number
-
-            /**
-             * @beta
-             */
-            fov: number
-
-            /**
-             * @beta
-             */
-            inputTexture: Editor.Assets.Texture
-
-            /**
-             * @beta
-             */
-            maskTexture: Editor.Assets.Texture
-
-            /**
-             * @beta
+             * @unreleased
              */
             mipmapLevel: number
 
             /**
-             * @beta
-             */
-            near: number
-
-            /**
-             * @beta
-             */
-            oitLayers: Editor.Components.CameraOitLayers
-
-            /**
-             * @readonly
-
-             * @beta
-             */
-            orthographicSize: vec2
-
-            /**
-             * @beta
+             * @unreleased
              */
             renderOrder: number
 
             /**
-             * @beta
+             * @unreleased
+             */
+            size: number
+
+            /**
+             * @unreleased
+             */
+            near: number
+
+            /**
+             * @unreleased
+             */
+            far: number
+
+            /**
+             * @unreleased
+             */
+            fov: number
+
+            /**
+             * @unreleased
+             */
+            clearColor: Editor.Components.CameraClearColor
+
+            /**
+             * @unreleased
+             */
+            clearDepth: Editor.Components.CameraClearDepth
+
+            /**
+             * @unreleased
+             */
+            aspect: number
+
+            /**
+             * @unreleased
+             */
+            cameraType: Editor.Components.CameraType
+
+            /**
+             * @unreleased
+             */
+            depthMode: Editor.Components.CameraDepthBufferMode
+
+            /**
+             * @unreleased
+             */
+            deviceProperty: Editor.Components.CameraDeviceProperty
+
+            /**
+             * @unreleased
+             */
+            aspectPreset: Editor.Components.CameraAspectPreset
+
+            /**
+             * @unreleased
+             */
+            oitLayers: Editor.Components.CameraOitLayers
+
+            /**
+             * @unreleased
              */
             renderTarget: Editor.Assets.RenderTarget
 
             /**
-             * @beta
+             * @unreleased
              */
-            size: number
+            maskTexture: Editor.Assets.Texture
+
+            /**
+             * @unreleased
+             */
+            inputTexture: Editor.Assets.Texture
+
+            /**
+             * @unreleased
+
+             * @readonly
+             */
+            orthographicSize: vec2
 
         }
 
@@ -2832,17 +1813,15 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * The same entity as in Lens Scripting.  @see {@link Editor.Components.Camera}.
-
-         * @beta
+         * @unreleased
          */
         enum CameraAspectPreset {
             /**
-             * @beta
+             * @unreleased
              */
             Specific,
             /**
-             * @beta
+             * @unreleased
              */
             Custom
         }
@@ -2854,28 +1833,23 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * The same entity as in Lens Scripting.  @see {@link Editor.Components.Camera}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class CameraClearColor extends Editor.Model.EntityStructure {
-
-            protected constructor()
-
+        class CameraClearColor {
             /**
-             * @beta
+             * @unreleased
              */
-            color: vec4
+            constructor()
 
             /**
-             * @beta
-             */
-            input: Editor.Assets.Texture
-
-            /**
-             * @beta
+             * @unreleased
              */
             mode: Editor.Components.CameraClearColor.Mode
+
+            /**
+             * @unreleased
+             */
+            color: vec4
 
         }
 
@@ -2887,25 +1861,23 @@ declare namespace Editor {
     namespace Components {
         namespace CameraClearColor {
             /**
-             * The same entity as in Lens Scripting.  @see {@link Editor.Components.Camera}.
-
-             * @beta
+             * @unreleased
              */
             enum Mode {
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 None,
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 Background,
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 Color,
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 Texture
             }
@@ -2919,26 +1891,21 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * The same entity as in Lens Scripting.  @see {@link Editor.Components.Camera}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class CameraClearDepth extends Editor.Model.EntityStructure {
-
-            protected constructor()
-
+        class CameraClearDepth {
             /**
-             * @beta
+             * @unreleased
              */
-            input: Editor.Assets.Texture
+            constructor()
 
             /**
-             * @beta
+             * @unreleased
              */
             mode: Editor.Components.CameraClearDepth.Mode
 
             /**
-             * @beta
+             * @unreleased
              */
             value: number
 
@@ -2952,23 +1919,17 @@ declare namespace Editor {
     namespace Components {
         namespace CameraClearDepth {
             /**
-             * The same entity as in Lens Scripting.  @see {@link Editor.Components.Camera}.
-
-             * @beta
+             * @unreleased
              */
             enum Mode {
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 None,
                 /**
-                 * @beta
+                 * @unreleased
                  */
-                Value,
-                /**
-                 * @beta
-                 */
-                Texture
+                Custom
             }
 
         }
@@ -2980,17 +1941,15 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * The same entity as in Lens Scripting.  @see {@link Editor.Components.Camera}.
-
-         * @beta
+         * @unreleased
          */
         enum CameraDepthBufferMode {
             /**
-             * @beta
+             * @unreleased
              */
             Regular,
             /**
-             * @beta
+             * @unreleased
              */
             Logarithmic
         }
@@ -3002,25 +1961,23 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * The same entity as in Lens Scripting.  @see {@link Editor.Components.Camera}.
-
-         * @beta
+         * @unreleased
          */
         enum CameraDeviceProperty {
             /**
-             * @beta
+             * @unreleased
              */
             None,
             /**
-             * @beta
+             * @unreleased
              */
             Aspect,
             /**
-             * @beta
+             * @unreleased
              */
             Fov,
             /**
-             * @beta
+             * @unreleased
              */
             All
         }
@@ -3032,25 +1989,23 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * The same entity as in Lens Scripting.  @see {@link Editor.Components.Camera}.
-
-         * @beta
+         * @unreleased
          */
         enum CameraOitLayers {
             /**
-             * @beta
+             * @unreleased
              */
             NoOit,
             /**
-             * @beta
+             * @unreleased
              */
             Layers4,
             /**
-             * @beta
+             * @unreleased
              */
             Layers4Plus1,
             /**
-             * @beta
+             * @unreleased
              */
             Layers8
         }
@@ -3062,17 +2017,15 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * The same entity as in Lens Scripting.  @see {@link Editor.Components.Camera}.
-
-         * @beta
+         * @unreleased
          */
         enum CameraType {
             /**
-             * @beta
+             * @unreleased
              */
             Perspective,
             /**
-             * @beta
+             * @unreleased
              */
             Orthographic
         }
@@ -3084,23 +2037,18 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * Settings used with {@link "Lens Scripting".Built-In.Canvas}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class Canvas extends Editor.Components.Component {
-
-            protected constructor()
-
+        interface Canvas extends Editor.Components.Component {
             /**
-             * @beta
-             */
-            sortingType: Editor.Components.SortingType
-
-            /**
-             * @beta
+             * @unreleased
              */
             unitType: Editor.Components.UnitType
+
+            /**
+             * @unreleased
+             */
+            sortingType: Editor.Components.SortingType
 
         }
 
@@ -3111,19 +2059,19 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * @beta
+         * @unreleased
          */
         enum CapitalizationOverride {
             /**
-             * @beta
+             * @unreleased
              */
             None,
             /**
-             * @beta
+             * @unreleased
              */
             AllUpper,
             /**
-             * @beta
+             * @unreleased
              */
             AllLower
         }
@@ -3135,121 +2083,131 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * @beta
+         * @unreleased
          */
-        enum ClipRangeType {
+        interface ClothVisual extends Editor.Components.MaterialMeshVisual {
             /**
-             * @beta
+             * @unreleased
              */
-            Frames,
+            getVertexBindingsCount(): number
+
             /**
-             * @beta
+             * @unreleased
              */
-            Seconds
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Components {
-        /**
-         * The same entity as in Lens Scripting.  @see {@link "Lens Scripting".Built-In.ClothVisual}.
-
-         * @beta
-         */
-        abstract class ClothVisual extends Editor.Components.MaterialMeshVisual {
-
-            protected constructor()
+            getVertexBindingAt(pos: number): Editor.Components.ClothVisual.VertexBinding
 
             /**
-             * @beta
+             * @unreleased
              */
-            bendMode: Editor.Components.ClothVisual.BendMode
+            setVertexBindingAt(pos: number, value: Editor.Components.ClothVisual.VertexBinding): void
 
             /**
-             * @beta
+             * @unreleased
              */
-            bendStiffness: number
+            addVertexBindingAt(value: Editor.Components.ClothVisual.VertexBinding, pos: number): void
 
             /**
-             * @beta
+             * @unreleased
              */
-            colliders: Editor.Components.Physics.ColliderComponent[]
+            removeVertexBindingAt(pos: number): void
 
             /**
-             * @beta
+             * @unreleased
              */
-            collisionEnabled: boolean
+            clearVertexBindings(): void
 
             /**
-             * @beta
+             * @unreleased
              */
-            collisionFriction: number
+            moveVertexBinding(origin: number, destination: number): void
 
             /**
-             * @beta
+             * @unreleased
              */
-            collisionOffset: number
+            indexOfVertexBinding(value: Editor.Components.ClothVisual.VertexBinding): number
 
             /**
-             * @beta
-             */
-            collisionStiffness: number
-
-            /**
-             * @beta
-             */
-            debugModeEnabled: boolean
-
-            /**
-             * @beta
-             */
-            frameRate: number
-
-            /**
-             * @beta
-             */
-            friction: number
-
-            /**
-             * @beta
-             */
-            gravity: vec3
-
-            /**
-             * @beta
-             */
-            iterations: number
-
-            /**
-             * @beta
-             */
-            mass: number
-
-            /**
-             * @beta
-             */
-            maxAcceleration: number
-
-            /**
-             * @beta
+             * @unreleased
              */
             mesh: Editor.Assets.RenderMesh
 
             /**
-             * @beta
+             * @unreleased
              */
-            stretchStiffness: number
+            debugModeEnabled: boolean
 
             /**
-             * @beta
+             * @unreleased
+             */
+            frameRate: number
+
+            /**
+             * @unreleased
+             */
+            iterations: number
+
+            /**
+             * @unreleased
              */
             updateNormalsEnabled: boolean
 
             /**
-             * @beta
+             * @unreleased
+             */
+            bendMode: Editor.Components.ClothVisual.BendMode
+
+            /**
+             * @unreleased
+             */
+            gravity: vec3
+
+            /**
+             * @unreleased
+             */
+            mass: number
+
+            /**
+             * @unreleased
+             */
+            stretchStiffness: number
+
+            /**
+             * @unreleased
+             */
+            bendStiffness: number
+
+            /**
+             * @unreleased
+             */
+            friction: number
+
+            /**
+             * @unreleased
+             */
+            maxAcceleration: number
+
+            /**
+             * @unreleased
+             */
+            collisionEnabled: boolean
+
+            /**
+             * @unreleased
+             */
+            collisionStiffness: number
+
+            /**
+             * @unreleased
+             */
+            collisionOffset: number
+
+            /**
+             * @unreleased
+             */
+            collisionFriction: number
+
+            /**
+             * @unreleased
              */
             vertexBindings: Editor.Components.ClothVisual.VertexBinding[]
 
@@ -3263,17 +2221,15 @@ declare namespace Editor {
     namespace Components {
         namespace ClothVisual {
             /**
-             * The same entity as in Lens Scripting.  @see {@link Editor.Components.ClothVisual}.
-
-             * @beta
+             * @unreleased
              */
             enum BendMode {
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 Isometric,
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 Linear
             }
@@ -3288,26 +2244,21 @@ declare namespace Editor {
     namespace Components {
         namespace ClothVisual {
             /**
-             * The same entity as in Lens Scripting.  @see {@link Editor.Components.ClothVisual}.
-
-             * @beta
+             * @unreleased
              */
-            abstract class VertexBinding extends Editor.Model.Entity {
-
-                protected constructor()
+            interface VertexBinding extends Editor.Model.Entity {
+                /**
+                 * @unreleased
+                 */
+                colorMask: vec4
 
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 color: vec4
 
                 /**
-                 * @beta
-                 */
-                colorMask: any
-
-                /**
-                 * @beta
+                 * @unreleased
                  */
                 followObject: Editor.Model.SceneObject
 
@@ -3322,28 +2273,23 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * The same entity as in Lens Scripting.  @see {@link Editor.Components.ClothVisual}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class Component extends Editor.Model.Prefabable {
-
-            protected constructor()
-
+        interface Component extends Editor.Model.Prefabable {
             /**
-             * @beta
-             */
-            enabled: boolean
-
-            /**
-             * @beta
+             * @unreleased
              */
             name: string
 
             /**
-             * @readonly
+             * @unreleased
+             */
+            enabled: boolean
 
-             * @beta
+            /**
+             * @unreleased
+
+             * @readonly
              */
             sceneObject: Editor.Model.SceneObject
 
@@ -3356,21 +2302,19 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * The same entity as in Lens Scripting.  @see {@link Editor.Components.LightSource}.
-
-         * @beta
+         * @unreleased
          */
         enum DecayType {
             /**
-             * @beta
+             * @unreleased
              */
             None,
             /**
-             * @beta
+             * @unreleased
              */
             Linear,
             /**
-             * @beta
+             * @unreleased
              */
             Quadratic
         }
@@ -3382,26 +2326,21 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * The same entity as in Lens Scripting.  @see {@link "Lens Scripting".Built-In.DeviceTracking}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class DeviceTracking extends Editor.Components.Component {
-
-            protected constructor()
-
+        interface DeviceTracking extends Editor.Components.Component {
             /**
-             * @beta
+             * @unreleased
              */
             deviceTrackingMode: Editor.Components.DeviceTrackingMode
 
             /**
-             * @beta
+             * @unreleased
              */
             rotationOptions: Editor.Components.RotationOptions
 
             /**
-             * @beta
+             * @unreleased
              */
             surfaceOptions: Editor.Components.SurfaceOptions
 
@@ -3414,21 +2353,19 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * The same entity as in Lens Scripting.  @see {@link Editor.Components.DeviceTracking}.
-
-         * @beta
+         * @unreleased
          */
         enum DeviceTrackingMode {
             /**
-             * @beta
+             * @unreleased
              */
             Rotation,
             /**
-             * @beta
+             * @unreleased
              */
             Surface,
             /**
-             * @beta
+             * @unreleased
              */
             World
         }
@@ -3440,26 +2377,21 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * Settings used with {@link Editor.Components.Text}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class DropshadowSettings extends Editor.Model.EntityStructure {
-
-            protected constructor()
-
+        interface DropshadowSettings extends Editor.Components.EntityStructure {
             /**
-             * @beta
+             * @unreleased
              */
             enabled: boolean
 
             /**
-             * @beta
+             * @unreleased
              */
             fill: Editor.Components.TextFill
 
             /**
-             * @beta
+             * @unreleased
              */
             offset: vec2
 
@@ -3472,21 +2404,31 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * The same entity as in Lens Scripting.  @see {@link Editor.Components.LightSource}.
+         * @unreleased
+         */
+        interface EntityStructure {
+        }
 
-         * @beta
+    }
+
+}
+
+declare namespace Editor {
+    namespace Components {
+        /**
+         * @unreleased
          */
         enum EnvmapFromCameraMode {
             /**
-             * @beta
+             * @unreleased
              */
             Auto,
             /**
-             * @beta
+             * @unreleased
              */
             Face,
             /**
-             * @beta
+             * @unreleased
              */
             Surface
         }
@@ -3498,21 +2440,19 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * Settings used with {@link Editor.Components.Text3D}.
-
-         * @beta
+         * @unreleased
          */
         enum ExtrudeDirection {
             /**
-             * @beta
+             * @unreleased
              */
             Forwards,
             /**
-             * @beta
+             * @unreleased
              */
             Backwards,
             /**
-             * @beta
+             * @unreleased
              */
             Both
         }
@@ -3524,33 +2464,28 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * The same entity as in Lens Scripting.  @see {@link "Lens Scripting".Built-In.EyeColorVisual}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class EyeColorVisual extends Editor.Components.Visual {
-
-            protected constructor()
-
+        interface EyeColorVisual extends Editor.Components.Visual {
             /**
-             * @beta
-             */
-            eyeToRender: Editor.Components.EyeToRender
-
-            /**
-             * @beta
-             */
-            faceIndex: number
-
-            /**
-             * @beta
+             * @unreleased
              */
             mainMaterial: Editor.Assets.Material
 
             /**
-             * @beta
+             * @unreleased
+             */
+            faceIndex: number
+
+            /**
+             * @unreleased
              */
             rotationEnabled: boolean
+
+            /**
+             * @unreleased
+             */
+            eyeToRender: Editor.Components.EyeToRender
 
         }
 
@@ -3561,21 +2496,19 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * Settings used with {@link Editor.Components.EyeColorVisual}.
-
-         * @beta
+         * @unreleased
          */
         enum EyeToRender {
             /**
-             * @beta
+             * @unreleased
              */
             Both,
             /**
-             * @beta
+             * @unreleased
              */
             Left,
             /**
-             * @beta
+             * @unreleased
              */
             Right
         }
@@ -3587,33 +2520,31 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * The same entity as in Lens Scripting.  @see {@link "Lens Scripting".Built-In.FaceInsetRegion}. Use with {@link Editor.Components.FaceInsetVisual}.
-
-         * @beta
+         * @unreleased
          */
         enum FaceInsetRegion {
             /**
-             * @beta
+             * @unreleased
              */
             LeftEye,
             /**
-             * @beta
+             * @unreleased
              */
             RightEye,
             /**
-             * @beta
+             * @unreleased
              */
             Mouth,
             /**
-             * @beta
+             * @unreleased
              */
             Nose,
             /**
-             * @beta
+             * @unreleased
              */
             Face,
             /**
-             * @beta
+             * @unreleased
              */
             Custom
         }
@@ -3625,28 +2556,23 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * The same entity as in Lens Scripting.  @see {@link "Lens Scripting".Built-In.FaceInsetVisual}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class FaceInsetVisual extends Editor.Components.Visual {
-
-            protected constructor()
+        interface FaceInsetVisual extends Editor.Components.Visual {
+            /**
+             * @unreleased
+             */
+            mainMaterial: Editor.Assets.Material
 
             /**
-             * @beta
+             * @unreleased
              */
             faceIndex: number
 
             /**
-             * @beta
+             * @unreleased
              */
             faceRegion: Editor.Components.FaceInsetRegion
-
-            /**
-             * @beta
-             */
-            mainMaterial: Editor.Assets.Material
 
         }
 
@@ -3657,73 +2583,68 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * The same entity as in Lens Scripting.  @see {@link "Lens Scripting".Built-In.FaceMaskVisual}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class FaceMaskVisual extends Editor.Components.Visual {
-
-            protected constructor()
-
+        interface FaceMaskVisual extends Editor.Components.Visual {
             /**
-             * @beta
-             */
-            drawMouth: boolean
-
-            /**
-             * @beta
-             */
-            enabledLipsFix: boolean
-
-            /**
-             * @beta
-             */
-            enabledTeethFix: boolean
-
-            /**
-             * @beta
-             */
-            faceIndex: number
-
-            /**
-             * @beta
+             * @unreleased
              */
             mainMaterial: Editor.Assets.Material
 
             /**
-             * @beta
-             */
-            maskCoordinates: vec2[]
-
-            /**
-             * @beta
-             */
-            maskOnMouthClosed: Editor.Assets.Texture
-
-            /**
-             * @beta
-             */
-            originalFaceIndex: number
-
-            /**
-             * @beta
-             */
-            teethFixAlpha: number
-
-            /**
-             * @beta
+             * @unreleased
              */
             textureCoordinates: vec2[]
 
             /**
-             * @beta
+             * @unreleased
+             */
+            maskCoordinates: vec2[]
+
+            /**
+             * @unreleased
+             */
+            faceIndex: number
+
+            /**
+             * @unreleased
+             */
+            originalFaceIndex: number
+
+            /**
+             * @unreleased
+             */
+            useTextureFacePosition: boolean
+
+            /**
+             * @unreleased
              */
             useOriginalTexCoords: boolean
 
             /**
-             * @beta
+             * @unreleased
              */
-            useTextureFacePosition: boolean
+            drawMouth: boolean
+
+            /**
+             * @unreleased
+             */
+            enabledLipsFix: boolean
+
+            /**
+             * @unreleased
+             */
+            enabledTeethFix: boolean
+
+            /**
+             * @unreleased
+             */
+            teethFixAlpha: number
+
+            /**
+             * @unreleased
+             */
+            maskOnMouthClosed: Editor.Assets.Texture
 
         }
 
@@ -3734,56 +2655,51 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * The same entity as in Lens Scripting.  @see {@link "Lens Scripting".Built-In.FaceStretchVisual}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class FaceStretchVisual extends Editor.Components.Visual {
-
-            protected constructor()
-
+        interface FaceStretchVisual extends Editor.Components.Visual {
             /**
-             * @beta
-             */
-            addFeature(name: string): void
-
-            /**
-             * @beta
-             */
-            clearFeatures(): void
-
-            /**
-             * @beta
-             */
-            getFeatureNames(): string[]
-
-            /**
-             * @beta
-             */
-            getFeaturePoints(name: string): Editor.Components.StretchPoint[]
-
-            /**
-             * @beta
-             */
-            getFeatureWeight(name: string): number
-
-            /**
-             * @beta
-             */
-            removeFeature(name: string): void
-
-            /**
-             * @beta
+             * @unreleased
              */
             setFeatureWeight(name: string, weight: number): void
 
             /**
-             * @beta
+             * @unreleased
+             */
+            getFeatureWeight(name: string): number
+
+            /**
+             * @unreleased
+             */
+            getFeatureNames(): string[]
+
+            /**
+             * @unreleased
+             */
+            removeFeature(name: string): void
+
+            /**
+             * @unreleased
              */
             updateFeaturePoints(name: string, points: Editor.Components.StretchPoint[]): void
 
             /**
-             * @beta
+             * @unreleased
+             */
+            getFeaturePoints(name: string): Editor.Components.StretchPoint[]
+
+            /**
+             * @unreleased
+             */
+            clearFeatures(): void
+
+            /**
+             * @unreleased
+             */
+            addFeature(name: string): void
+
+            /**
+             * @unreleased
              */
             faceIndex: number
 
@@ -3796,238 +2712,203 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * A component used to render GaussianSplattingAsset.
+         * @unreleased
          */
-        abstract class GaussianSplattingVisual extends Editor.Components.Visual {
-
-            protected constructor()
-
+        interface HairVisual extends Editor.Components.BaseMeshVisual {
             /**
-             * Specify which frame to display (for animated Gaussian Splattings `.gsaf`).
-             */
-            activeFrame: number
-
-            /**
-             * A GaussianSplattingAsset to render.
-             */
-            asset: Editor.Assets.GaussianSplattingAsset
-
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Components {
-        /**
-         * The same entity as in Lens Scripting.  @see {@link "Lens Scripting".Built-In.HairVisual}.
-
-         * @beta
-         */
-        abstract class HairVisual extends Editor.Components.BaseMeshVisual {
-
-            protected constructor()
-
-            /**
-             * @beta
-             */
-            bendStiffness: number
-
-            /**
-             * @beta
-             */
-            clumpDensity: number
-
-            /**
-             * @beta
-             */
-            clumpRadius: number
-
-            /**
-             * @beta
-             */
-            clumpTipScale: number
-
-            /**
-             * @beta
-             */
-            collapseStiffness: number
-
-            /**
-             * @beta
-             */
-            colliders: Editor.Components.Physics.ColliderComponent[]
-
-            /**
-             * @beta
-             */
-            collisionEnabled: boolean
-
-            /**
-             * @beta
-             */
-            collisionFriction: number
-
-            /**
-             * @beta
-             */
-            collisionOffset: number
-
-            /**
-             * @beta
-             */
-            collisionStiffness: number
-
-            /**
-             * @beta
-             */
-            damp: number
-
-            /**
-             * @beta
-             */
-            debugDrawLoadedStrands: boolean
-
-            /**
-             * @beta
-             */
-            debugDrawSimulatedStrands: boolean
-
-            /**
-             * @beta
-             */
-            debugModeEnabled: boolean
-
-            /**
-             * @beta
-             */
-            density: number
-
-            /**
-             * @beta
-             */
-            fallbackModeEnabled: boolean
-
-            /**
-             * @beta
-             */
-            frameRate: number
-
-            /**
-             * @beta
-             */
-            friction: number
-
-            /**
-             * @beta
-             */
-            gravity: vec3
-
-            /**
-             * @beta
-             */
-            hairData: Editor.Assets.HairDataAsset
-
-            /**
-             * @beta
+             * @unreleased
              */
             hairMaterial: Editor.Assets.Material
 
             /**
-             * @beta
+             * @unreleased
              */
-            hairResolution: number
+            fallbackModeEnabled: boolean
 
             /**
-             * @beta
+             * @unreleased
              */
-            noise: number
+            hairData: Editor.Assets.HairDataAsset
 
             /**
-             * @beta
-             */
-            selfCollisionEnabled: boolean
-
-            /**
-             * @beta
-             */
-            selfCollisionFriction: number
-
-            /**
-             * @beta
-             */
-            selfCollisionOffset: number
-
-            /**
-             * @beta
-             */
-            selfCollisionStiffness: number
-
-            /**
-             * @beta
-             */
-            steppedCutEnabled: boolean
-
-            /**
-             * @beta
-             */
-            stiffness: number
-
-            /**
-             * @beta
-             */
-            strandCut: number
-
-            /**
-             * @beta
-             */
-            strandNeighborCosThreshold: number
-
-            /**
-             * @beta
-             */
-            strandNeighborLengthThreshold: number
-
-            /**
-             * @beta
+             * @unreleased
              */
             strandNeighborRadius: number
 
             /**
-             * @beta
+             * @unreleased
              */
-            strandTaper: number
+            strandNeighborCosThreshold: number
 
             /**
-             * @beta
+             * @unreleased
+             */
+            strandNeighborLengthThreshold: number
+
+            /**
+             * @unreleased
+             */
+            hairResolution: number
+
+            /**
+             * @unreleased
+             */
+            steppedCutEnabled: boolean
+
+            /**
+             * @unreleased
+             */
+            strandCut: number
+
+            /**
+             * @unreleased
              */
             strandWidth: number
 
             /**
-             * @beta
+             * @unreleased
+             */
+            strandTaper: number
+
+            /**
+             * @unreleased
+             */
+            density: number
+
+            /**
+             * @unreleased
+             */
+            noise: number
+
+            /**
+             * @unreleased
+             */
+            clumpDensity: number
+
+            /**
+             * @unreleased
+             */
+            clumpRadius: number
+
+            /**
+             * @unreleased
+             */
+            clumpTipScale: number
+
+            /**
+             * @unreleased
+             */
+            frameRate: number
+
+            /**
+             * @unreleased
              */
             stretchLimitEnabled: boolean
 
             /**
-             * @beta
+             * @unreleased
+             */
+            damp: number
+
+            /**
+             * @unreleased
+             */
+            friction: number
+
+            /**
+             * @unreleased
+             */
+            gravity: vec3
+
+            /**
+             * @unreleased
              */
             stretchStiffness: number
 
             /**
-             * @beta
+             * @unreleased
+             */
+            bendStiffness: number
+
+            /**
+             * @unreleased
              */
             twistStiffness: number
 
             /**
-             * @beta
+             * @unreleased
+             */
+            collapseStiffness: number
+
+            /**
+             * @unreleased
+             */
+            stiffness: number
+
+            /**
+             * @unreleased
+             */
+            collisionEnabled: boolean
+
+            /**
+             * @unreleased
+             */
+            collisionStiffness: number
+
+            /**
+             * @unreleased
+             */
+            collisionOffset: number
+
+            /**
+             * @unreleased
+             */
+            collisionFriction: number
+
+            /**
+             * @unreleased
+             */
+            selfCollisionEnabled: boolean
+
+            /**
+             * @unreleased
+             */
+            selfCollisionStiffness: number
+
+            /**
+             * @unreleased
+             */
+            selfCollisionOffset: number
+
+            /**
+             * @unreleased
+             */
+            selfCollisionFriction: number
+
+            /**
+             * @unreleased
              */
             windEnabled: boolean
 
             /**
-             * @beta
+             * @unreleased
              */
             windForce: vec3
+
+            /**
+             * @unreleased
+             */
+            debugDrawLoadedStrands: boolean
+
+            /**
+             * @unreleased
+             */
+            debugDrawSimulatedStrands: boolean
+
+            /**
+             * @unreleased
+             */
+            debugModeEnabled: boolean
 
         }
 
@@ -4038,28 +2919,23 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * The same entity as in Lens Scripting.  @see {@link "Lens Scripting".Built-In.Head}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class Head extends Editor.Components.Component {
-
-            protected constructor()
-
+        interface Head extends Editor.Components.Component {
             /**
-             * @beta
+             * @unreleased
              */
-            attachedBarycentricVertex: Editor.Components.BarycentricVertex
+            faceIndex: number
 
             /**
-             * @beta
+             * @unreleased
              */
             attachmentPoint: Editor.Components.HeadAttachmentPointType
 
             /**
-             * @beta
+             * @unreleased
              */
-            faceIndex: number
+            attachedBarycentricVertex: Editor.Components.BarycentricVertex
 
         }
 
@@ -4070,61 +2946,59 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * Settings used with {@link Editor.Components.Head}.
-
-         * @beta
+         * @unreleased
          */
         enum HeadAttachmentPointType {
             /**
-             * @beta
+             * @unreleased
              */
             HeadCenter,
             /**
-             * @beta
+             * @unreleased
              */
             CandideCenter,
             /**
-             * @beta
+             * @unreleased
              */
             TriangleBarycentric,
             /**
-             * @beta
+             * @unreleased
              */
             FaceMeshCenter,
             /**
-             * @beta
+             * @unreleased
              */
             LeftEyeballCenter,
             /**
-             * @beta
+             * @unreleased
              */
             RightEyeballCenter,
             /**
-             * @beta
+             * @unreleased
              */
             MouthCenter,
             /**
-             * @beta
+             * @unreleased
              */
             Chin,
             /**
-             * @beta
+             * @unreleased
              */
             Forehead,
             /**
-             * @beta
+             * @unreleased
              */
             LeftForehead,
             /**
-             * @beta
+             * @unreleased
              */
             RightForehead,
             /**
-             * @beta
+             * @unreleased
              */
             LeftCheek,
             /**
-             * @beta
+             * @unreleased
              */
             RightCheek
         }
@@ -4136,29 +3010,23 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * Settings used with {@link Editor.Components.Text} and {@link Editor.Components.Text3D}.
-
-         * @beta
+         * @unreleased
          */
         enum HorizontalOverflow {
             /**
-             * @beta
+             * @unreleased
              */
             Overflow,
             /**
-             * @beta
+             * @unreleased
              */
             Truncate,
             /**
-             * @beta
+             * @unreleased
              */
             Wrap,
             /**
-             * @beta
-             */
-            Ellipsis,
-            /**
-             * @beta
+             * @unreleased
              */
             Shrink
         }
@@ -4170,26 +3038,21 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * The same entity as in Lens Scripting.  @see {@link "Lens Scripting".Built-In.Image}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class Image extends Editor.Components.MaterialMeshVisual {
-
-            protected constructor()
-
+        interface Image extends Editor.Components.MaterialMeshVisual {
             /**
-             * @beta
+             * @unreleased
              */
             flipX: boolean
 
             /**
-             * @beta
+             * @unreleased
              */
             flipY: boolean
 
             /**
-             * @beta
+             * @unreleased
              */
             pivot: vec2
 
@@ -4202,28 +3065,23 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * The same entity as in Lens Scripting.  @see {@link "Lens Scripting".Built-In.InteractionComponent}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class InteractionComponent extends Editor.Components.Component {
-
-            protected constructor()
-
+        interface InteractionComponent extends Editor.Components.Component {
             /**
-             * @beta
+             * @unreleased
              */
             camera: Editor.Components.Camera
 
             /**
-             * @beta
-             */
-            meshVisuals: Editor.Components.BaseMeshVisual[]
-
-            /**
-             * @beta
+             * @unreleased
              */
             minimumTouchSize: number
+
+            /**
+             * @unreleased
+             */
+            meshVisuals: Editor.Components.BaseMeshVisual[]
 
         }
 
@@ -4234,158 +3092,153 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * The same entity as in Lens Scripting.  @see {@link "Lens Scripting".Built-In.LightSource}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class LightSource extends Editor.Components.RenderLayerOwner {
-
-            protected constructor()
-
+        interface LightSource extends Editor.Components.RenderLayerOwner {
             /**
-             * @beta
-             */
-            autoLightSourcePosition: boolean
-
-            /**
-             * @beta
-             */
-            autoShadowFrustumSize: boolean
-
-            /**
-             * @beta
-             */
-            autoShadowFrustumSizeExtend: number
-
-            /**
-             * @beta
-             */
-            castsShadows: boolean
-
-            /**
-             * @beta
-             */
-            color: vec4
-
-            /**
-             * @beta
-             */
-            decayLimit: boolean
-
-            /**
-             * @beta
-             */
-            decayRange: number
-
-            /**
-             * @beta
-             */
-            decayType: Editor.Components.DecayType
-
-            /**
-             * @beta
-             */
-            diffuseEnvmapTexture: Editor.Assets.Texture
-
-            /**
-             * @beta
-             */
-            dynamicEnvInputTexture: Editor.Assets.Texture
-
-            /**
-             * @beta
-             */
-            envmapExposure: number
-
-            /**
-             * @beta
-             */
-            envmapFromCameraMode: Editor.Components.EnvmapFromCameraMode
-
-            /**
-             * @beta
-             */
-            envmapRotation: number
-
-            /**
-             * @beta
-             */
-            estimationIntensity: number
-
-            /**
-             * @beta
-             */
-            estimationSharpness: number
-
-            /**
-             * @beta
-             */
-            innerConeAngle: number
-
-            /**
-             * @beta
-             */
-            intensity: number
-
-            /**
-             * @beta
+             * @unreleased
              */
             lightType: Editor.Components.LightType
 
             /**
-             * @beta
+             * @unreleased
+             */
+            intensity: number
+
+            /**
+             * @unreleased
+             */
+            innerConeAngle: number
+
+            /**
+             * @unreleased
              */
             outerConeAngle: number
 
             /**
-             * @beta
+             * @unreleased
              */
-            shadowBlurRadius: number
+            decayType: Editor.Components.DecayType
 
             /**
-             * @beta
+             * @unreleased
              */
-            shadowColor: vec4
+            decayLimit: boolean
 
             /**
-             * @beta
+             * @unreleased
+             */
+            decayRange: number
+
+            /**
+             * @unreleased
+             */
+            castsShadows: boolean
+
+            /**
+             * @unreleased
              */
             shadowDensity: number
 
             /**
-             * @beta
+             * @unreleased
              */
-            shadowFrustumFarClipPlane: number
+            shadowBlurRadius: number
 
             /**
-             * @beta
-             */
-            shadowFrustumNearClipPlane: number
-
-            /**
-             * @beta
-             */
-            shadowFrustumSize: number
-
-            /**
-             * @beta
+             * @unreleased
              */
             shadowTextureSize: number
 
             /**
-             * @beta
+             * @unreleased
              */
-            specularEnvmapTexture: Editor.Assets.Texture
+            autoLightSourcePosition: boolean
 
             /**
-             * @beta
+             * @unreleased
+             */
+            autoShadowFrustumSize: boolean
+
+            /**
+             * @unreleased
+             */
+            autoShadowFrustumSizeExtend: number
+
+            /**
+             * @unreleased
+             */
+            shadowFrustumSize: number
+
+            /**
+             * @unreleased
+             */
+            shadowFrustumNearClipPlane: number
+
+            /**
+             * @unreleased
+             */
+            shadowFrustumFarClipPlane: number
+
+            /**
+             * @unreleased
              */
             useEnvmapFromCamera: boolean
 
             /**
-             * @beta
+             * @unreleased
+             */
+            envmapFromCameraMode: Editor.Components.EnvmapFromCameraMode
+
+            /**
+             * @unreleased
              */
             useEstimation: boolean
+
+            /**
+             * @unreleased
+             */
+            estimationIntensity: number
+
+            /**
+             * @unreleased
+             */
+            estimationSharpness: number
+
+            /**
+             * @unreleased
+             */
+            envmapExposure: number
+
+            /**
+             * @unreleased
+             */
+            envmapRotation: number
+
+            /**
+             * @unreleased
+             */
+            diffuseEnvmapTexture: Editor.Assets.Texture
+
+            /**
+             * @unreleased
+             */
+            specularEnvmapTexture: Editor.Assets.Texture
+
+            /**
+             * @unreleased
+             */
+            color: vec4
+
+            /**
+             * @unreleased
+             */
+            shadowColor: vec4
+
+            /**
+             * @unreleased
+             */
+            dynamicEnvInputTexture: Editor.Assets.Texture
 
         }
 
@@ -4396,33 +3249,31 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * Settings used with {@link Editor.Components.LightSource}.
-
-         * @beta
+         * @unreleased
          */
         enum LightType {
             /**
-             * @beta
+             * @unreleased
              */
             Point,
             /**
-             * @beta
+             * @unreleased
              */
             Directional,
             /**
-             * @beta
+             * @unreleased
              */
             Spot,
             /**
-             * @beta
+             * @unreleased
              */
             Ambient,
             /**
-             * @beta
+             * @unreleased
              */
             EnvMap,
             /**
-             * @beta
+             * @unreleased
              */
             Estimation
         }
@@ -4434,24 +3285,19 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * The same entity as in Lens Scripting.  @see {@link "Lens Scripting".Built-In.LiquifyVisual}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class LiquifyVisual extends Editor.Components.Visual {
-
-            protected constructor()
-
+        interface LiquifyVisual extends Editor.Components.Visual {
             /**
-             * @beta
-             */
-            intensity: number
-
-            /**
-             * @beta
+             * @unreleased
              */
             radius: number
 
+            /**
+             * @unreleased
+             */
+            intensity: number
+
         }
 
     }
@@ -4460,23 +3306,17 @@ declare namespace Editor {
 
 declare namespace Editor {
     namespace Components {
-        /**
-         * The same entity as in Lens Scripting.  @see {@link "Lens Scripting".Built-In.LocatedAtComponent}.
-         */
-        abstract class LocatedAtComponent extends Editor.Components.Component {
-
-            protected constructor()
-
+        interface LocatedAtComponent extends Editor.Components.Component {
             /**
-             * @beta
-             */
-            location: Editor.Assets.Location
-
-            /**
-             * @beta
+             * @unreleased
              */
             position: vec3
 
+            /**
+             * @unreleased
+             */
+            location: Editor.Assets.Location
+
         }
 
     }
@@ -4485,37 +3325,31 @@ declare namespace Editor {
 
 declare namespace Editor {
     namespace Components {
-        /**
-         * The same entity as in Lens Scripting.  @see {@link "Lens Scripting".Built-In.LookAtComponent}.
-         */
-        abstract class LookAtComponent extends Editor.Components.Component {
-
-            protected constructor()
-
+        interface LookAtComponent extends Editor.Components.Component {
             /**
-             * @beta
-             */
-            aimVectors: Editor.Components.LookAtComponent.AimVectors
-
-            /**
-             * @beta
+             * @unreleased
              */
             lookAtMode: Editor.Components.LookAtComponent.LookAtMode
 
             /**
-             * @beta
+             * @unreleased
              */
-            offsetRotation: quat
+            aimVectors: Editor.Components.LookAtComponent.AimVectors
 
             /**
-             * @beta
+             * @unreleased
+             */
+            worldUpVector: Editor.Components.LookAtComponent.WorldUpVector
+
+            /**
+             * @unreleased
              */
             target: Editor.Model.SceneObject
 
             /**
-             * @beta
+             * @unreleased
              */
-            worldUpVector: Editor.Components.LookAtComponent.WorldUpVector
+            offsetRotation: quat
 
         }
 
@@ -4527,105 +3361,103 @@ declare namespace Editor {
     namespace Components {
         namespace LookAtComponent {
             /**
-             * Settings used with {@link Editor.Components.LookAtComponent}.
-
-             * @beta
+             * @unreleased
              */
             enum AimVectors {
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 XAimYUp,
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 XAimZUp,
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 YAimXUp,
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 YAimZUp,
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 ZAimXUp,
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 ZAimYUp,
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 XAimNegativeYUp,
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 XAimNegativeZUp,
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 YAimNegativeXUp,
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 YAimNegativeZUp,
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 ZAimNegativeXUp,
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 ZAimNegativeYUp,
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 NegativeXAimYUp,
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 NegativeXAimZUp,
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 NegativeYAimXUp,
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 NegativeYAimZUp,
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 NegativeZAimXUp,
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 NegativeZAimYUp,
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 NegativeXAimNegativeYUp,
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 NegativeXAimNegativeZUp,
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 NegativeYAimNegativeXUp,
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 NegativeYAimNegativeZUp,
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 NegativeZAimNegativeXUp,
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 NegativeZAimNegativeYUp
             }
@@ -4640,17 +3472,15 @@ declare namespace Editor {
     namespace Components {
         namespace LookAtComponent {
             /**
-             * Settings used with {@link Editor.Components.LookAtComponent}.
-
-             * @beta
+             * @unreleased
              */
             enum LookAtMode {
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 LookAtPoint,
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 LookAtDirection
             }
@@ -4665,45 +3495,43 @@ declare namespace Editor {
     namespace Components {
         namespace LookAtComponent {
             /**
-             * Settings used with {@link Editor.Components.LookAtComponent}.
-
-             * @beta
+             * @unreleased
              */
             enum WorldUpVector {
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 SceneX,
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 SceneY,
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 SceneZ,
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 TargetX,
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 TargetY,
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 TargetZ,
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 ObjectX,
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 ObjectY,
                 /**
-                 * @beta
+                 * @unreleased
                  */
                 ObjectZ
             }
@@ -4717,48 +3545,43 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * The same entity as in Lens Scripting.  @see {@link "Lens Scripting".Built-In.ManipulateComponent}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class ManipulateComponent extends Editor.Components.Component {
-
-            protected constructor()
+        interface ManipulateComponent extends Editor.Components.Component {
+            /**
+             * @unreleased
+             */
+            scale: boolean
 
             /**
-             * @beta
+             * @unreleased
              */
             drag: boolean
 
             /**
-             * @beta
-             */
-            maxDistance: number
-
-            /**
-             * @beta
-             */
-            maxScale: number
-
-            /**
-             * @beta
-             */
-            minDistance: number
-
-            /**
-             * @beta
-             */
-            minScale: number
-
-            /**
-             * @beta
+             * @unreleased
              */
             rotate: boolean
 
             /**
-             * @beta
+             * @unreleased
              */
-            scale: boolean
+            minDistance: number
+
+            /**
+             * @unreleased
+             */
+            maxDistance: number
+
+            /**
+             * @unreleased
+             */
+            minScale: number
+
+            /**
+             * @unreleased
+             */
+            maxScale: number
 
         }
 
@@ -4769,16 +3592,11 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * The same entity as in Lens Scripting.  @see {@link "Lens Scripting".Built-In.MarkerTrackingComponent}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class MarkerTrackingComponent extends Editor.Components.Component {
-
-            protected constructor()
-
+        interface MarkerTrackingComponent extends Editor.Components.Component {
             /**
-             * @beta
+             * @unreleased
              */
             marker: Editor.Assets.MarkerAsset
 
@@ -4791,63 +3609,58 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * The same entity as in Lens Scripting.  @see {@link "Lens Scripting".Built-In.MaterialMeshVisual}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class MaterialMeshVisual extends Editor.Components.BaseMeshVisual {
-
-            protected constructor()
-
+        interface MaterialMeshVisual extends Editor.Components.BaseMeshVisual {
             /**
-             * @beta
-             */
-            addMaterialAt(value: Editor.Assets.Material, pos?: number): void
-
-            /**
-             * @beta
-             */
-            clearMaterials(): void
-
-            /**
-             * @beta
-             */
-            getMaterialAt(pos: number): Editor.Assets.Material
-
-            /**
-             * @beta
+             * @unreleased
              */
             getMaterialsCount(): number
 
             /**
-             * @beta
+             * @unreleased
              */
-            indexOfMaterial(value: Editor.Assets.Material): number | undefined
+            getMaterialAt(pos: number): Editor.Assets.Material
 
             /**
-             * @beta
-             */
-            moveMaterial(origin: number, destination: number): void
-
-            /**
-             * @beta
-             */
-            removeMaterialAt(pos: number): void
-
-            /**
-             * @beta
+             * @unreleased
              */
             setMaterialAt(pos: number, value: Editor.Assets.Material): void
 
             /**
-             * @beta
+             * @unreleased
              */
-            mainMaterial: Editor.Assets.Material
+            addMaterialAt(value: Editor.Assets.Material, pos: number): void
 
             /**
-             * @beta
+             * @unreleased
+             */
+            removeMaterialAt(pos: number): void
+
+            /**
+             * @unreleased
+             */
+            clearMaterials(): void
+
+            /**
+             * @unreleased
+             */
+            moveMaterial(origin: number, destination: number): void
+
+            /**
+             * @unreleased
+             */
+            indexOfMaterial(value: Editor.Assets.Material): number
+
+            /**
+             * @unreleased
              */
             materials: Editor.Assets.Material[]
+
+            /**
+             * @unreleased
+             */
+            mainMaterial: Editor.Assets.Material
 
         }
 
@@ -4858,21 +3671,19 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * The same entity as in Lens Scripting.  @see {@link "Lens Scripting".Built-In.BaseMeshVisual}.
-
-         * @beta
+         * @unreleased
          */
         enum MeshShadowMode {
             /**
-             * @beta
+             * @unreleased
              */
             None,
             /**
-             * @beta
+             * @unreleased
              */
             Caster,
             /**
-             * @beta
+             * @unreleased
              */
             Receiver
         }
@@ -4884,14 +3695,11 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * @beta
+         * @unreleased
          */
-        abstract class ObjectTracking extends Editor.Components.Component {
-
-            protected constructor()
-
+        interface ObjectTracking extends Editor.Components.Component {
             /**
-             * @beta
+             * @unreleased
              */
             trackingType: Editor.Components.ObjectTrackingType
 
@@ -4904,65 +3712,13 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * The same entity as in Lens Scripting.  @see {@link "Lens Scripting".Built-In.ObjectTracking3D}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class ObjectTracking3D extends Editor.Components.Component {
-
-            protected constructor()
-
+        interface ObjectTracking3D extends Editor.Components.Component {
             /**
-             * @beta
-             */
-            matchingRootObject: Editor.Model.SceneObject
-
-            /**
-             * @beta
-             */
-            objectIndex: number
-
-            /**
-             * @beta
-             */
-            trackPosition: boolean
-
-            /**
-             * @beta
+             * @unreleased
              */
             trackingAsset: Editor.Assets.Object3DAsset
-
-            /**
-             * @beta
-             */
-            trackingMode: Editor.Components.ObjectTracking3D.TrackingMode
-
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Components {
-        namespace ObjectTracking3D {
-            /**
-             * @beta
-             */
-            enum TrackingMode {
-                /**
-                 * @beta
-                 */
-                ProportionsAndPose,
-                /**
-                 * @beta
-                 */
-                PoseOnly,
-                /**
-                 * @beta
-                 */
-                Attachment
-            }
 
         }
 
@@ -4973,41 +3729,39 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * Settings used with {@link Editor.Components.ObjectTracking}.
-
-         * @beta
+         * @unreleased
          */
         enum ObjectTrackingType {
             /**
-             * @beta
+             * @unreleased
              */
             Cat,
             /**
-             * @beta
+             * @unreleased
              */
             Dog,
             /**
-             * @beta
+             * @unreleased
              */
             Pet,
             /**
-             * @beta
+             * @unreleased
              */
             Hand,
             /**
-             * @beta
+             * @unreleased
              */
             Nails,
             /**
-             * @beta
+             * @unreleased
              */
             Shoulder,
             /**
-             * @beta
+             * @unreleased
              */
             UpperBody,
             /**
-             * @beta
+             * @unreleased
              */
             FullBody
         }
@@ -5019,26 +3773,21 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * Settings used with {@link Editor.Components.Text}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class OutlineSettings extends Editor.Model.EntityStructure {
-
-            protected constructor()
-
+        interface OutlineSettings extends Editor.Components.EntityStructure {
             /**
-             * @beta
+             * @unreleased
              */
             enabled: boolean
 
             /**
-             * @beta
+             * @unreleased
              */
             fill: Editor.Components.TextFill
 
             /**
-             * @beta
+             * @unreleased
              */
             size: number
 
@@ -5050,296 +3799,7 @@ declare namespace Editor {
 
 declare namespace Editor {
     namespace Components {
-        namespace Physics {
-            abstract class BodyComponent extends Editor.Components.Physics.ColliderComponent {
-
-                protected constructor()
-
-                angularDamping: number
-
-                bodySetting: Editor.Components.Physics.BodySetting
-
-                bodySettingValue: number
-
-                damping: number
-
-                dynamic: boolean
-
-            }
-
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Components {
-        namespace Physics {
-            enum BodySetting {
-                Mass,
-                Density
-            }
-
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Components {
-        namespace Physics {
-            abstract class Box extends Editor.Components.Physics.Shape {
-
-                protected constructor()
-
-                size: vec3
-
-            }
-
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Components {
-        namespace Physics {
-            abstract class Capsule extends Editor.Components.Physics.Shape {
-
-                protected constructor()
-
-                axis: Editor.Axis
-
-                length: number
-
-                radius: number
-
-            }
-
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Components {
-        namespace Physics {
-            abstract class ColliderComponent extends Editor.Components.Component {
-
-                protected constructor()
-
-                debugDrawEnabled: boolean
-
-                filter: Editor.Assets.Physics.Filter
-
-                fitVisual: boolean
-
-                forceCompound: boolean
-
-                intangible: boolean
-
-                matter: Editor.Assets.Physics.Matter
-
-                overlapFilter: Editor.Assets.Physics.Filter
-
-                rotateSmoothFactor: number
-
-                shape: Editor.Components.Physics.Shape
-
-                smooth: boolean
-
-                translateSmoothFactor: number
-
-                worldSettings: Editor.Assets.Physics.WorldSettingsAsset
-
-            }
-
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Components {
-        namespace Physics {
-            abstract class Cone extends Editor.Components.Physics.Shape {
-
-                protected constructor()
-
-                axis: Editor.Axis
-
-                length: number
-
-                radius: number
-
-            }
-
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Components {
-        namespace Physics {
-            enum Constraint {
-                Fixed,
-                Point,
-                Hinge
-            }
-
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Components {
-        namespace Physics {
-            abstract class ConstraintComponent extends Editor.Components.Component {
-
-                protected constructor()
-
-                constraint: Editor.Components.Physics.Constraint
-
-                debugDrawEnabled: boolean
-
-                target: Editor.Components.Physics.ColliderComponent
-
-            }
-
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Components {
-        namespace Physics {
-            abstract class Cylinder extends Editor.Components.Physics.Shape {
-
-                protected constructor()
-
-                axis: Editor.Axis
-
-                length: number
-
-                radius: number
-
-            }
-
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Components {
-        namespace Physics {
-            abstract class LevelSet extends Editor.Components.Physics.Shape {
-
-                protected constructor()
-
-                asset: Editor.Assets.Physics.LevelsetColliderAsset
-
-            }
-
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Components {
-        namespace Physics {
-            abstract class Mesh extends Editor.Components.Physics.Shape {
-
-                protected constructor()
-
-                convex: boolean
-
-                mesh: Editor.Assets.RenderMesh
-
-                skin: Editor.Components.Skin
-
-            }
-
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Components {
-        namespace Physics {
-            abstract class Shape extends Editor.Model.EntityStructure {
-
-                protected constructor()
-
-            }
-
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Components {
-        namespace Physics {
-            abstract class Sphere extends Editor.Components.Physics.Shape {
-
-                protected constructor()
-
-                radius: number
-
-            }
-
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Components {
-        namespace Physics {
-            abstract class WorldComponent extends Editor.Components.Component {
-
-                protected constructor()
-
-                updateOrder: number
-
-                worldSettings: Editor.Assets.Physics.WorldSettingsAsset
-
-            }
-
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Components {
-        /**
-         * The same entity as in Lens Scripting.  @see {@link "Lens Scripting".Built-In.PostEffectVisual}.
-         */
-        abstract class PostEffectVisual extends Editor.Components.Visual {
-
-            protected constructor()
-
+        interface PostEffectVisual extends Editor.Components.Visual {
             mainMaterial: Editor.Assets.Material
 
         }
@@ -5351,16 +3811,11 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * The same entity as in Lens Scripting.  @see {@link "Lens Scripting".Built-In.RectangleSetter}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class RectangleSetter extends Editor.Components.Component {
-
-            protected constructor()
-
+        interface RectangleSetter extends Editor.Components.Component {
             /**
-             * @beta
+             * @unreleased
              */
             cropTexture: Editor.Assets.Texture
 
@@ -5373,16 +3828,11 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * The render layer which the component will be on.
-
-         * @beta
+         * @unreleased
          */
-        abstract class RenderLayerOwner extends Editor.Components.Component {
-
-            protected constructor()
-
+        interface RenderLayerOwner extends Editor.Components.Component {
             /**
-             * @beta
+             * @unreleased
              */
             renderLayer: Editor.Model.LayerSet
 
@@ -5395,28 +3845,23 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * The same entity as in Lens Scripting.  @see {@link "Lens Scripting".Built-In.RenderMeshVisual}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class RenderMeshVisual extends Editor.Components.MaterialMeshVisual {
-
-            protected constructor()
-
+        interface RenderMeshVisual extends Editor.Components.MaterialMeshVisual {
             /**
-             * @beta
+             * @unreleased
              */
-            blendNormals: boolean
+            mesh: Editor.Assets.RenderMesh
 
             /**
-             * @beta
+             * @unreleased
              */
             blendShapesEnabled: boolean
 
             /**
-             * @beta
+             * @unreleased
              */
-            mesh: Editor.Assets.RenderMesh
+            blendNormals: boolean
 
         }
 
@@ -5427,38 +3872,33 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * The same entity as in Lens Scripting.  @see {@link "Lens Scripting".Built-In.RetouchVisual}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class RetouchVisual extends Editor.Components.Visual {
-
-            protected constructor()
-
+        interface RetouchVisual extends Editor.Components.Visual {
             /**
-             * @beta
-             */
-            eyeWhiteningIntensity: number
-
-            /**
-             * @beta
+             * @unreleased
              */
             faceIndex: number
 
             /**
-             * @beta
-             */
-            sharpenEyeIntensity: number
-
-            /**
-             * @beta
+             * @unreleased
              */
             softSkinIntensity: number
 
             /**
-             * @beta
+             * @unreleased
              */
             teethWhiteningIntensity: number
+
+            /**
+             * @unreleased
+             */
+            sharpenEyeIntensity: number
+
+            /**
+             * @unreleased
+             */
+            eyeWhiteningIntensity: number
 
         }
 
@@ -5469,16 +3909,13 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * Used with {@link Editor.Components.DeviceTracking}.  @see {@link "Lens Scripting".Built-In.RotationOptions}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class RotationOptions extends Editor.Model.EntityStructure {
-
-            protected constructor()
+        class RotationOptions {
+            constructor()
 
             /**
-             * @beta
+             * @unreleased
              */
             invertRotation: boolean
 
@@ -5491,21 +3928,16 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * The same entity as in Lens Scripting.  @see {@link "Lens Scripting".Built-In.ScreenRegionComponent}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class ScreenRegionComponent extends Editor.Components.Component {
-
-            protected constructor()
-
+        interface ScreenRegionComponent extends Editor.Components.Component {
             /**
-             * @beta
+             * @unreleased
              */
             region: Editor.Components.ScreenRegionType
 
             /**
-             * @beta
+             * @unreleased
              */
             resizeWithKeyboard: boolean
 
@@ -5518,29 +3950,27 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * Used with {@link Editor.Components.ScreenRegionComponent}.
-
-         * @beta
+         * @unreleased
          */
         enum ScreenRegionType {
             /**
-             * @beta
+             * @unreleased
              */
             FullFrame,
             /**
-             * @beta
+             * @unreleased
              */
             Capture,
             /**
-             * @beta
+             * @unreleased
              */
             Preview,
             /**
-             * @beta
+             * @unreleased
              */
             SafeRender,
             /**
-             * @beta
+             * @unreleased
              */
             RoundButton
         }
@@ -5552,43 +3982,38 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * The same entity as in Lens Scripting.  @see {@link "Lens Scripting".Built-In.ScreenTransform}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class ScreenTransform extends Editor.Components.Component {
-
-            protected constructor()
-
+        interface ScreenTransform extends Editor.Components.Component {
             /**
-             * @beta
-             */
-            advanced: boolean
-
-            /**
-             * @beta
-             */
-            anchor: Editor.Rect
-
-            /**
-             * @beta
+             * @unreleased
              */
             constraints: Editor.Components.ScreenTransformConstraints
 
             /**
-             * @beta
+             * @unreleased
+             */
+            anchor: Editor.Rect
+
+            /**
+             * @unreleased
              */
             offset: Editor.Rect
 
             /**
-             * @beta
+             * @unreleased
              */
             pivot: vec2
 
             /**
-             * @beta
+             * @unreleased
              */
             transform: Editor.Transform
+
+            /**
+             * @unreleased
+             */
+            advanced: boolean
 
         }
 
@@ -5599,43 +4024,41 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * Used with {@link Editor.Components.ScreenTransformConstraints}.
-
-         * @beta
+         * @unreleased
          */
         class ScreenTransformConstraints {
             /**
-             * @beta
+             * @unreleased
              */
             constructor()
 
             /**
-             * @beta
+             * @unreleased
              */
             fixedHeight: boolean
 
             /**
-             * @beta
+             * @unreleased
              */
             fixedWidth: boolean
 
             /**
-             * @beta
+             * @unreleased
              */
             pinToBottom: boolean
 
             /**
-             * @beta
+             * @unreleased
              */
             pinToLeft: boolean
 
             /**
-             * @beta
+             * @unreleased
              */
             pinToRight: boolean
 
             /**
-             * @beta
+             * @unreleased
              */
             pinToTop: boolean
 
@@ -5648,24 +4071,11 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * The same entity as in Lens Scripting.  @see {@link "Lens Scripting".Built-In.ScriptComponent}.
-
-         * @beta
-
-         * @example
-         * ```js
-         * const scriptComponent = sceneObject.addComponent('ScriptComponent')
-         * scriptComponent.scriptAsset = scriptAsset
-         * ```
+         * @unreleased
          */
-        abstract class ScriptComponent extends Editor.Components.Component {
-
-            protected constructor()
-
+        interface ScriptComponent extends Editor.Components.Component {
             /**
-             * Script asset associated with the script component.
-
-             * @beta
+             * @unreleased
              */
             scriptAsset: Editor.Assets.ScriptAsset
 
@@ -5678,37 +4088,15 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * @beta
-         */
-        abstract class Skin extends Editor.Components.Component {
-
-            protected constructor()
-
-            /**
-             * @beta
-             */
-            skinBones: object
-
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Components {
-        /**
-         * Used with {@link Editor.Components.Canvas}.
-
-         * @beta
+         * @unreleased
          */
         enum SortingType {
             /**
-             * @beta
+             * @unreleased
              */
             Hierarchy,
             /**
-             * @beta
+             * @unreleased
              */
             Depth
         }
@@ -5720,33 +4108,31 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * Used with {@link Editor.Components.BaseMeshVisual}.
-
-         * @beta
+         * @unreleased
          */
         enum StretchMode {
             /**
-             * @beta
+             * @unreleased
              */
             Fill,
             /**
-             * @beta
+             * @unreleased
              */
             Fit,
             /**
-             * @beta
+             * @unreleased
              */
             Stretch,
             /**
-             * @beta
+             * @unreleased
              */
             FitWidth,
             /**
-             * @beta
+             * @unreleased
              */
             FitHeight,
             /**
-             * @beta
+             * @unreleased
              */
             FillAndCut
         }
@@ -5758,30 +4144,28 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * Used with {@link Editor.Components.FaceStretchVisual}.
-
-         * @beta
+         * @unreleased
          */
         class StretchPoint {
             /**
-             * @beta
+             * @unreleased
              */
             constructor()
 
             /**
-             * @beta
-             */
-            delta: vec3
-
-            /**
-             * @beta
+             * @unreleased
              */
             index: number
 
             /**
-             * @beta
+             * @unreleased
              */
             weight: number
+
+            /**
+             * @unreleased
+             */
+            delta: vec3
 
         }
 
@@ -5792,16 +4176,13 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * The same entity as in Lens Scripting.  @see {@link "Lens Scripting".Built-In.DeviceTracking}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class SurfaceOptions extends Editor.Model.EntityStructure {
-
-            protected constructor()
+        class SurfaceOptions {
+            constructor()
 
             /**
-             * @beta
+             * @unreleased
              */
             enhanceWithNativeAR: boolean
 
@@ -5814,245 +4195,103 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * The same entity as in Lens Scripting.  @see {@link "Lens Scripting".Built-In.Text}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class Text extends Editor.Components.BaseMeshVisual {
-
-            protected constructor()
-
+        interface Text extends Editor.Components.BaseMeshVisual {
             /**
-             * @beta
-             */
-            advancedLayout: Editor.Components.TextAdvancedLayout
-
-            /**
-             * @beta
-             */
-            backgroundSettings: Editor.Components.BackgroundSettings
-
-            /**
-             * @beta
-             */
-            capitalizationOverride: Editor.Components.CapitalizationOverride
-
-            /**
-             * @beta
-             */
-            depthTest: boolean
-
-            /**
-             * @beta
-             */
-            dropshadowSettings: Editor.Components.DropshadowSettings
-
-            /**
-             * @beta
-             */
-            editable: boolean
-
-            /**
-             * @beta
-             */
-            font: Editor.Assets.Font
-
-            /**
-             * @beta
-             */
-            horizontalOverflow: Editor.Components.HorizontalOverflow
-
-            /**
-             * @beta
-             */
-            letterSpacing: number
-
-            /**
-             * @beta
-             */
-            lineSpacing: number
-
-            /**
-             * @beta
-             */
-            outlineSettings: Editor.Components.OutlineSettings
-
-            /**
-             * @beta
-             */
-            showEditingPreview: boolean
-
-            /**
-             * @beta
-             */
-            size: number
-
-            /**
-             * @beta
-             */
-            sizeToFit: boolean
-
-            /**
-             * @beta
+             * @unreleased
              */
             text: string
 
             /**
-             * @beta
+             * @unreleased
+             */
+            font: Editor.Assets.Font
+
+            /**
+             * @unreleased
+             */
+            size: number
+
+            /**
+             * @unreleased
+             */
+            verticalOverflow: Editor.Components.VerticalOverflow
+
+            /**
+             * @unreleased
+             */
+            horizontalOverflow: Editor.Components.HorizontalOverflow
+
+            /**
+             * @unreleased
              */
             textFill: Editor.Components.TextFill
 
             /**
-             * @beta
+             * @unreleased
              */
-            touchHandler: Editor.Components.InteractionComponent
+            dropshadowSettings: Editor.Components.DropshadowSettings
 
             /**
-             * @beta
+             * @unreleased
              */
-            twoSided: boolean
+            outlineSettings: Editor.Components.OutlineSettings
 
             /**
-             * @beta
+             * @unreleased
              */
-            verticalOverflow: Editor.Components.VerticalOverflow
+            backgroundSettings: Editor.Components.BackgroundSettings
 
             /**
-             * @beta
-             */
-            worldSpaceRect: Editor.Rect
-
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Components {
-        /**
-         * The same entity as in Lens Scripting.  @see {@link "Lens Scripting".Built-In.Text3D}.
-
-         * @beta
-         */
-        abstract class Text3D extends Editor.Components.MaterialMeshVisual {
-
-            protected constructor()
-
-            /**
-             * @beta
+             * @unreleased
              */
             advancedLayout: Editor.Components.TextAdvancedLayout
 
             /**
-             * @beta
-             */
-            capitalizationOverride: Editor.Components.CapitalizationOverride
-
-            /**
-             * @beta
-             */
-            editable: boolean
-
-            /**
-             * @beta
-             */
-            extrudeDirection: Editor.Components.ExtrudeDirection
-
-            /**
-             * @beta
-             */
-            extrusionDepth: number
-
-            /**
-             * @beta
-             */
-            font: Editor.Assets.Font
-
-            /**
-             * @beta
-             */
-            horizontalOverflow: Editor.Components.HorizontalOverflow
-
-            /**
-             * @beta
-             */
-            letterSpacing: number
-
-            /**
-             * @beta
-             */
-            lineSpacing: number
-
-            /**
-             * @beta
-             */
-            showEditingPreview: boolean
-
-            /**
-             * @beta
-             */
-            size: number
-
-            /**
-             * @beta
+             * @unreleased
              */
             sizeToFit: boolean
 
             /**
-             * @beta
-             */
-            text: string
-
-            /**
-             * @beta
-             */
-            touchHandler: Editor.Components.InteractionComponent
-
-            /**
-             * @beta
-             */
-            verticalOverflow: Editor.Components.VerticalOverflow
-
-            /**
-             * @beta
-             */
-            worldSpaceRect: Editor.Rect
-
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Components {
-        /**
-         * @beta
-         */
-        abstract class TextAdvancedLayout extends Editor.Model.EntityStructure {
-
-            protected constructor()
-
-            /**
-             * @beta
-             */
-            capitalizationOverride: Editor.Components.CapitalizationOverride
-
-            /**
-             * @beta
-             */
-            extentsTarget: Editor.Components.ScreenTransform
-
-            /**
-             * @beta
+             * @unreleased
              */
             letterSpacing: number
 
             /**
-             * @beta
+             * @unreleased
              */
             lineSpacing: number
+
+            /**
+             * @unreleased
+             */
+            depthTest: boolean
+
+            /**
+             * @unreleased
+             */
+            worldSpaceRect: Editor.Rect
+
+            /**
+             * @unreleased
+             */
+            capitalizationOverride: Editor.Components.CapitalizationOverride
+
+            /**
+             * @unreleased
+             */
+            editable: boolean
+
+            /**
+             * @unreleased
+             */
+            showEditingPreview: boolean
+
+            /**
+             * @unreleased
+             */
+            touchHandler: Editor.Components.InteractionComponent
 
         }
 
@@ -6063,43 +4302,147 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * Settings used with {@link Editor.Components.Text}.  @see {@link "Lens Scripting".Built-In.Text}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class TextFill extends Editor.Model.EntityStructure {
-
-            protected constructor()
-
+        interface Text3D extends Editor.Components.MaterialMeshVisual {
             /**
-             * @beta
+             * @unreleased
              */
-            color: vec4
+            text: string
 
             /**
-             * @beta
+             * @unreleased
+             */
+            font: Editor.Assets.Font
+
+            /**
+             * @unreleased
+             */
+            size: number
+
+            /**
+             * @unreleased
+             */
+            extrusionDepth: number
+
+            /**
+             * @unreleased
+             */
+            extrudeDirection: Editor.Components.ExtrudeDirection
+
+            /**
+             * @unreleased
+             */
+            verticalOverflow: Editor.Components.VerticalOverflow
+
+            /**
+             * @unreleased
+             */
+            horizontalOverflow: Editor.Components.HorizontalOverflow
+
+            /**
+             * @unreleased
+             */
+            sizeToFit: boolean
+
+            /**
+             * @unreleased
+             */
+            letterSpacing: number
+
+            /**
+             * @unreleased
+             */
+            lineSpacing: number
+
+            /**
+             * @unreleased
+             */
+            worldSpaceRect: Editor.Rect
+
+            /**
+             * @unreleased
+             */
+            capitalizationOverride: Editor.Components.CapitalizationOverride
+
+            /**
+             * @unreleased
+             */
+            editable: boolean
+
+            /**
+             * @unreleased
+             */
+            showEditingPreview: boolean
+
+            /**
+             * @unreleased
+             */
+            touchHandler: Editor.Components.InteractionComponent
+
+            /**
+             * @unreleased
+             */
+            advancedLayout: Editor.Components.TextAdvancedLayout
+
+        }
+
+    }
+
+}
+
+declare namespace Editor {
+    namespace Components {
+        /**
+         * @unreleased
+         */
+        interface TextAdvancedLayout extends Editor.Components.EntityStructure {
+            /**
+             * @unreleased
+             */
+            extentsTarget: Editor.Components.ScreenTransform
+
+            /**
+             * @unreleased
+             */
+            letterSpacing: number
+
+            /**
+             * @unreleased
+             */
+            lineSpacing: number
+
+            /**
+             * @unreleased
+             */
+            capitalizationOverride: Editor.Components.CapitalizationOverride
+
+        }
+
+    }
+
+}
+
+declare namespace Editor {
+    namespace Components {
+        /**
+         * @unreleased
+         */
+        interface TextFill extends Editor.Components.EntityStructure {
+            /**
+             * @unreleased
              */
             mode: Editor.Components.TextFillMode
 
             /**
-             * @beta
+             * @unreleased
+             */
+            color: vec4
+
+            /**
+             * @unreleased
              */
             texture: Editor.Assets.Texture
-
-            /**
-             * @beta
-             */
-            textureStretch: Editor.Components.StretchMode
-
-            /**
-             * @beta
-             */
-            tileCount: number
-
-            /**
-             * @beta
-             */
-            tileZone: Editor.Components.TextFillTileZone
 
         }
 
@@ -6110,17 +4453,15 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * Settings used with {@link Editor.Components.Text}.  @see {@link "Lens Scripting".Built-In.Text}.
-
-         * @beta
+         * @unreleased
          */
         enum TextFillMode {
             /**
-             * @beta
+             * @unreleased
              */
             Solid,
             /**
-             * @beta
+             * @unreleased
              */
             Texture
         }
@@ -6132,49 +4473,19 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * @beta
-         */
-        enum TextFillTileZone {
-            /**
-             * @beta
-             */
-            Rect,
-            /**
-             * @beta
-             */
-            Extents,
-            /**
-             * @beta
-             */
-            Character,
-            /**
-             * @beta
-             */
-            Screen
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Components {
-        /**
-         * Settings used with {@link Editor.Components.Canvas}.  @see {@link "Lens Scripting".Built-In.Canvas}.
-
-         * @beta
+         * @unreleased
          */
         enum UnitType {
             /**
-             * @beta
+             * @unreleased
              */
             World,
             /**
-             * @beta
+             * @unreleased
              */
             Pixels,
             /**
-             * @beta
+             * @unreleased
              */
             Points
         }
@@ -6186,21 +4497,19 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * Settings used with {@link Editor.Components.Text}.  @see {@link "Lens Scripting".Built-In.Text}.
-
-         * @beta
+         * @unreleased
          */
         enum VerticalOverflow {
             /**
-             * @beta
+             * @unreleased
              */
             Overflow,
             /**
-             * @beta
+             * @unreleased
              */
             Truncate,
             /**
-             * @beta
+             * @unreleased
              */
             Shrink
         }
@@ -6212,16 +4521,11 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Components {
         /**
-         * The same entity as in Lens Scripting.  @see {@link "Lens Scripting".Built-In.Visual}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class Visual extends Editor.Components.Component {
-
-            protected constructor()
-
+        interface Visual extends Editor.Components.Component {
             /**
-             * @beta
+             * @unreleased
              */
             renderOrder: number
 
@@ -6232,23 +4536,14 @@ declare namespace Editor {
 }
 
 declare namespace Editor {
-    abstract class Compression {
-
-        protected constructor()
-
+    interface Compression {
     }
 
 }
 
 declare namespace Editor {
     namespace Compression {
-        /**
-         * Module to zip and unzip files.
-         */
-        abstract class Zip {
-
-            protected constructor()
-
+        interface Zip {
         }
 
     }
@@ -6258,18 +4553,14 @@ declare namespace Editor {
     namespace Compression {
         namespace Zip {
             /**
-             * Pack files into a zip.
-
-             * @beta
+             * @unreleased
              */
-            export function pack(src: Editor.Path, destFile: Editor.Path): void
+            export function unpack(src: Editor.Path, destDir: Editor.Path): void
 
             /**
-             * Unpack the zip file.
-
-             * @beta
+             * @unreleased
              */
-            export function unpack(src: Editor.Path | string, destDir: Editor.Path | string): void
+            export function pack(src: Editor.Path, destFile: Editor.Path): void
 
 
         }
@@ -6280,74 +4571,66 @@ declare namespace Editor {
 
 declare namespace Editor {
     /**
-     * An action in a {@link Editor.IContextActionRegistry}.
+     * @unreleased
+     */
+    interface Connection {
+        /**
+         * @unreleased
+         */
+        disconnect(): void
 
-     * @beta
+        /**
+         * @unreleased
+
+         * @readonly
+         */
+        isConnected: boolean
+
+    }
+
+}
+
+declare namespace Editor {
+    /**
+     * @unreleased
      */
     class ContextAction {
         /**
-         * @beta
+         * @unreleased
          */
         constructor()
 
         /**
-         * Callback for when the action is executed.
-
-         * @beta
+         * @unreleased
          */
-        apply: () => void
+        id: string
 
         /**
-         * Caption for the action.
-
-         * @beta
+         * @unreleased
          */
         caption: string
 
         /**
-         * Description for the action.
+         * @unreleased
+         */
+        apply: () => void
 
-         * @beta
+        /**
+         * @unreleased
          */
         description: string
 
         /**
-         * Section for the action to be in.
-
-         * @beta
+         * @unreleased
          */
         group: string[]
 
-        /**
-         * Identifier for the caption.
-
-         * @beta
-         */
-        id: string
-
     }
 
 }
 
 declare namespace Editor {
-    /**
-     * A registry of {@link Editor.ContextAction} which populates actions in context menu (i.e. right click).
-
-     * @beta
-     */
-    abstract class ContextActionRegistry extends Editor.IContextActionRegistry {
-
-        protected constructor()
-
-    }
-
-}
-
-declare namespace Editor {
-    abstract class Dock {
-
-        protected constructor()
-
+    interface Dock {
     }
 
 }
@@ -6355,83 +4638,16 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Dock {
         /**
-         * @beta
+         * @unreleased
          */
-        abstract class DockManager extends Editor.Dock.IDockManager {
-
-            protected constructor()
-
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Dock {
-        /**
-         * Manages the states of Lens Studio panels.
-
-         * @beta
-
-         * @example
-         * ```js
-         * import CoreService from 'LensStudio:CoreService';
-         * import * as serialization from 'LensStudio:Serialization';
-
-         * export class DockManager extends CoreService {
-         *     static descriptor() {
-         *         return {
-         *             id: 'Snap.Test.DockManager',
-         *             name: 'DockManager',
-         *             description: 'DockManager',
-         *             interfaces: CoreService.descriptor().interfaces,
-         *             dependencies: [Editor.Dock.IDockManager]
-         *         };
-         *     }
-
-         *     constructor(pluginSystem) {
-         *         super(pluginSystem);
-         *         this.guards = [];
-         *     }
-
-         *     start() {
-         *         const layoutStr = 'dock:\n' +
-         * d: false\n' +
-         *             '  main:\n' +
-         *             '    items:\n' +
-         *             '      - items:\n';
-
-         *         // Simply test that reader and writer can be created and used without throwing
-         *         let reader = serialization.Yaml.createReader(layoutStr);
-         *         const writer = serialization.Yaml.createWriter();
-
-         *         const dockManager = this.pluginSystem.findInterface(Editor.Dock.IDockManager);
-         *         dockManager.write(writer);
-         *         const writtenContent = writer.getString();
-         *         reader = serialization.Yaml.createReader(writtenContent);
-         *     }
-
-         *     stop() {
-         *     }
-         * }
-         * ```
-         */
-        abstract class IDockManager extends Editor.IPluginComponent {
-
-            protected constructor()
-
+        interface IDockManager extends ScriptObject {
             /**
-             * Reads the current state of the DockManager.
-
-             * @beta
+             * @unreleased
              */
             read(reader: import('LensStudio:Serialization').IReader): void
 
             /**
-             * Writes to the Dock Manager.
-
-             * @beta
+             * @unreleased
              */
             write(writer: import('LensStudio:Serialization').IWriter): void
 
@@ -6440,67 +4656,30 @@ declare namespace Editor {
     }
 
 }
-declare namespace Editor {
-    namespace Dock {
-        namespace IDockManager {
-            /**
-             * @beta
-             */
-            let interfaceID: string
-
-
-        }
-
-    }
-
-}
 
 declare namespace Editor {
     /**
-     * @beta
+     * @unreleased
      */
-    abstract class EntityPickerComponent extends Editor.IEntityPicker {
-
-        protected constructor()
-
-    }
-
-}
-
-declare namespace Editor {
-    /**
-     * Component that allows you to check whether Lens Studio is authorized, as well as get authorization. Requires `snap_auth_token` in the `module.json` of your plugin.
-
-     * @beta
-     */
-    abstract class IAuthorization extends Editor.IPluginComponent {
-
-        protected constructor()
-
+    interface IAuthorization extends ScriptObject {
         /**
-         * Initiate the authorization flow.
-
-         * @beta
+         * @unreleased
          */
         authorize(): void
 
         /**
-         * Current authorization state.
+         * @unreleased
 
          * @readonly
-
-         * @beta
          */
         isAuthorized: boolean
 
         /**
-         * Signal that responds to changes in authorization state.
+         * @unreleased
 
          * @readonly
-
-         * @beta
          */
-        onAuthorizationChange: signal1<boolean, void>
+        onAuthorizationChange: any
 
     }
 
@@ -6516,112 +4695,47 @@ declare namespace Editor {
 
 declare namespace Editor {
     /**
-     * An icon to be used in the Editor UI.
-
-     * @beta
-
-     * @example
-     * ```js
-     * const pathToIconFromPlugin = import.meta.resolve('icon.svg');
-     * Editor.Icon.fromFile(pathToIconFromPlugin);
-     * ```
+     * @unreleased
      */
-    abstract class Icon {
-
-        protected constructor()
-
+    interface Icon {
     }
 
 }
 declare namespace Editor {
     namespace Icon {
         /**
-         * Creates an icon from an SVG file.
-
-         * @beta
-         */
-        export function fromFile(absoluteFilePath: Editor.Path | string): Editor.Icon
-
-        /**
-         * Creates an icon from a buffer containing SVG data.
-
-         * @beta
+         * @unreleased
          */
         export function fromSvgData(buffer: string): Editor.Icon
 
-
-    }
-
-}
-
-declare namespace Editor {
-    /**
-     * @beta
-     */
-    abstract class IContext extends ScriptObject {
-
-        protected constructor()
-
-    }
-
-}
-
-declare namespace Editor {
-    /**
-     * A registry of {@link Editor.ContextAction} which will be shown in a contextual menu (i.e. right click).
-
-     * @beta
-
-     * @example
-     * ```js
-     * import { CoreService } from 'LensStudio:CoreService';
-
-     * export class ContextActionRegistry extends CoreService {
-     *     static descriptor() {
-     *         return {
-     *             id: 'com.example.contextActionRegistry',
-     *             name: 'ContextActionRegistry',
-     *             description: 'ContextActionRegistry',
-     *             interfaces: CoreService.descriptor().interfaces,
-     *             dependencies: [Editor.IContextActionRegistry]
-     *         };
-     *     }
-
-     *     constructor(pluginSystem) {
-     *         super(pluginSystem);
-     *         this.guards = [];
-     *     }
-
-     *     start() {
-     *         const contextActionRegistry = this.pluginSystem.findInterface(Editor.IContextActionRegistry);
-     *         this.guards.push(contextActionRegistry.registerAction((context) => {
-     *             const action = new Editor.ContextAction();
-     *             action.id = 'Test Action Id';
-     *             action.caption = 'Test Action Caption';
-     *             action.description = 'Test Action Description';
-     *             action.group = ['Test Group'];
-     *             action.apply = () => {
-     *             };
-     *             return action;
-     *         }));
-     *     }
-
-     *     stop() {
-     *         this.guards = [];
-     *     }
-     * }
-     * ```
-     */
-    abstract class IContextActionRegistry extends Editor.IPluginComponent {
-
-        protected constructor()
-
         /**
-         * Adds the `action` to the registry.
-
-         * @beta
+         * @unreleased
          */
-        registerAction(action: (arg1: Editor.IContext) => Editor): Editor.IGuard
+        export function fromFile(absoluteFilePath: Editor.Path): Editor.Icon
+
+
+    }
+
+}
+
+declare namespace Editor {
+    /**
+     * @unreleased
+     */
+    interface IContext extends ScriptObject {
+    }
+
+}
+
+declare namespace Editor {
+    /**
+     * @unreleased
+     */
+    interface IContextActionRegistry extends ScriptObject {
+        /**
+         * @unreleased
+         */
+        registerAction(action: (arg1: Editor.IContext) => Editor): Editor.ScopeGuard
 
     }
 
@@ -6629,7 +4743,7 @@ declare namespace Editor {
 declare namespace Editor {
     namespace IContextActionRegistry {
         /**
-         * @beta
+         * @unreleased
          */
         let interfaceID: string
 
@@ -6640,46 +4754,11 @@ declare namespace Editor {
 
 declare namespace Editor {
     /**
-     * Popup window that allows the user to choose specific objects in the Scene hierarchy, or assets in the Asset Browser.
-
-     * @beta
-
-     * @example
-     * ```js
-     * // Get access to the project's model component
-     * const model = this.pluginSystem.findInterface(Editor.IModel);
-     * const project = model.project;
-
-     * // Get access to the picker component
-     * const refPicker = this.pluginSystem.findInterface(Editor.IEntityPicker);
-
-     * // Open a picker
-     * const type = "SceneObject"
-
-     * // or Asset, etc.
-     * refPicker.requestPicker(type, (pickedReplacementUid) => {
-     *     Editor.print(pickedReplacementUid);
-     * })
-
-     * // List assets in project
-     * const assetManager = project.assetManager;
-     * assetManager.assets.forEach( asset => {
-     *     Editor.print(asset.id);
-     * })
-
-     * // List objects in project's scene
-     * const scene = project.scene;
-     * scene.sceneObjects.forEach( obj => {
-     *     Editor.print(obj.id);
-     * })
-     * ```
+     * @unreleased
      */
-    abstract class IEntityPicker extends Editor.IPluginComponent {
-
-        protected constructor()
-
+    interface IEntityPicker extends ScriptObject {
         /**
-         * @beta
+         * @unreleased
          */
         requestPicker(entityType: string, callback: (arg1: Editor.Model.Entity) => void): void
 
@@ -6689,7 +4768,7 @@ declare namespace Editor {
 declare namespace Editor {
     namespace IEntityPicker {
         /**
-         * @beta
+         * @unreleased
          */
         let interfaceID: string
 
@@ -6700,199 +4779,51 @@ declare namespace Editor {
 
 declare namespace Editor {
     /**
-     * @beta
+     * @unreleased
      */
-    abstract class IGuard extends ScriptObject {
-
-        protected constructor()
-
+    interface InstallableContentActionsComponent extends ScriptObject {
         /**
-         * @beta
-         */
-        dispose(): void
-
-    }
-
-}
-
-declare namespace Editor {
-    /**
-     * @beta
-     */
-    abstract class IInstallableContentActions extends Editor.IPluginComponent {
-
-        protected constructor()
-
-        /**
-         * @beta
+         * @unreleased
          */
         exportScript(scriptAsset: Editor.Assets.ScriptAsset, path: Editor.Path, visibility: Editor.Assets.ScriptTypes.Visibility, exportDependency: Editor.Model.ExportDependency): void
 
     }
 
 }
-declare namespace Editor {
-    namespace IInstallableContentActions {
-        /**
-         * @beta
-         */
-        let interfaceID: string
-
-
-    }
-
-}
 
 declare namespace Editor {
     /**
-     * @beta
+     * @unreleased
      */
-    abstract class IInstallableContentRegistry extends Editor.IPluginComponent {
-
-        protected constructor()
-
+    interface InstallableContentRegistryComponent extends ScriptObject {
         /**
-         * @beta
+         * @unreleased
          */
         getTypeById(uid: Editor.Uuid, entityBaseType: Editor.Model.EntityBaseType): string
 
         /**
-         * @beta
-         */
-        getTypeByName(name: string, entityBaseType: Editor.Model.EntityBaseType): string
-
-        /**
-         * @beta
+         * @unreleased
          */
         getTypeByVersion(uid: Editor.Uuid, version: Editor.Assets.Version, entityBaseType: Editor.Model.EntityBaseType): string
 
-    }
-
-}
-declare namespace Editor {
-    namespace IInstallableContentRegistry {
         /**
-         * @beta
+         * @unreleased
          */
-        let interfaceID: string
-
-
-    }
-}
-
-declare namespace Editor {
-    abstract class IInterface extends ScriptObject {
-
-        protected constructor()
-
-    }
-}
-
-declare namespace Editor {
-    /**
-     * @beta
-     */
-    abstract class InstallableContentActions extends Editor.IInstallableContentActions {
-
-        protected constructor()
+        getTypeByName(name: string, entityBaseType: Editor.Model.EntityBaseType): string
 
     }
 
 }
 
 declare namespace Editor {
-    /**
-     * @beta
-     */
-    abstract class InstallableContentRegistry extends Editor.IInstallableContentRegistry {
-
-        protected constructor()
-
-    }
-}
-
-declare namespace Editor {
-    /**
-     * @beta
-     */
-    abstract class IPackageActions extends Editor.IPluginComponent {
-
-        protected constructor()
-
-        /**
-         * @beta
-         */
-        exportScript(scriptAsset: Editor.Assets.ScriptAsset, path: Editor.Path, visibility: Editor.Assets.ScriptTypes.Visibility, exportDependency: Editor.Model.ExportDependency): void
-
-
-        exportPackage(nativePackageDescriptor: Editor.Assets.NativePackageDescriptor,path: Editor.Path | string, visibility: Editor.Assets.ScriptTypes.Visibility, externalDependenciesToInclude? : Editor.Model.AssetImportMetadata[]): void
-
-    }
-
-}
-
-declare namespace Editor {
-    /**
-     * @beta
-     */
-    abstract class IOverlayManager extends Editor.IPluginComponent {
-
-        protected constructor()
-
-        /**
-         * @beta
-         */
-        requestShow(overlayID: string): void
-
-    }
-
-}
-declare namespace Editor {
-    namespace IOverlayManager {
-        /**
-         * @beta
-         */
-        let interfaceID: string
-
-
-    }
-
-}
-
-declare namespace Editor {
-    abstract class IPluginComponent extends Editor.IInterface {
-
-        protected constructor()
-
-    }
-
-}
-
-declare namespace Editor {
-    /**
-     * The model object is a core concept in the plugin development environment. It serves as a central point for accessing key elements such as the scene, project, and {@link Editor.Model.AssetManager}.  The model object encapsulates the data model representing a Lens Studio project. It brings together environment entities and functionalities that are essential for developing plugins. It plays a role analogous to the "Model" component found in Model-View-Controller architectural patterns, containing both data and business logic.  In order to get the model object, which many key objects are stored within, you need the pluginSystem object which is being passed into the constructor of the plugin class, along with the ID of the model component (which can be accessed through the `Editor` namespace)
-
-     * @example
-     * ```js
-     * const model = pluginSystem.findInterface(Editor.Model.IModel)
-     * const assetManager = model.project.assetManager
-     * const scene = model.project.scene
-     * ```
-     */
-    abstract class Model {
-
-        protected constructor()
-
+    interface Model {
     }
 
 }
 
 declare namespace Editor {
     namespace Model {
-        abstract class AssetContext extends Editor.IContext {
-
-            protected constructor()
-
+        interface AssetContext extends Editor.IContext {
             /**
              * @readonly
              */
@@ -6907,19 +4838,16 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Model {
         namespace AssetContext {
-            abstract class Item {
-
-                protected constructor()
+            interface Item {
+                /**
+                 * @readonly
+                 */
+                path: Editor.Path
 
                 /**
                  * @readonly
                  */
                 asset: Editor.Assets.Asset
-
-                /**
-                 * @readonly
-                 */
-                path: Editor.Path
 
             }
 
@@ -6932,53 +4860,27 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Model {
         /**
-         * A handle for the metadata of an asset.
-
-         * @beta
-
-         * @example
-         * ```js
-         * // Get an asset by either finding an already imported one, or importing it.
-         * export function findOrCreate(assetManager, absolutePath) {
-         *     let meta = assetManager.findImportedCopy(absolutePath);
-         *     if (meta) {
-         *         return meta.primaryAsset;
-         *     }
-
-         *     meta = assetManager.importExternalFile(absolutePath);
-         *     return meta.primaryAsset;
-         * }
-         * ```
-
+         * @unreleased
          */
-        abstract class AssetImportMetadata extends Editor.Model.Entity {
-
-            protected constructor()
-
+        interface AssetImportMetadata extends Editor.Model.Entity {
             /**
-             * A list of all the available assets this handle contains.
+             * @unreleased
 
              * @readonly
-
-             * @beta
-             */
-            assets: Editor.Assets.Asset[]
-
-            /**
-             * The primary asset of this handle. Usually, this is the asset you will assign after accessing an asset.
-
-             * @readonly
-
-             * @beta
              */
             primaryAsset: Editor.Assets.Asset
 
             /**
-             * The source file where the asset was imported from.
+             * @unreleased
 
              * @readonly
+             */
+            assets: Editor.Assets.Asset[]
 
-             * @beta
+            /**
+             * @unreleased
+
+             * @readonly
              */
             sourcePath: Editor.Path
 
@@ -6990,36 +4892,22 @@ declare namespace Editor {
 
 declare namespace Editor {
     namespace Model {
-        abstract class AssetManager extends ScriptObject {
-
-            protected constructor()
-
-            createNativeAsset(assetType: string, baseName: string, relativeDestinationDir: Editor.Path): Editor.Assets.Asset
-
-            createPackage(requestedAssets: Editor.Model.AssetImportMetadata[], relativeDestinationDir: Editor.Path, packageName: string, packageOption: Editor.Model.PackageOption): Editor.Model.AssetImportMetadata
-
-            exportAssets(requestedAssets: Editor.Model.AssetImportMetadata[], absoluteDestination: Editor.Path): Editor.Model.AssetImportMetadata[]
-
-            exportSceneObjects(topLevelSceneObjects: Editor.Model.SceneObject[], absoluteDestination: Editor.Path): Editor.Model.AssetImportMetadata[]
-
-            /**
-             * Find a copy, if it exists, of a file.
-             */
-            findImportedCopy(absoluteSourcePath: Editor.Path): Editor.Model.AssetImportMetadata
-
-            getFileMeta(relativeFilePath: Editor.Path | string): Editor.Model.AssetImportMetadata
-
-            importExternalFile(absoluteSourcePath: Editor.Path | string, relativeDestinationDir: Editor.Path | string, resultType: Editor.Model.ResultType): Editor.Model.ImportResult
-
+        interface AssetManager extends ScriptObject {
             importExternalFileAsync(absoluteSourcePath: Editor.Path, relativeDestinationDir: Editor.Path, resultType: Editor.Model.ResultType): Promise<Editor.Model.ImportResult>
 
-            move(fileMeta: Editor.Model.AssetImportMetadata, relativeDestinationDir: Editor.Path): void
+            importExternalFile(absoluteSourcePath: Editor.Path, relativeDestinationDir: Editor.Path, resultType: Editor.Model.ResultType): Editor.Model.ImportResult
+
+            findImportedCopy(absoluteSourcePath: Editor.Path): Editor.Model.AssetImportMetadata
+
+            getFileMeta(relativeFilePath: Editor.Path): Editor.Model.AssetImportMetadata
 
             remove(relativeFilePath: Editor.Path): void
 
-            rename(fileMeta: Editor.Model.AssetImportMetadata, newName: string): void
+            createNativeAsset(assetType: string, baseName: string, relativeDestinationDir: Editor.Path): Editor.Assets.Asset
 
             saveAsPrefab(sceneObject: Editor.Model.SceneObject, relativeDestinationDir: Editor.Path): Editor.Assets.ObjectPrefab
+
+            move(fileMeta: Editor.Model.AssetImportMetadata, relativeDestinationDir: Editor.Path): void
 
             /**
              * @readonly
@@ -7044,10 +4932,7 @@ declare namespace Editor {
 
 declare namespace Editor {
     namespace Model {
-        abstract class BaseChangesStream extends ScriptObject {
-
-            protected constructor()
-
+        interface BaseChangesStream extends ScriptObject {
             executeAsGroup(name: string, change: () => void): void
 
         }
@@ -7058,23 +4943,7 @@ declare namespace Editor {
 
 declare namespace Editor {
     namespace Model {
-        abstract class ChangesStream extends Editor.Model.BaseChangesStream {
-
-            protected constructor()
-
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Model {
-        enum DeviceType {
-            Unknown,
-            Mobile,
-            Spectacles,
-            Desktop
+        interface ChangesStream extends Editor.Model.BaseChangesStream {
         }
 
     }
@@ -7084,50 +4953,35 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Model {
         /**
-         * An object in the scene, or asset in the {@link Editor.Model.AssetManager}
-
-         * @beta
+         * @unreleased
          */
-        abstract class Entity extends ScriptObject {
-
-            protected constructor()
-
+        interface Entity extends ScriptObject {
             /**
-             * A list of entities which this entity has a reference to.
-
-             * @beta
+             * @unreleased
              */
-            getDirectlyReferencedEntities(): Editor.Model.Entity[]
+            remapReferences(referenceMapping: Object): void
 
             /**
-             * A list of entities which has a reference to this entity.
-
-             * @beta
+             * @unreleased
              */
             getOwnedEntities(): Editor.Model.Entity[]
 
             /**
-             * Swap this entity for another one based on a JSON of the current entity id and the target entity id.
-
-             * @beta
+             * @unreleased
              */
-            remapReferences(referenceMapping: object): void
+            getDirectlyReferencedEntities(): Editor.Model.Entity[]
 
             /**
-             * The unique id of the entity.
+             * @unreleased
 
              * @readonly
-
-             * @beta
              */
             id: Editor.Uuid
 
             /**
-             * The entity's type.
+             * @unreleased
 
              * @readonly
-
-             * @beta
              */
             type: string
 
@@ -7140,15 +4994,15 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Model {
         /**
-         * @beta
+         * @unreleased
          */
         enum EntityBaseType {
             /**
-             * @beta
+             * @unreleased
              */
             Asset,
             /**
-             * @beta
+             * @unreleased
              */
             Component
         }
@@ -7160,73 +5014,43 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Model {
         /**
-         * @beta
+         * @unreleased
          */
         class EntityPrototypeData {
             /**
-             * @beta
+             * @unreleased
              */
             constructor()
 
             /**
-             * @beta
-             */
-            baseEntityType: string
-
-            /**
-             * @beta
-             */
-            caption: string
-
-            /**
-             * @beta
-             */
-            creator: (any|any)
-
-            /**
-             * @beta
+             * @unreleased
              */
             entityType: string
 
             /**
-             * @beta
+             * @unreleased
              */
-            icon: Editor.Icon
+            caption: string
 
             /**
-             * @beta
+             * @unreleased
              */
             section: string
 
-        }
+            /**
+             * @unreleased
+             */
+            baseEntityType: string
 
-    }
+            /**
+             * @unreleased
+             */
+            creator: (any | any)
 
-}
-
-declare namespace Editor {
-    namespace Model {
-        /**
-         * @beta
-         */
-        abstract class EntityPrototypeRegistryComponent extends Editor.Model.IEntityPrototypeRegistry {
-
-            protected constructor()
-
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Model {
-        /**
-         * @beta
-         */
-        abstract class EntityRegistryComponent extends Editor.Model.IEntityRegistry {
-
-            protected constructor()
+            /**
+             * @unreleased
+             */
+            icon: Editor.Icon
 
         }
 
@@ -7236,32 +5060,8 @@ declare namespace Editor {
 
 declare namespace Editor {
     namespace Model {
-        /**
-         * @beta
-         */
-        abstract class EntityStructure extends Editor.Model.Entity {
-
-            protected constructor()
-
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Model {
-        /**
-         * Exporting parameters used in  Editor.InstallableContentActionsComponent.exportScript(). It specifies wheather you'd like to include or exclude dependencies from your script export.
-         */
         enum ExportDependency {
-            /**
-             * This is used to tell inform export that you do not want to include any dependencies when exporting scripts. This means that if your script references items outside of your project, they will not be included in export.
-             */
             WithoutDependencies,
-            /**
-             * This is used to tell inform export that you do want to include any dependencies when exporting scripts. This means that if your script references items outside of your project, they will be included in export.
-             */
             WithDependencies
         }
 
@@ -7272,36 +5072,33 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Model {
         /**
-         * @beta
+         * @unreleased
          */
-        abstract class IEntityPrototypeRegistry extends Editor.IPluginComponent {
-
-            protected constructor()
-
+        interface IEntityPrototypeRegistry extends ScriptObject {
             /**
-             * @beta
+             * @unreleased
              */
-            createEntity(entityType: string, arg: (Editor.Path|Editor.Model.Entity), callback: (arg1: Editor.Model.Entity) => void): void
+            registerEntityPrototype(prototypeData: Editor.Model.EntityPrototypeData): Editor.ScopeGuard
 
             /**
-             * @beta
-             */
-            getCaptionForType(type: string): string
-
-            /**
-             * @beta
+             * @unreleased
              */
             getEntityTypes(baseType: string, filter: (arg1: string) => any): string[]
 
             /**
-             * @beta
+             * @unreleased
+             */
+            createEntity(entityType: string, arg: (Editor.Path | Editor.Model.Entity)): Editor.Model.Entity
+
+            /**
+             * @unreleased
              */
             getIconForType(type: string): Editor.Icon
 
             /**
-             * @beta
+             * @unreleased
              */
-            registerEntityPrototype(prototypeData: Editor.Model.EntityPrototypeData): Editor.IGuard
+            getCaptionForType(type: string): string
 
         }
 
@@ -7312,7 +5109,7 @@ declare namespace Editor {
     namespace Model {
         namespace IEntityPrototypeRegistry {
             /**
-             * @beta
+             * @unreleased
              */
             let interfaceID: string
 
@@ -7326,27 +5123,11 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Model {
         /**
-         * A registry of various entities.
-
-         * @beta
-
-         * @example
-         * ```js
-         * // Get a list of abstract entities
-         * const entityRegistry = pluginSystem.findInterface(Editor.Model.IEntityRegistry);
-         * const abstractFilter = (entityType) => {
-         *     return entityRegistry.getMeta(entityType).isAbstract;
-         * };
-         * ```
+         * @unreleased
          */
-        abstract class IEntityRegistry extends Editor.IPluginComponent {
-
-            protected constructor()
-
+        interface IEntityRegistry extends ScriptObject {
             /**
-             * Get the metadata of an entity.
-
-             * @beta
+             * @unreleased
              */
             getMeta(entityType: string): Editor.Model.Meta
 
@@ -7359,7 +5140,7 @@ declare namespace Editor {
     namespace Model {
         namespace IEntityRegistry {
             /**
-             * @beta
+             * @unreleased
              */
             let interfaceID: string
 
@@ -7372,25 +5153,12 @@ declare namespace Editor {
 
 declare namespace Editor {
     namespace Model {
-        abstract class IModel extends Editor.IPluginComponent {
-
-            protected constructor()
-
-            openProject(path: Editor.Path): void
+        interface IModel extends ScriptObject {
+            setEmptyProject(): void
 
             setDefaultProject(): void
 
-            setEmptyProject(): void
-
-            /**
-             * @readonly
-             */
-            onMetaInfoChanged: signal0<void>
-
-            /**
-             * @readonly
-             */
-            onProjectChanged: signal0<void>
+            openProject(path: Editor.Path): void
 
             /**
              * @readonly
@@ -7416,30 +5184,18 @@ declare namespace Editor {
 
 declare namespace Editor {
     namespace Model {
-        /**
-         * The result of {@link Editor.Model.AssetManager.importExternalFile} and {@link Editor.Model.AssetManager.importExternalFileAsync}.
-         */
-        abstract class ImportResult {
-
-            protected constructor()
-
+        interface ImportResult {
             /**
-             * The metadata of the files imported.
-
              * @readonly
              */
             files: Editor.Model.AssetImportMetadata[]
 
             /**
-             * A path to the imported file.
-
              * @readonly
              */
             path: Editor.Path
 
             /**
-             * The asset which is usually referenced after the asset has been imported.
-
              * @readonly
              */
             primary: Editor.Assets.Asset
@@ -7453,25 +5209,16 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Model {
         /**
-         * The layers within a {@link Editor.Model.LayerSet}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class Layer {
-
-            protected constructor()
-
+        interface Layer {
             /**
-             * The id of this layer.
-
-             * @beta
+             * @unreleased
              */
             id: Editor.Model.LayerId
 
             /**
-             * The name of the layer.
-
-             * @beta
+             * @unreleased
              */
             name: string
 
@@ -7484,13 +5231,11 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Model {
         /**
-         * The id of a {@link Editor.Model.Layer}.
-
-         * @beta
+         * @unreleased
          */
         class LayerId {
             /**
-             * @beta
+             * @unreleased
              */
             constructor(value: number)
 
@@ -7503,42 +5248,34 @@ declare namespace Editor {
     namespace Model {
         namespace LayerId {
             /**
-             * @beta
+             * @unreleased
              */
             export function forEach(predicate: (arg1: Editor.Model.LayerId) => void): void
 
             /**
-             * @beta
+             * @unreleased
              */
             export function forEachUser(predicate: (arg1: Editor.Model.LayerId) => void): void
 
             /**
-             * The default layer in a Lens.
-
-             * @beta
+             * @unreleased
              */
             let Default: Editor.Model.LayerId
 
             /**
-             * The maximum user of a layer.
-
-             * @beta
+             * @unreleased
              */
-            let MaxUser: Editor.Model.LayerId
+            let Ortho: Editor.Model.LayerId
 
             /**
-             * The minimum user of a layer.
-
-             * @beta
+             * @unreleased
              */
             let MinUser: Editor.Model.LayerId
 
             /**
-             * The layer which is used by the Orthographic camera by default.
-
-             * @beta
+             * @unreleased
              */
-            let Ortho: Editor.Model.LayerId
+            let MaxUser: Editor.Model.LayerId
 
 
         }
@@ -7550,57 +5287,40 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Model {
         /**
-         * The layers of a {@Editor.Assets.Scene}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class Layers extends Editor.Model.Entity {
-
-            protected constructor()
-
+        interface Layers extends Editor.Model.Entity {
             /**
-             * Add `layerId` to this entity.
-
-             * @beta
-             */
-            add(layerId: Editor.Model.LayerId): Editor.Model.Layer
-
-            /**
-             * Whether the layers contain `layerId`.
-
-             * @beta
+             * @unreleased
              */
             contains(layerId: Editor.Model.LayerId): boolean
 
             /**
-             * Get the layer with `layerId` if possible.
-
-             * @beta
+             * @unreleased
              */
-            find(layerId: Editor.Model.LayerId): Editor.Model.Layer | undefined
+            add(layerId: Editor.Model.LayerId): Editor.Model.Layer
 
             /**
-             * Remove `layerId` from this entity.
-
-             * @beta
+             * @unreleased
              */
             remove(layerId: Editor.Model.LayerId): void
 
             /**
-             * Check if another layer can be added to this entity.
+             * @unreleased
+             */
+            find(layerId: Editor.Model.LayerId): Editor.Model.Layer
+
+            /**
+             * @unreleased
 
              * @readonly
-
-             * @beta
              */
             canAdd: boolean
 
             /**
-             * The LayerSet which represents this entity.
+             * @unreleased
 
              * @readonly
-
-             * @beta
              */
             combinedIds: Editor.Model.LayerSet
 
@@ -7613,43 +5333,38 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Model {
         /**
-         * The same entity as in Lens Scripting.  @see {@link "Lens Scripting".Built-In.LayerSet}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class LayerSet {
-
-            protected constructor()
-
+        interface LayerSet {
             /**
-             * @beta
+             * @unreleased
              */
             contains(other: Editor.Model.LayerSet): boolean
 
             /**
-             * @beta
-             */
-            except(other: Editor.Model.LayerSet): Editor.Model.LayerSet
-
-            /**
-             * @beta
-             */
-            intersect(other: Editor.Model.LayerSet): Editor.Model.LayerSet
-
-            /**
-             * @beta
+             * @unreleased
              */
             isEmpty(): boolean
 
             /**
-             * @beta
-             */
-            toArray(): Editor.Model.LayerId[]
-
-            /**
-             * @beta
+             * @unreleased
              */
             union(other: Editor.Model.LayerSet): Editor.Model.LayerSet
+
+            /**
+             * @unreleased
+             */
+            intersect(other: Editor.Model.LayerSet): Editor.Model.LayerSet
+
+            /**
+             * @unreleased
+             */
+            except(other: Editor.Model.LayerSet): Editor.Model.LayerSet
+
+            /**
+             * @unreleased
+             */
+            toArray(): Editor.Model.LayerId[]
 
         }
 
@@ -7660,22 +5375,22 @@ declare namespace Editor {
     namespace Model {
         namespace LayerSet {
             /**
-             * @beta
+             * @unreleased
              */
             export function PredefinedIds(): Editor.Model.LayerSet
 
             /**
-             * @beta
+             * @unreleased
              */
             export function fromBit(bit: number): Editor.Model.LayerSet
 
             /**
-             * @beta
+             * @unreleased
              */
             export function fromId(layerId: Editor.Model.LayerId): Editor.Model.LayerSet
 
             /**
-             * @beta
+             * @unreleased
              */
             export function fromMask(mask: number): Editor.Model.LayerSet
 
@@ -7688,17 +5403,8 @@ declare namespace Editor {
 
 declare namespace Editor {
     namespace Model {
-        /**
-         * The various cameras which will be activated when this project's Lens turns on.
-         */
         enum LensActivationCamera {
-            /**
-             * Opens the front camera by default.
-             */
             Front,
-            /**
-             * Opens the back camera by default.
-             */
             Rear
         }
 
@@ -7708,18 +5414,11 @@ declare namespace Editor {
 
 declare namespace Editor {
     namespace Model {
-        /**
-         * The various contexts in which this Lens can be used.
-         */
         enum LensApplicability {
-            /**
-             * Lens is usable on the front camera.
-             */
             Front,
-            /**
-             * Lens is usable on the back camera.
-             */
-            Back
+            Back,
+            SpectaclesV3,
+            SpectaclesV4
         }
 
     }
@@ -7729,20 +5428,13 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Model {
         /**
-         * The metadata of an entity.
-
-         * @beta
+         * @unreleased
          */
-        abstract class Meta extends ScriptObject {
-
-            protected constructor()
-
+        interface Meta extends ScriptObject {
             /**
-             * Whether the entity can be created.
+             * @unreleased
 
              * @readonly
-
-             * @beta
              */
             isAbstract: boolean
 
@@ -7754,46 +5446,24 @@ declare namespace Editor {
 
 declare namespace Editor {
     namespace Model {
-        /**
-         * Metadata of the current project's Lens.
-         */
-        abstract class MetaInfo {
-
-            protected constructor()
-
-            /**
-             * Sets the `icon` as the Lens' icon.
-             */
+        interface MetaInfo {
             setIcon(externalPath: Editor.Path): void
 
-            /**
-             * The camera which will be activated when this Lens is turned on.
-             */
-            activationCamera: Editor.Model.LensActivationCamera
+            lensName: string
 
             /**
-             * The absolute path to the Lens Icon.
-
-             * @readonly
-             */
-            iconPath: Editor.Path
-
-            /**
-             * Whether an Lens icon has been set.
-
              * @readonly
              */
             isIconSet: boolean
 
             /**
-             * Where the Lens can be used.
+             * @readonly
              */
+            iconPath: Editor.Path
+
             lensApplicability: Editor.Model.LensApplicability[]
 
-            /**
-             * The publicly visible name of the Lens.
-             */
-            lensName: string
+            activationCamera: Editor.Model.LensActivationCamera
 
         }
 
@@ -7803,9 +5473,6 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Model {
         namespace MetaInfo {
-            /**
-             * Checks whether the Lens Name is valid. See Project Info guide to learn more.
-             */
             export function isLensNameValid(lensName: string): boolean
 
 
@@ -7817,10 +5484,7 @@ declare namespace Editor {
 
 declare namespace Editor {
     namespace Model {
-        abstract class ObjectContext extends Editor.IContext {
-
-            protected constructor()
-
+        interface ObjectContext extends Editor.IContext {
             /**
              * @readonly
              */
@@ -7834,26 +5498,10 @@ declare namespace Editor {
 
 declare namespace Editor {
     namespace Model {
-        enum PackageOption {
-            Packed,
-            Unpacked
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Model {
         /**
-         * An entity which can be turned into a prefab, such as {@link Editor.Model.SceneObject}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class Prefabable extends Editor.Model.Entity {
-
-            protected constructor()
-
+        interface Prefabable extends Editor.Model.Entity {
         }
 
     }
@@ -7862,13 +5510,15 @@ declare namespace Editor {
 
 declare namespace Editor {
     namespace Model {
-        abstract class Project extends ScriptObject {
-
-            protected constructor()
+        interface Project extends ScriptObject {
+            saveTo(absoluteFilePath: Editor.Path): void
 
             save(): void
 
-            saveTo(absoluteFilePath: Editor.Path): void
+            /**
+             * @readonly
+             */
+            scene: Editor.Assets.Scene
 
             /**
              * @readonly
@@ -7878,24 +5528,7 @@ declare namespace Editor {
             /**
              * @readonly
              */
-            assetsDirectory: Editor.Path
-
-            /**
-             * @readonly
-             */
-            cacheDirectory: Editor.Path
-
-            /**
-             * @readonly
-             */
             history: Editor.Model.ChangesStream
-
-            metaInfo: Editor.Model.MetaInfo
-
-            /**
-             * @readonly
-             */
-            projectDirectory: Editor.Path
 
             /**
              * @readonly
@@ -7905,14 +5538,19 @@ declare namespace Editor {
             /**
              * @readonly
              */
-            scene: Editor.Assets.Scene
+            projectDirectory: Editor.Path
 
             /**
              * @readonly
-
-             * @beta
              */
-            selection: Editor.Model.Selection
+            cacheDirectory: Editor.Path
+
+            /**
+             * @readonly
+             */
+            assetsDirectory: Editor.Path
+
+            metaInfo: Editor.Model.MetaInfo
 
         }
 
@@ -7922,21 +5560,9 @@ declare namespace Editor {
 
 declare namespace Editor {
     namespace Model {
-        /**
-         * How a file should be imported into the project.
-         */
         enum ResultType {
-            /**
-             * The imported entities will be readonly. However, the entity cann also be updated from source file.
-             */
             Packed,
-            /**
-             * The entity is unpacked and the entities within exists as if it was imported individually.
-             */
             Unpacked,
-            /**
-             * Lens Studio will decide how the file will be imported.
-             */
             Auto
         }
 
@@ -7947,253 +5573,182 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Model {
         /**
-         * The same entity as in Lens Scripting.   Can contain one or more {@link Editor.Components.Component}. Additionally, it can have zero or more scene objects which is a child of it.  @see {@link "Lens Scripting".Built-In.SceneObject}.
-
-         * @beta
+         * @unreleased
          */
-        abstract class SceneObject extends Editor.Model.Prefabable {
-
-            protected constructor()
-
+        interface SceneObject extends Editor.Model.Prefabable {
             /**
-             * Add a scene object as a child of this object at a specified `pos`.
-
-             * @beta
-             */
-            addChildAt(value: Editor.Model.SceneObject, pos?: number): void
-
-            /**
-             * Add a new {@link Editor.Components.Component} by entityType to this object..
-
-             * @beta
-             */
-            addComponent(entityType: string): Editor.Components.Component
-
-            /**
-             * Add the component `value` at the specified `pos`.
-
-             * @beta
-             */
-            addComponentAt(value: Editor.Components.Component, pos?: number): void
-
-            /**
-             * Remove all children from this object.
-
-             * @beta
-             */
-            clearChildren(): void
-
-            /**
-             * Remove all components from this scene object.
-
-             * @beta
-             */
-            clearComponents(): void
-
-            /**
-             * Destroy this scene object. All references to it becomes invalid.
-
-             * @beta
-             */
-            destroy(): void
-
-            /**
-             * Get a specific object at the specified `pos`.
-
-             * @beta
-             */
-            getChildAt(pos: number): Editor.Model.SceneObject
-
-            /**
-             * Get the number of children on this object.
-
-             * @beta
-             */
-            getChildrenCount(): number
-
-            /**
-             * Get the first component of `entityType`.
-
-             * @beta
-             */
-            getComponent<K extends keyof ComponentNameMap>(entityType: K): ComponentNameMap[K] | null
-
-            /**
-             * Get the component at the specified `pos`.
-
-             * @beta
-             */
-            getComponentAt(pos: number): Editor.Components.Component
-
-            /**
-             * Get all the components of `entityType` on this object.
-
-             * @beta
-             */
-            getComponents<K extends keyof ComponentNameMap>(entityType: K): ComponentNameMap[K][]
-
-            /**
-             * Get the number of components on this object.
-
-             * @beta
-             */
-            getComponentsCount(): number
-
-            /**
-             * Get the parent of this scene object.
-
-             * @beta
+             * @unreleased
              */
             getParent(): Editor.Model.SceneObject
 
             /**
-             * Get the position of a specific object, if the object is a child of this object.
-
-             * @beta
+             * @unreleased
              */
-            indexOfChild(value: Editor.Model.SceneObject): number | undefined
+            setParent(newParent: Editor.Model.SceneObject, position: number): void
 
             /**
-             * Get the position of a specific component `value` on this object.
-
-             * @beta
+             * @unreleased
              */
-            indexOfComponent(value: Editor.Components.Component): number | undefined
+            destroy(): void
 
             /**
-             * Move `child` in the order of children on this object.
-
-             * @beta
-             */
-            moveChild(child: Editor.Model.SceneObject, destination: number): void
-
-            /**
-             * Move the component `value` to a specified `pos`.
-
-             * @beta
-             */
-            moveComponent(origin: number, destination: number): void
-
-            /**
-             * Remove a child from this from this scene object.
-
-             * @beta
+             * @unreleased
              */
             removeChild(child: Editor.Model.SceneObject): void
 
             /**
-             * Remove a child at the specified `pos`.
-
-             * @beta
+             * @unreleased
              */
-            removeChildAt(pos: number): void
+            moveChild(child: Editor.Model.SceneObject, destination: number): void
 
             /**
-             * Remove the first component of `entityType` from this object.
+             * @unreleased
+             */
+            addComponent(entityType: string): Editor.Components.Component
 
-             * @beta
+            /**
+             * @unreleased
+             */
+            getComponent<K extends keyof ComponentNameMap>(entityType: string): ComponentNameMap[K]
+
+            /**
+             * @unreleased
+             */
+            getComponents<K extends keyof ComponentNameMap>(entityType: string): ComponentNameMap[K][]
+
+            /**
+             * @unreleased
              */
             removeComponent(entityType: string): boolean
 
             /**
-             * Remove the components at the specified `pos`.
-
-             * @beta
+             * @unreleased
              */
-            removeComponentAt(pos: number): void
+            getChildrenCount(): number
 
             /**
-             * Set the child scene object `value` to be at the specified `pos`.
+             * @unreleased
+             */
+            getChildAt(pos: number): Editor.Model.SceneObject
 
-             * @beta
+            /**
+             * @unreleased
              */
             setChildAt(pos: number, value: Editor.Model.SceneObject): void
 
             /**
-             * Set the component `value` to be at the specified `pos`.
+             * @unreleased
+             */
+            addChildAt(value: Editor.Model.SceneObject, pos: number): void
 
-             * @beta
+            /**
+             * @unreleased
+             */
+            removeChildAt(pos: number): void
+
+            /**
+             * @unreleased
+             */
+            clearChildren(): void
+
+            /**
+             * @unreleased
+             */
+            indexOfChild(value: Editor.Model.SceneObject): number
+
+            /**
+             * @unreleased
+             */
+            getComponentsCount(): number
+
+            /**
+             * @unreleased
+             */
+            getComponentAt(pos: number): Editor.Components.Component
+
+            /**
+             * @unreleased
              */
             setComponentAt(pos: number, value: Editor.Components.Component): void
 
             /**
-             * Set the parent of this scene object.
-
-             * @beta
+             * @unreleased
              */
-            setParent(newParent: Editor.Model.SceneObject, position?: number): void
+            addComponentAt(value: Editor.Components.Component, pos: number): void
 
             /**
-             * A list of scene objects that is a child of this scene object.
-
-             * @beta
+             * @unreleased
              */
-            children: Editor.Model.SceneObject[]
+            removeComponentAt(pos: number): void
 
             /**
-             * A list of components that is a child of this scene object.
-
-             * @beta
+             * @unreleased
              */
-            components: Editor.Components.Component[]
+            clearComponents(): void
 
             /**
-             * Whether this scene object is enabled or disabled.
-
-             * @beta
+             * @unreleased
              */
-            enabled: boolean
+            moveComponent(origin: number, destination: number): void
 
             /**
-             * Whether this scene object contains any component which is of type `Editor.Components.Visual`.
-
-             * @readonly
-
-             * @beta
+             * @unreleased
              */
-            hasVisuals: boolean
+            indexOfComponent(value: Editor.Components.Component): number
 
             /**
-             * The layer that this scene object is on.
-
-             * @beta
-             */
-            layer: Editor.Model.LayerId
-
-            /**
-             * The layerSet this scene object is on.
-
-             * @beta
-             */
-            layers: Editor.Model.LayerSet
-
-            /**
-             * The transform of this scene object relative to its parent.
-
-             * @beta
-             */
-            localTransform: Editor.Transform
-
-            /**
-             * The name of the scene object.
-
-             * @beta
+             * @unreleased
              */
             name: string
 
             /**
-             * @readonly
+             * @unreleased
+             */
+            enabled: boolean
 
-             * @beta
+            /**
+             * @unreleased
+             */
+            layer: Editor.Model.LayerId
+
+            /**
+             * @unreleased
+             */
+            layers: Editor.Model.LayerSet
+
+            /**
+             * @unreleased
+             */
+            localTransform: Editor.Transform
+
+            /**
+             * @unreleased
+             */
+            worldTransform: Editor.Transform
+
+            /**
+             * @unreleased
+
+             * @readonly
              */
             topOwner: Editor.Assets.ObjectOwner
 
             /**
-             * The transform of this scene object relative to the scene its in.
+             * @unreleased
 
-             * @beta
+             * @readonly
              */
-            worldTransform: Editor.Transform
+            hasVisuals: boolean
+
+            /**
+             * @unreleased
+             */
+            children: Editor.Model.SceneObject[]
+
+            /**
+             * @unreleased
+             */
+            components: Editor.Components.Component[]
 
         }
 
@@ -8204,93 +5759,15 @@ declare namespace Editor {
     namespace Model {
         namespace SceneObject {
             /**
-             * @beta
-             */
-            export function commonParent(sceneObjects: Editor.Model.SceneObject[]): Editor.Model.SceneObject
-
-            /**
-             * @beta
+             * @unreleased
              */
             export function topLevel(sceneObjects: Editor.Model.SceneObject[]): Editor.Model.SceneObject[]
 
-
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Model {
-        /**
-         * @beta
-         */
-        abstract class Selection extends ScriptObject {
-
-            protected constructor()
-
             /**
-             * @beta
+             * @unreleased
              */
-            add(entity: Editor.Model.Entity): void
+            export function commonParent(sceneObjects: Editor.Model.SceneObject[]): Editor.Model.SceneObject
 
-            /**
-             * @beta
-             */
-            clear(): void
-
-            /**
-             * @beta
-             */
-            remove(entity: Editor.Model.Entity): boolean
-
-            /**
-             * @beta
-             */
-            set(entities: Editor.Model.Entity[]): void
-
-            /**
-             * @readonly
-
-             * @beta
-             */
-            assets: Editor.Assets.Asset[]
-
-            /**
-             * @readonly
-
-             * @beta
-             */
-            entities: Editor.Model.Entity[]
-
-            /**
-             * @readonly
-
-             * @beta
-             */
-            onSelectionChange: signal0<void>
-
-            /**
-             * @readonly
-
-             * @beta
-             */
-            sceneObjects: Editor.Model.SceneObject[]
-
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace MyLenses {
-        /**
-         * @beta
-         */
-        abstract class Authorization extends Editor.IAuthorization {
-
-            protected constructor()
 
         }
 
@@ -8300,106 +5777,135 @@ declare namespace Editor {
 
 declare namespace Editor {
     /**
-     * @beta
-     */
-    abstract class OverlayManger extends Editor.IOverlayManager {
-
-        protected constructor()
-
-    }
-
-}
-
-declare namespace Editor {
-    /**
-     * A path in the filesystem, or Asset Manager. Useful for things like importing files into Lens Studio through the {@link Editor.Model.AssetManager}.
-
-     * @example
-     * ```js
-     * // Get access to the project's assetManager
-     * const model = this.pluginSystem.findInterface(Editor.Model.IModel);
-     * const assetManager = model.project.assetManager;
-
-     * // Locate the shader pass we want to import
-     * const resourceLoc = import.meta.resolve('Resources/myMesh.ss_graph');
-     * const absGraphPath = new Editor.Path(resourceLoc);
-
-     * // Import the shader pass
-     * const pathInAssetManager = new Editor.Path('');
-     * const meta = await assetManager.importExternalFileAsync(absolutePath, pathInAssetManager, Editor.Model.ResultType.Packed);
-     * ```
+     * @unreleased
      */
     class Path {
         /**
-         * Construct a new path object.
+         * @unreleased
          */
         constructor(str: string)
 
         /**
-         * Returns a new path object relative to the `rootPath`.
-         */
-        appended(path: Editor.Path | string): Editor.Path
-
-        /**
-         * Whether the path object has a file extension in the end.
+         * @unreleased
          */
         hasExtension(extension: string): boolean
 
         /**
-         * Whether the current path is inside `directory`.
-         */
-        isInside(directory: Editor.Path): boolean
-
-        /**
-         * Returns a new path object relative to the `rootPath`.
+         * @unreleased
          */
         relative(rootPath: Editor.Path): Editor.Path
 
         /**
-         * Rename the extension of the file.
+         * @unreleased
+         */
+        isInside(directory: Editor.Path): boolean
+
+        /**
+         * @unreleased
+         */
+        renameFileBase(name: string): Editor.Path
+
+        /**
+         * @unreleased
          */
         replaceExtension(newExtension: string): Editor.Path
 
-        replaceFileNameBase(name: string): Editor.Path
+        /**
+         * @unreleased
+         */
+        appended(path: Editor.Path): Editor.Path
 
         /**
-         * Returns the current path as a string.
+         * @unreleased
+         */
+        append(path: Editor.Path): void
+
+        /**
+         * @unreleased
          */
         toString(): string
 
         /**
-         * The extension of the file of the current path object (without dot).
-
-
-         * @readonly
-         */
-        extension: string
-
-        /**
-         * The name of the file, including its extension, in the current path object.
+         * @unreleased
 
          * @readonly
          */
         fileName: Editor.Path
 
         /**
-         * The name of the file, without its extension, in the current path object.
+         * @unreleased
+
+         * @readonly
+         */
+        parent: Editor.Path
+
+        /**
+         * @unreleased
+
+         * @readonly
+         */
+        directory: Editor.Path
+
+        /**
+         * @unreleased
 
          * @readonly
          */
         fileNameBase: string
 
         /**
-         * @readonly
-         */
-        isEmpty: boolean
-
-        /**
-         * A path to the parent folder of the current path object.
+         * @unreleased
 
          * @readonly
          */
-        parent: Editor.Path
+        extension: string
+
+        /**
+         * @unreleased
+
+         * @readonly
+         */
+        isExtensionText: boolean
+
+        /**
+         * @unreleased
+
+         * @readonly
+         */
+        isExtensionImage: boolean
+
+        /**
+         * @unreleased
+
+         * @readonly
+         */
+        isExtensionVideo: boolean
+
+        /**
+         * @unreleased
+
+         * @readonly
+         */
+        empty: boolean
+
+    }
+
+}
+
+declare namespace Editor {
+    interface PluginRefManager extends ScriptObject {
+    }
+
+}
+
+declare namespace Editor {
+    interface PluginSystem extends ScriptObject {
+        findInterface(object: unknown): ScriptObject
+
+        /**
+         * @readonly
+         */
+        refManager: Editor.PluginRefManager
 
     }
 
@@ -8407,100 +5913,21 @@ declare namespace Editor {
 
 declare namespace Editor {
     /**
-     * @beta
-     */
-    enum PlaybackMode {
-        /**
-         * @beta
-         */
-        Single,
-        /**
-         * @beta
-         */
-        Loop,
-        /**
-         * @beta
-         */
-        PingPong
-    }
-
-}
-
-declare namespace Editor {
-    /**
-     * Provides access to the Lens Studio editor plugins, components, and interfaces
-
-     * @example
-     * ```js
-     * import { Preset } from 'LensStudio:Preset';
-
-     * export class ObjectPrefabPreset extends Preset {
-     *     static descriptor() {
-     *         return {
-     *             id: 'Com.Snap.ObjectPrefabPreset',
-     *             interfaces: Preset.descriptor().interfaces,
-     *             dependencies: [Editor.Model.IModel],
-     *             name: 'Object Prefab',
-     *             description: '',
-     *             icon: Editor.Icon.fromFile(import.meta.resolve('../Resources/ObjectPrefab.svg')),
-     *             section: 'General',
-     *             entityType: 'ObjectPrefab'
-     *         };
-     *     }
-     *     constructor(pluginSystem) {
-     *         super(pluginSystem);
-     *     }
-     *     create(destination) {
-     *         const model = this.pluginSystem.findInterface(Editor.IModel);
-     *         const assetManager = model.project.assetManager;
-
-     *         const prefab = assetManager.createNativeAsset('ObjectPrefab', 'ObjectPrefab', destination);
-
-     *         const object = prefab.addSceneObject(null);
-     *         object.name = 'Object Prefab';
-
-     *         return prefab;
-     *     }
-     * }
-     * ```
-
-     * ```js
-     * // Triggering another plugin from a plugin
-     * import { MyOtherPluginPreset } from './MyOtherPluginPreset.js';
-     * const myOtherPluginPreset = new MyOtherPluginPreset(this.pluginSystem);
-     * myOtherPluginResult = await myOtherPluginPreset.createAsync();
-     * ```
-     */
-    abstract class PluginSystem extends ScriptObject {
-
-        protected constructor()
-
-        /**
-         * Get various interfaces to the Lens Studio editor, such as its {@link Editor.Model} and {@link Editor.Model.AssetManager}.
-         */
-        findInterface<T extends Editor.IInterface>(object: any): T
-
-    }
-
-}
-
-declare namespace Editor {
-    /**
-     * @beta
+     * @unreleased
      */
     class Point {
         /**
-         * @beta
+         * @unreleased
          */
         constructor()
 
         /**
-         * @beta
+         * @unreleased
          */
         x: number
 
         /**
-         * @beta
+         * @unreleased
          */
         y: number
 
@@ -8509,139 +5936,69 @@ declare namespace Editor {
 }
 
 declare namespace Editor {
-    abstract class Preview {
-
-        protected constructor()
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Preview {
-        /**
-         * @beta
-         */
-        abstract class IPreviewController extends Editor.IPluginComponent {
-
-            protected constructor()
-
-            /**
-             * @beta
-             */
-            pauseAll(displayMessage: string): void
-
-            /**
-             * @beta
-             */
-            refreshAll(): void
-
-            /**
-             * @beta
-             */
-            resumeAll(): void
-
-        }
-
-    }
-
-}
-declare namespace Editor {
-    namespace Preview {
-        namespace IPreviewController {
-            /**
-             * @beta
-             */
-            let interfaceID: string
-
-
-        }
-
-    }
-
-}
-
-declare namespace Editor {
-    namespace Preview {
-        /**
-         * @beta
-         */
-        abstract class PreviewController extends Editor.Preview.IPreviewController {
-
-            protected constructor()
-
-        }
-
-    }
-
-}
-
-declare namespace Editor {
     /**
-     * Used with {@link Editor.Components.ScreenTransform}.
-
-     * @beta
+     * @unreleased
      */
     class Rect {
         /**
-         * @beta
+         * @unreleased
          */
         constructor()
 
         /**
-         * @beta
-         */
-        getCenter(): vec2
-
-        /**
-         * @beta
+         * @unreleased
          */
         getSize(): vec2
 
         /**
-         * @beta
-         */
-        setCenter(center: vec2): void
-
-        /**
-         * @beta
+         * @unreleased
          */
         setSize(size: vec2): void
 
         /**
-         * @beta
+         * @unreleased
+         */
+        getCenter(): vec2
+
+        /**
+         * @unreleased
+         */
+        setCenter(center: vec2): void
+
+        /**
+         * @unreleased
          */
         toVec4(): vec4
 
         /**
-         * @beta
-         */
-        bottom: number
-
-        /**
-         * @beta
-         */
-        left: number
-
-        /**
-         * @beta
+         * @unreleased
          */
         leftBottom: vec2
 
         /**
-         * @beta
-         */
-        right: number
-
-        /**
-         * @beta
+         * @unreleased
          */
         rightTop: vec2
 
         /**
-         * @beta
+         * @unreleased
+         */
+        left: number
+
+        /**
+         * @unreleased
+         */
+        right: number
+
+        /**
+         * @unreleased
          */
         top: number
+
+        /**
+         * @unreleased
+         */
+        bottom: number
 
     }
 
@@ -8649,15 +6006,15 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Rect {
         /**
-         * @beta
-         */
-        export function create(left: number, right: number, bottom: number, top: number): Editor.Rect
-
-        /**
-         * @beta
+         * @unreleased
          */
         export function fromMinMax(min: vec2, max: vec2): Editor.Rect
 
+        /**
+         * @unreleased
+         */
+        export function create(left: number, right: number, bottom: number, top: number): Editor.Rect
+
 
     }
 
@@ -8665,52 +6022,13 @@ declare namespace Editor {
 
 declare namespace Editor {
     /**
-     * @beta
+     * @unreleased
      */
-    abstract class ScopedConnection extends Editor.IGuard {
-
-        protected constructor()
-
+    interface ScopeGuard extends ScriptObject {
         /**
-         * @beta
+         * @unreleased
          */
-        disconnect(): boolean
-
-        /**
-         * @readonly
-
-         * @beta
-         */
-        isConnected: boolean
-
-    }
-
-}
-
-declare namespace Editor {
-    abstract class Shape {
-
-        protected constructor()
-
-    }
-
-}
-declare namespace Editor {
-    namespace Shape {
-        export function createBoxShape(scene: Editor.Assets.Scene): Editor.Components.Physics.Box
-
-        export function createCapsuleShape(scene: Editor.Assets.Scene): Editor.Components.Physics.Capsule
-
-        export function createConeShape(scene: Editor.Assets.Scene): Editor.Components.Physics.Cone
-
-        export function createCylinderShape(scene: Editor.Assets.Scene): Editor.Components.Physics.Cylinder
-
-        export function createLevelSetShape(scene: Editor.Assets.Scene): Editor.Components.Physics.LevelSet
-
-        export function createMeshShape(scene: Editor.Assets.Scene): Editor.Components.Physics.Mesh
-
-        export function createSphereShape(scene: Editor.Assets.Scene): Editor.Components.Physics.Sphere
-
+        dispose(): void
 
     }
 
@@ -8718,38 +6036,36 @@ declare namespace Editor {
 
 declare namespace Editor {
     /**
-     * Used with {@link Editor.Assets.RenderTarget}.
-
-     * @beta
+     * @unreleased
      */
     class Size {
         /**
-         * @beta
+         * @unreleased
          */
         constructor(x: number, y: number)
 
         /**
-         * @beta
+         * @unreleased
          */
         equal(value: Editor.Size): boolean
 
         /**
-         * @beta
+         * @unreleased
          */
         isEmpty(): boolean
 
         /**
-         * @beta
+         * @unreleased
          */
         toVec2(): vec2
 
         /**
-         * @beta
+         * @unreleased
          */
         x: number
 
         /**
-         * @beta
+         * @unreleased
          */
         y: number
 
@@ -8759,7 +6075,7 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Size {
         /**
-         * @beta
+         * @unreleased
          */
         export function fromVec2(value: vec2): Editor.Size
 
@@ -8770,28 +6086,26 @@ declare namespace Editor {
 
 declare namespace Editor {
     /**
-     * Used with {@link Editor.Model.SceneObject}.
-
-     * @beta
+     * @unreleased
      */
     class Transform {
         /**
-         * @beta
+         * @unreleased
          */
         constructor(position: vec3, rotation: vec3, scale: vec3)
 
         /**
-         * @beta
+         * @unreleased
          */
         position: vec3
 
         /**
-         * @beta
+         * @unreleased
          */
         rotation: vec3
 
         /**
-         * @beta
+         * @unreleased
          */
         scale: vec3
 
@@ -8801,25 +6115,16 @@ declare namespace Editor {
 
 declare namespace Editor {
     /**
-     * A unique identifier. Used to identify things like {@link Editor.Model.EntityBaseType} and {@link Editor.IInstallableContentRegistry}
-
-     * @beta
+     * @unreleased
      */
-    abstract class Uuid {
-
-        protected constructor()
-
+    interface Uuid {
         /**
-         * Returns whether the identifier is valid.
-
-         * @beta
+         * @unreleased
          */
         isValid(): boolean
 
         /**
-         * Returns the identifier as a string.
-
-         * @beta
+         * @unreleased
          */
         toString(): string
 
@@ -8828,9 +6133,9 @@ declare namespace Editor {
 }
 
 /**
- * Before using anything in this namespace, make sure to import `LensStudio:App`.
-
  * @module LensStudio:App
+
+ * @description Before using anything in this namespace, make sure to import `LensStudio:App`.
 
  * @example
  * ```js
@@ -8841,107 +6146,74 @@ declare namespace Editor {
 declare module "LensStudio:App" {
 }
 declare module "LensStudio:App" {
-    /**
-     * A map containing the PATH and PWD environment variables of the current Lens Studio process.
-     */
-    let env: object
-
-    /**
-     * The Lens Studio version.
-     */
     let version: string
+
+    let env: Object
 
 
 }
 
 /**
- * Before using anything in this namespace, make sure to import `LensStudio:AssetLibrary`.
-
  * @module LensStudio:AssetLibrary
+
+ * @description Before using anything in this namespace, make sure to import `LensStudio:AssetLibrary`.
  */
 declare module "LensStudio:AssetLibrary" {
 }
 
 declare module "LensStudio:AssetLibrary" {
-    /**
-     * A handle for an asset from the Asset Library.
-     */
     interface Asset {
-        /**
-         * The id of the asset.
-         */
         assetId: string
 
-        /**
-         * The name of the asset.
-         */
         assetName: string
 
-        /**
-         * The type of the asset.
-         */
-        assetType: AssetType
-
-        /**
-         * A handle for the resources contained in the asset that can be downloaded.
-         */
         resources: Resource[]
+
+        assetType: AssetType
 
     }
 
 }
 
 declare module "LensStudio:AssetLibrary" {
-    /**
-     * A filter used to narrow down an AssetListRequest.  @see {@link "LensStudio:AssetLibrary".Asset}.
-     */
     class AssetFilter {
         constructor()
 
         categoryId: string
 
-        pagination: Pagination
-
         searchText: string
+
+        pagination: Pagination
 
     }
 
 }
 
 declare module "LensStudio:AssetLibrary" {
-    /**
-     * A request object for finding assets in the Asset Library.  @see {@link "LensStudio:AssetLibrary".Asset}.
-     */
     class AssetListRequest {
         constructor(environmentSetting: EnvironmentSetting, assetFilter: AssetFilter)
 
         /**
          * @readonly
          */
-        assetFilter: AssetFilter
+        environmentSetting: EnvironmentSetting
 
         /**
          * @readonly
          */
-        environmentSetting: EnvironmentSetting
+        assetFilter: AssetFilter
 
     }
 
 }
 
 declare module "LensStudio:AssetLibrary" {
-    /**
-     * A handle returned by the  {@link "LensStudio:AssetLibrary".AssetListService}.  @see {@link "LensStudio:AssetLibrary".Asset}.
-     */
     interface AssetListResponse {
     }
 
 }
 
 declare module "LensStudio:AssetLibrary" {
-    /**
-     * A handle to the  {@link "LensStudio:AssetLibrary".AssetListService} which can provide a list of assets based on the passed in parameters.  @see {@link "LensStudio:AssetLibrary".Asset}.
-     */
     interface AssetListService extends ScriptObject {
         fetch(request: AssetListRequest, onSuccess: (arg1: AssetListSuccess) => void, onFailure: (arg1: ServiceError) => void): void
 
@@ -8950,9 +6222,6 @@ declare module "LensStudio:AssetLibrary" {
 }
 
 declare module "LensStudio:AssetLibrary" {
-    /**
-     * The result of a `fetch` call by the {@link "LensStudio:AssetLibrary".AssetListService}, which provides you a list of matching assets in the Asset Library.  @see {@link "LensStudio:AssetLibrary".Asset}.
-     */
     interface AssetListSuccess {
         assets: Asset[]
 
@@ -8961,9 +6230,6 @@ declare module "LensStudio:AssetLibrary" {
 }
 
 declare module "LensStudio:AssetLibrary" {
-    /**
-     * The types of assets that might be provided by the {@link "LensStudio:AssetLibrary"}.
-     */
     enum AssetType {
         Invalid,
         Texture,
@@ -8987,9 +6253,6 @@ declare module "LensStudio:AssetLibrary" {
 }
 
 declare module "LensStudio:AssetLibrary" {
-    /**
-     * The Asset Library environment which assets should be searched within. In most cases `Production` should be used. Used with {@link "LensStudio:AssetLibrary".EnvironmentSetting}.   @see {@link "LensStudio:AssetLibrary".Asset}.
-     */
     enum Environment {
         Invalid,
         Production,
@@ -8999,9 +6262,6 @@ declare module "LensStudio:AssetLibrary" {
 }
 
 declare module "LensStudio:AssetLibrary" {
-    /**
-     * A configuration object that describes what Asset Library environment should be accessed.  @see {@link "LensStudio:AssetLibrary".Asset}.
-     */
     class EnvironmentSetting {
         constructor()
 
@@ -9014,10 +6274,7 @@ declare module "LensStudio:AssetLibrary" {
 }
 
 declare module "LensStudio:AssetLibrary" {
-    /**
-     * A handle that provides access to the AssetLibraryListService.  @see {@link "LensStudio:AssetLibrary".Asset}.
-     */
-    interface IAssetLibraryProvider extends Editor.IPluginComponent {
+    interface IAssetLibraryProvider extends ScriptObject {
         /**
          * @readonly
          */
@@ -9036,9 +6293,6 @@ declare module "LensStudio:AssetLibrary" {
 }
 
 declare module "LensStudio:AssetLibrary" {
-    /**
-     * Configuration for the page to be accessed in a {@link "LensStudio:AssetLibrary".AssetFilter}.
-     */
     interface Pagination {
         /**
          * @readonly
@@ -9063,22 +6317,16 @@ declare module "LensStudio:AssetLibrary" {
 }
 
 declare module "LensStudio:AssetLibrary" {
-    /**
-     * The actual resources of an {@link "LensStudio:AssetLibrary".Asset}.
-     */
     interface Resource {
-        name: string
-
         uri: string
+
+        name: string
 
     }
 
 }
 
 declare module "LensStudio:AssetLibrary" {
-    /**
-     * The callback of an errored `fetch` call by the {@link "LensStudio:AssetLibrary".AssetListService}.  @see {@link "LensStudio:AssetLibrary".Asset}.
-     */
     interface ServiceError {
         description: string
 
@@ -9087,9 +6335,6 @@ declare module "LensStudio:AssetLibrary" {
 }
 
 declare module "LensStudio:AssetLibrary" {
-    /**
-     * The Asset Library space which assets should be searched within. In most cases `Public` should be used. Used with {@link "LensStudio:AssetLibrary".EnvironmentSetting}.   @see {@link "LensStudio:AssetLibrary".Asset}.
-     */
     enum Space {
         Invalid,
         Internal,
@@ -9099,9 +6344,15 @@ declare module "LensStudio:AssetLibrary" {
 }
 
 /**
- * Before using anything in this namespace, make sure to import `LensStudio:FileSystem` and add `filesystem` in your plugin's `module.json`.
+ * @module LensStudio:Engine
+ */
+declare module "LensStudio:Engine" {
+}
 
+/**
  * @module LensStudio:FileSystem
+
+ * @description Before using anything in this namespace, make sure to import `LensStudio:FileSystem` and add `filesystem` in your plugin's `module.json`.
 
  * @example
  * ```js
@@ -9121,87 +6372,38 @@ declare module "LensStudio:AssetLibrary" {
 declare module "LensStudio:FileSystem" {
 }
 declare module "LensStudio:FileSystem" {
-    /**
-     * `Options` can take recursive and force. The recursive parameter controls whether to read into subdirectories. The force parameter controls whether duplicated contents will be overwritten during the copying process.
+    export function createDir(path: Editor.Path, options: CreateDirOptions): void
 
-     * ```js
-     * fs.copyDir(Tests.srcDir, Tests.destDir, {force: true, recursive: true});
-     * fs.copyDir(Tests.srcDir, Tests.destDir, null);
-     * fs.copyDir(Tests.srcDir, Tests.destDir, {});
-     * fs.copyDir(Tests.srcDir, Tests.destDir, {force: false});
-     * ```
-     */
+    export function exists(path: Editor.Path): boolean
+
+    export function copyFile(src: Editor.Path, dest: Editor.Path): void
+
     export function copyDir(src: Editor.Path, dest: Editor.Path, options: CopyDirOptions): void
 
-    /**
-     * Copies a file from `src` to `dest`.
-     */
-    export function copyFile(src: Editor.Path | string, dest: Editor.Path | string): void
+    export function readDir(path: Editor.Path, options: ReadDirOptions): Editor.Path[]
 
-    /**
-     * Create a directory at `path`.
-     */
-    export function createDir(path: Editor.Path | string, options: CreateDirOptions): void
+    export function remove(path: Editor.Path): void
 
-    /**
-     * Checks if a file or directory exists at `path`.
-     */
-    export function exists(path: Editor.Path | string): boolean
-
-    /**
-     * Checks whether a `path` is a directory.
-     */
-    export function isDirectory(path: Editor.Path): boolean
-
-    /**
-     * Checks whether a `path` is a file.
-     */
-    export function isFile(path: Editor.Path): boolean
-
-    /**
-     * Returns the content of `path` as bytes.
-     */
-    export function readBytes(path: Editor.Path): Uint8Array
-
-    /**
-     * `Options` can take a single recursive parameter. `fs.readDir(Tests.destDir, {recursive: false});`. By default, recursive is set to false and force is set to true if not specified.
-     */
-    export function readDir(path: Editor.Path | string, options: ReadDirOptions): Editor.Path[]
-
-    /**
-     * Returns the content of `path`.
-     */
-    export function readFile(path: Editor.Path | string): string
+    export function rename(oldPath: Editor.Path, newPath: Editor.Path): void
 
     export function realPath(path: Editor.Path): Editor.Path
 
-    /**
-     * Removes the `path`.
-     */
-    export function remove(path: Editor.Path | string): void
+    export function writeFile(path: Editor.Path, data: (Uint8Array | string)): void
 
-    /**
-     * Renames the `path`.
-     */
-    export function rename(oldPath: Editor.Path | string, newPath: Editor.Path | string): void
+    export function readFile(path: Editor.Path): string
 
-    /**
-     * Get the size of `path`.
-     */
+    export function readBytes(path: Editor.Path): Uint8Array
+
+    export function isFile(path: Editor.Path): boolean
+
+    export function isDirectory(path: Editor.Path): boolean
+
     export function size(path: Editor.Path): number
 
-    /**
-     * Writes a file to `path` given the `data`.
-     */
-    export function writeFile(path: Editor.Path | string, data: (Uint8Array|string)): void
 
-    export function getAppCacheFolder(): Editor.Path
 }
 
 declare module "LensStudio:FileSystem" {
-    /**
-     * Used with {@link "LensStudio:FileSystem".CopyDirOptions}.
-     */
     interface CopyDirOptions {
         force: boolean
 
@@ -9212,9 +6414,6 @@ declare module "LensStudio:FileSystem" {
 }
 
 declare module "LensStudio:FileSystem" {
-    /**
-     * Used with {@link "LensStudio:FileSystem".CreateDirOptions}.
-     */
     interface CreateDirOptions {
         recursive: boolean
 
@@ -9223,9 +6422,6 @@ declare module "LensStudio:FileSystem" {
 }
 
 declare module "LensStudio:FileSystem" {
-    /**
-     * Used with {@link "LensStudio:FileSystem".ReadDirOptions}.
-     */
     interface ReadDirOptions {
         recursive: boolean
 
@@ -9234,26 +6430,6 @@ declare module "LensStudio:FileSystem" {
 }
 
 declare module "LensStudio:FileSystem" {
-    /**
-     * Helper to create temporary directory.
-
-     * @example
-     * ```js
-     * import * as fs from 'LensStudio:FileSystem';
-
-     * const resourceName = "resourceName.txt";
-
-     * // Create a temporary dir
-     * const tempDir = fs.TempDir.create();
-
-     * // Create a path that we want to write file to
-     * const resourcePath = tempDir.path;
-     * resoursePath.append(resourceName);
-
-     * // Write to the file
-     * fs.writeFile(resourceName, "Hello World");
-     * ```
-     */
     interface TempDir extends ScriptObject {
         /**
          * @readonly
@@ -9265,9 +6441,6 @@ declare module "LensStudio:FileSystem" {
 }
 declare module "LensStudio:FileSystem" {
     namespace TempDir {
-        /**
-         * Creates a temporary directory which will be deleted the moment all references to it disappears.
-         */
         export function create(): TempDir
 
 
@@ -9275,293 +6448,37 @@ declare module "LensStudio:FileSystem" {
 
 }
 
-declare module "LensStudio:SysInfo" {
-    export const productType: string;
-}
-
 /**
- * @module LensStudio:LensBasedEditorView
- */
-declare module "LensStudio:LensBasedEditorView" {
-}
-declare module "LensStudio:LensBasedEditorView" {
-    /**
-     * @beta
-     */
-    export function create(options: InitOptions, parent: import('LensStudio:Ui').Widget): LensBasedEditorView
-
-
-}
-
-declare module "LensStudio:LensBasedEditorView" {
-    /**
-     * @beta
-     */
-    class ImageInput {
-        /**
-         * @beta
-         */
-        constructor()
-
-        /**
-         * @beta
-         */
-        file: Editor.Path | string
-
-        /**
-         * @beta
-         */
-        fps: number
-
-        /**
-         * @beta
-         */
-        paused: boolean
-
-    }
-
-}
-
-declare module "LensStudio:LensBasedEditorView" {
-    /**
-     * @beta
-     */
-    class InitOptions {
-        /**
-         * @beta
-         */
-        constructor()
-
-        /**
-         * @beta
-         */
-        authorization: Editor.IAuthorization
-
-    }
-
-}
-
-declare module "LensStudio:LensBasedEditorView" {
-    /**
-     * @beta
-     */
-    interface InputControl extends ScriptObject {
-        pause(): void
-
-        resume(): void
-
-    }
-
-}
-
-declare module "LensStudio:LensBasedEditorView" {
-    import {Widget} from "LensStudio:Ui"
-
-    /**
-     * @beta
-     */
-    interface LensBasedEditorView extends Widget {
-        /**
-         * @beta
-         */
-        load(options: LoadOptions): void
-
-        /**
-         * @beta
-         */
-        pause(): void
-
-        /**
-         * @beta
-         */
-        postMessage(value: any): void
-
-        /**
-         * @beta
-         */
-        reload(): void
-
-        /**
-         * @beta
-         */
-        resume(): void
-
-        /**
-         * @beta
-         */
-        unload(): void
-
-        /**
-         * @beta
-         */
-        deviceType: Editor.Model.DeviceType
-
-        /**
-         * @readonly
-
-         * @beta
-         */
-        input: InputControl
-
-        /**
-         * @readonly
-
-         * @beta
-         */
-        isLoaded: boolean
-
-        /**
-         * @readonly
-
-         * @beta
-         */
-        isPaused: boolean
-
-        /**
-         * @beta
-         */
-        mlIndex: number
-
-        /**
-         * @readonly
-
-         * @beta
-         */
-        onMessage: signal1<any, void>
-
-        /**
-         * @readonly
-
-         * @beta
-         */
-        onStateChanged: signal1<import('LensStudio:LensBasedEditorView').State, void>
-
-        /**
-         * @readonly
-
-         * @beta
-         */
-        state: State
-
-    }
-
-}
-
-declare module "LensStudio:LensBasedEditorView" {
-    /**
-     * @beta
-     */
-    class LoadOptions {
-        /**
-         * @beta
-         */
-        constructor()
-
-        /**
-         * @beta
-         */
-        ignoredTypes: string[]
-
-        /**
-         * @beta
-         */
-        input: (import('LensStudio:LensBasedEditorView').VideoInput|import('LensStudio:LensBasedEditorView').ImageInput)
-
-        /**
-         * @beta
-         */
-        lens: Editor.Path | string
-
-        /**
-         * @beta
-         */
-        useOverlayOutput: boolean
-
-    }
-
-}
-
-declare module "LensStudio:LensBasedEditorView" {
-    /**
-     * @beta
-     */
-    enum State {
-        /**
-         * @beta
-         */
-        Idle,
-        /**
-         * @beta
-         */
-        Loading,
-        /**
-         * @beta
-         */
-        Running
-    }
-
-}
-
-declare module "LensStudio:LensBasedEditorView" {
-    /**
-     * @beta
-     */
-    class VideoInput {
-        /**
-         * @beta
-         */
-        constructor()
-
-        /**
-         * @beta
-         */
-        file: Editor.Path
-
-        /**
-         * @beta
-         */
-        paused: boolean
-
-        /**
-         * @beta
-         */
-        sequential: boolean
-
-    }
-
-}
-
-/**
- * Before using anything in this namespace, make sure to import `LensStudio:ModelUI`.
-
  * @module LensStudio:ModelUi
+
+ * @description Before using anything in this namespace, make sure to import `LensStudio:ModelUI`.
  */
 declare module "LensStudio:ModelUi" {
 }
 
 declare module "LensStudio:ModelUi" {
-    import {LineEdit} from "LensStudio:Ui"
+    import { LineEdit } from "LensStudio:Ui"
 
     interface EntityReferencePickerLine extends LineEdit {
         /**
          * @readonly
          */
-        onAssetHighlight: signal0<void>
+        onEntityDrop: any
 
         /**
          * @readonly
          */
-        onEntityClear: signal0<void>
+        onEntityClear: any
 
         /**
          * @readonly
          */
-        onEntityDrop: signal1<Editor.Model.Entity, void>
+        onAssetHighlight: any
 
         /**
          * @readonly
          */
-        onEntitySelect: signal0<void>
+        onEntitySelect: any
 
     }
 
@@ -9576,9 +6493,9 @@ declare module "LensStudio:ModelUi" {
 }
 
 /**
- * Before using anything in this namespace, make sure to import `LensStudio:Network` and add `network` in your plugin's `module.json`.
-
  * @module LensStudio:Network
+
+ * @description Before using anything in this namespace, make sure to import `LensStudio:Network` and add `network` in your plugin's `module.json`.
 
  * @example
  * ```js
@@ -9597,33 +6514,19 @@ declare module "LensStudio:ModelUi" {
 declare module "LensStudio:Network" {
 }
 declare module "LensStudio:Network" {
-    /**
-     * Request an HTTP call with reply. You should store the reply object (e.g. in the `this` of the plugin) in order for the network connection to be maintained.
-
-     * @beta
-     */
-    export function performHttpRequestWithReply(request: HttpRequest): HttpReply
-
     export function performHttpRequest(request: HttpRequest, callback: (arg1: HttpResponse) => void): void
 
     export function performAuthorizedHttpRequest(request: HttpRequest, callback: (arg1: HttpResponse) => void): void
+
+
 }
 
 declare module "LensStudio:Network" {
-    /**
-     * A TCP Server address. Use with {@link "LensStudio:Network".TcpServer}.
-     */
     class Address {
         constructor()
 
-        /**
-         * The address of the server.
-         */
         address: string
 
-        /**
-         * The port to connect to.
-         */
         port: number
 
     }
@@ -9631,11 +6534,83 @@ declare module "LensStudio:Network" {
 }
 
 declare module "LensStudio:Network" {
-    interface BaseServer extends ScriptObject {
-        close(): void
+    class FormData {
+        constructor()
 
+        append(body: (Uint8Array | string), headers: Object): void
+
+    }
+
+}
+
+declare module "LensStudio:Network" {
+    class HttpRequest {
+        constructor()
+
+        url: string
+
+        method: HttpRequest.Method
+
+        contentType: string
+
+        headers: Object
+
+        body: (Uint8Array | import('LensStudio:Network').FormData | string)
+
+    }
+
+}
+
+declare module "LensStudio:Network" {
+    namespace HttpRequest {
+        enum Method {
+            Get,
+            Post,
+            Put,
+            Delete
+        }
+
+    }
+
+}
+
+declare module "LensStudio:Network" {
+    interface HttpResponse {
+        /**
+         * @readonly
+         */
+        statusCode: number
+
+        /**
+         * @readonly
+         */
+        contentType: string
+
+        /**
+         * @readonly
+         */
+        headers: Object
+
+        /**
+         * @readonly
+         */
+        body: Editor.Buffer
+
+        /**
+         * @readonly
+         */
+        error: string
+
+    }
+
+}
+
+declare module "LensStudio:Network" {
+    interface TcpServer extends ScriptObject {
         listen(address: Address): boolean
 
+        close(): void
+
         /**
          * @readonly
          */
@@ -9644,47 +6619,57 @@ declare module "LensStudio:Network" {
         /**
          * @readonly
          */
-        onConnect: signal1<import('LensStudio:Network').BaseSocket, void>
-
-        /**
-         * @readonly
-         */
-        onError: signal1<number, void>
-
-        /**
-         * @readonly
-         */
         port: number
+
+        /**
+         * @readonly
+         */
+        onConnect: any
+
+        /**
+         * @readonly
+         */
+        onError: any
+
+    }
+
+}
+declare module "LensStudio:Network" {
+    namespace TcpServer {
+        export function create(): TcpServer
+
 
     }
 
 }
 
 declare module "LensStudio:Network" {
-    interface BaseSocket extends ScriptObject {
-        close(): void
+    interface TcpSocket extends ScriptObject {
+        write(data: (Uint8Array | string)): number
+
+        end(): void
 
         destroy(): void
 
         /**
          * @readonly
          */
+        onData: any
+
+        /**
+         * @readonly
+         */
+        onError: any
+
+        /**
+         * @readonly
+         */
+        onEnd: any
+
+        /**
+         * @readonly
+         */
         localAddress: Address
-
-        /**
-         * @readonly
-         */
-        onData: signal1<Editor.Buffer, void>
-
-        /**
-         * @readonly
-         */
-        onEnd: signal0<void>
-
-        /**
-         * @readonly
-         */
-        onError: signal1<number, void>
 
         /**
          * @readonly
@@ -9695,369 +6680,23 @@ declare module "LensStudio:Network" {
 
 }
 
-declare module "LensStudio:Network" {
-    /**
-     * @beta
-     */
-    class FormData {
-        /**
-         * @beta
-         */
-        constructor()
-
-        /**
-         * @beta
-         */
-        append(body: (Uint8Array|string), headers: object): void
-
-    }
-
-}
-
-declare module "LensStudio:Network" {
-    /**
-     * @beta
-     */
-    interface HttpReply extends ScriptObject {
-        /**
-         * @readonly
-
-         * @beta
-         */
-        onData: signal1<Editor.Buffer, void>
-
-        /**
-         * @readonly
-
-         * @beta
-         */
-        onEnd: signal1<import('LensStudio:Network').HttpResponse, void>
-
-        /**
-         * @readonly
-
-         * @beta
-         */
-        onError: signal1<import('LensStudio:Network').HttpResponse, void>
-
-    }
-
-}
-
-declare module "LensStudio:Network" {
-    /**
-     * A HTTP Request configuration. Use with {@link "LensStudio:Network".performHttpRequestWithReply}.
-
-     * @beta
-
-     * @example
-     * ```js
-     * // Note: reply object needs to be stored (e.g. in `this` object of the plugin)
-     * // in order for the network connection to be maintained.
-     * const reply = performHttpRequestWithReply(httpRequest);
-     * reply.onData.connect((buffer) => {
-     *   console.log('Received data chunk: ' + buffer.toString());
-     * });
-     * reply.onEnd.connect(response => {
-     *   console.log(response.statusCode);
-     * });
-     * reply.onError.connect(response => {});
-     * ```
-     */
-    class HttpRequest {
-        /**
-         * @beta
-         */
-        constructor()
-
-        /**
-         * @beta
-         */
-        authorization: Editor.IAuthorization
-
-        /**
-         * The body for the HTTP Request.
-
-         * @beta
-         */
-        body: (Uint8Array|import('LensStudio:Network').FormData|string)
-
-        /**
-         * The content type of the request body.
-
-         * @beta
-         */
-        contentType: string
-
-        /**
-         * The header for the HTTP request.
-
-         * @beta
-         */
-        headers: object
-
-        /**
-         * The HTTP method to send the request with.
-
-         * @beta
-         */
-        method: HttpRequest.Method
-
-        /**
-         * The URL where the request should be made to.
-
-         * @beta
-         */
-        url: string
-
-    }
-
-}
-
-declare module "LensStudio:Network" {
-    namespace HttpRequest {
-        /**
-         * The method in which to send the HTTP request. Use with {@link "LensStudio:Network".HttpRequest}.
-
-         * @beta
-         */
-        enum Method {
-            /**
-             * @beta
-             */
-            Get,
-            /**
-             * @beta
-             */
-            Post,
-            /**
-             * @beta
-             */
-            Put,
-            /**
-             * @beta
-             */
-            Delete
-        }
-
-    }
-
-}
-
-declare module "LensStudio:Network" {
-    /**
-     * An HTTP response, received from the callback to performing a request, such as through: {@link "LensStudio:Network".performHttpRequestWithReply}, or {@link "LensStudio:RemoteServiceModule".performApiRequest}.
-
-     * @beta
-     */
-    interface HttpResponse {
-        /**
-         * The body of this response.
-
-         * @readonly
-
-         * @beta
-         */
-        body: Editor.Buffer
-
-        /**
-         * The content type of this response.
-
-         * @readonly
-
-         * @beta
-         */
-        contentType: string
-
-        /**
-         * The error of this response, if applicable.
-
-         * @readonly
-
-         * @beta
-         */
-        error: string
-
-        /**
-         * The headers of this response.
-
-         * @readonly
-
-         * @beta
-         */
-        headers: object
-
-        /**
-         * The HTTP status code of this response.
-
-         * @readonly
-
-         * @beta
-         */
-        statusCode: number
-
-    }
-
-}
-
-declare module "LensStudio:Network" {
-    /**
-     * A class to accept TCP connetions. Useful for receiving streaming data. It's also able to send back responses.
-     */
-    interface TcpServer extends BaseServer {
-    }
-
-}
-declare module "LensStudio:Network" {
-    namespace TcpServer {
-        /**
-         * Create a TCP Server.
-         */
-        export function create(): TcpServer
-
-
-    }
-
-}
-
-declare module "LensStudio:Network" {
-    /**
-     * TCP socket for use with {@link "LensStudio:Network".TcpSocket}.
-
-     * @example
-     * ```js
-     * import * as Network from "LensStudio:Network"
-
-     * export default class TcpServerManager {
-     *   constructor() {
-     *     this.server = Network.TcpServer.create()
-     *     this.connections = []
-     *     this.sockets = []
-     *     this.onClientConnected = null
-     *     this.onClientDataReceived = null
-     *     this.onClientDisconnected = null
-     *     this.onClientSocketError = null
-     *     this.enableLogging = false
-
-     *     // Setup listeners
-     *     this.connections.push(
-     *       this.server.onConnect.connect(socket => {
-     *         //save sockets to the persistent array so they dont get garbage collected
-     *         this.sockets.push(socket)
-
-     *         if (this.enableLogging) {
-     *           Editor.print(`Incoming connection from ${socket.remoteAddress.address}:${socket.remoteAddress.port}`)
-     *         }
-
-     *         if (this.onClientConnected) {
-     *           this.onClientConnected(socket)
-     *         }
-
-     *         this.connections.push(
-     *           socket.onData.connect(data => {
-     *             if (this.enableLogging) {
-     *               Editor.print(`Received data from socket: ${data}`)
-     *             }
-
-     *             if (this.onClientDataReceived) {
-     *               this.onClientDataReceived(data, socket)
-     *             }
-     *           })
-     *         )
-
-     *         this.connections.push(
-     *           socket.onEnd.connect(() => {
-     *             if (this.enableLogging) {
-     *               Editor.print(`Socket connected to ${socket.remoteAddress.address}:${socket.remoteAddress.port} disconnected from the server.`)
-     *             }
-
-     *             if (this.onClientDisconnected) {
-     *               this.onClientDisconnected(socket)
-     *             }
-     *           })
-     *         )
-
-     *         this.connections.push(
-     *           socket.onError.connect(error => {
-     *             if (this.enableLogging) {
-     *               logger.logException(`Socket error: ${error}`)
-     *             }
-
-     *             if (this.onClientSocketError) {
-     *               this.onClientSocketError(error, socket)
-     *             }
-     *           })
-     *         )
-     *       })
-     *     )
-     *   }
-
-     *   start (address, port) {
-     *     const localhostAddr = new Network.Address()
-     *     localhostAddr.address = address
-     *     localhostAddr.port = port
-     *     try {
-     *       this.server.listen(localhostAddr)
-     *       Editor.print(`Server started at ${address}:${port}`)
-     *     } catch (e) {
-     *       Editor.print("Failed to start the server: " + e)
-     *     }
-     *   }
-
-     *   close (){
-     *     // Disconnect all the connections
-     *     this.connections.forEach(connection => connection.disconnect())
-     *     this.connections = []
-     *     // Close the server
-     *     this.server.close()
-     *   }
-     * }
-     * ```
-     */
-    interface TcpSocket extends BaseSocket {
-        /**
-         * Write to the socket.
-         */
-        write(data: (Uint8Array|string)): number
-
-    }
-
-}
-
 /**
- * Class for interacting with Snap's RemoteServiceModule. Unlike {@link "LensStudio:Network".performHttpRequestWithReply}, the API requests done here are to specific endpoints that have been registered with Snap.
-
  * @module LensStudio:RemoteServiceModule
  */
 declare module "LensStudio:RemoteServiceModule" {
 }
 declare module "LensStudio:RemoteServiceModule" {
-    /**
-     * Perform the API request.
-     */
-    export function performApiRequest(request: RemoteApiRequest, callback: (arg1: RemoteApiResponse) => void): void
+    export function performApiRequest(request: RemoteApiRequest, callback: (arg1: import('LensStudio:Network').HttpResponse) => void): void
 
 
 }
 
 declare module "LensStudio:RemoteServiceModule" {
-    /**
-     * Configuration for request through {@link "LensStudio:RemoteServiceModule".performApiRequest}
-     */
     interface RemoteApiRequest {
-        /**
-         * The body of the request.
-         */
-        body: (Uint8Array|string)
-
-        /**
-         * The endpoint of the request (e.g. API path).
-         */
         endpoint: string
 
-        /**
-         * The spec id of the RemoteServiceModule.
-         */
+        body: (Uint8Array | string)
+
         specId: string
 
     }
@@ -10065,9 +6704,6 @@ declare module "LensStudio:RemoteServiceModule" {
 }
 declare module "LensStudio:RemoteServiceModule" {
     namespace RemoteApiRequest {
-        /**
-         * Create the configuration.
-         */
         export function create(): RemoteApiRequest
 
 
@@ -10075,52 +6711,17 @@ declare module "LensStudio:RemoteServiceModule" {
 
 }
 
-declare module "LensStudio:RemoteServiceModule" {
-    interface RemoteApiResponse {
-        /**
-         * @readonly
-         */
-        body: Editor.Buffer
-
-        /**
-         * @readonly
-         */
-        linkedResources: RemoteApiResponse.LinkedResource[]
-
-        /**
-         * @readonly
-         */
-        statusCode: number
-
-    }
-
-}
-
-declare module "LensStudio:RemoteServiceModule" {
-    namespace RemoteApiResponse {
-        interface LinkedResource {
-            /**
-             * @readonly
-             */
-            url: string
-
-        }
-
-    }
-
-}
-
 /**
- * Before using anything in this namespace, make sure to import `LensStudio:Serialization`.
-
  * @module LensStudio:Serialization
+
+ * @description Before using anything in this namespace, make sure to import `LensStudio:Serialization`.
  */
 declare module "LensStudio:Serialization" {
 }
 
 declare module "LensStudio:Serialization" {
     /**
-     * @beta
+     * @unreleased
      */
     interface IReader extends ScriptObject {
     }
@@ -10129,11 +6730,11 @@ declare module "LensStudio:Serialization" {
 
 declare module "LensStudio:Serialization" {
     /**
-     * @beta
+     * @unreleased
      */
     interface IWriter extends ScriptObject {
         /**
-         * @beta
+         * @unreleased
          */
         getString(): string
 
@@ -10142,9 +6743,6 @@ declare module "LensStudio:Serialization" {
 }
 
 declare module "LensStudio:Serialization" {
-    /**
-     * Class which allows you to serialize and deserialize data from YAML. Useful for modifying layout with {@link Editor.Dock.IDockManager}.
-     */
     interface Yaml {
     }
 
@@ -10152,12 +6750,12 @@ declare module "LensStudio:Serialization" {
 declare module "LensStudio:Serialization" {
     namespace Yaml {
         /**
-         * @beta
+         * @unreleased
          */
         export function createReader(data: string): IReader
 
         /**
-         * @beta
+         * @unreleased
          */
         export function createWriter(): IWriter
 
@@ -10167,24 +6765,22 @@ declare module "LensStudio:Serialization" {
 }
 
 /**
- * Before using anything in this namespace, make sure to import `LensStudio:Shell`.
-
  * @module LensStudio:Shell
+
+ * @description Before using anything in this namespace, make sure to import `LensStudio:Shell`.
  */
 declare module "LensStudio:Shell" {
 }
 declare module "LensStudio:Shell" {
-    export function openUrl(baseUrl: string, queryData: object): boolean
-
-    export function showItemInFolder(path: Editor.Path): void
+    export function openUrl(baseUrl: string, queryData: Object): boolean
 
 
 }
 
 /**
- * Before using anything in this namespace, make sure to import `LensStudio:Subprocess` and add `subprocess` in your plugin's `module.json`.
-
  * @module LensStudio:Subprocess
+
+ * @description Before using anything in this namespace, make sure to import `LensStudio:Subprocess` and add `subprocess` in your plugin's `module.json`.
 
  * @example
  * ```js
@@ -10208,37 +6804,37 @@ declare module "LensStudio:Shell" {
 
  * function createStartedCallback(text) {
  *     return function () {
- *         Editor.print('Process: ' + text + ' started');
+ *         console.log('Process: ' + text + ' started');
  *     };
  * }
 
  * function createStateChangedCallback(text) {
  *     return function (state) {
- *         Editor.print('Process: ' + text + ' state changed to: ' + state);
+ *         console.log('Process: ' + text + ' state changed to: ' + state);
  *     };
  * }
 
  * function createErrorCallback(text) {
  *     return function (errorType) {
- *         Editor.print('Process: ' + text + ' encountered process error of type: ' + errorType);
+ *         console.log('Process: ' + text + ' encountered process error of type: ' + errorType);
  *     };
  * }
 
  * function createExitCallback(text) {
  *     return function (exitCode) {
- *         Editor.print('Process: ' + text + ' exited with code ' + exitCode);
+ *         console.log('Process: ' + text + ' exited with code ' + exitCode);
  *     };
  * }
 
  * function createStdOutCallback(text) {
  *     return function (data) {
- *         Editor.print('Process: ' + text + ' stdout: ' + data);
+ *         console.log('Process: ' + text + ' stdout: ' + data);
  *     };
  * }
 
  * function createStdErrCallback(text) {
  *     return function (data) {
- *         Editor.print('Process: ' + text + ' stderr: ' + data);
+ *         console.log('Process: ' + text + ' stderr: ' + data);
  *     }
  * }
 
@@ -10266,12 +6862,12 @@ declare module "LensStudio:Shell" {
  *
  *         // Hook into subprocess
  *         const myCommand = this.pythonVersionSubprocess.command;
- *         this.connections.push(this.pythonVersionSubprocess.started.connect(createStartedCallback(myCommand)));
- *         this.connections.push(this.pythonVersionSubprocess.stateChanged.connect(createStateChangedCallback(myCommand)));
- *         this.connections.push(this.pythonVersionSubprocess.errored.connect(createErrorCallback(myCommand)));
- *         this.connections.push(this.pythonVersionSubprocess.exited.connect(createExitCallback(myCommand)));
- *         this.connections.push(this.pythonVersionSubprocess.stdout.connect(createStdOutCallback(myCommand)));
- *         this.connections.push(this.pythonVersionSubprocess.stderr.connect(createStdErrCallback(myCommand)));
+ *         this.pythonVersionSubprocess.started.connect(createStartedCallback(myCommand));
+ *         this.pythonVersionSubprocess.stateChanged.connect(createStateChangedCallback(myCommand));
+ *         this.pythonVersionSubprocess.errored.connect(createErrorCallback(myCommand));
+ *         this.pythonVersionSubprocess.exited.connect(createExitCallback(myCommand));
+ *         this.pythonVersionSubprocess.stdout.connect(createStdOutCallback(myCommand));
+ *         this.pythonVersionSubprocess.stderr.connect(createStdErrCallback(myCommand));
 
  *         // Start the process
  *         this.pythonVersionSubprocess.start();
@@ -10291,20 +6887,18 @@ declare module "LensStudio:Shell" {
 
  *         const result = sb.spawnSync('git', ['status'], options);
 
- *         Editor.print('success: ' + result.success);
- *         Editor.print('stdout: ' + result.stdout);
- *         Editor.print('stderr: ' + result.stderr);
- *         Editor.print('exitCode: ' + result.exitCode);
+ *         console.log('success: ' + result.success);
+ *         console.log('stdout: ' + result.stdout);
+ *         console.log('stderr: ' + result.stderr);
+ *         console.log('exitCode: ' + result.exitCode);
  *     }
 
  *     start() {
- *         this.connections = [];
-
- *         Editor.print("Start: subprocess for Git Status ------------------------------");
+ *         console.log("Start: subprocess for Git Status ------------------------------");
  *         this._subprocessSyncGitStatus();
- *         Editor.print("Done: subprocess for Git Status -------------------------------");
+ *         console.log("Done: subprocess for Git Status -------------------------------");
  *
- *         Editor.print("Start: subprocess for Python3 Version -------------------------");
+ *         console.log("Start: subprocess for Python3 Version -------------------------");
  *         this._subprocessPythonVersion();
  *     }
 
@@ -10312,7 +6906,7 @@ declare module "LensStudio:Shell" {
  *         // Need to kill the asynchronus process we started in `subprocessPythonVersion`.
  *         // For example when the app closes, or user disables the plugin.
  *         this.pythonVersionSubprocess.kill();
- *         Editor.print("Done: subprocess for Python3 Version --------------------------");
+ *         console.log("Done: subprocess for Python3 Version --------------------------");
  *     }
  * }
  * ```
@@ -10320,23 +6914,14 @@ declare module "LensStudio:Shell" {
 declare module "LensStudio:Subprocess" {
 }
 declare module "LensStudio:Subprocess" {
-    /**
-     * the options parameter can take `cwd` and `timeout`, meaning the current working directory to launch the program in, as well as the milliseconds to wait for a synchronously spawned subprocess to finish. By default, `cwd` is set to the current directory of the Lens Studio application, and timeout is set to 30000.
-     */
     export function spawn(command: string, args: string[], options: SpawnOptions): Subprocess
 
-    /**
-     * the options parameter can take `cwd` and `timeout`, meaning the current working directory to launch the program in, as well as the milliseconds to wait for a synchronously spawned subprocess to finish. By default, `cwd` is set to the current directory of the Lens Studio application, and timeout is set to 30000.
-     */
     export function spawnSync(command: string, args: string[], options: SpawnOptions): SpawnSyncResult
 
 
 }
 
 declare module "LensStudio:Subprocess" {
-    /**
-     * The exit status of a {@link "LensStudio:Subprocess".spawn} or {@link "LensStudio:Subprocess".spawnSync}.
-     */
     enum ExitStatus {
         NormalExit,
         CrashExit
@@ -10345,9 +6930,6 @@ declare module "LensStudio:Subprocess" {
 }
 
 declare module "LensStudio:Subprocess" {
-    /**
-     * The process error of a {@link "LensStudio:Subprocess".spawn} or {@link "LensStudio:Subprocess".spawnSync}.
-     */
     enum ProcessError {
         FailedToStart,
         Crashed,
@@ -10360,9 +6942,6 @@ declare module "LensStudio:Subprocess" {
 }
 
 declare module "LensStudio:Subprocess" {
-    /**
-     * The process state of a {@link "LensStudio:Subprocess".spawn} or {@link "LensStudio:Subprocess".spawnSync}.
-     */
     enum ProcessState {
         Idle,
         Starting,
@@ -10372,24 +6951,18 @@ declare module "LensStudio:Subprocess" {
 }
 
 declare module "LensStudio:Subprocess" {
-    /**
-     * The options of {@link "LensStudio:Subprocess".spawn} or {@link "LensStudio:Subprocess".spawnSync}.  `env`, can be specified as a `{PATH: myPath, PWD: myPwd}` or a JS object. The PATH and PWD fields will override the default value in your environment has when the subprocess is spawned.   You can access the default environment variables from {@link "LensStudio:App"},  where its a constant value that you can retrieve just like `.version`, using `.env`.
-     */
     interface SpawnOptions {
         cwd: Editor.Path
 
-        env: object
-
         timeout: number
+
+        env: Object
 
     }
 
 }
 
 declare module "LensStudio:Subprocess" {
-    /**
-     * The result of {@link "LensStudio:Subprocess".spawnSync}.
-     */
     interface SpawnSyncResult {
         /**
          * @readonly
@@ -10399,96 +6972,68 @@ declare module "LensStudio:Subprocess" {
         /**
          * @readonly
          */
-        stderr: Editor.Buffer
+        stdout: Editor.Buffer
 
         /**
          * @readonly
          */
-        stdout: Editor.Buffer
+        stderr: Editor.Buffer
 
     }
 
 }
 
 declare module "LensStudio:Subprocess" {
-    /**
-     * Class which allows you to trigger a subproccess outside of Lens Studio (e.g. a command line command).
-     */
     interface Subprocess extends ScriptObject {
-        /**
-         * Kills a subprocess.
-         */
+        start(): void
+
         kill(): void
 
         /**
-         * Starts a subprocess.
-         */
-        start(): void
-
-        /**
-         * The command for the subprocess.
-
          * @readonly
          */
         command: string
 
         /**
-         * A handle for getting callback when a subprocess' state has errored.
-
          * @readonly
          */
-        onError: signal1<number, void>
+        onStart: any
 
         /**
-         * A handle for getting callback when a subprocess' state has exited.
-
          * @readonly
          */
-        onExit: signal2<number, number, void>
+        onStateChange: any
 
         /**
-         * A handle for getting callback when a subprocess is started
-
          * @readonly
          */
-        onStart: signal0<void>
+        onError: any
 
         /**
-         * A handle for getting callback when a subprocess' state has changed.
-
          * @readonly
          */
-        onStateChange: signal1<number, void>
+        onExit: any
 
         /**
-         * A handle for getting callback when a subprocess' state has received stderr.
-
          * @readonly
          */
-        stderr: signal1<Editor.Buffer, void>
+        stdout: any
 
         /**
-         * A handle for getting callback when a subprocess' state has received stdin.
+         * @readonly
+         */
+        stderr: any
 
+        /**
          * @readonly
          */
         stdin: Writable
-
-        /**
-         * A handle for getting callback when a subprocess' state has received stdout.
-
-         * @readonly
-         */
-        stdout: signal1<Editor.Buffer, void>
 
     }
 
 }
 declare module "LensStudio:Subprocess" {
     namespace Subprocess {
-        /**
-         * Create a subprocess.
-         */
         export function create(command: string, args: string[], options: SpawnOptions): Subprocess
 
 
@@ -10498,16 +7043,16 @@ declare module "LensStudio:Subprocess" {
 
 declare module "LensStudio:Subprocess" {
     interface Writable extends ScriptObject {
-        write(data: (Uint8Array|string)): number
+        write(data: (Uint8Array | string)): number
 
     }
 
 }
 
 /**
- * Before using anything in this namespace, make sure to import `LensStudio:Ui`.
-
  * @module LensStudio:Ui
+
+ * @description Before using anything in this namespace, make sure to import `LensStudio:Ui`.
  */
 declare module "LensStudio:Ui" {
 }
@@ -10525,8 +7070,6 @@ declare module "LensStudio:Ui" {
 
         text: string
 
-        checked: boolean
-
     }
 
 }
@@ -10535,24 +7078,17 @@ declare module "LensStudio:Ui" {
     interface Action extends ScriptObject {
         blockSignals(blocked: boolean): void
 
+        text: string
+
         checkable: boolean
 
         checked: boolean
 
-        iconVisibleInMenu: boolean
-
-        icon: Editor.Icon
-
         /**
          * @readonly
          */
-        onToggle: signal1<boolean, void>
+        onToggle: any
 
-        onTrigger: signal1<boolean, void>
-
-        text: string
-
-        toolTip: string
     }
 
 }
@@ -10618,13 +7154,13 @@ declare module "LensStudio:Ui" {
 
 declare module "LensStudio:Ui" {
     interface BoxLayout extends Layout {
-        addLayout(layout: Layout): void
+        setDirection(direction: Direction): void
 
         addStretch(stretch: number): void
 
-        addWidgetWithStretch(widget: Widget, stretch: number, alignment: Alignment): void
+        addLayout(layout: Layout): void
 
-        setDirection(direction: Direction): void
+        addWidgetWithStretch(widget: Widget, stretch: number, alignment: Alignment): void
 
     }
 
@@ -10654,12 +7190,14 @@ declare module "LensStudio:Ui" {
 
 declare module "LensStudio:Ui" {
     interface CheckBox extends AbstractButton {
+        checked: boolean
+
         checkState: CheckState
 
         /**
          * @readonly
          */
-        onToggle: signal1<boolean, void>
+        onToggle: any
 
     }
 
@@ -10683,19 +7221,11 @@ declare module "LensStudio:Ui" {
 }
 
 declare module "LensStudio:Ui" {
-    enum ClearLayoutBehavior {
-        KeepClearedWidgets,
-        DeleteClearedWidgets
-    }
-
-}
-
-declare module "LensStudio:Ui" {
     interface ClickableLabel extends Label {
         /**
          * @readonly
          */
-        onClick: signal0<void>
+        onClick: any
 
     }
 
@@ -10711,22 +7241,22 @@ declare module "LensStudio:Ui" {
 
 declare module "LensStudio:Ui" {
     interface CollapsiblePanel extends Widget {
+        setContentWidget(widget: Widget): void
+
         clearContent(): void
 
         expand(value: boolean): void
 
-        setContentWidget(widget: Widget): void
-
         customBackgroundRole: BackgroundRole
+
+        overrideBackgroundRole: boolean
 
         expandable: boolean
 
         /**
          * @readonly
          */
-        onExpand: signal1<boolean, void>
-
-        overrideBackgroundRole: boolean
+        onExpand: any
 
     }
 
@@ -10734,77 +7264,6 @@ declare module "LensStudio:Ui" {
 declare module "LensStudio:Ui" {
     namespace CollapsiblePanel {
         export function create(icon: Editor.Icon, text: string, widget: Widget): CollapsiblePanel
-
-
-    }
-
-}
-
-declare module "LensStudio:Ui" {
-    class Color {
-        constructor()
-
-        alpha: number
-
-        blue: number
-
-        green: number
-
-        red: number
-
-    }
-
-}
-
-declare module "LensStudio:Ui" {
-    interface ColorButton extends PushButton {
-        setAutoUpdateToolTip(autoUpdateToolTip: boolean): void
-
-        alphaEnabled: boolean
-
-        /**
-         * @readonly
-         */
-        colorAccepted: signal1<import('LensStudio:Ui').Color, void>
-
-        /**
-         * @readonly
-         */
-        colorRejected: signal1<import('LensStudio:Ui').Color, void>
-
-        /**
-         * @readonly
-         */
-        colorValueChanged: signal1<import('LensStudio:Ui').Color, void>
-
-        currentColor: Color
-
-        /**
-         * @readonly
-         */
-        dialogClosed: signal0<void>
-
-        /**
-         * @readonly
-         */
-        dialogCreated: signal1<import('LensStudio:Ui').Color, void>
-
-        /**
-         * @readonly
-         */
-        isDialogActive: boolean
-
-        /**
-         * @readonly
-         */
-        lastAcceptedColor: Color
-
-    }
-
-}
-declare module "LensStudio:Ui" {
-    namespace ColorButton {
-        export function create(widget: Widget): ColorButton
 
 
     }
@@ -10840,9 +7299,9 @@ declare module "LensStudio:Ui" {
 
 declare module "LensStudio:Ui" {
     interface ComboBox extends Widget {
-        addIconItem(icon: Editor.Icon, text: string): void
-
         addItem(text: string): void
+
+        addIconItem(icon: Editor.Icon, text: string): void
 
         setItemIcon(index: number, icon: Editor.Icon): void
 
@@ -10851,7 +7310,7 @@ declare module "LensStudio:Ui" {
         /**
          * @readonly
          */
-        onCurrentTextChange: signal1<string, void>
+        onCurrentTextChange: any
 
     }
 
@@ -10866,17 +7325,6 @@ declare module "LensStudio:Ui" {
 }
 
 declare module "LensStudio:Ui" {
-    enum ContextMenuPolicy {
-        NoContextMenu,
-        DefaultContextMenu,
-        ActionsContextMenu,
-        CustomContextMenu,
-        PreventContextMenu
-    }
-
-}
-
-declare module "LensStudio:Ui" {
     interface Dialog extends Widget {
         close(): void
 
@@ -10885,7 +7333,7 @@ declare module "LensStudio:Ui" {
         /**
          * @readonly
          */
-        onClose: signal0<void>
+        onClose: any
 
     }
 
@@ -10936,25 +7384,17 @@ declare module "LensStudio:Ui" {
 }
 
 declare module "LensStudio:Ui" {
-    enum DockState {
-        Detached,
-        Attached
-    }
-
-}
-
-declare module "LensStudio:Ui" {
     interface DoubleSpinBox extends Widget {
         setRange(min: number, max: number): void
+
+        value: number
+
+        singleStep: number
 
         /**
          * @readonly
          */
-        onValueChange: signal1<number, void>
-
-        singleStep: number
-
-        value: number
+        onValueChange: any
 
     }
 
@@ -10990,27 +7430,19 @@ declare module "LensStudio:Ui" {
 
 declare module "LensStudio:Ui" {
     interface GridLayout extends Layout {
-        addLayout(layout: Layout, row: number, column: number, alignment: Alignment): void
-
         addWidgetAt(widget: Widget, row: number, column: number, alignment: Alignment): void
 
         addWidgetWithSpan(widget: Widget, fromRow: number, fromColumn: number, rowSpan: number, columnSpan: number, alignment: Alignment): void
 
+        addLayout(layout: Layout, row: number, column: number, alignment: Alignment): void
+
         getColumnMinimumWidth(column: number): number
-
-        getColumnStretch(column: number): number
-
-        getRowMinimumHeight(row: number): number
-
-        getRowStretch(row: number): number
 
         setColumnMinimumWidth(column: number, minSize: number): void
 
-        setColumnStretch(column: number, stretch: number): void
+        getRowMinimumHeight(row: number): number
 
         setRowMinimumHeight(row: number, minSize: number): void
-
-        setRowStretch(row: number, stretch: number): void
 
     }
 
@@ -11042,9 +7474,9 @@ declare module "LensStudio:Ui" {
     interface IDialogs extends ScriptObject {
         selectFileToOpen(params: Dialogs.Params, defaultPath: Editor.Path): Editor.Path
 
-        selectFileToSave(params: Dialogs.Params, defaultPath: Editor.Path): Editor.Path
-
         selectFilesToOpen(params: Dialogs.Params, defaultPath: Editor.Path): Editor.Path[]
+
+        selectFileToSave(params: Dialogs.Params, defaultPath: Editor.Path): Editor.Path
 
         selectFolderToOpen(params: Dialogs.Params, defaultPath: Editor.Path): Editor.Path
 
@@ -11055,7 +7487,7 @@ declare module "LensStudio:Ui" {
 }
 
 declare module "LensStudio:Ui" {
-    interface IGui extends Editor.IPluginComponent {
+    interface IGui extends ScriptObject {
         createDialog(): Dialog
 
         /**
@@ -11077,23 +7509,23 @@ declare module "LensStudio:Ui" {
 
 declare module "LensStudio:Ui" {
     interface ImageView extends Widget {
-        /**
-         * @readonly
-         */
-        onClick: signal0<void>
-
-        /**
-         * @readonly
-         */
-        onHover: signal1<boolean, void>
-
         pixmap: Pixmap
 
-        radius: number
+        scaledContents: boolean
 
         responseHover: boolean
 
-        scaledContents: boolean
+        radius: number
+
+        /**
+         * @readonly
+         */
+        onClick: any
+
+        /**
+         * @readonly
+         */
+        onHover: any
 
     }
 
@@ -11109,11 +7541,11 @@ declare module "LensStudio:Ui" {
 
 declare module "LensStudio:Ui" {
     interface Label extends Widget {
-        openExternalLinks: boolean
-
         text: string
 
         wordWrap: boolean
+
+        openExternalLinks: boolean
 
     }
 
@@ -11129,26 +7561,24 @@ declare module "LensStudio:Ui" {
 
 declare module "LensStudio:Ui" {
     interface Layout extends ScriptObject {
-        addWidget(widget: Widget): void
-
-        clear(behavior: ClearLayoutBehavior): void
-
         deleteLater(): void
+
+        addWidget(widget: Widget): void
 
         setContentsMargins(left: number, top: number, right: number, bottom: number): void
 
-        setLayoutAlignment(layout: Layout, alignment: Alignment): boolean
-
         setWidgetAlignment(widget: Widget, alignment: Alignment): boolean
 
+        setLayoutAlignment(layout: Layout, alignment: Alignment): boolean
+
         enabled: boolean
+
+        spacing: number
 
         /**
          * @readonly
          */
         isNull: boolean
-
-        spacing: number
 
     }
 
@@ -11156,16 +7586,16 @@ declare module "LensStudio:Ui" {
 
 declare module "LensStudio:Ui" {
     interface LineEdit extends Widget {
+        text: string
+
+        placeholderText: string
+
         icon: Editor.Icon
 
         /**
          * @readonly
          */
-        onTextChange: signal1<string, void>
-
-        placeholderText: string
-
-        text: string
+        onTextChange: any
 
     }
 
@@ -11181,9 +7611,9 @@ declare module "LensStudio:Ui" {
 
 declare module "LensStudio:Ui" {
     interface Menu extends Widget {
-        addAction(action: Action): void
-
         addMenu(caption: string): Menu
+
+        addAction(action: Action): void
 
         addSeparator(): void
 
@@ -11205,138 +7635,15 @@ declare module "LensStudio:Ui" {
     interface Movie extends ScriptObject {
         resize(width: number, height: number): void
 
+        width: number
+
         height: number
 
         speed: number
 
-        width: number
-
     }
 
 }
-
-
-
-/**
- * @module LensStudio:LensBasedEditorView
- */
-declare module "LensStudio:LensBasedEditorView" {
-}
-declare module "LensStudio:LensBasedEditorView" {
-    /**
-     * @beta
-     */
-    export function create(options: InitOptions, parent: import('LensStudio:Ui').Widget): LensBasedEditorView
-
-
-}
-
-declare module "LensStudio:LensBasedEditorView" {
-    /**
-     * @beta
-     */
-    interface InputControl extends ScriptObject {
-        pause(): void
-
-        resume(): void
-
-    }
-
-}
-
-declare module "LensStudio:LensBasedEditorView" {
-    import {Widget} from "LensStudio:Ui"
-
-    /**
-     * @beta
-     */
-    interface LensBasedEditorView extends Widget {
-        /**
-         * @beta
-         */
-        load(options: LoadOptions): void
-
-        /**
-         * @beta
-         */
-        pause(): void
-
-        /**
-         * @beta
-         */
-        postMessage(value: any): void
-
-        /**
-         * @beta
-         */
-        reload(): void
-
-        /**
-         * @beta
-         */
-        resume(): void
-
-        /**
-         * @beta
-         */
-        unload(): void
-
-        /**
-         * @beta
-         */
-        deviceType: Editor.Model.DeviceType
-
-        /**
-         * @readonly
-
-         * @beta
-         */
-        input: InputControl
-
-        /**
-         * @readonly
-
-         * @beta
-         */
-        isLoaded: boolean
-
-        /**
-         * @readonly
-
-         * @beta
-         */
-        isPaused: boolean
-
-        /**
-         * @beta
-         */
-        mlIndex: number
-
-        /**
-         * @readonly
-
-         * @beta
-         */
-        onMessage: signal1<any, void>
-
-        /**
-         * @readonly
-
-         * @beta
-         */
-        onStateChanged: signal1<import('LensStudio:LensBasedEditorView').State, void>
-
-        /**
-         * @readonly
-
-         * @beta
-         */
-        state: State
-
-    }
-
-}
-
 declare module "LensStudio:Ui" {
     namespace Movie {
         export function create(filename: Editor.Path): Movie
@@ -11352,19 +7659,19 @@ declare module "LensStudio:Ui" {
 
         movie: Movie
 
-        /**
-         * @readonly
-         */
-        onClick: signal0<void>
-
-        /**
-         * @readonly
-         */
-        onHover: signal1<boolean, void>
+        scaledContents: boolean
 
         responseHover: boolean
 
-        scaledContents: boolean
+        /**
+         * @readonly
+         */
+        onClick: any
+
+        /**
+         * @readonly
+         */
+        onHover: any
 
     }
 
@@ -11387,42 +7694,28 @@ declare module "LensStudio:Ui" {
 }
 
 declare module "LensStudio:Ui" {
-    interface OverflowToolBar extends Widget {
-        addWidget(widget: Widget, section: Section, action?: Action): void
-        addStretch(section: Section, stretch: number): void
-    }
-}
-
-declare module "LensStudio:Ui" {
-    namespace OverflowToolBar {
-        export function create(widget: Widget): OverflowToolBar
-    }
-}
-
-declare module "LensStudio:Ui" {
     interface Pixmap extends ScriptObject {
-        crop(rect: Rect): void
-
         load(filename: Editor.Path): void
 
         resize(width: number, height: number): void
 
-        save(filename: Editor.Path): void
+        crop(rect: Rect): void
 
-        aspectRatioMode: AspectRatioMode
+        width: number
 
         height: number
 
-        transformationMode: TransformationMode
+        aspectRatioMode: AspectRatioMode
 
-        width: number
+        transformationMode: TransformationMode
 
     }
 
 }
+
 declare module "LensStudio:Ui" {
     namespace Pixmap {
-        export function create(filename: Editor.Path | string): Pixmap
+        export function create(filename: Editor.Path): Pixmap
 
 
     }
@@ -11431,11 +7724,11 @@ declare module "LensStudio:Ui" {
 
 declare module "LensStudio:Ui" {
     interface PopupWithArrow extends Widget {
-        close(): void
-
         popup(target: Widget): void
 
         setMainWidget(widget: Widget): void
+
+        close(): void
 
     }
 
@@ -11453,9 +7746,9 @@ declare module "LensStudio:Ui" {
     interface ProgressBar extends Widget {
         setRange(minimum: number, maximum: number): void
 
-        maximum: number
-
         minimum: number
+
+        maximum: number
 
         value: number
 
@@ -11490,41 +7783,15 @@ declare module "LensStudio:Ui" {
 }
 
 declare module "LensStudio:Ui" {
-    namespace ProjectSettings {
-        class Error {
-            constructor(description: string)
-
-            description: string
-
-        }
-
-    }
-
-}
-
-declare module "LensStudio:Ui" {
-    namespace ProjectSettings {
-        class Warning {
-            constructor(description: string)
-
-            description: string
-
-        }
-
-    }
-
-}
-
-declare module "LensStudio:Ui" {
     interface PushButton extends AbstractButton {
-        setIconMode(iconMode: IconMode): void
-
         setIconWithMode(icon: Editor.Icon, iconMode: IconMode): void
+
+        setIconMode(iconMode: IconMode): void
 
         /**
          * @readonly
          */
-        onClick: signal0<void>
+        onClick: any
 
         primary: boolean
 
@@ -11545,7 +7812,7 @@ declare module "LensStudio:Ui" {
         /**
          * @readonly
          */
-        onClick: signal0<void>
+        onClick: any
 
     }
 
@@ -11609,15 +7876,6 @@ declare module "LensStudio:Ui" {
 }
 
 declare module "LensStudio:Ui" {
-    enum Section {
-        Left,
-        Center,
-        Right
-    }
-
-}
-
-declare module "LensStudio:Ui" {
     interface Separator extends Widget {
     }
 
@@ -11636,18 +7894,6 @@ declare module "LensStudio:Ui" {
         Plain,
         Raised,
         Sunken
-    }
-
-}
-
-declare module "LensStudio:Ui" {
-    class Size {
-        constructor(width: number, height: number)
-
-        height: number
-
-        width: number
-
     }
 
 }
@@ -11675,79 +7921,79 @@ declare module "LensStudio:Ui" {
 }
 declare module "LensStudio:Ui" {
     namespace Sizes {
-        let ButtonDelegateSide: number
+        let Spacing: number
+
+        let Padding: number
+
+        let HalfPadding: number
+
+        let DoublePadding: number
+
+        let PaddingLarge: number
+
+        let ToolButtonPadding: number
+
+        let IconSide: number
+
+        let DragIconSizeWidth: number
+
+        let DragIconSizeHeight: number
+
+        let SizeGripSizeWidth: number
+
+        let SizeGripSizeHeight: number
+
+        let MessageBoxIconSide: number
+
+        let ExtentIconSide: number
+
+        let InputHeight: number
 
         let ButtonHeight: number
 
+        let TextEditHeight: number
+
+        let SpinboxDefaultWidth: number
+
         let ButtonRadius: number
+
+        let CheckboxRadius: number
+
+        let InputRadius: number
 
         let CheckBoxDrawedDiameter: number
 
         let CheckBoxOutlineWidth: number
 
-        let CheckboxFocusPadding: number
-
         let CheckboxPadding: number
 
-        let CheckboxRadius: number
-
-        let DialogContentMargin: number
-
-        let DoublePadding: number
-
-        let DragIconSizeHeight: number
-
-        let DragIconSizeWidth: number
-
-        let ExtentIconSide: number
-
-        let HalfPadding: number
-
-        let IconSide: number
-
-        let InputHeight: number
-
-        let InputRadius: number
-
-        let MenuItemHeight: number
-
-        let MessageBoxIconSide: number
-
-        let Padding: number
-
-        let PaddingLarge: number
-
-        let ProgressBarHeight: number
-
-        let RoundedPixmapRadius: number
-
-        let SeparatorContentsMargin: number
-
-        let SeparatorLineWidth: number
-
-        let SizeGripSizeHeight: number
-
-        let SizeGripSizeWidth: number
-
-        let Spacing: number
-
-        let SpinboxButtonHeight: number
+        let CheckboxFocusPadding: number
 
         let SpinboxButtonWidth: number
 
-        let SpinboxDefaultWidth: number
+        let SpinboxButtonHeight: number
 
-        let SplitterHandleWidth: number
+        let MenuItemHeight: number
 
-        let TextEditHeight: number
+        let ViewSectionHeight: number
 
-        let ToolButtonPadding: number
-
-        let ViewElidingGradientWidth: number
+        let ButtonDelegateSide: number
 
         let ViewIndentation: number
 
-        let ViewSectionHeight: number
+        let ViewElidingGradientWidth: number
+
+        let SeparatorLineWidth: number
+
+        let SeparatorContentsMargin: number
+
+        let RoundedPixmapRadius: number
+
+        let DialogContentMargin: number
+
+        let SplitterHandleWidth: number
+
+        let ProgressBarHeight: number
 
 
     }
@@ -11758,14 +8004,14 @@ declare module "LensStudio:Ui" {
     interface Slider extends Widget {
         setRange(min: number, max: number): void
 
-        /**
-         * @readonly
-         */
-        onValueChange: signal1<number, void>
+        value: number
 
         singleStep: number
 
-        value: number
+        /**
+         * @readonly
+         */
+        onValueChange: any
 
     }
 
@@ -11783,14 +8029,14 @@ declare module "LensStudio:Ui" {
     interface SpinBox extends Widget {
         setRange(min: number, max: number): void
 
-        /**
-         * @readonly
-         */
-        onValueChange: signal1<number, void>
+        value: number
 
         step: number
 
-        value: number
+        /**
+         * @readonly
+         */
+        onValueChange: any
 
     }
 
@@ -11798,31 +8044,6 @@ declare module "LensStudio:Ui" {
 declare module "LensStudio:Ui" {
     namespace SpinBox {
         export function create(widget: Widget): SpinBox
-
-
-    }
-
-}
-
-declare module "LensStudio:Ui" {
-    interface StackedLayout extends Layout {
-        addWidgetAt(widget: Widget, index: number): number
-
-        currentIndex: number
-
-        /**
-         * @readonly
-         */
-        onCurrentChanged: signal1<number, void>
-
-        stackingMode: StackingMode
-
-    }
-
-}
-declare module "LensStudio:Ui" {
-    namespace StackedLayout {
-        export function create(): StackedLayout
 
 
     }
@@ -11845,14 +8066,6 @@ declare module "LensStudio:Ui" {
         export function create(widget: Widget): StackedWidget
 
 
-    }
-
-}
-
-declare module "LensStudio:Ui" {
-    enum StackingMode {
-        StackOne,
-        StackAll
     }
 
 }
@@ -11888,7 +8101,7 @@ declare module "LensStudio:Ui" {
         /**
          * @readonly
          */
-        onCurrentChange: signal1<number, void>
+        onCurrentChange: any
 
     }
 
@@ -11904,16 +8117,14 @@ declare module "LensStudio:Ui" {
 
 declare module "LensStudio:Ui" {
     interface TextEdit extends Widget {
-        acceptRichText: boolean
+        plainText: string
+
+        placeholderText: string
 
         /**
          * @readonly
          */
-        onTextChange: signal0<void>
-
-        placeholderText: string
-
-        plainText: string
+        onTextChange: any
 
     }
 
@@ -11934,9 +8145,7 @@ declare module "LensStudio:Ui" {
         /**
          * @readonly
          */
-        onClick: signal0<void>
-
-        setDefaultAction(action: Action): void
+        onClick: any
 
     }
 
@@ -11965,7 +8174,7 @@ declare module "LensStudio:Ui" {
         /**
          * @readonly
          */
-        maximum: number
+        onValueChange: any
 
         /**
          * @readonly
@@ -11975,7 +8184,7 @@ declare module "LensStudio:Ui" {
         /**
          * @readonly
          */
-        onValueChange: signal1<number, void>
+        maximum: number
 
         value: number
 
@@ -11995,16 +8204,6 @@ declare module "LensStudio:Ui" {
     interface WebEngineView extends Widget {
         load(url: string): void
 
-        /**
-         * @readonly
-         */
-        onLoadFinished: signal1<boolean, void>
-
-        /**
-         * @readonly
-         */
-        onLoadStarted: signal0<void>
-
     }
 
 }
@@ -12019,92 +8218,65 @@ declare module "LensStudio:Ui" {
 
 declare module "LensStudio:Ui" {
     interface Widget extends ScriptObject {
-        activateWindow(): void
+        deleteLater(): void
 
-        adjustSize(): void
+        setSizePolicy(horizontal: SizePolicy.Policy, vertical: SizePolicy.Policy): void
+
+        setFixedWidth(width: number): void
+
+        setFixedHeight(height: number): void
+
+        setMinimumWidth(width: number): void
+
+        setMinimumHeight(height: number): void
+
+        setMaximumWidth(width: number): void
+
+        setMaximumHeight(height: number): void
+
+        resize(width: number, height: number): void
 
         blockSignals(blocked: boolean): void
 
-        deleteLater(): void
+        adjustSize(): void
+
+        setContentsMargins(left: number, top: number, right: number, bottom: number): void
 
         move(ax: number, ay: number): void
 
         raise(): void
 
-        resize(width: number, height: number): void
+        activateWindow(): void
 
-        setContentsMargins(left: number, top: number, right: number, bottom: number): void
+        windowTitle: string
 
-        setFixedHeight(height: number): void
+        layout: Layout
 
-        setFixedWidth(width: number): void
-
-        setMaximumHeight(height: number): void
-
-        setMaximumWidth(width: number): void
-
-        setMinimumHeight(height: number): void
-
-        setMinimumWidth(width: number): void
-
-        setSizePolicy(horizontal: SizePolicy.Policy, vertical: SizePolicy.Policy): void
-
-        autoFillBackground: boolean
+        foregroundRole: ColorRole
 
         backgroundRole: ColorRole
 
-        contextMenuPolicy: ContextMenuPolicy
+        fontRole: FontRole
+
+        autoFillBackground: boolean
+
+        visible: boolean
+
+        hidden: boolean
+
+        enabled: boolean
+
+        toolTip: string
 
         /**
          * @readonly
          */
         devicePixelRatio: number
 
-        enabled: boolean
-
-        fontRole: FontRole
-
-        foregroundRole: ColorRole
-
-        /**
-         * @readonly
-         */
-        height: number
-
-        hidden: boolean
-
         /**
          * @readonly
          */
         isNull: boolean
-
-        layout: Layout
-
-        /**
-         * @readonly
-         */
-        onHide: signal0<void>
-
-        /**
-         * @readonly
-         */
-        onResize: signal2<number, number, void>
-
-        /**
-         * @readonly
-         */
-        onShow: signal0<void>
-
-        toolTip: string
-
-        visible: boolean
-
-        /**
-         * @readonly
-         */
-        width: number
-
-        windowTitle: string
 
     }
 
@@ -12118,42 +8290,7 @@ declare module "LensStudio:Ui" {
 
 }
 
-/**
- * @module LensStudio:WebSocket
- */
-declare module "LensStudio:WebSocket" {
-}
-
-declare module "LensStudio:WebSocket" {
-    import {BaseSocket} from "LensStudio:Network"
-
-    interface WebSocket extends BaseSocket {
-        send(data: (Uint8Array|string)): number
-
-    }
-
-}
-
-declare module "LensStudio:WebSocket" {
-    import {BaseServer} from "LensStudio:Network"
-
-    interface WebSocketServer extends BaseServer {
-    }
-
-}
-declare module "LensStudio:WebSocket" {
-    namespace WebSocketServer {
-        export function create(): WebSocketServer
-
-
-    }
-
-}
-
-declare abstract class ScriptObject {
-
-    protected constructor()
-
+interface ScriptObject {
     getTypeName(): string
 
     isOfType(type: string): boolean
@@ -12162,986 +8299,18 @@ declare abstract class ScriptObject {
 
 }
 
-/**
- * Provides encrypted storage for each plugin module's sensitive data, like access tokens. It uses Keychain on macOS and Credentials Manager on Windows. The data can be stored and retrieved as string-to-string key value pairs via a global secureLocalStorage object. Data for each plugin module (module.json) is kept separate from all others. There is a 2KB limit on the string size because this is meant for small pieces of secure info rather than a generic container.
-
- * @example
- * ```js
- * secureLocalStorage.setItem('myLoginPassword', 'myPassword');
- * Editor.print("My stored password is: " + secureLocalStorage.getItem('myLoginPassword'));
- * secureLocalStorage.removeItem('myLoginPassword');
- * Editor.print("My stored password is: " + secureLocalStorage.getItem('myLoginPassword'));
- * ```
- */
-declare abstract class SecureLocalStorage extends ScriptObject {
-
-    protected constructor()
-
-    /**
-     * Remove all values in the storage.
-     */
-    clear(): void
-
-    /**
-     * Get the value stored under `keyName`.
-     */
-    getItem(keyName: string): string | undefined
-
-    /**
-     * Get the length of the storage.
-     */
+interface SecureLocalStorage extends ScriptObject {
     length(): number
 
-    /**
-     * Remove the stored value under `keyName`.
-     */
-    removeItem(keyName: string): void
+    getItem(keyName: string): string
 
-    /**
-     * Sets the value stored under `keyName`.
-     */
     setItem(keyName: string, keyValue: string): void
 
-}
+    removeItem(keyName: string): void
 
-/**
- * A handle for a timer. You can create a timeout using {@link setTimeout}.
- */
-declare abstract class Timeout {
-
-    protected constructor()
+    clear(): void
 
 }
-
-/**
- * The following interfaces are returned by various APIs
- * and allows you to bind some callback when `connect` occurs.
- */
-
-/**
- * An interface that allows you to bind a callback on `connect`.
- */
-interface signal0<R> {
-    connect(callback: () => R) : void
-}
-
-/**
- * An interface that allows you to bind a callback on `connect`.
- */
-interface signal1<T0, R> {
-    connect(callback: (arg0:T0) => R) : void
-}
-
-/**
- * An interface that allows you to bind a callback on `connect`.
- */
-interface signal2<T0,T1, R> {
-    connect(callback: (arg0:T0, arg1:T1) => R) : void
-}
-
-/**
- * An interface that allows you to bind a callback on `connect`.
- */
-interface signal3<T0,T1,T2, R> {
-    connect(callback: (arg0:T0, arg1:T1, arg2:T2) => R) : void
-}
-
-/**
- * An interface that allows you to bind a callback on `connect`.
- */
-interface signal4<T0,T1,T2,T3, R> {
-    connect(callback: (arg0:T0, arg1:T1, arg2:T2, arg3:T3) => R) : void
-}
-
-/**
- * An interface that allows you to bind a callback on `connect`.
- */
-interface signal5<T0,T1,T2,T3,T4, R> {
-    connect(callback: (arg0:T0, arg1:T1, arg2:T2, arg3:T3, arg4:T4) => R) : void
-}
-
-
-/**
- * The following classes are the same as the ones in Lens Scripting.
- * They are provided here for convenience as they can be used in Editor Scripting.
- */
-
-
-/**
- * A two dimensional vector.
- * Vectors can only store finite numbers in the range Number.MIN_VALUE to Number.MAX_VALUE.
-
- */
-declare class vec2 {
-    /**
-     * Creates a new instance of a vec2.
-     */
-    constructor(x: number, y: number)
-
-    /**
-     * Returns a string representation of the vector.
-     */
-    toString(): string
-
-    /**
-     * Returns the vector plus `vec`.
-     */
-    add(vec: vec2): vec2
-
-    /**
-     * Returns the vector minus `vec`.
-     */
-    sub(vec: vec2): vec2
-
-    /**
-     * Returns the component-wise multiplication product of the vector and `vec`.
-     */
-    mult(vec: vec2): vec2
-
-    /**
-     * Returns the component-wise multiplication product of the vector and `vec`.
-     */
-    scale(vec: vec2): vec2
-
-    /**
-     * Returns the division of the vector by the vector `vec`.
-     */
-    div(vec: vec2): vec2
-
-    /**
-     * Multiplies the components by the number `scale`.
-     */
-    uniformScale(scale: number): vec2
-
-    /**
-     * Returns whether this is equal to `vec`.
-     */
-    equal(vec: vec2): boolean
-
-    /**
-     * Returns a copy of the vector with its length clamped to `length`.
-     */
-    clampLength(length: number): vec2
-
-    /**
-     * Returns a copy of the vector with its length scaled to 1.
-     */
-    normalize(): vec2
-
-    /**
-     * Returns the angle between the vector and `vec`.
-     */
-    angleTo(vec: vec2): number
-
-    /**
-     * Returns the distance between the vector and the vector `vec`.
-     */
-    distance(vec: vec2): number
-
-    /**
-     * Like `distance()`, but returns the squared distance between vectors.
-     */
-    distanceSquared(vec: vec2): number
-
-    /**
-     * Returns the dot product of the vector and `vec`.
-     */
-    dot(vec: vec2): number
-
-    /**
-     * Returns a copy of the vector moved towards the point `point` by the amount `magnitude`.
-     */
-    moveTowards(point: vec2, magnitude: number): vec2
-
-    /**
-     * Returns a copy of the vector projected onto the vector `vec`.
-     */
-    project(vec: vec2): vec2
-
-    /**
-     * Projects the vector onto the plane represented by the normal `normal`.
-     */
-    projectOnPlane(normal: vec2): vec2
-
-    /**
-     * Returns a copy of the vector reflected across the plane defined by the normal `vec`.
-     */
-    reflect(vec: vec2): vec2
-
-    /**
-     * x component of the vec2.
-     */
-    x: number
-
-    /**
-     * y component of the vec2.
-     */
-    y: number
-
-    /**
-     * Alternate name for the x component.
-     */
-    r: number
-
-    /**
-     * Alternate name for the y component.
-     */
-    g: number
-
-    /**
-     * Returns the length of the vector.
-     */
-    length: number
-
-    /**
-     * Returns the squared length of the vector.
-     */
-    lengthSquared: number
-
-}
-declare namespace vec2 {
-    /**
-     * Returns a new vector containing the largest value of each component in the two vectors.
-     */
-    export function max(vecA: vec2, vecB: vec2): vec2
-
-    /**
-     * Returns a new vector containing the smallest value of each component in the two vectors.
-     */
-    export function min(vecA: vec2, vecB: vec2): vec2
-
-    /**
-     * Linearly interpolates between the two vectors `vecA` and `vecB` by the factor `t`.
-     */
-    export function lerp(vecA: vec2, vecB: vec2, t: number): vec2
-
-    /**
-     * Returns the vector (1, 1).
-     */
-    export function one(): vec2
-
-    /**
-     * Returns the vector (0, 0).
-     */
-    export function zero(): vec2
-
-    /**
-     * Returns the vector (0, 1).
-     */
-    export function up(): vec2
-
-    /**
-     * Returns the vector (0, -1).
-     */
-    export function down(): vec2
-
-    /**
-     * Returns the vector (-1, 0).
-     */
-    export function left(): vec2
-
-    /**
-     * Returns the vector (1, 0).
-     */
-    export function right(): vec2
-
-    /**
-     * Generate a random 2D direction vector. This is equivalent to a random point on a unit-radius circle.
-     */
-    export function randomDirection(): vec2
-
-
-}
-
-/**
- * A three dimensional vector.
- * Vectors can only store finite numbers in the range Number.MIN_VALUE to Number.MAX_VALUE.
-
- */
-declare class vec3 {
-    /**
-     * Creates a new instance of a vec3.
-     */
-    constructor(x: number, y: number, z: number)
-
-    /**
-     * Returns a string representation of the vector.
-     */
-    toString(): string
-
-    /**
-     * Returns the cross product of the vector and `vec`
-     */
-    cross(vec: vec3): vec3
-
-    /**
-     * Returns a copy of the vector rotated towards the `target` vector by `step` radians.
-
-     * The vectors may be non-normalized. The function always returns a vector with the source vector's magnitude.
-     * This prevents overshoot. If `step` exceeds the angle between vectors, it stops at the `target` direction.
-     * If `step` is negative, this rotates the source vector away from `target`. It stops when the direction is precisely opposite to `target`.
-     * If the vectors are in opposite directions, the result is rotated along an arbitrary (but consistent) axis.
-     * If either vector is zero magnitude, it returns the source vector.
-
-     */
-    rotateTowards(target: vec3, step: number): vec3
-
-    /**
-     * Returns the vector plus `vec`.
-     */
-    add(vec: vec3): vec3
-
-    /**
-     * Returns the vector minus `vec`.
-     */
-    sub(vec: vec3): vec3
-
-    /**
-     * Returns the component-wise multiplication product of the vector and `vec`.
-     */
-    mult(vec: vec3): vec3
-
-    /**
-     * Returns the component-wise multiplication product of the vector and `vec`.
-     */
-    scale(vec: vec3): vec3
-
-    /**
-     * Returns the division of the vector by the vector `vec`.
-     */
-    div(vec: vec3): vec3
-
-    /**
-     * Multiplies the components by the number `scale`.
-     */
-    uniformScale(scale: number): vec3
-
-    /**
-     * Returns whether this is equal to `vec`.
-     */
-    equal(vec: vec3): boolean
-
-    /**
-     * Returns a copy of the vector with its length clamped to `length`.
-     */
-    clampLength(length: number): vec3
-
-    /**
-     * Returns a copy of the vector with its length scaled to 1.
-     */
-    normalize(): vec3
-
-    /**
-     * Returns the angle in radians between the vector and `vec`.
-     */
-    angleTo(vec: vec3): number
-
-    /**
-     * Returns the distance between the vector and the vector `vec`.
-     */
-    distance(vec: vec3): number
-
-    /**
-     * Like `distance()`, but returns the squared distance between vectors.
-     */
-    distanceSquared(vec: vec3): number
-
-    /**
-     * Returns the dot product of the vector and `vec`.
-     */
-    dot(vec: vec3): number
-
-    /**
-     * Returns a copy of the vector moved towards the point `point` by the amount `magnitude`.
-     */
-    moveTowards(point: vec3, magnitude: number): vec3
-
-    /**
-     * Returns a copy of the vector projected onto the vector `vec`.
-     */
-    project(vec: vec3): vec3
-
-    /**
-     * Projects the vector onto the plane represented by the normal `normal`.
-     */
-    projectOnPlane(normal: vec3): vec3
-
-    /**
-     * Returns a copy of the vector reflected across the plane defined by the normal `vec`.
-     */
-    reflect(vec: vec3): vec3
-
-    /**
-     * x component of the vec3.
-     */
-    x: number
-
-    /**
-     * y component of the vec3.
-     */
-    y: number
-
-    /**
-     * z component of the vec3.
-     */
-    z: number
-
-    /**
-     * Alternate name for the x component.
-     */
-    r: number
-
-    /**
-     * Alternate name for the y component.
-     */
-    g: number
-
-    /**
-     * Alternate name for the z component.
-     */
-    b: number
-
-    /**
-     * Returns the length of the vector.
-     */
-    length: number
-
-    /**
-     * Returns the squared length of the vector.
-     */
-    lengthSquared: number
-
-}
-declare namespace vec3 {
-    /**
-     * Makes the vectors `vecA` and `vecB` normalized and orthogonal to each other.
-     */
-    export function orthonormalize(vecA: vec3, vecB: vec3): void
-
-    /**
-     * Returns a new vector containing the largest value of each component in the two vectors.
-     */
-    export function max(vecA: vec3, vecB: vec3): vec3
-
-    /**
-     * Returns a new vector containing the smallest value of each component in the two vectors.
-     */
-    export function min(vecA: vec3, vecB: vec3): vec3
-
-    /**
-     * Linearly interpolates between the two vectors `vecA` and `vecB` by the factor `t`.
-     */
-    export function lerp(vecA: vec3, vecB: vec3, t: number): vec3
-
-    /**
-     * Spherically interpolates between the two vectors `vecA` and `vecB` by the factor `t`.
-     */
-    export function slerp(vecA: vec3, vecB: vec3, t: number): vec3
-
-    /**
-     * Returns the vector (1, 1, 1).
-     */
-    export function one(): vec3
-
-    /**
-     * Returns the vector (0, 0, 0).
-     */
-    export function zero(): vec3
-
-    /**
-     * Returns the vector (0, 1, 0).
-     */
-    export function up(): vec3
-
-    /**
-     * Returns the vector (0, -1, 0).
-     */
-    export function down(): vec3
-
-    /**
-     * Returns the vector (-1, 0, 0).
-     */
-    export function left(): vec3
-
-    /**
-     * Returns the vector (1, 0, 0).
-     */
-    export function right(): vec3
-
-    /**
-     * Returns the vector (0, 0, -1).
-     */
-    export function back(): vec3
-
-    /**
-     * Returns the vector (0, 0, 1).
-     */
-    export function forward(): vec3
-
-    /**
-     * Generate random 3D direction vector. This is equivalent to a random point on a unit-radius sphere.
-     */
-    export function randomDirection(): vec3
-
-
-}
-
-/**
- * A four dimensional vector.
- * Vectors can only store finite numbers in the range Number.MIN_VALUE to Number.MAX_VALUE.
-
- */
-declare class vec4 {
-    /**
-     * Creates a new instance of a vec4.
-     */
-    constructor(x: number, y: number, z: number, w: number)
-
-    /**
-     * Returns a string representation of the vector.
-     */
-    toString(): string
-
-    /**
-     * Returns the vector plus `vec`.
-     */
-    add(vec: vec4): vec4
-
-    /**
-     * Returns the vector minus `vec`.
-     */
-    sub(vec: vec4): vec4
-
-    /**
-     * Returns the component-wise multiplication product of the vector and `vec`.
-     */
-    mult(vec: vec4): vec4
-
-    /**
-     * Returns the component-wise multiplication product of the vector and `vec`.
-     */
-    scale(vec: vec4): vec4
-
-    /**
-     * Returns the division of the vector by the vector `vec`.
-     */
-    div(vec: vec4): vec4
-
-    /**
-     * Multiplies the components by the number `scale`.
-     */
-    uniformScale(scale: number): vec4
-
-    /**
-     * Returns whether this is equal to `vec`.
-     */
-    equal(vec: vec4): boolean
-
-    /**
-     * Returns a copy of the vector with its length clamped to `length`.
-     */
-    clampLength(length: number): vec4
-
-    /**
-     * Returns a copy of the vector with its length scaled to 1.
-     */
-    normalize(): vec4
-
-    /**
-     * Returns the angle between the vector and `vec`.
-     */
-    angleTo(vec: vec4): number
-
-    /**
-     * Returns the distance between the vector and the vector `vec`.
-     */
-    distance(vec: vec4): number
-
-    /**
-     * Like `distance()`, but returns the squared distance between vectors.
-     */
-    distanceSquared(vec: vec4): number
-
-    /**
-     * Returns the dot product of the vector and `vec`.
-     */
-    dot(vec: vec4): number
-
-    /**
-     * Returns a copy of the vector moved towards the point `point` by the amount `magnitude`.
-     */
-    moveTowards(point: vec4, magnitude: number): vec4
-
-    /**
-     * Returns a copy of the vector projected onto the vector `vec`.
-     */
-    project(vec: vec4): vec4
-
-    /**
-     * Projects the vector onto the plane represented by the normal `normal`.
-     */
-    projectOnPlane(normal: vec4): vec4
-
-    /**
-     * Returns a copy of the vector reflected across the plane defined by the normal `vec`.
-     */
-    reflect(vec: vec4): vec4
-
-    /**
-     * x component of the vec4.
-     */
-    x: number
-
-    /**
-     * y component of the vec4.
-     */
-    y: number
-
-    /**
-     * z component of the vec4.
-     */
-    z: number
-
-    /**
-     * w component of the vec4.
-     */
-    w: number
-
-    /**
-     * Alternate name for the x component.
-     */
-    r: number
-
-    /**
-     * Alternate name for the y component.
-     */
-    g: number
-
-    /**
-     * Alternate name for the z component.
-     */
-    b: number
-
-    /**
-     * Alternate name for the w component.
-     */
-    a: number
-
-    /**
-     * Returns the length of the vector.
-     */
-    length: number
-
-    /**
-     * Returns the squared length of the vector.
-     */
-    lengthSquared: number
-
-}
-declare namespace vec4 {
-    /**
-     * Returns a new vector containing the largest value of each component in the two vectors.
-     */
-    export function max(vecA: vec4, vecB: vec4): vec4
-
-    /**
-     * Returns a new vector containing the smallest value of each component in the two vectors.
-     */
-    export function min(vecA: vec4, vecB: vec4): vec4
-
-    /**
-     * Linearly interpolates between the two vectors `vecA` and `vecB` by the factor `t`.
-     */
-    export function lerp(vecA: vec4, vecB: vec4, t: number): vec4
-
-    /**
-     * Returns the vector (1, 1, 1, 1).
-     */
-    export function one(): vec4
-
-    /**
-     * Returns the vector (0, 0, 0, 0).
-     */
-    export function zero(): vec4
-
-
-}
-
-
-/**
- * A quaternion, used to represent rotation.
- */
-declare class quat {
-    /**
-     * Creates a new quat.
-     */
-    constructor(w: number, x: number, y: number, z: number)
-
-    /**
-     * Returns an inverted version of the quat.
-     */
-    invert(): quat
-
-    /**
-     * Normalizes the quat.
-     */
-    normalize(): void
-
-    /**
-     * Returns a string representation of the quat.
-     */
-    toString(): string
-
-    /**
-     * Returns an euler angle representation of the quat, in radians.
-     */
-    toEulerAngles(): vec3
-
-    /**
-     * Returns the rotation angle of the quat.
-     */
-    getAngle(): number
-
-    /**
-     * Returns the rotation axis of the quat.
-     */
-    getAxis(): vec3
-
-    /**
-     * Returns the dot product of the two quats.
-     */
-    dot(quat: quat): number
-
-    /**
-     * Returns the product of this quat and `b`.
-     */
-    multiply(b: quat): quat
-
-    /**
-     * Returns the result of rotating direction vector `vec3` by this quat.
-     */
-    multiplyVec3(vec3: vec3): vec3
-
-    /**
-     * Returns whether this quat and `b` are equal.
-     */
-    equal(b: quat): boolean
-
-    /**
-     * x component of the quat.
-     */
-    x: number
-
-    /**
-     * y component of the quat.
-     */
-    y: number
-
-    /**
-     * z component of the quat.
-     */
-    z: number
-
-    /**
-     * w component of the quat.
-     */
-    w: number
-
-}
-declare namespace quat {
-    /**
-     * Returns the angle between `a` and `b`.
-     */
-    export function angleBetween(a: quat, b: quat): number
-
-    /**
-     * Returns a new quat with angle `angle` and axis `axis`.
-     */
-    export function angleAxis(angle: number, axis: vec3): quat
-
-    /**
-     * Returns a new quat using the euler angles `x`, `y`, `z` (in radians).
-     */
-    export function fromEulerAngles(x: number, y: number, z: number): quat
-
-    /**
-     * Returns a new quat using the euler angle `eulerVec` (in radians).
-     */
-    export function fromEulerVec(eulerVec: vec3): quat
-
-    /**
-     * Returns a rotation quat between direction vectors `from` and `to`.
-     */
-    export function rotationFromTo(from: vec3, to: vec3): quat
-
-    /**
-     * Returns a new quat with a forward vector `forward` and up vector `up`.
-     */
-    export function lookAt(forward: vec3, up: vec3): quat
-
-    /**
-     * Returns a new quat linearly interpolated between `a` and `b`.
-     */
-    export function lerp(a: quat, b: quat, t: number): quat
-
-    /**
-     * Returns a new quat spherically linearly interpolated between `a` and `b`.
-     */
-    export function slerp(a: quat, b: quat, t: number): quat
-
-    /**
-     * Returns the identity quaternion.
-     */
-    export function quatIdentity(): quat
-
-    /**
-     * Creates a quaternion from a matrix.
-     */
-    export function fromRotationMat(rotationMat: mat3): quat
-
-
-}
-
-/**
- * A 3x3 matrix.
- */
-declare class mat3 {
-    /**
-     * Creates a new mat3, defaulting to identity values.
-     */
-    constructor()
-
-    /**
-     * Returns the result of adding the two matrices together.
-     */
-    add(mat: mat3): mat3
-
-    /**
-     * Returns the result of subtracting the two matrices.
-     */
-    sub(mat: mat3): mat3
-
-    /**
-     * Returns the result of multiplying the two matrices.
-     */
-    mult(mat: mat3): mat3
-
-    /**
-     * Returns the result of dividing the two matrices.
-     */
-    div(mat: mat3): mat3
-
-    /**
-     * Returns the determinant of the matrix.
-     */
-    determinant(): number
-
-    /**
-     * Returns the inverse of the matrix.
-     */
-    inverse(): mat3
-
-    /**
-     * Returns the transpose of this matrix.
-     */
-    transpose(): mat3
-
-    /**
-     * Returns whether the two matrices are equal.
-     */
-    equal(mat: mat3): boolean
-
-    /**
-     * Returns the result of scalar multiplying the matrix.
-     */
-    multiplyScalar(scalar: number): mat3
-
-    /**
-     * Returns a string representation of the matrix.
-     */
-    toString(): string
-
-    /**
-     * Returns a string representation of the matrix.
-     */
-    description: string
-
-    /**
-     * The first column of the matrix.
-     */
-    column0: vec3
-
-    /**
-     * The second column of the matrix.
-     */
-    column1: vec3
-
-    /**
-     * The third column of the matrix.
-     */
-    column2: vec3
-
-}
-declare namespace mat3 {
-    /**
-     * Returns the identity matrix.
-     */
-    export function identity(): mat3
-
-    /**
-     * Returns a matrix with all zero values.
-     */
-    export function zero(): mat3
-
-    /**
-     * Returns a matrix representing the specified rotation.
-     */
-    export function makeFromRotation(arg1: quat): mat3
-
-
-}
-
-declare class bvec4 {
-}
-
-interface ComponentNameMap {
-    "AnimationPlayer": Editor.Components.AnimationPlayer;
-    "BaseMeshVisual": Editor.Components.BaseMeshVisual;
-    "Camera": Editor.Components.Camera;
-    "Canvas": Editor.Components.Canvas;
-    "ClearDepth": Editor.Components.CameraClearDepth;
-    "ClothVisual": Editor.Components.ClothVisual;
-    "ColliderComponent": Editor.Components.Physics.ColliderComponent;
-    "DeviceTracking": Editor.Components.DeviceTracking;
-    "EyeColorVisual": Editor.Components.EyeColorVisual;
-    "FaceInsetVisual": Editor.Components.FaceInsetVisual;
-    "FaceMaskVisual": Editor.Components.FaceMaskVisual;
-    "FaceStretchVisual": Editor.Components.FaceStretchVisual;
-    "FaceSubVisual": Editor.Components.FaceMaskVisual;
-    "GaussianSplattingVisual": Editor.Components.GaussianSplattingVisual;
-    "HairVisual": Editor.Components.HairVisual;
-    "Head": Editor.Components.Head;
-    "Image": Editor.Components.Image;
-    "InteractionComponent": Editor.Components.InteractionComponent;
-    "LightSource": Editor.Components.LightSource;
-    "LiquifyVisual": Editor.Components.LiquifyVisual;
-    "LocatedAtComponent": Editor.Components.LocatedAtComponent;
-    "LookAtComponent": Editor.Components.LookAtComponent;
-    "ManipulateComponent": Editor.Components.ManipulateComponent;
-    "MarkerTrackingComponent": Editor.Components.MarkerTrackingComponent;
-    "MaterialMeshVisual": Editor.Components.MaterialMeshVisual;
-    "ObjectTracking": Editor.Components.ObjectTracking;
-    "ObjectTracking3D": Editor.Components.ObjectTracking3D;
-    "PostEffectVisual": Editor.Components.PostEffectVisual;
-    "RectangleSetter": Editor.Components.RectangleSetter;
-    "RenderMeshVisual": Editor.Components.RenderMeshVisual;
-    "RetouchVisual": Editor.Components.RetouchVisual;
-    "ScreenRegionComponent": Editor.Components.ScreenRegionComponent;
-    "ScreenTransform": Editor.Components.ScreenTransform;
-    "ScriptComponent": Editor.Components.ScriptComponent;
-    "Skin": Editor.Components.Skin;
-    "Text": Editor.Components.Text;
-    "Text3D": Editor.Components.Text3D;
-    "TouchComponent": Editor.Components.InteractionComponent;
-    "Visual": Editor.Components.Visual;
+declare var secureLocalStorage: SecureLocalStorage
+interface Timeout {
 }

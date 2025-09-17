@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as Ui from "LensStudio:Ui";
 import { BoxLayout } from "./boxLayout.js";
 export class VBoxLayout extends BoxLayout {

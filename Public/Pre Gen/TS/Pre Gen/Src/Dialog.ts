@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as Ui from "LensStudio:Ui";
 import {HomeScreen} from "./HomeScreen.js";
 import {logEventOpen} from "./analytics.js";
@@ -27,6 +28,7 @@ export class Dialog {
 
     show(): void {
         this.dialog.show();
+        this.dialog.raise();
         logEventOpen();
         this.homeScreen.updateGallery();
     }

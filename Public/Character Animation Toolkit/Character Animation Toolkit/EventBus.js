@@ -1,3 +1,4 @@
+// @ts-nocheck
 export var EventTypes;
 (function (EventTypes) {
     EventTypes["OnAuthorizationChange"] = "onAuthorizationChange";

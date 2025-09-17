@@ -1,10 +1,20 @@
 export function buildAssetData(controls) {
     const request = {
-        'prompt': '',
-        'seed': controls['seedPicker'].value
+        'prompt': null,
+        'seed': controls['seedPicker'].value,
+        'uploadUid': null
     };
 
-    request.prompt = controls['promptPicker'].value;
+    const prompt = controls['promptPicker'].value;
 
+    if (prompt.length > 0) {
+        request.prompt = prompt;
+    }
+
+    const images = controls['imageReferencePicker'].value;
+
+    if (images.length > 0) {
+        request.uploadUid = images[0].uid;
+    }
     return request;
 }

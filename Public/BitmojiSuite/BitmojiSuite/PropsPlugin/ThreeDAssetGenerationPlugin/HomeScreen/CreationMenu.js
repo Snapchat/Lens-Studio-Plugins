@@ -65,7 +65,7 @@ export class CreationMenu {
 
         const data = buildAssetData(controls, true);
 
-        let inputFormat = controls["imageReferencePicker"].value.length > 0 ? "INPUT_IMAGE" : "INPUT_PROMPT";
+        let inputFormat = controls["imageReferencePicker"].value.length > 0 ? "PROMPT_IMAGE" : "PROMPT_TEXT";
 
         createAsset(data, (response) => {
             if (this.isDeinitialized) {

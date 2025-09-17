@@ -1,3 +1,4 @@
+// @ts-nocheck
 class Application {
     constructor() {
         this.curName = "AI Portraits";

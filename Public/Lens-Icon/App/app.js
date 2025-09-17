@@ -148,17 +148,25 @@ export class LensIconWidget extends ProjectSettingsPlugin {
         this.iconCropper = new IconCropper(this.pluginSystem, this.requestIconSet.bind(this), this.requestCancelation.bind(this));
 
         this.widget = new Ui.Widget(parent);
-        this.widget.resize(510, 610);
+
+        this.widget.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Expanding);
         this.widget.setContentsMargins(0, 0, 0, 0);
 
+        this.layout = new Ui.BoxLayout();
+        this.layout.setDirection(Ui.Direction.TopToBottom);
+        this.layout.setContentsMargins(0, 0, 0, 0);
+
         this.views = new Ui.StackedWidget(this.widget);
-        this.views.setMinimumWidth(510);
-        this.views.setMinimumHeight(610);
+        this.views.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Expanding);
         this.views.setContentsMargins(0, 0, 0, 0);
 
         this.views.addWidget(this.homeScreen.createWidget(this.views));
         this.views.addWidget(this.iconGenerator.createWidget(this.views));
         this.views.addWidget(this.iconCropper.createWidget(this.views));
+
+        this.layout.addWidget(this.views);
+
+        this.widget.layout = this.layout;
 
         logEventOpen();
         this.init();

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as Ui from "LensStudio:Ui";
 import {MenuTemplate} from "./MenuTemplate.js";
 import {Widget} from "../components/common/widgets/widget.js";

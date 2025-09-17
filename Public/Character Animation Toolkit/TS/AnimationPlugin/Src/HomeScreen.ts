@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as Ui from "LensStudio:Ui";
 import {Widget} from "./components/common/widgets/widget.js";
 import {HBoxLayout} from "./components/common/layouts/hBoxLayout.js";
@@ -13,6 +14,7 @@ export class HomeScreen {
     private menu: Menu;
     private preview: Preview;
     private loginScreen: Ui.ImageView | undefined;
+    private transparentScreen: Ui.ImageView | undefined;
     private authComponent: Editor.IAuthorization | undefined;
 
     constructor() {
@@ -31,6 +33,7 @@ export class HomeScreen {
         layout.spacing = 0;
 
         this.createLoginScreen(parent);
+        this.createTransparentScreen(parent);
 
         const pluginSystem = dependencyContainer.get(DependencyKeys.PluginSystem) as PluginSystem;
         this.authComponent = pluginSystem.findInterface(Editor.IAuthorization) as Editor.IAuthorization;
@@ -111,6 +114,17 @@ export class HomeScreen {
         })
 
         this.loginScreen.visible = false;
+    }
+
+    private createTransparentScreen(parent: Ui.Widget): void {
+        this.transparentScreen = new Ui.ImageView(parent);
+        this.transparentScreen.setFixedWidth(800);
+        this.transparentScreen.setFixedHeight(620)
+        this.transparentScreen.pixmap = new Ui.Pixmap(import.meta.resolve('./Menu/Resources/transparent.png'));
+        this.transparentScreen.scaledContents = true;
+        this.transparentScreen.visible = false;
+
+        dependencyContainer.register(DependencyKeys.TransparentScreen, this.transparentScreen);
     }
 
     deinit(): void {

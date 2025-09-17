@@ -1,19 +1,26 @@
+// @ts-nocheck
 import * as Network from 'LensStudio:Network';
 import * as FileSystem from 'LensStudio:FileSystem';
 const BASE_URL = 'https://ml.snap.com';
-export function getMyAnimations(callback, pageToken) {
+export function getMyAnimations(callback, pageToken, filter) {
     const request = new Network.HttpRequest();
     request.url = BASE_URL + '/api/animations';
     request.method = Network.HttpRequest.Method.Get;
+    if (filter) {
+        request.url += "?filter[]=type%3D" + filter;
+    }
     if (pageToken) {
-        request.url += '?&pageToken=' + pageToken;
+        if (!filter) {
+            request.url += '?';
+        }
+        request.url += '&pageToken=' + pageToken;
     }
     Network.performAuthorizedHttpRequest(request, (response) => {
         //@ts-ignore
         if (JSON.parse(response.body).nextPageToken) {
             callback(response, true);
             //@ts-ignore
-            getMyAnimations(callback, JSON.parse(response.body).nextPageToken.toString());
+            getMyAnimations(callback, JSON.parse(response.body).nextPageToken.toString(), filter);
         }
         else {
             callback(response, false);
@@ -32,6 +39,43 @@ export function promptToAnimation(prompt, callback) {
     request.contentType = 'application/json';
     Network.performAuthorizedHttpRequest(request, (response) => {
         callback(response);
+    });
+}
+export function uploadFile(assetPath, callback) {
+    const request = new Network.HttpRequest();
+    request.url = BASE_URL + '/api/animations/:with-existing-animation';
+    request.method = Network.HttpRequest.Method.Post;
+    const formData = new Network.FormData();
+    const fileName = assetPath.toString().split('/').pop();
+    const headers = {
+        'Content-Disposition': `form-data; name="media"; filename=${fileName + ""}`
+    };
+    const data = FileSystem.readBytes(assetPath);
+    formData.append(data, headers);
+    request.body = formData;
+    request.contentType = 'multipart/form-data';
+    Network.performAuthorizedHttpRequest(request, (response) => {
+        callback(response);
+    });
+}
+export function blendAnimations(animations, callback) {
+    const request = new Network.HttpRequest();
+    request.url = BASE_URL + '/api/animations/:with-stitching';
+    request.method = Network.HttpRequest.Method.Post;
+    const data = {
+        "animation_ids": animations
+    };
+    request.body = JSON.stringify(data);
+    request.contentType = 'application/json';
+    Network.performAuthorizedHttpRequest(request, (response) => {
+        callback(response);
+    });
+}
+export async function blendAnimationsPromise(animations) {
+    return new Promise((resolve) => {
+        blendAnimations(animations, (response) => {
+            resolve(response);
+        });
     });
 }
 export function getAnimationById(animationId, callback) {

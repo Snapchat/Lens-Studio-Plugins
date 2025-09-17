@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as Ui from "LensStudio:Ui";
 import {Pixmap} from "LensStudio:Ui";
 
@@ -68,9 +69,11 @@ export class Preview {
         imageViewLayout.addWidgetWithStretch(this.spinner, 0, Ui.Alignment.AlignCenter);
 
         this.generatingPreviewLabel = new Ui.Label(widget);
-        this.generatingPreviewLabel.text = '<center>' + 'Generating preview...<br>This may take up to 30 seconds.' + '</center>';
-        this.generatingPreviewLabel.setFixedWidth(200);
-        this.generatingPreviewLabel.move(110, 298);
+        this.generatingPreviewLabel.text = '<center>' + 'Generating previews...<br>At this time, generations can take an hour or two<br>due to the technical limitations and high<br>demand. We are working to improve this time.' + '</center>';
+        this.generatingPreviewLabel.setFixedWidth(350);
+        this.generatingPreviewLabel.setFixedHeight(90);
+        this.generatingPreviewLabel.move(35, 298);
+
         this.generatingPreviewLabel.foregroundRole = Ui.ColorRole.BrightText;
 
         this.generatingPreviewLabel.visible = false;
@@ -199,7 +202,9 @@ export class Preview {
             this.imageView.pixmap = new Ui.Pixmap(this.previewImages.targetImagePath);
         }
         else {
-            this.imageView.pixmap = new Ui.Pixmap(this.previewImages.sourceImagePath);
+            const pixmap = new Ui.Pixmap(this.previewImages.sourceImagePath);
+            pixmap.crop(new Ui.Rect(37, 0, 438, 768));
+            this.imageView.pixmap = pixmap
         }
     }
 

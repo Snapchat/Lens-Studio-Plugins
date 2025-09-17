@@ -1,8 +1,9 @@
+// @ts-nocheck
 import * as Ui from "LensStudio:Ui";
 import { Widget } from "./widget.js";
 export class ImageView extends Widget {
     constructor(parent) {
-        super(parent, Ui.ImageView.create);
+        super(parent, Ui.ImageView);
     }
     get onClick() {
         return this.__widget__.onClick;

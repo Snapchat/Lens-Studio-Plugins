@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as Network from 'LensStudio:Network';
 
 const BASE_URL = 'https://ml.snap.com';

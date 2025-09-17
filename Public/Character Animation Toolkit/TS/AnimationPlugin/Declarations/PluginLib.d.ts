@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * The plugin system has an API that describes the entry points that a plugin
  * will use to register itself with the editor and gain access to the rest

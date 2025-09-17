@@ -2,7 +2,8 @@ import * as Ui from 'LensStudio:Ui';
 
 export const HintID = {
     'seed': 0,
-    'prompt': 1
+    'prompt': 1,
+    'image_reference': 2
 };
 
 const hintScheme = {
@@ -13,6 +14,10 @@ const hintScheme = {
     [HintID.seed]: {
         'title': 'Seed',
         'text': 'Controls randomness. Use the same number to recreate the same look, or try different ones for new variations!'
+    },
+    [HintID.image_reference]: {
+        'title': 'Image Reference',
+        'text': 'Optional image reference to guide the output.'
     }
 };
 
@@ -28,6 +33,7 @@ class HintFactory {
         layout.setDirection(Ui.Direction.TopToBottom);
 
         const content = new Ui.Widget(parent);
+        content.setMinimumWidth(275);
 
         if (image_path) {
             const imageView = new Ui.ImageView(content);

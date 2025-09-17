@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as Ui from "LensStudio:Ui";
 import { defaultPrompts } from "./Prompts.js";
 import { deleteById } from "./api.js";
@@ -233,6 +234,7 @@ class TextField {
         const textEdit = new Ui.TextEdit(widget);
         textEdit.placeholderText = placeholderText;
         textEdit.setFixedHeight(72);
+        textEdit.acceptRichText = false;
         this.connections.push(textEdit.onTextChange.connect(() => {
             this.onTextChange();
         }));

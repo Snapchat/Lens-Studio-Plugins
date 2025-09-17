@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as Ui from "LensStudio:Ui";
 import { Widget } from "../common/widgets/widget.js";
 import { ImageView } from "../common/widgets/imageView.js";
@@ -14,6 +15,7 @@ export class GridTile extends Widget {
         super(parent);
         this.wasGenerated = false;
         this.isClickableWhenSelected = false;
+        this.previewPath = "";
         this.type = "";
         this.isRemoved = false;
         this.onClickCallback = () => { };
@@ -95,6 +97,7 @@ export class GridTile extends Widget {
     }
     addPreview(path) {
         this.setDefaultState();
+        this.previewPath = path;
         const movie = new Ui.Movie(path);
         movie.resize(220, 320);
         this.movieView.movie = movie;
@@ -103,6 +106,9 @@ export class GridTile extends Widget {
         this.movieView.raise();
         if (this.removeButton) {
             this.removeButton.raise();
+        }
+        if (this.blendIcon) {
+            this.blendIcon.raise();
         }
     }
     addBodyMorphPreview(path) {
@@ -122,6 +128,9 @@ export class GridTile extends Widget {
         this.frame.setFixedHeight(height);
         if (this.removeButton) {
             this.removeButton.move(width - 32, 8);
+        }
+        if (this.blendIcon) {
+            this.blendIcon.move(8, 8);
         }
     }
     handleClick() {
@@ -198,6 +207,22 @@ export class GridTile extends Widget {
                 this.onRemoveCallback(this.id);
             });
         });
+    }
+    addBlendIcon(pixmap) {
+        if (this.blendIcon) {
+            return;
+        }
+        this.blendIcon = new ImageView(this.frame);
+        this.blendIcon.visible = true;
+        this.blendIcon.setFixedWidth(9);
+        this.blendIcon.setFixedHeight(8);
+        this.blendIcon.pixmap = pixmap;
+        this.blendIcon.scaledContents = true;
+        this.blendIcon.move(8, 8);
+        this.blendIcon.raise();
+    }
+    getPreviewPath() {
+        return this.previewPath;
     }
     setProgress(value) {
         this.progressPercentLabel.visible = true;

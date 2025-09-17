@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { CoreService } from "LensStudio:CoreService";
 import * as Ui from "LensStudio:Ui";
 import { Dialog } from "./Dialog.js";

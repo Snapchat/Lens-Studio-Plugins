@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as Ui from "LensStudio:Ui";
 import {HomeScreen} from "./HomeScreen.js";
 import {eventBus, EventTypes} from "./EventBus.js";
@@ -29,6 +30,7 @@ export class Dialog {
 
     show(): void {
         this.dialog.show();
+        this.dialog.raise();
         stateManager.updateState(StateKeys.IsDialogShown, true);
         eventBus.emit(EventTypes.DialogShown, true);
         logEventOpen();

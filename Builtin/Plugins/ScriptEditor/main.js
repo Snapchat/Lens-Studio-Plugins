@@ -5,6 +5,7 @@ import {launchWebSocketServer} from './webviewServerManager.js';
 import TcpServerManager from './TcpServerManager.js';
 import {FileWatcher} from "./utils/files/fileWatcher.js";
 import {PluginSettings} from "./lib/Resources/Common.js";
+import { isValidComponentToEdit } from './utils/index.js';
 
 
 const LOCALHOST_ADDRESS = "127.0.0.1";
@@ -12,14 +13,10 @@ const addr = {
     serverAddr: `http://${LOCALHOST_ADDRESS}`,
 };
 
-const isValidScriptComponent = (entity) => {
-    return !!(entity && (entity.isOfType("JavaScriptAsset") || entity.isOfType("TypeScriptAsset")));
-}
-
 const findScriptComponent = (entities) => {
     if (Array.isArray(entities)) {
-        return entities.find(e => isValidScriptComponent(e));
-    } else if (isValidScriptComponent(entities)) {
+        return entities.find(e => isValidComponentToEdit(e));
+    } else if (isValidComponentToEdit(entities)) {
         return entities;
     }
     return undefined;
@@ -32,7 +29,7 @@ export class ScriptEditor extends EditorPlugin {
             name: PluginSettings.PluginName,
             description: 'Lens Studio Script Editor',
             canEdit: entity => {
-                return isValidScriptComponent(entity);
+                return isValidComponentToEdit(entity);
             },
             defaultSize: new Ui.Size(800, 500),
             minimumSize: new Ui.Size(100, 150),
@@ -167,6 +164,7 @@ export class ScriptEditor extends EditorPlugin {
 
     edit(entities) {
         this.editableComponent = findScriptComponent(entities);
+
         if (this.editableComponent) {
             let assetToOpen = this.editableComponent;
             const sourcePath = assetToOpen.fileMeta.sourcePath.toString();
@@ -175,7 +173,7 @@ export class ScriptEditor extends EditorPlugin {
             this.updateLoadingMessage(scriptName);
 
             if (sourcePath.toLowerCase().endsWith('.lsc')) {
-                if (assetToOpen.primaryAsset && isValidScriptComponent(assetToOpen.primaryAsset)) {
+                if (assetToOpen.primaryAsset && isValidComponentToEdit(assetToOpen.primaryAsset)) {
                     assetToOpen = assetToOpen.primaryAsset;
                 } else {
                     console.warn(`[Script Editor] Selected packed Custom Component has no primary asset. Aborting open.`);
@@ -187,7 +185,7 @@ export class ScriptEditor extends EditorPlugin {
                 const allAssets = this.assetManager.assets;
                 allAssets.forEach(asset => {
                     const dependencySourcePath = asset.fileMeta.sourcePath.toString();
-                    if (!assetToOpen.isSame(asset) && isValidScriptComponent(asset) && !dependencySourcePath.toLowerCase().endsWith('.lsc')) {
+                    if (!assetToOpen.isSame(asset) && isValidComponentToEdit(asset) && !dependencySourcePath.toLowerCase().endsWith('.lsc')) {
                         this.webSocketManager.loadDependency(dependencySourcePath, asset.id.toString());
                     }
                 });

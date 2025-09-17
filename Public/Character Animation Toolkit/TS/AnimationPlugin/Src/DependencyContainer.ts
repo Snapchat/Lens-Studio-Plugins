@@ -1,9 +1,11 @@
+// @ts-nocheck
 export enum DependencyKeys {
     PluginSystem = 'pluginSystem',
     AnimationLibrary = 'AnimationLibrary',
     Preview = 'Preview',
     LBEPreview = 'LBEPreview',
-    IsActive = "IsActive"
+    IsActive = "IsActive",
+    TransparentScreen = "TransparentScreen"
 }
 
 class DependencyContainer {

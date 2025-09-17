@@ -4,10 +4,10 @@ import { tieWidgets } from '../../utils.js';
 import { Control } from './Control.js';
 
 export class TextEdit extends Control {
-    constructor(parent, label, valueImporter, valueExporter, defaultValue, placeholderText) {
+    constructor(parent, label, valueImporter, valueExporter, defaultValue, placeholderText, maxSymbols) {
         super(parent, label, valueImporter, valueExporter, null, defaultValue);
 
-        this.maxSymbols = 200;
+        this.maxSymbols = maxSymbols;
 
         this.mControl = new Ui.TextEdit(this.widget);
 
@@ -17,14 +17,41 @@ export class TextEdit extends Control {
         this.mControl.acceptRichText = false;
 
         this.mConnections.push(this.mControl.onTextChange.connect(() => {
-            if (this.value.length > this.maxSymbols) {
-                this.value = this.value.substring(0, this.maxSymbols);
-            }
-
             this.mOnValueChanged.forEach((callback) => callback(this.value));
         }));
 
-        tieWidgets(this.mLabel, this.mControl, this.mWidget);
+        if (this.maxSymbols) {
+            const layout = new Ui.BoxLayout();
+            layout.setDirection(Ui.Direction.TopToBottom);
+            layout.setContentsMargins(0, 0, 0, 0);
+
+            const limitationLabel = new Ui.Label(this.widget);
+            limitationLabel.text = "0 / " + this.maxSymbols;
+
+            layout.addWidget(this.mControl);
+            layout.addWidgetWithStretch(limitationLabel, 0, Ui.Alignment.AlignRight);
+
+            this.mOnValueChanged.push((value) => {
+                if (value.length >= this.maxSymbols) {
+                    this.mControl.blockSignals(true);
+                    this.value = value.substring(0, this.maxSymbols);
+                    this.moveCursorToEnd();
+                    this.mControl.blockSignals(false);
+                }
+
+                limitationLabel.text = this.value.length + " / " + this.maxSymbols;
+            });
+
+            this.widget.layout = layout;
+        } else {
+            tieWidgets(this.mLabel, this.mControl, this.mWidget);
+        }
+    }
+
+    moveCursorToEnd() {
+        const cursor = this.mControl.textCursor;
+        cursor.movePosition(Ui.TextCursor.MoveOperation.End, Ui.TextCursor.MoveMode.MoveAnchor);
+        this.mControl.textCursor = cursor;
     }
 
     reset() {

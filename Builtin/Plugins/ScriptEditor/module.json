@@ -1,5 +1,5 @@
 {
     "name": "Script Editor",
-    "main": "main.js",
+    "main": "pluginRegistry.js",
     "permissions": [ "network", "filesystem"]
 }

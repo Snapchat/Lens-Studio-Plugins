@@ -1,3 +1,4 @@
+// @ts-nocheck
 export var DependencyKeys;
 (function (DependencyKeys) {
     DependencyKeys["Main"] = "Main";
@@ -7,6 +8,7 @@ export var DependencyKeys;
     DependencyKeys["LBEPreview"] = "LBEPreview";
     DependencyKeys["IsActive"] = "IsActive";
     DependencyKeys["BitmojiComponent"] = "BitmojiComponent";
+    DependencyKeys["TransparentScreen"] = "TransparentScreen";
 })(DependencyKeys || (DependencyKeys = {}));
 class DependencyContainer {
     constructor() {

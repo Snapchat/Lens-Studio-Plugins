@@ -1,3 +1,4 @@
+// @ts-nocheck
 class Application {
 
     private mPluginSystem: Editor.PluginSystem | null;

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as Ui from "LensStudio:Ui";
 import {Widget} from "../common/widgets/widget.js";
 import {VerticalScrollArea} from "../common/widgets/verticalScrollArea.js";
@@ -18,6 +19,7 @@ export class Grid extends Widget {
     private visibleTiles: GridTile[];
     private spacer: Widget;
     private selectedId: number = -1;
+    private selectedTile: any = null;
     private searchText: string;
     private onScrollValueChangedCallback: Function =  () => {};
 
@@ -81,7 +83,8 @@ export class Grid extends Widget {
         const tileHeight = tileWidth * this.tileAspect;
         this.gridLayout.clear(Ui.ClearLayoutBehavior.KeepClearedWidgets);
         let row = 0, col = 0;
-        for (let i = this.visibleTiles.length - 1; i >= 0; i--) {
+
+        for (let i = 0; i < this.visibleTiles.length; i++) {
             if (col === 0) {
                 this.gridLayout.setRowStretch(row, 0);
             }
@@ -100,16 +103,26 @@ export class Grid extends Widget {
     }
 
     clearSelection() {
-        if (this.selectedId > -1) {
-            this.allTiles[this.selectedId].deselect();
-            this.selectedId = -1;
+        if (this.selectedTile) {
+            this.selectedTile.deselect();
+            this.selectedTile = null;
         }
     }
 
-    addTile(tile: GridTile) {
+    addTile(tile: GridTile, shouldArrange: boolean = true) {
         this.allTiles.push(tile);
         if (this.shouldTileBeVisible(tile)) {
             this.visibleTiles.push(tile);
+            if (shouldArrange) {
+                this.arrangeLayout();
+            }
+        }
+    }
+
+    addTileToFront(tile: GridTile) {
+        this.allTiles.unshift(tile);
+        if (this.shouldTileBeVisible(tile)) {
+            this.visibleTiles.unshift(tile);
             this.arrangeLayout();
         }
     }
@@ -155,9 +168,9 @@ export class Grid extends Widget {
         this.onScrollValueChanged(this.scrollArea.value / this.scrollArea.maximum);
     }
 
-    selectTile(id: number) {
-        this.selectedId = id;
-        this.allTiles[this.selectedId].select();
+    selectTile(tile: GridTile) {
+        tile.select();
+        this.selectedTile = tile;
     }
 
     addOnScrollValueChangedCallback(callback: Function) {

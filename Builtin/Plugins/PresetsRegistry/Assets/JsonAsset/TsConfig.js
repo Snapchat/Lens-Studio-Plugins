@@ -1,22 +1,12 @@
-import { Preset } from 'LensStudio:Preset';
+import {createResourcePresetClass, PresetCreateMethod} from '../Utils/ResourcePresetFactory.js';
 
-export async function createJSONAsset(model, destination) {
-    const meta = await model.project.assetManager.importExternalFileAsync(import.meta.resolve('Resources/tsconfig.json'), destination, Editor.Model.ResultType.Unpacked);
-    return meta.primary;
-}
-export class TsConfigPreset extends Preset {
-    static descriptor() {
-        return {
-            id: 'Com.Snap.JsonAssetPreset.TsConfig',
-            name: 'TS Config',
-            description: '',
-            icon: Editor.Icon.fromFile(import.meta.resolve('../Resources/JsonFile.svg')),
-            section: 'Scripting',
-            entityType: 'JsonAsset'
-        };
-    }
-    async createAsync(destination) {
-        const model = this.pluginSystem.findInterface(Editor.Model.IModel);
-        return await createJSONAsset(model, destination);
-    }
-}
+export const TsConfigPreset = createResourcePresetClass({
+    name: 'TS Config',
+    id: 'Com.Snap.JsonAssetPreset.TsConfig',
+    description: '',
+    icon: Editor.Icon.fromFile(import.meta.resolve('../Resources/JsonFile.svg')),
+    section: 'Scripting',
+    entityType: "JsonAsset",
+    resourcePath: import.meta.resolve('Resources/tsconfig.json'),
+    createMethod: PresetCreateMethod.AlwaysCreateNew
+});

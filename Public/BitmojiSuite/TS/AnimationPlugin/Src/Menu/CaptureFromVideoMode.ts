@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as Ui from "LensStudio:Ui";
 import {Alignment} from "LensStudio:Ui";
 import {MenuTemplate} from "./MenuTemplate.js";
@@ -93,14 +94,14 @@ export class CaptureFromVideoMode {
         buttonLabel.move(109, 159);
 
         //@ts-ignore
-        const videoWidget = MultimediaWidgets.VideoWidget.create(videoUpload);
+        const videoWidget = new MultimediaWidgets.VideoWidget(videoUpload);
         videoWidget.setFixedWidth(288);
         videoWidget.setFixedHeight(288);
         videoWidget.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
         videoWidget.visible = false;
 
         //@ts-ignore
-        const mediaPlayer = MultimediaWidgets.MediaPlayer.create();
+        const mediaPlayer = new MultimediaWidgets.MediaPlayer();
 
         contentLayout.addWidgetWithStretch(videoUpload, 0, (Ui.Alignment.AlignCenter));
         contentLayout.addStretch(0);

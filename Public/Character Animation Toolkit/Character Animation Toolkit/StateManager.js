@@ -1,3 +1,4 @@
+// @ts-nocheck
 export var StateKeys;
 (function (StateKeys) {
     StateKeys["IsUserAuthenticated"] = "isUserAuthenticated";

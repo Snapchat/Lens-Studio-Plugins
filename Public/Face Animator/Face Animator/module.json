@@ -1,0 +1,5 @@
+{
+    "main": "Main.js",
+    "permissions": ["snap_auth_token", "network", "filesystem"],
+    "name": "Face Animator"
+}

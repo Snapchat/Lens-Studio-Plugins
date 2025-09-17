@@ -12,6 +12,8 @@ export const PromptPickerMode = {
     Image: 1
 };
 
+const MAX_SYMBOLS = 200;
+
 export class PromptPicker extends Control {
     constructor(parent, label, valueImporter, valueExporter, hint) {
         super(parent, null, valueImporter, valueExporter);
@@ -24,7 +26,7 @@ export class PromptPicker extends Control {
 
         const promptHeaderWidget = this['createPromptHeaderWidget'](this.widget, label, hint);
 
-        this.textEdit = new TextEdit(parent, null, null, null, 'Enter prompt here...');
+        this.textEdit = new TextEdit(parent, null, null, null, 'Enter prompt here...', MAX_SYMBOLS);
         this.textEdit.widget.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Fixed);
 
         this.textEdit.addOnValueChanged((value) => {

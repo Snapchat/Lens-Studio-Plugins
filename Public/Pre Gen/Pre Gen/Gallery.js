@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as Ui from "LensStudio:Ui";
 import { GalleryItem } from "./GalleryItem.js";
 export class Gallery {

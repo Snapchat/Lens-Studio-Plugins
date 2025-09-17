@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as Ui from "LensStudio:Ui";
 import {Direction} from "LensStudio:Ui";
 import {Preview} from "./Preview.js";
@@ -14,6 +15,7 @@ export class EffectSettings {
     private importer: Importer;
     private previewEffectButton: Ui.PushButton | undefined;
     private trainModelButton: Ui.PushButton | undefined;
+    private trainLabel: Ui.Label | undefined;
     private importButton: Ui.PushButton | undefined;
     private reusePromptButton: Ui.PushButton | undefined;
     private statusWidget: Ui.Widget | undefined;
@@ -127,7 +129,14 @@ export class EffectSettings {
 
         layout.addWidgetWithStretch(this.reusePromptButton, 0, Ui.Alignment.AlignLeft | Ui.Alignment.AlignCenter);
 
+        this.trainLabel = new Ui.Label(widget);
+        this.trainLabel.text = '<center>' + 'At this time, generations can take a day or two due to the technical limitations and high<br>demand. We are working to improve this time.' + '</center>';
+        this.trainLabel.visible = false;
+
+        layout.addWidgetWithStretch(this.trainLabel, 0, Ui.Alignment.AlignCenter);
+
         const previewEffectButton = new Ui.PushButton(widget);
+
         previewEffectButton.text = 'Preview Effect';
         previewEffectButton.primary = true;
         previewEffectButton.enabled = false;
@@ -146,6 +155,9 @@ export class EffectSettings {
 
         this.connections.push(trainModelButton.onClick.connect(() => {
             trainModelButton.visible = false;
+            if (this.trainLabel) {
+                this.trainLabel.visible = false;
+            }
             if (this.statusWidget) {
                 this.statusWidget.visible = true;
             }
@@ -173,7 +185,7 @@ export class EffectSettings {
         layout.addWidgetWithStretch(importButton, 0, Ui.Alignment.AlignRight | Ui.Alignment.AlignCenter);
 
         const statusWidget = new Ui.Widget(widget);
-        statusWidget.setFixedWidth(404);
+        statusWidget.setFixedWidth(704);
         statusWidget.setFixedHeight(24);
         const statusLayout = new Ui.BoxLayout();
         statusLayout.setDirection(Ui.Direction.LeftToRight);
@@ -182,7 +194,8 @@ export class EffectSettings {
         statusLayout.addStretch(0);
 
         const statusLabel = new Ui.Label(statusWidget);
-        statusLabel.text = 'Model training in progress';
+        statusLabel.text = '<center>' + 'Model training in progress. At this time, generations can take a day or two due to the technical limitations and high<br>demand. We are working to improve this time.' + '</center>';
+        statusLabel.setFixedHeight(24);
 
         const loading = new Ui.ProgressIndicator(statusWidget);
         loading.start();
@@ -210,10 +223,11 @@ export class EffectSettings {
         this.effectSettingsPage.setSettings(settings);
         this.curId = settings.id;
 
-        if (this.previewEffectButton && this.trainModelButton && this.importButton && this.statusWidget && this.popup && this.reusePromptButton) {
+        if (this.previewEffectButton && this.trainModelButton && this.trainLabel && this.importButton && this.statusWidget && this.popup && this.reusePromptButton) {
             this.previewEffectButton.visible = false;
             this.previewEffectButton.enabled = false;
             this.trainModelButton.visible = false;
+            this.trainLabel.visible = false;
             this.importButton.visible = false;
             this.importButton.enabled = true;
             this.statusWidget.visible = false;
@@ -269,9 +283,10 @@ export class EffectSettings {
             this.effectSettingsPage.unlock();
         }
 
-        if (this.trainModelButton && this.importButton) {
+        if (this.trainModelButton && this.importButton && this.trainLabel) {
             if (settings.state === "SUCCESS") {
                 this.trainModelButton.visible = true;
+                this.trainLabel.visible = true;
             }
             else if (settings.state === "PACK_SUCCESS") {
                 this.importButton.visible = true;
@@ -336,6 +351,12 @@ export class EffectSettings {
 
                 if (response.statusCode === 400 || response.statusCode === 422) {
                     logEventCreate("GUIDELINES_VIOLATION", "NEW", "PROMPT_TEXT");
+                }
+                else if (response.statusCode == 429) {
+                    if (this.curId === this.preview.getId()) {
+                        this.preview.setDefaultState();
+                        this.showPreviewLimitReachedPopup();
+                    }
                 }
             }
         })
@@ -439,10 +460,22 @@ export class EffectSettings {
             return;
         }
         this.popup.setFixedHeight(32);
-        this.popup.setFixedWidth(380);
-        this.popup.move(210, 4);
+        this.popup.setFixedWidth(388);
+        this.popup.move(206, 4);
 
-        this.popupLabel.text = "Limit reached – A maximum of 2 models can be trained per hour";
+        this.popupLabel.text = "Limit reached – A maximum of 1 model can be trained per 4 hours.";
+        this.popup.visible = true;
+    }
+
+    private showPreviewLimitReachedPopup() {
+        if (!this.popup || !this.popupLabel) {
+            return;
+        }
+        this.popup.setFixedHeight(32);
+        this.popup.setFixedWidth(420);
+        this.popup.move(190, 4);
+
+        this.popupLabel.text = "Limit reached — A maximum of 10 previews can be generated per hour.";
         this.popup.visible = true;
     }
 

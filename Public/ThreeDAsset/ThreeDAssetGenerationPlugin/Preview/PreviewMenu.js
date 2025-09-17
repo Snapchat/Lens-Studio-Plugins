@@ -29,7 +29,7 @@ export class PreviewMenu {
         this.editEffectButton.enabled = false;
         app.log('Creating new asset...', { 'progressBar': true });
 
-        let inputFormat = controls["imageReferencePicker"].value.length > 0 ? "INPUT_IMAGE" : "INPUT_PROMPT";
+        let inputFormat = controls["imageReferencePicker"].value.length > 0 ? "PROMPT_IMAGE" : "PROMPT_TEXT";
 
         if (this.updateAssetOption.value == 'Change Texture') {
             retextureAsset(this.asset_id, buildAssetData(controls, false), (retextureResponse) => {

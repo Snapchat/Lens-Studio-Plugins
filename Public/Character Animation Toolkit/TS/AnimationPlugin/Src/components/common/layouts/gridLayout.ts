@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as Ui from "LensStudio:Ui";
 import { Layout } from "./layout.js";
 export class GridLayout extends Layout {

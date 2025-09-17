@@ -45,7 +45,6 @@ export function createAsset(data, callback) {
     request.body = JSON.stringify(data);
     request.contentType = 'application/json';
 
-
     Network.performAuthorizedHttpRequest(request, function(response) {
         callback(response);
     });
@@ -113,6 +112,27 @@ export function deleteAsset(id, callback) {
     const request = new Network.HttpRequest();
     request.url = base_url + '/' + id;
     request.method = Network.HttpRequest.Method.Delete;
+
+    Network.performAuthorizedHttpRequest(request, function(response) {
+        callback(response);
+    });
+}
+
+export function createAttachment(data, contentType, filename, callback) {
+    const request = new Network.HttpRequest();
+    request.url = 'https://ml.snap.com/api/uploads';
+    request.method = Network.HttpRequest.Method.Post;
+
+    const headers = {
+        'Content-Disposition': `form-data; name="media"; filename="${filename}"`,
+        'Content-Type': contentType
+    };
+
+    const formData = new Network.FormData();
+
+    formData.append(data, headers);
+
+    request.body = formData;
 
     Network.performAuthorizedHttpRequest(request, function(response) {
         callback(response);

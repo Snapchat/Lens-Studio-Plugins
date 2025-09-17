@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Widget } from "../components/common/widgets/widget.js";
 import * as Ui from "LensStudio:Ui";
 import { VBoxLayout } from "../components/common/layouts/vBoxLayout.js";
@@ -38,6 +39,7 @@ export class AnimationLibrary {
         this.tileBackground = new Ui.Pixmap(new Editor.Path(import.meta.resolve('./Resources/preview.svg')));
         this.tileHoveredBackground = new Ui.Pixmap(new Editor.Path(import.meta.resolve('./Resources/preview_h.svg')));
         this.tileFailedBackground = new Ui.Pixmap(new Editor.Path(import.meta.resolve('./Resources/preview_e.svg')));
+        this.blendIcon = new Ui.Pixmap(import.meta.resolve('./Resources/blend.svg'));
         this.actionsIdMap = JSON.parse(FileSystem.readFile(new Editor.Path(import.meta.resolve("./actionsIdMap.json"))));
         Object.keys(this.actionsIdMap).forEach(id => {
             this.actionsIds.push(id);
@@ -119,33 +121,38 @@ export class AnimationLibrary {
         if (!this.tileData[pageName] || !this.assetLibImporter || !this.preview || !this.lbePreview) {
             return;
         }
+        let filter = "action";
+        if (pageName === GridPages.Emotions) {
+            filter = "emotion";
+        }
         const tileData = this.tileData[pageName];
-        this.assetLibImporter.fetchAssets(0, ids, (assetData) => {
-            if (!this.isActive) {
-                return;
-            }
-            const tile = this.addNewTile(pageName);
-            if (idMap[assetData.id]) {
-                tile === null || tile === void 0 ? void 0 : tile.addDescription(idMap[assetData.id].replace(/-/g, ' ').replace(/[^\w\s]/g, '').replace(/\s+/g, ' ').trim());
-            }
-            if (tile) {
-                tileData[tile.getId()] = {
-                    tile: tile,
-                    id: assetData.id,
-                    animation_preview: assetData.animation_preview,
-                    bitmoji_animation: assetData.bitmoji_animation
-                };
-                if (this.assetLibImporter && this.preview && this.lbePreview) {
-                    this.setUpClickEvent(pageName, tile);
-                }
-            }
-        }, () => {
+        let items = [];
+        getMyAnimations((response, isNextPage) => {
             var _a;
             if (!this.isActive) {
                 return;
             }
-            (_a = this.pages[pageName]) === null || _a === void 0 ? void 0 : _a.resetScroll();
-        });
+            if (response.statusCode !== 200 && response.statusCode !== 201) {
+                return;
+            }
+            items = JSON.parse(response.body.toString()).items;
+            items.forEach((item) => {
+                const tile = this.addNewTile(pageName);
+                if (tile) {
+                    tileData[tile.getId()] = {
+                        tile: tile,
+                        id: item.id,
+                        animation_preview: item.previewPluginUrl.toString(),
+                        bitmoji_animation: item.bitmojiUrl.toString()
+                    };
+                    if (item.description) {
+                        tile.addDescription(item.description);
+                    }
+                    this.setUpClickEvent(pageName, tile);
+                }
+            });
+            (_a = this.pages[pageName]) === null || _a === void 0 ? void 0 : _a.arrangeLayout();
+        }, null, filter);
     }
     setMyGalleryAnimations(pageName) {
         if (!this.tileData[pageName] || !this.assetLibImporter || !this.preview || !this.lbePreview) {
@@ -161,11 +168,7 @@ export class AnimationLibrary {
             if (response.statusCode !== 200 && response.statusCode !== 201) {
                 return;
             }
-            items.push(...JSON.parse(response.body.toString()).items);
-            if (isNextPage) {
-                return;
-            }
-            items = items.reverse();
+            items = JSON.parse(response.body.toString()).items;
             items.forEach((item) => {
                 if (item.state != "SUCCESS" && item.state != "FAILED") {
                     const startIntervalFunction = this.addAnimationToMyGallery("");
@@ -198,11 +201,17 @@ export class AnimationLibrary {
                         bitmoji_animation: item.bitmojiUrl.toString()
                     };
                     tile.setType(item.type);
+                    if (item.description) {
+                        tile.addDescription(item.description);
+                    }
+                    if (item.type === "stitch") {
+                        tile.addBlendIcon(this.blendIcon);
+                    }
                     this.setUpClickEvent(GridPages.MyGallery, tile);
                     this.setUpRemoveCallback(GridPages.MyGallery, tile);
                 }
             });
-            (_a = this.pages[pageName]) === null || _a === void 0 ? void 0 : _a.resetScroll();
+            (_a = this.pages[pageName]) === null || _a === void 0 ? void 0 : _a.arrangeLayout();
         });
         this.setUpScrollEvent(pageName);
     }
@@ -231,8 +240,8 @@ export class AnimationLibrary {
             const scrollStepPerRow = 1 / rowCount;
             const maxPreviewTileIdx = Math.min(this.maxInitialPreviewTiles + Math.ceil(value / scrollStepPerRow) * 3, page.getVisibleTiles().length);
             const visibleTiles = page.getVisibleTiles();
-            const to = Math.max(0, visibleTiles.length - maxPreviewTileIdx);
-            for (let i = visibleTiles.length - 1; i >= to; i--) {
+            const to = Math.max(0, maxPreviewTileIdx);
+            for (let i = 0; i < to; i++) {
                 const curId = visibleTiles[i].getId();
                 if (tileData[curId] && !tileData[curId].tile.hasPreview && tileData[curId].animation_preview) {
                     const fileName = tileData[curId].id + "_" + "animation_preview" + ".webp";
@@ -253,43 +262,69 @@ export class AnimationLibrary {
         if (!this.tileData[pageName]) {
             return;
         }
-        const tileData = this.tileData[pageName];
         tile.addOnClickCallback((id) => {
-            var _a, _b, _c;
-            (_a = this.preview) === null || _a === void 0 ? void 0 : _a.onAnimationLoadStart();
-            this.clearSelection();
-            (_b = this.pages[pageName]) === null || _b === void 0 ? void 0 : _b.selectTile(id);
-            const bFileName = tileData[tile.getId()].id + "_" + "bitmoji_animation" + ".fbx";
-            (_c = this.assetLibImporter) === null || _c === void 0 ? void 0 : _c.downloadAsset(tileData[tile.getId()].bitmoji_animation, bFileName, (response) => {
-                var _a, _b, _c, _d, _e, _f;
-                if (!this.isActive) {
-                    return;
+            var _a;
+            this.selectTile(pageName, id, tile);
+            (_a = this.preview) === null || _a === void 0 ? void 0 : _a.selectTile(pageName, id, tile.getPreviewPath());
+        });
+    }
+    selectTile(pageName, id, tile) {
+        var _a, _b;
+        this.clearSelection();
+        if (tile) {
+            (_a = this.pages[pageName]) === null || _a === void 0 ? void 0 : _a.selectTile(tile);
+            this.previewAnimation(tile, pageName);
+        }
+        else {
+            const curTile = this.tileData[pageName][id].tile;
+            (_b = this.pages[pageName]) === null || _b === void 0 ? void 0 : _b.selectTile(curTile);
+            this.previewAnimation(curTile, pageName);
+        }
+    }
+    previewAnimation(tile, pageName) {
+        var _a, _b;
+        (_a = this.preview) === null || _a === void 0 ? void 0 : _a.onAnimationLoadStart();
+        const tileData = this.tileData[pageName];
+        if (!tileData) {
+            return;
+        }
+        let fileName = tileData[tile.getId()].id + "_" + "bitmoji_animation" + ".fbx";
+        let url = tileData[tile.getId()].bitmoji_animation;
+        (_b = this.assetLibImporter) === null || _b === void 0 ? void 0 : _b.downloadAsset(url, fileName, (response) => {
+            var _a, _b, _c, _d, _e, _f, _g, _h;
+            if (!this.isActive) {
+                return;
+            }
+            if (response.success && tile) {
+                (_a = this.lbePreview) === null || _a === void 0 ? void 0 : _a.sendMessage({
+                    "event_type": "update_animation",
+                    "path": response.path,
+                    "type": tile.getType()
+                });
+                if (pageName === GridPages.Actions) {
+                    (_b = this.preview) === null || _b === void 0 ? void 0 : _b.onAnimationSelected(response.path, "ACTIONS", tileData[tile.getId()].id);
                 }
-                if (response.success && tile) {
-                    (_a = this.lbePreview) === null || _a === void 0 ? void 0 : _a.sendMessage({
-                        "event_type": "update_animation",
-                        "path": response.path,
-                        "type": tile.getType()
-                    });
-                    if (pageName === GridPages.Actions) {
-                        (_b = this.preview) === null || _b === void 0 ? void 0 : _b.onAnimationSelected(response.path, "ACTIONS");
+                else if (pageName === GridPages.Emotions) {
+                    (_c = this.preview) === null || _c === void 0 ? void 0 : _c.onAnimationSelected(response.path, "EMOTIONS", tileData[tile.getId()].id);
+                }
+                else if (pageName === GridPages.MyGallery) {
+                    if (tile.getType() == "text") {
+                        (_d = this.preview) === null || _d === void 0 ? void 0 : _d.onAnimationSelected(response.path, "PROMPT_TEXT", tileData[tile.getId()].id);
                     }
-                    else if (pageName === GridPages.Emotions) {
-                        (_c = this.preview) === null || _c === void 0 ? void 0 : _c.onAnimationSelected(response.path, "EMOTIONS");
+                    else if (tile.getType() == "video") {
+                        (_e = this.preview) === null || _e === void 0 ? void 0 : _e.onAnimationSelected(response.path, "PROMPT_VIDEO", tileData[tile.getId()].id);
                     }
-                    else if (pageName === GridPages.MyGallery) {
-                        if (tile.getType() == "text") {
-                            (_d = this.preview) === null || _d === void 0 ? void 0 : _d.onAnimationSelected(response.path, "PROMPT_TEXT");
-                        }
-                        else if (tile.getType() == "video") {
-                            (_e = this.preview) === null || _e === void 0 ? void 0 : _e.onAnimationSelected(response.path, "PROMPT_VIDEO");
-                        }
-                        else {
-                            (_f = this.preview) === null || _f === void 0 ? void 0 : _f.onAnimationSelected(response.path, "MY_GALLERY");
-                        }
+                    else if (tile.getType() == "stitch") {
+                        (_f = this.preview) === null || _f === void 0 ? void 0 : _f.onAnimationSelected(response.path, "STITCHED", tileData[tile.getId()].id);
+                    }
+                    else if (tile.getType() == "animation") {
+                        (_g = this.preview) === null || _g === void 0 ? void 0 : _g.onAnimationSelected(response.path, "UPLOAD", tileData[tile.getId()].id);
+                    }
+                    else {
+                        (_h = this.preview) === null || _h === void 0 ? void 0 : _h.onAnimationSelected(response.path, "MY_GALLERY", tileData[tile.getId()].id);
                     }
                 }
-            });
+            }
         });
     }
     setUpRemoveCallback(pageName, tile) {
@@ -301,26 +336,32 @@ export class AnimationLibrary {
             (_a = this.pages[pageName]) === null || _a === void 0 ? void 0 : _a.onTileRemoved();
         });
     }
-    createTile(galleryWidget) {
+    createTile(galleryWidget, isGenerated) {
         const tile = new GridTile(galleryWidget, galleryWidget.getAllTiles().length);
         tile.background = this.tileBackground;
         tile.hoveredBackground = this.tileHoveredBackground;
         tile.errorBackground = this.tileFailedBackground;
-        galleryWidget.addTile(tile);
+        if (isGenerated) {
+            galleryWidget.addTileToFront(tile);
+        }
+        else {
+            galleryWidget.addTile(tile, false);
+        }
         return tile;
     }
-    addNewTile(pageName) {
+    addNewTile(pageName, isGenerated = false) {
         if (this.pages[pageName]) {
-            const tile = this.createTile(this.pages[pageName]);
+            const tile = this.createTile(this.pages[pageName], isGenerated);
             return tile;
         }
         return null;
     }
     addAnimationToMyGallery(inputFormat) {
-        var _a;
+        var _a, _b;
         (_a = this.pages[GridPages.MyGallery]) === null || _a === void 0 ? void 0 : _a.resetScroll();
-        const tile = this.addNewTile(GridPages.MyGallery);
+        const tile = this.addNewTile(GridPages.MyGallery, true);
         tile === null || tile === void 0 ? void 0 : tile.addRemoveButton();
+        (_b = this.pages[GridPages.MyGallery]) === null || _b === void 0 ? void 0 : _b.arrangeLayout();
         return (animationId) => {
             if (!this.isActive) {
                 return;
@@ -357,6 +398,12 @@ export class AnimationLibrary {
                         else if (responseBody.type == "video") {
                             inputFormat = "PROMPT_VIDEO";
                         }
+                        else if (responseBody.type == "stitch") {
+                            inputFormat = "STITCHED";
+                        }
+                        else if (responseBody.type == "animation") {
+                            inputFormat = "UPLOAD";
+                        }
                     }
                     if (responseBody.state === "FAILED") {
                         logEventCreate("FAILED", inputFormat);
@@ -379,6 +426,12 @@ export class AnimationLibrary {
                                 bitmoji_animation: responseBody.bitmojiUrl.toString()
                             };
                             tile.setType(responseBody.type);
+                            if (responseBody.description) {
+                                tile.addDescription(responseBody.description);
+                            }
+                            if (responseBody.type === "stitch") {
+                                tile.addBlendIcon(this.blendIcon);
+                            }
                             tile.hasPreview = true;
                             const fileName = responseBody.id + "_" + "animation_preview" + ".webp";
                             (_a = this.assetLibImporter) === null || _a === void 0 ? void 0 : _a.downloadAsset(responseBody.previewPluginUrl, fileName, (response) => {
@@ -416,6 +469,9 @@ export class AnimationLibrary {
         if (this.tabBar) {
             this.tabBar.currentIndex = GridPages.MyGallery;
         }
+    }
+    getAnimationId(pageName, id) {
+        return this.tileData[pageName][id].id;
     }
     clearSelection() {
         Object.keys(this.pages).forEach((pageType) => {

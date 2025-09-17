@@ -1,22 +1,12 @@
-import { Preset } from 'LensStudio:Preset';
+import {createResourcePresetClass, PresetCreateMethod} from '../Utils/ResourcePresetFactory.js';
 
-export async function createJSONAsset(model, destination) {
-    const meta = await model.project.assetManager.importExternalFileAsync(import.meta.resolve('Resources/Empty JSON.json'), destination, Editor.Model.ResultType.Unpacked);
-    return meta.primary;
-}
-export class EmptyJsonAssetPreset extends Preset {
-    static descriptor() {
-        return {
-            id: 'Com.Snap.JsonAssetPreset.EmptyJson',
-            name: 'Empty JSON',
-            description: '',
-            icon: Editor.Icon.fromFile(import.meta.resolve('../Resources/JsonFile.svg')),
-            section: 'General',
-            entityType: 'JsonAsset'
-        };
-    }
-    async createAsync(destination) {
-        const model = this.pluginSystem.findInterface(Editor.Model.IModel);
-        return await createJSONAsset(model, destination);
-    }
-}
+export const EmptyJsonAssetPreset = createResourcePresetClass({
+    name: 'Empty JSON',
+    id: 'Com.Snap.JsonAssetPreset.EmptyJson',
+    description: '',
+    icon: Editor.Icon.fromFile(import.meta.resolve('../Resources/JsonFile.svg')),
+    section: 'General',
+    entityType: "JsonAsset",
+    resourcePath: import.meta.resolve('Resources/Empty JSON.json'),
+    createMethod: PresetCreateMethod.AlwaysCreateNew
+});

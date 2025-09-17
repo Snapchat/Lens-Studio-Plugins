@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as Ui from "LensStudio:Ui";
 import { Widget } from "./components/common/widgets/widget.js";
 import { HBoxLayout } from "./components/common/layouts/hBoxLayout.js";
@@ -24,7 +25,17 @@ export class HomeScreen {
         layout.addNativeWidget(separator);
         layout.addWidget(previewWidget);
         widget.layout = layout;
+        this.createTransparentScreen(widget.toNativeWidget());
         return widget;
+    }
+    createTransparentScreen(parent) {
+        this.transparentScreen = new Ui.ImageView(parent);
+        this.transparentScreen.setFixedWidth(3000);
+        this.transparentScreen.setFixedHeight(2000);
+        this.transparentScreen.pixmap = new Ui.Pixmap(import.meta.resolve('./Menu/Resources/transparent.png'));
+        this.transparentScreen.scaledContents = true;
+        this.transparentScreen.visible = false;
+        dependencyContainer.register(DependencyKeys.TransparentScreen, this.transparentScreen);
     }
     deinit() {
         this.menu.deinit();

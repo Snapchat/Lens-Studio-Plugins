@@ -5,6 +5,7 @@ import * as Ui from 'LensStudio:Ui';
 import * as Script from 'LensStudio:ScriptEditor';
 import {generateInputDeclarations} from "./utils/files/completion.js";
 import {EDITOR_EVENTS, FILE_EVENTS} from "./lib/Resources/Common.js";
+import { isValidComponentToEdit } from './utils/index.js';
 
 const scriptPath = import.meta.url.replace('file://', '');
 const scriptDir = scriptPath.substring(0, scriptPath.lastIndexOf('/'));
@@ -12,10 +13,6 @@ const tsScriptPath = scriptDir + '/lib/BaseScriptComponent.d.ts';
 const decScriptPath = scriptDir + '/lib/Decorators.d.ts'; // TODO only add if TS?
 const uiDefPath = scriptDir + '/lib/UIControl.d.ts';
 const scriptDef = "\ndeclare var script : ScriptComponent;"
-
-const isValidScriptAsset = (asset) => {
-    return !!(asset && (asset.isOfType("JavaScriptAsset") || asset.isOfType("TypeScriptAsset")));
-};
 
 function generateTypeMap(definitionsContent, projectScripts, assetManager) {
     const componentRegex = /interface ComponentNameMap\s*\{(?<content>[\s\S]*?)\}/;
@@ -99,7 +96,7 @@ async function handleEditorMessage(socket, message, serverManager) {
                 const definitionsContent = fs.readFile(scriptingDefPath).toString() + scriptDef;
 
                 const projectScripts = serverManager.assetManager.assets
-                    .filter(isValidScriptAsset)
+                    .filter(isValidComponentToEdit)
                     .map(asset => ({
                         filePath: asset.fileMeta.sourcePath.toString(),
                         componentId: asset.id.toString()

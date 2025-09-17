@@ -9,6 +9,8 @@ import * as fs from 'LensStudio:FileSystem';
 import app from '../../../application/app.js';
 import { HintID, getHintFactory } from '../../Hints/HintFactory.js';
 
+const MAX_SYMBOLS = 200;
+
 export class ImagePicker extends Control {
     constructor(parent, label, valueImporter, valueExporter) {
         super(parent, label, valueImporter, valueExporter);
@@ -57,7 +59,7 @@ export class ImagePicker extends Control {
 
         const promptHeaderWidget = this['createPromptHeaderWidget'](this.widget, "Text Reference", { id: HintID.text_reference });
 
-        this.textEdit = new TextEdit(parent, null, null, null, 'Enter text reference here...');
+        this.textEdit = new TextEdit(parent, null, null, null, 'Enter text reference here...', MAX_SYMBOLS);
         this.textEdit.widget.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Fixed);
 
         this.layout.addWidget(promptHeaderWidget);

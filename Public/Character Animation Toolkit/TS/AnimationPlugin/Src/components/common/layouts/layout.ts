@@ -1,3 +1,4 @@
+// @ts-nocheck
 import {Widget} from "../widgets/widget.js";
 import * as Ui from "LensStudio:Ui";
 

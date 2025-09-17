@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as Ui from "LensStudio:Ui";
 import { downloadFile } from "./api.js";
 import * as FileSystem from 'LensStudio:FileSystem';

@@ -1,36 +1,18 @@
-import { Preset } from 'LensStudio:Preset';
-import * as Utils from 'LensStudio:Utils@1.0.js';
+import {createResourcePresetClass, PresetCreateMethod} from '../Utils/ResourcePresetFactory.js';
 
 function createFontClass(name) {
-    class FontPreset extends Preset {
-        static descriptor() {
-            return {
-                id: `Com.Snap.FontPreset.${name}`,
-                name: name,
-                description: '',
-                icon: Editor.Icon.fromFile(new Editor.Path(import.meta.resolve('./Resources/Font.svg'))),
-                section: 'Fonts',
-                entityType: 'Asset'
-            };
-        }
-        async createAsync(d) {
-            try {
-                const destination = d ? d : new Editor.Path('');
-
-                const model = this.pluginSystem.findInterface(Editor.Model.IModel);
-                const assetManager = model.project.assetManager;
-
-                const resourceLoc = import.meta.resolve(`Resources/Fonts/${name}.ttf`);
-                const absGraphPath = new Editor.Path(resourceLoc);
-
-                return await Utils.findOrCreateAsync(assetManager, absGraphPath, destination);
-            } catch (e) {
-                console.log(`${e.message}\n${e.stack}`);
-            }
-        }
-    }
-    return FontPreset;
+    return createResourcePresetClass({
+        name,
+        id: `Com.Snap.FontPreset.${name}`,
+        description: '',
+        icon: Editor.Icon.fromFile(new Editor.Path(import.meta.resolve('./Resources/Font.svg'))),
+        section: 'Fonts',
+        entityType: 'Asset',
+        resourcePath: new Editor.Path(import.meta.resolve(`Resources/Fonts/${name}.ttf`)),
+        createMethod: PresetCreateMethod.FindOrCreate
+    });
 }
+
 // Unfortunately can't do for-in
 export const AmaticScFontPreset = createFontClass('AmaticSC');
 export const CaveatFontPreset = createFontClass('Caveat');

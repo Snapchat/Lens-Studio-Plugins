@@ -134,7 +134,7 @@ export class IconCropper {
     createWidget(parent) {
         this.widget = new Ui.Widget(parent);
 
-        this.widget.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
+        this.widget.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Expanding);
 
         this.widget.setContentsMargins(0, Ui.Sizes.DoublePadding, 0, 0);
 

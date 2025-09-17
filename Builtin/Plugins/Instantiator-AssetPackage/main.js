@@ -40,7 +40,7 @@ export class PackageInstantiator extends AssetInstantiator {
         //  Provide an Utils to facilitate adding objects to the scene.
         let nativePackageDescriptor = asset;
         if (nativePackageDescriptor.setupScript.code.length > 0) {
-            // @ts-ignore 
+            // @ts-ignore
             const instantiatePackage = createFunctionObject(nativePackageDescriptor.setupScript.code, "defaultAssetInstantiatorFunc");
             let result = instantiatePackage(asset, scene, target, this);
             return InstantiatorUtils.toPrefabableArray(result);
@@ -69,7 +69,8 @@ export class PackageInstantiator extends AssetInstantiator {
                 }
             }
             // If no prefabs were instantiated or no setup script exists, return an empty array
-            return InstantiatorUtils.toPrefabableArray(result);
+            // Temporary fix to only return scene objects that were not parented to prevent reparenting
+            return InstantiatorUtils.toPrefabableArray(result.filter(obj => obj.getParent() == null));
         }
     }
     instantiatePrefabWithPrefix(prefabFile, folderPath, model) {

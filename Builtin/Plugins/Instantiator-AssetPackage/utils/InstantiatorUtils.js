@@ -22,12 +22,14 @@ export function getHierarchyUtils() {
 }
 export function addToOrthoCamera(scene, sceneObject) {
     const orthoCamera = HierarchyUtils.findOrCreateCameraObject(scene, Editor.Components.CameraType.Orthographic);
-    sceneObject.setParent(orthoCamera);
+    if (!sceneObject.isSame(orthoCamera)) {
+        sceneObject.setParent(orthoCamera);
+    }
     console.log("Added to Orthographic Camera " + sceneObject.name);
 }
 export function addToMainCamera(scene, sceneObject) {
     const camera = scene.mainCamera;
-    if (camera != null) {
+    if (camera != null && !camera.sceneObject.isSame(sceneObject)) {
         sceneObject.setParent(camera.sceneObject);
         console.log("Added to Main Camera " + sceneObject.name);
     }

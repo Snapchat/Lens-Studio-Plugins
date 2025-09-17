@@ -12,6 +12,8 @@ export const PromptPickerMode = {
     Image: 1
 };
 
+const MAX_SYMBOLS = 200;
+
 export class PromptPicker extends Control {
     constructor(parent, label, valueImporter, valueExporter, defaultValue, hint) {
         super(parent, null, valueImporter, valueExporter, null, defaultValue);
@@ -23,7 +25,7 @@ export class PromptPicker extends Control {
 
         const promptHeaderWidget = this['createPromptHeaderWidget'](this.widget, label, hint);
 
-        this.textEdit = new TextEdit(parent, null, null, null, defaultValue, 'Enter prompt here...');
+        this.textEdit = new TextEdit(parent, null, null, null, defaultValue, 'Enter prompt here...', MAX_SYMBOLS);
 
         this.textEdit.addOnValueChanged((value) => {
             this.mOnValueChanged.forEach((callback) => callback(value));

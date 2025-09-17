@@ -102,6 +102,7 @@ export default class TcpServerManager {
             '.woff': 'font/woff',
             '.woff2': 'font/woff2',
             '.png': 'image/png',
+            '.md': 'text/markdown',
         };
 
         const binaryExtensions = ['.ttf', '.woff', '.woff2', '.png'];

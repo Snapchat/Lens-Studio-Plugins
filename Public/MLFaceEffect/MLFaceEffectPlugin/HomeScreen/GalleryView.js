@@ -569,6 +569,7 @@ export class GalleryView {
                 favoriteButton.setFixedWidth(Ui.Sizes.ButtonHeight * 1.6);
                 favoriteButton.setFixedHeight(Ui.Sizes.ButtonHeight);
                 favoriteButton.move(144 - Ui.Sizes.Padding - Ui.Sizes.ButtonHeight * 1.6, Ui.Sizes.Padding);
+                favoriteButton.checkable = true;
                 favoriteButton.checked = item.isFavorite;
 
                 updateButton(favoriteButton);
@@ -580,7 +581,6 @@ export class GalleryView {
                 }
 
                 this.favoriteConnections[i] = favoriteButton.onClick.connect(() => {
-                    favoriteButton.checked = !favoriteButton.checked;
                     updateButton(favoriteButton, item.id);
                 });
 

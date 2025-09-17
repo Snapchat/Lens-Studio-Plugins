@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as Ui from "LensStudio:Ui";
 import {ColorRole} from "LensStudio:Ui";
 import {EffectGallery} from "./EffectGallery.js";

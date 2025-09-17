@@ -14,6 +14,8 @@ export const PromptPickerMode = {
     Image: 1
 };
 
+const MAX_SYMBOLS = 200;
+
 export class PromptPicker extends Control {
     constructor(parent, label, valueImporter, valueExporter, prompt_hint, image_hint) {
         super(parent, null, valueImporter, valueExporter);
@@ -99,11 +101,12 @@ export class PromptPicker extends Control {
         }
     }
 
+
     ['createMediaPickerWidget'](parent) {
         const stackedWidget = new Ui.StackedWidget(parent);
         stackedWidget.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Fixed);
 
-        this.textEdit = new TextEdit(parent, null, null, null, 'Enter prompt here...');
+        this.textEdit = new TextEdit(parent, null, null, null, 'Enter prompt here...', MAX_SYMBOLS);
 
         stackedWidget.addWidget(this.textEdit.widget);
 

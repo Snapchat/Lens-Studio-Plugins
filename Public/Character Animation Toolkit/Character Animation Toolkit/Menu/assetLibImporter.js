@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as FileSystem from 'LensStudio:FileSystem';
 import * as AssetLibrary from "LensStudio:AssetLibrary";
 import * as Network from "LensStudio:Network";

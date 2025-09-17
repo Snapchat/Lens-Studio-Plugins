@@ -1,3 +1,4 @@
+// @ts-nocheck
 import {dependencyContainer, DependencyKeys} from "./DependencyContainer.js";
 import * as FileSystem from 'LensStudio:FileSystem';
 import {LBEPreview} from "./Preview/LBEPreview.js";
@@ -20,20 +21,18 @@ export class AnimationImporter {
         const assetManager: Editor.Model.AssetManager = model.project.assetManager
 
         const animationPrefab: Editor.Model.ImportResult = assetManager.importExternalFile(path, '/', Editor.Model.ResultType.Unpacked);
-        let animTrackMeta = assetManager.getFileMeta(animationPrefab.path + "/Animations" + "/BaseLayer.animationAsset");
-        if (!animTrackMeta) {
-            animTrackMeta = assetManager.getFileMeta(animationPrefab.path + "/Animations" + "/Scene.animationAsset");
-            if (!animTrackMeta) {
-                animTrackMeta = assetManager.getFileMeta(animationPrefab.path + "/Animations" + "/Root Scene.animationAsset");
-                if (!animTrackMeta) {
-                    animTrackMeta = assetManager.getFileMeta(animationPrefab.path + "/Animations" + "/Layer0.animationAsset");
-                    if (!animTrackMeta) {
-                        animTrackMeta = assetManager.getFileMeta(animationPrefab.path + "/Animations" + "/baseLayer.animationAsset");
-                    }
-                }
+        const fileNames: string[] = ["BaseLayer", "Scene", "Root Scene", "Layer0", "baseLayer"];
+        let animTrackMeta;
+        let heavyAnimTrackMeta;
+        for (let i = 0; i < fileNames.length; i++) {
+            animTrackMeta = assetManager.getFileMeta(animationPrefab.path + "/Animations" + "/" + fileNames[i] + ".animationAsset");
+            heavyAnimTrackMeta = assetManager.getFileMeta(animationPrefab.path + "/" + fileNames[i] + "_heavy" + ".animationAsset");
+            if (animTrackMeta) {
+                break;
             }
         }
 
+        const animationController = assetManager.importExternalFile(import.meta.resolve("./Resources/BitmojiAnimationController.js"), '/', Editor.Model.ResultType.Unpacked);
         const bitmojiPackage = assetManager.importExternalFile(import.meta.resolve("./Resources/Character Animation.lspkg"), '/', Editor.Model.ResultType.Unpacked);
         let scriptIsFound = false;
         let scriptFilePath!: Editor.Path;
@@ -50,45 +49,65 @@ export class AnimationImporter {
 
         assetManager.remove(scriptFilePath);
         assetManager.move(animTrackMeta, bitmojiPackage.path);
+        assetManager.move(heavyAnimTrackMeta, bitmojiPackage.path);
+        assetManager.move(animationController.primary.fileMeta, bitmojiPackage.path);
 
         const actionManager = pluginSystem.findInterface(Editor.IPackageActions) as Editor.IPackageActions;
-        actionManager.exportPackage(nativePackageDescriptorFile, this.tempDir.path + "/Character Animation.lspkg", Editor.Assets.ScriptTypes.Visibility.Editable);
+        const exportOptions = new Editor.Model.ExportOptions();
+        exportOptions.packagePolicy = Editor.Assets.PackagePolicy.CanBeUnpacked;
+        actionManager.exportPackage(nativePackageDescriptorFile, this.tempDir.path + "/Character Animation.lspkg", exportOptions);
+
+        let packedBitmojiPackage = assetManager.importExternalFile(this.tempDir.path + "/Character Animation.lspkg", '/', Editor.Model.ResultType.Packed);
 
         assetManager.remove(bitmojiPackage.path);
         assetManager.remove(animationPrefab.path);
 
-        let packedBitmojiPackage = assetManager.importExternalFile(this.tempDir.path + "/Character Animation.lspkg", '/', Editor.Model.ResultType.Packed);
+        try {
 
-        animTrackMeta = assetManager.getFileMeta(packedBitmojiPackage.path + "/BaseLayer.animationAsset");
-        if (!animTrackMeta) {
-            animTrackMeta = assetManager.getFileMeta(packedBitmojiPackage.path + "/Scene.animationAsset");
-            if (!animTrackMeta) {
-                animTrackMeta = assetManager.getFileMeta(packedBitmojiPackage.path + "/Root Scene.animationAsset");
-                if (!animTrackMeta) {
-                    animTrackMeta = assetManager.getFileMeta(packedBitmojiPackage.path + "/Layer0.animationAsset");
-                    if (!animTrackMeta) {
-                        animTrackMeta = assetManager.getFileMeta(packedBitmojiPackage.path + "/baseLayer.animationAsset");
-                    }
+            animTrackMeta = null;
+            heavyAnimTrackMeta = null;
+
+            for (let i = 0; i < fileNames.length; i++) {
+                animTrackMeta = assetManager.getFileMeta(packedBitmojiPackage.path + "/" + fileNames[i] + ".animationAsset");
+                heavyAnimTrackMeta = assetManager.getFileMeta(packedBitmojiPackage.path + "/" + fileNames[i] + "_heavy" + ".animationAsset");
+                if (animTrackMeta) {
+                    break;
                 }
             }
+
+            let animationControllerAsset = assetManager.getFileMeta(packedBitmojiPackage.path + "/" + "BitmojiAnimationController" + ".js").primaryAsset;
+            animationControllerAsset.animationAsset = animTrackMeta.primaryAsset;
+            animationControllerAsset.heavyAnimationAsset = heavyAnimTrackMeta.primaryAsset;
+
+            let so: Editor.Model.SceneObject = await createBitmoji3DObject(pluginSystem);
+            const bitmojiScriptComponent = so.getComponent('ScriptComponent')
+
+            if (!so) {
+                return;
+            }
+
+            let animationPlayer: Editor.Components.AnimationPlayer = so.getComponent("AnimationPlayer") as Editor.Components.AnimationPlayer;
+
+            if (!animationPlayer) {
+                animationPlayer = so.addComponent("AnimationPlayer") as Editor.Components.AnimationPlayer;
+            }
+
+            animationControllerAsset.animationPlayer = animationPlayer;
+
+            const clip: Editor.AnimationClip = Editor.createAnimationClip(scene);
+            clip.name = "Clip 0";
+            clip.animation = animTrackMeta.primaryAsset as Editor.Assets.AnimationAsset;
+            clip.end = clip.animation.duration;
+            animationPlayer.animationClips = [clip];
+
+            animationControllerAsset.bitmoji3dComponent = bitmojiScriptComponent;
+
+            const scriptComponent = so.addComponent('ScriptComponent');
+            scriptComponent.scriptAsset = animationControllerAsset;
+            scriptComponent.enabled = true;
+        } catch (e) {
+            console.error(e);
         }
-
-        let so: Editor.Model.SceneObject =  await createBitmoji3DObject(pluginSystem);
-
-        if (!so) {
-            return;
-        }
-
-        let animationPlayer: Editor.Components.AnimationPlayer = so.getComponent("AnimationPlayer") as Editor.Components.AnimationPlayer;
-
-        if (!animationPlayer) {
-            animationPlayer = so.addComponent("AnimationPlayer") as Editor.Components.AnimationPlayer;
-        }
-        const clip: Editor.AnimationClip = Editor.createAnimationClip(scene);
-        clip.name = "Clip 0";
-        clip.animation = animTrackMeta.primaryAsset as Editor.Assets.AnimationAsset;
-        clip.end = clip.animation.duration;
-        animationPlayer.animationClips = [clip];
     }
 
     async importBodyMorphAnimationToProject(path: Editor.Path | string, bodyMorphGlbPath: Editor.Path | string) {
@@ -173,12 +192,15 @@ export class AnimationImporter {
         }
 
         const actionManager = pluginSystem.findInterface(Editor.IPackageActions) as Editor.IPackageActions;
-        actionManager.exportPackage(nativePackageDescriptorFile, this.tempDir.path + "/Character Animation.lspkg", Editor.Assets.ScriptTypes.Visibility.Editable);
+        const exportOptions = new Editor.Model.ExportOptions();
+        exportOptions.packagePolicy = Editor.Assets.PackagePolicy.CanBeUnpacked;
+        actionManager.exportPackage(nativePackageDescriptorFile, this.tempDir.path + "/Character Animation.lspkg", exportOptions);
+
+        let packedBitmojiPackage = assetManager.importExternalFile(this.tempDir.path + "/Character Animation.lspkg", '/', Editor.Model.ResultType.Packed);
 
         assetManager.remove(bitmojiPackage.path);
         assetManager.remove(bodyMorphPrefab.path);
 
-        let packedBitmojiPackage = assetManager.importExternalFile(this.tempDir.path + "/Character Animation.lspkg", '/', Editor.Model.ResultType.Packed);
         let bitmojiAnimMeta = assetManager.getFileMeta(packedBitmojiPackage.path + "/" + "Character Animation" + ".prefab");
         let obj = scene.instantiatePrefab(bitmojiAnimMeta.primaryAsset as ObjectPrefab, null);
         obj.enabled = true;

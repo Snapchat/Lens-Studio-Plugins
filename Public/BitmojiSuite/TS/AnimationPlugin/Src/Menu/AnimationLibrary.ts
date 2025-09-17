@@ -1,3 +1,4 @@
+// @ts-nocheck
 import {Widget} from "../components/common/widgets/widget.js";
 import * as Ui from "LensStudio:Ui";
 import {VBoxLayout} from "../components/common/layouts/vBoxLayout.js";
@@ -38,6 +39,7 @@ export class AnimationLibrary {
     private tileBackground: Ui.Pixmap;
     private tileHoveredBackground: Ui.Pixmap;
     private tileFailedBackground: Ui.Pixmap;
+    private blendIcon: Ui.Pixmap;
     private menuTemplate: MenuTemplate;
     private connections: Array<any> = [];
     private assetLibImporter: AssetLibImporter | undefined;
@@ -59,6 +61,7 @@ export class AnimationLibrary {
         this.tileBackground = new Ui.Pixmap(new Editor.Path(import.meta.resolve('./Resources/preview.svg')));
         this.tileHoveredBackground = new Ui.Pixmap(new Editor.Path(import.meta.resolve('./Resources/preview_h.svg')));
         this.tileFailedBackground = new Ui.Pixmap(new Editor.Path(import.meta.resolve('./Resources/preview_e.svg')));
+        this.blendIcon = new Ui.Pixmap(import.meta.resolve('./Resources/blend.svg'));
 
         this.actionsIdMap = JSON.parse(FileSystem.readFile(new Editor.Path(import.meta.resolve("./actionsIdMap.json"))));
         Object.keys(this.actionsIdMap).forEach(id => {
@@ -170,34 +173,45 @@ export class AnimationLibrary {
             return;
         }
 
+        let filter: string = "action";
+        if (pageName === GridPages.Emotions) {
+            filter = "emotion";
+        }
         const tileData = this.tileData[pageName];
-        this.assetLibImporter.fetchAssets(0, ids, (assetData: {id: string; animation_preview: string; bitmoji_animation: string}) => {
+        let items: any[] = [];
+
+        getMyAnimations((response: any, isNextPage: boolean) => {
             if (!this.isActive) {
                 return;
             }
-            const tile = this.addNewTile(pageName);
-            if (idMap[assetData.id]) {
-                tile?.addDescription(idMap[assetData.id].replace(/-/g, ' ').replace(/[^\w\s]/g, '').replace(/\s+/g, ' ').trim());
+            if (response.statusCode !== 200 && response.statusCode !== 201) {
+                return;
             }
-            if (tile) {
-                tileData[tile.getId()] = {
-                    tile: tile,
-                    id: assetData.id,
-                    animation_preview: assetData.animation_preview,
-                    bitmoji_animation: assetData.bitmoji_animation
-                };
 
-                if (this.assetLibImporter && this.preview && this.lbePreview) {
+            items = JSON.parse(response.body.toString()).items;
+
+
+            items.forEach((item: any) => {
+                const tile = this.addNewTile(pageName);
+
+                if (tile) {
+                    tileData[tile.getId()] = {
+                        tile: tile,
+                        id: item.id,
+                        animation_preview: item.previewPluginUrl.toString(),
+                        bitmoji_animation: item.bitmojiUrl.toString()
+                    };
+
+                    if (item.description) {
+                        tile.addDescription(item.description);
+                    }
                     this.setUpClickEvent(pageName, tile);
                 }
-            }
-        }, () => {
-            if (!this.isActive) {
-                return;
-            }
+            })
 
-            this.pages[pageName]?.resetScroll();
-        });
+            this.pages[pageName]?.arrangeLayout();
+
+        }, null, filter)
     }
 
     private setMyGalleryAnimations(pageName: GridPages): void {
@@ -214,13 +228,7 @@ export class AnimationLibrary {
                 return;
             }
 
-            items.push(...JSON.parse(response.body.toString()).items);
-
-            if (isNextPage) {
-                return;
-            }
-
-            items = items.reverse();
+            items = JSON.parse(response.body.toString()).items;
 
             items.forEach((item: any) => {
                 if (item.state != "SUCCESS" && item.state != "FAILED") {
@@ -256,12 +264,18 @@ export class AnimationLibrary {
                     };
 
                     tile.setType(item.type);
+                    if (item.description) {
+                        tile.addDescription(item.description);
+                    }
+                    if (item.type === "stitch") {
+                        tile.addBlendIcon(this.blendIcon);
+                    }
                     this.setUpClickEvent(GridPages.MyGallery, tile);
                     this.setUpRemoveCallback(GridPages.MyGallery, tile);
                 }
             })
 
-            this.pages[pageName]?.resetScroll();
+            this.pages[pageName]?.arrangeLayout();
         });
 
         this.setUpScrollEvent(pageName);
@@ -297,9 +311,9 @@ export class AnimationLibrary {
             const scrollStepPerRow: number = 1 / rowCount;
             const maxPreviewTileIdx: number = Math.min(this.maxInitialPreviewTiles + Math.ceil(value / scrollStepPerRow) * 3, page.getVisibleTiles().length);
             const visibleTiles = page.getVisibleTiles();
-            const to = Math.max(0, visibleTiles.length - maxPreviewTileIdx);
+            const to = Math.max(0, maxPreviewTileIdx);
 
-            for (let i = visibleTiles.length - 1; i >= to; i--) {
+            for (let i = 0; i < to; i++) {
                 const curId: number = visibleTiles[i].getId();
                 if (tileData[curId] && !tileData[curId].tile.hasPreview && tileData[curId].animation_preview) {
                     const fileName = tileData[curId].id + "_" + "animation_preview" + ".webp";
@@ -322,43 +336,71 @@ export class AnimationLibrary {
             return;
         }
 
+        tile.addOnClickCallback((id: number) => {
+            this.selectTile(pageName, id, tile);
+            this.preview?.selectTile(pageName, id, tile.getPreviewPath())
+        })
+    }
+
+    public selectTile(pageName: string, id: number, tile?: GridTile) {
+        this.clearSelection();
+
+        if (tile) {
+            this.pages[pageName]?.selectTile(tile);
+            this.previewAnimation(tile, pageName);
+        }
+        else{
+            const curTile = this.tileData[pageName][id].tile;
+            this.pages[pageName]?.selectTile(curTile);
+            this.previewAnimation(curTile, pageName);
+        }
+    }
+
+    private previewAnimation(tile: GridTile, pageName: GridPages) {
+        this.preview?.onAnimationLoadStart();
         const tileData = this.tileData[pageName];
 
-        tile.addOnClickCallback((id: number) => {
-            this.preview?.onAnimationLoadStart();
-            this.clearSelection();
-            this.pages[pageName]?.selectTile(id);
+        if (!tileData) {
+            return;
+        }
 
-            const bFileName = tileData[tile.getId()].id + "_" + "bitmoji_animation" + ".fbx";
-            this.assetLibImporter?.downloadAsset(tileData[tile.getId()].bitmoji_animation, bFileName, (response: any) => {
-                if (!this.isActive) {
-                    return;
+        let fileName = tileData[tile.getId()].id + "_" + "bitmoji_animation" + ".fbx";
+        let url = tileData[tile.getId()].bitmoji_animation;
+
+        this.assetLibImporter?.downloadAsset(url, fileName, (response: any) => {
+            if (!this.isActive) {
+                return;
+            }
+            if (response.success && tile) {
+                this.lbePreview?.sendMessage({
+                    "event_type": "update_animation",
+                    "path": response.path,
+                    "type": tile.getType()
+                });
+                if (pageName === GridPages.Actions) {
+                    this.preview?.onAnimationSelected(response.path, "ACTIONS", tileData[tile.getId()].id);
                 }
-                if (response.success && tile) {
-                    this.lbePreview?.sendMessage({
-                        "event_type": "update_animation",
-                        "path": response.path,
-                        "type": tile.getType()
-                    });
-                    if (pageName === GridPages.Actions) {
-                        this.preview?.onAnimationSelected(response.path, "ACTIONS");
+                else if (pageName === GridPages.Emotions) {
+                    this.preview?.onAnimationSelected(response.path, "EMOTIONS", tileData[tile.getId()].id);
+                }
+                else if(pageName === GridPages.MyGallery) {
+                    if (tile.getType() == "text") {
+                        this.preview?.onAnimationSelected(response.path, "PROMPT_TEXT", tileData[tile.getId()].id);
                     }
-                    else if (pageName === GridPages.Emotions) {
-                        this.preview?.onAnimationSelected(response.path, "EMOTIONS");
+                    else if (tile.getType() == "video") {
+                        this.preview?.onAnimationSelected(response.path, "PROMPT_VIDEO", tileData[tile.getId()].id);
                     }
-                    else if(pageName === GridPages.MyGallery) {
-                        if (tile.getType() == "text") {
-                            this.preview?.onAnimationSelected(response.path, "PROMPT_TEXT");
-                        }
-                        else if (tile.getType() == "video") {
-                            this.preview?.onAnimationSelected(response.path, "PROMPT_VIDEO");
-                        }
-                        else {
-                            this.preview?.onAnimationSelected(response.path, "MY_GALLERY");
-                        }
+                    else if (tile.getType() == "stitch") {
+                        this.preview?.onAnimationSelected(response.path, "STITCHED", tileData[tile.getId()].id);
+                    }
+                    else if (tile.getType() == "animation") {
+                        this.preview?.onAnimationSelected(response.path, "UPLOAD", tileData[tile.getId()].id);
+                    }
+                    else {
+                        this.preview?.onAnimationSelected(response.path, "MY_GALLERY", tileData[tile.getId()].id);
                     }
                 }
-            })
+            }
         })
     }
 
@@ -372,18 +414,23 @@ export class AnimationLibrary {
         })
     }
 
-    private createTile(galleryWidget: Grid) {
+    private createTile(galleryWidget: Grid, isGenerated) {
         const tile = new GridTile(galleryWidget, galleryWidget.getAllTiles().length);
         tile.background = this.tileBackground;
         tile.hoveredBackground = this.tileHoveredBackground;
         tile.errorBackground = this.tileFailedBackground;
-        galleryWidget.addTile(tile);
+        if (isGenerated) {
+            galleryWidget.addTileToFront(tile);
+        }
+        else {
+            galleryWidget.addTile(tile, false);
+        }
         return tile;
     }
 
-    private addNewTile(pageName: GridPages): GridTile | null {
+    private addNewTile(pageName: GridPages, isGenerated: boolean = false): GridTile | null {
         if (this.pages[pageName]) {
-            const tile: GridTile = this.createTile(this.pages[pageName]);
+            const tile: GridTile = this.createTile(this.pages[pageName], isGenerated);
             return tile;
         }
 
@@ -392,8 +439,9 @@ export class AnimationLibrary {
 
     addAnimationToMyGallery(inputFormat: string) {
         this.pages[GridPages.MyGallery]?.resetScroll();
-        const tile = this.addNewTile(GridPages.MyGallery);
+        const tile = this.addNewTile(GridPages.MyGallery, true);
         tile?.addRemoveButton();
+        this.pages[GridPages.MyGallery]?.arrangeLayout();
         return (animationId: string | null) => {
             if (!this.isActive) {
                 return;
@@ -430,6 +478,10 @@ export class AnimationLibrary {
                             inputFormat = "PROMPT_TEXT";
                         } else if (responseBody.type == "video") {
                             inputFormat = "PROMPT_VIDEO";
+                        } else if (responseBody.type == "stitch") {
+                            inputFormat = "STITCHED";
+                        } else if (responseBody.type == "animation") {
+                            inputFormat = "UPLOAD";
                         }
                     }
                     if (responseBody.state === "FAILED") {
@@ -454,6 +506,12 @@ export class AnimationLibrary {
                             };
 
                             tile.setType(responseBody.type);
+                            if (responseBody.description) {
+                                tile.addDescription(responseBody.description);
+                            }
+                            if (responseBody.type === "stitch") {
+                                tile.addBlendIcon(this.blendIcon);
+                            }
                             tile.hasPreview = true;
                             const fileName = responseBody.id + "_" + "animation_preview" + ".webp";
                             this.assetLibImporter?.downloadAsset(responseBody.previewPluginUrl, fileName, (response: any) => {
@@ -498,6 +556,10 @@ export class AnimationLibrary {
         if (this.tabBar) {
             this.tabBar.currentIndex = GridPages.MyGallery;
         }
+    }
+
+    getAnimationId(pageName: string, id: number) {
+        return this.tileData[pageName][id].id;
     }
 
     clearSelection() {

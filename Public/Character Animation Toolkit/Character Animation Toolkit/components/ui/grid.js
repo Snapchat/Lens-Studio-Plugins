@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as Ui from "LensStudio:Ui";
 import { Widget } from "../common/widgets/widget.js";
 import { VerticalScrollArea } from "../common/widgets/verticalScrollArea.js";
@@ -8,6 +9,7 @@ export class Grid extends Widget {
     constructor(parent, minTileWidth = 110, maxTileWidth = 220, minTileHeight = 160) {
         super(parent);
         this.selectedId = -1;
+        this.selectedTile = null;
         this.onScrollValueChangedCallback = () => { };
         this.minTileWidth = minTileWidth;
         this.maxTileWidth = maxTileWidth;
@@ -64,7 +66,7 @@ export class Grid extends Widget {
         const tileHeight = tileWidth * this.tileAspect;
         this.gridLayout.clear(Ui.ClearLayoutBehavior.KeepClearedWidgets);
         let row = 0, col = 0;
-        for (let i = this.visibleTiles.length - 1; i >= 0; i--) {
+        for (let i = 0; i < this.visibleTiles.length; i++) {
             if (col === 0) {
                 this.gridLayout.setRowStretch(row, 0);
             }
@@ -82,15 +84,24 @@ export class Grid extends Widget {
         this.gridLayout.setRowStretch(row + 1, 1);
     }
     clearSelection() {
-        if (this.selectedId > -1) {
-            this.allTiles[this.selectedId].deselect();
-            this.selectedId = -1;
+        if (this.selectedTile) {
+            this.selectedTile.deselect();
+            this.selectedTile = null;
         }
     }
-    addTile(tile) {
+    addTile(tile, shouldArrange = true) {
         this.allTiles.push(tile);
         if (this.shouldTileBeVisible(tile)) {
             this.visibleTiles.push(tile);
+            if (shouldArrange) {
+                this.arrangeLayout();
+            }
+        }
+    }
+    addTileToFront(tile) {
+        this.allTiles.unshift(tile);
+        if (this.shouldTileBeVisible(tile)) {
+            this.visibleTiles.unshift(tile);
             this.arrangeLayout();
         }
     }
@@ -129,9 +140,9 @@ export class Grid extends Widget {
         this.arrangeLayout();
         this.onScrollValueChanged(this.scrollArea.value / this.scrollArea.maximum);
     }
-    selectTile(id) {
-        this.selectedId = id;
-        this.allTiles[this.selectedId].select();
+    selectTile(tile) {
+        tile.select();
+        this.selectedTile = tile;
     }
     addOnScrollValueChangedCallback(callback) {
         this.onScrollValueChangedCallback = callback;

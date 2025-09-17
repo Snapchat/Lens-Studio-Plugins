@@ -2,9 +2,10 @@ import * as Ui from 'LensStudio:Ui';
 
 import { tieWidgets, convertDate, createGuidelinesWidget } from '../utils.js';
 import { PromptPicker, createPromptPicker } from '../Effects/Controls/PromptPicker.js';
+import { ImageReferencePicker, createImageReferencePicker } from '../Effects/Controls/ImageReferencePicker.js';
 import { SpinBox, createSpinBox } from '../Effects/Controls/SpinBox.js';
 import { SettingsDescriptor } from '../Effects/SettingsDescriptor.js';
-import { createAsset } from '../api.js';
+import { createAsset, getAsset } from '../api.js';
 import { buildAssetData } from '../Effects/EffectFactory.js';
 import { logEventAssetCreation } from '../../application/analytics.js';
 
@@ -21,7 +22,7 @@ export class ChangeGeometryMenu {
     modifyAsset(controls) {
         this.editEffectButton.enabled = false;
         app.log('Creating new asset...', { 'progressBar': true });
-        let inputFormat = "INPUT_PROMPT";
+        let inputFormat = controls["imageReferencePicker"].value.length > 0 ? "PROMPT_IMAGE" : "PROMPT_TEXT";
 
         createAsset(buildAssetData(controls), (response) => {
             if (response.statusCode == 200) {
@@ -73,9 +74,16 @@ export class ChangeGeometryMenu {
         this.asset_id = state.asset_id;
         this.status = state.status;
 
+        if (state.assetData.uploadUid) {
+            this.controls['imageReferencePicker'].value = [{uid: state.assetData.uploadUid, url: state.assetData.uploadUrl }];
+        } else {
+            this.controls['imageReferencePicker'].value = [];
+        }
+
         if (state.settings) {
             this.fillSettings(state.settings);
         }
+
         this.updateEditButtonVisibility();
     }
 
@@ -135,11 +143,7 @@ export class ChangeGeometryMenu {
     }
 
     updateEditButtonVisibility() {
-        if (this.controls['promptPicker'].value.length > 0) {
-            this.editEffectButton.enabled = true;
-        } else {
-            this.editEffectButton.enabled = false;
-        }
+        this.editEffectButton.enabled = ((this.controls['promptPicker'].value.length > 0) || (this.controls['imageReferencePicker'].value.length > 0));
     }
 
     createMenu(parent) {
@@ -176,6 +180,9 @@ export class ChangeGeometryMenu {
                     break;
                 case SpinBox:
                     this.controls[scheme.name] = createSpinBox(scheme);
+                    break;
+                case ImageReferencePicker:
+                    this.controls[scheme.name] = createImageReferencePicker(scheme);
                     break;
             }
 
@@ -235,6 +242,10 @@ export class ChangeGeometryMenu {
         });
 
         this.controls['promptPicker'].addOnValueChanged((value) => {
+            this.updateEditButtonVisibility();
+        });
+
+        this.controls['imageReferencePicker'].addOnValueChanged((value) => {
             this.updateEditButtonVisibility();
         });
 

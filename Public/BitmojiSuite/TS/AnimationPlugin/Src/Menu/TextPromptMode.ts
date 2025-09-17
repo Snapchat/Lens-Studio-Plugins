@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as Ui from "LensStudio:Ui";
 import {MenuTemplate} from "./MenuTemplate.js";
 import {Alignment} from "LensStudio:Ui";

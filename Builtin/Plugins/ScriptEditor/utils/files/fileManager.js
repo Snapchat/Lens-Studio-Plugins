@@ -6,6 +6,7 @@ import {
     parseTypedefs,
     updateCompletionData
 } from "./completion.js";
+import { getLanguageFromFilePath } from "../index.js";
 
 function _resolvedPath(fileMeta, filePath) {
     try {
@@ -164,11 +165,13 @@ export class FileManager {
     }
 
     createDefinitionFile(filePath, content) {
-        const language = filePath.endsWith('.ts') ? 'typescript' : 'javascript';
+        const language = getLanguageFromFilePath(filePath);
         const newModel = monaco.editor.createModel(content, language, monaco.Uri.parse(filePath));
 
-        monaco.languages.typescript.javascriptDefaults.addExtraLib(content, `file:///${filePath}`);
-        monaco.languages.typescript.typescriptDefaults.addExtraLib(content, `file:///${filePath}`);
+        if (language !== 'markdown') {
+            monaco.languages.typescript.javascriptDefaults.addExtraLib(content, `file:///${filePath}`);
+            monaco.languages.typescript.typescriptDefaults.addExtraLib(content, `file:///${filePath}`);
+        }
 
         const fileObject = {
             filePath,
@@ -194,7 +197,7 @@ export class FileManager {
 
         try {
             const {content} = await this.networkManager.request(EDITOR_EVENTS.GET_SCRIPT_CONTENT, {filePath});
-            const language = filePath.endsWith('.ts') ? 'typescript' : 'javascript';
+            const language = getLanguageFromFilePath(filePath);
 
             const {isPacked, fileMeta} = await this._getPackedStatus(filePath);
 

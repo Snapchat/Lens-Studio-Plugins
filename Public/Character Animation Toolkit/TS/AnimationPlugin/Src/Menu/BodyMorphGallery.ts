@@ -1,3 +1,4 @@
+// @ts-nocheck
 import {Widget} from "../components/common/widgets/widget.js";
 import * as Ui from "LensStudio:Ui";
 import {Grid} from "../components/ui/grid.js";

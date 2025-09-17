@@ -1,8 +1,9 @@
+// @ts-nocheck
 import * as Ui from "LensStudio:Ui";
 import { Widget } from "./widget.js";
 export class Label extends Widget {
     constructor(parent: any) {
-        super(parent, Ui.Label.create);
+        super(parent, Ui.Label);
     }
     get openExternalLinks() {
         return this.__widget__.openExternalLinks;

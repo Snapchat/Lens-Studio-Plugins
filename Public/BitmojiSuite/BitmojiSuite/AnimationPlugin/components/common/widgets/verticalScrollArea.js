@@ -1,8 +1,9 @@
+// @ts-nocheck
 import * as Ui from "LensStudio:Ui";
 import { Widget } from "./widget.js";
 export class VerticalScrollArea extends Widget {
     constructor(parent) {
-        super(parent, Ui.VerticalScrollArea.create);
+        super(parent, Ui.VerticalScrollArea);
     }
     get maximum() {
         return this.__widget__.maximum;

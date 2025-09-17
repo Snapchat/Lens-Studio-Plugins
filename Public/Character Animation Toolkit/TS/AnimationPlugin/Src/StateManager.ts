@@ -1,3 +1,4 @@
+// @ts-nocheck
 export enum StateKeys {
     IsUserAuthenticated = 'isUserAuthenticated',
     IsDialogShown = 'isDialogShown',

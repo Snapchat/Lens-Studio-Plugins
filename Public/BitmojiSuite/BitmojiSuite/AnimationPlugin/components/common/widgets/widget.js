@@ -1,14 +1,15 @@
+// @ts-nocheck
 import * as Ui from 'LensStudio:Ui';
 export function isJsWidget(widget) {
     return widget.isOfType("JsWidget");
 }
 export class Widget {
-    constructor(parent, creatorFunction = Ui.Widget.create) {
+    constructor(parent, widget = Ui.Widget) {
         if (isJsWidget(parent)) {
-            this.__widget__ = creatorFunction(parent.toNativeWidget());
+            this.__widget__ = new widget(parent.toNativeWidget());
         }
         else {
-            this.__widget__ = creatorFunction(parent);
+            this.__widget__ = new widget(parent);
         }
     }
     isOfType(typename) {

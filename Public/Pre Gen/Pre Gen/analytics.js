@@ -1,3 +1,4 @@
+// @ts-nocheck
 //@ts-ignore
 import * as Analytics from "LensStudio:Analytics";
 export const PLUGIN_ID = "Com.Snap.PreGen";

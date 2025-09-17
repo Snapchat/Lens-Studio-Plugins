@@ -2,9 +2,10 @@ import * as Ui from 'LensStudio:Ui';
 
 import { tieWidgets, convertDate, createGuidelinesWidget } from '../utils.js';
 import { PromptPicker, createPromptPicker } from '../Effects/Controls/PromptPicker.js';
+import { ImageReferencePicker, createImageReferencePicker } from '../Effects/Controls/ImageReferencePicker.js';
 import { SpinBox, createSpinBox } from '../Effects/Controls/SpinBox.js';
 import { SettingsDescriptor } from '../Effects/SettingsDescriptor.js';
-import { createAsset } from '../api.js';
+import { createAsset, getAsset } from '../api.js';
 import { buildAssetData } from '../Effects/EffectFactory.js';
 
 import app from '../../application/app.js';
@@ -23,7 +24,7 @@ export class PreviewMenu {
         this.editEffectButton.enabled = false;
         app.log('Creating new asset...', { 'progressBar': true });
 
-        let inputFormat = "INPUT_PROMPT";
+        let inputFormat = controls["imageReferencePicker"].value.length > 0 ? "PROMPT_IMAGE" : "PROMPT_TEXT";
 
         const settings = buildAssetData(controls, true);
 
@@ -76,6 +77,15 @@ export class PreviewMenu {
         if (state.settings) {
             this.fillSettings(state.settings);
         }
+
+        this.controls['imageReferencePicker'].value = [];
+
+        getAsset(state.asset_id, (asset) => {
+            if (asset && asset.uploadUid) {
+                this.controls['imageReferencePicker'].value = [{uid: asset.uploadUid, url: asset.uploadUrl }];
+                this.updateEditButtonVisibility();
+            }
+        });
 
         this.updateEditButtonVisibility();
     }
@@ -145,7 +155,7 @@ export class PreviewMenu {
     }
 
     updateEditButtonVisibility() {
-        this.editEffectButton.enabled = this.controls['promptPicker'].value.length > 0;
+        this.editEffectButton.enabled = ((this.controls['promptPicker'].value.length > 0) || (this.controls['imageReferencePicker'].value.length > 0));
     }
 
     createMenu(parent) {
@@ -178,6 +188,9 @@ export class PreviewMenu {
             switch (scheme.class) {
                 case PromptPicker:
                     this.controls[scheme.name] = createPromptPicker(scheme);
+                    break;
+                case ImageReferencePicker:
+                    this.controls[scheme.name] = createImageReferencePicker(scheme);
                     break;
                 case SpinBox:
                     this.controls[scheme.name] = createSpinBox(scheme);
@@ -240,6 +253,10 @@ export class PreviewMenu {
         });
 
         this.controls['promptPicker'].addOnValueChanged((value) => {
+            this.updateEditButtonVisibility();
+        });
+
+        this.controls['imageReferencePicker'].addOnValueChanged((value) => {
             this.updateEditButtonVisibility();
         });
 
