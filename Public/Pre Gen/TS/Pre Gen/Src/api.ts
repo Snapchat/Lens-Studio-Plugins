@@ -14,6 +14,7 @@ export function getMyDreams(callback: Function, pageToken: any = null) {
 
     Network.performAuthorizedHttpRequest(request, (response) => {
         callback(response);
+        // console.log(response.body);
 
         //@ts-ignore
         if (JSON.parse(response.body).nextPageToken) {

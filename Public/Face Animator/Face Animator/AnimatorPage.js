@@ -8,6 +8,7 @@ import { logEventEffectTraining } from "./analytics.js";
 export class AnimatorPage {
     constructor() {
         this.connections = [];
+        this.removedItems = {};
         this.updateItemDataCallback = () => { };
     }
     create(parent, onReturnCallback, onItemRemovedCallback, updateItemDataCallback) {
@@ -23,11 +24,18 @@ export class AnimatorPage {
         layout.setDirection(Ui.Direction.LeftToRight);
         layout.setContentsMargins(0, 0, 0, 0);
         layout.spacing = 0;
-        this.effectPreviewPage = new EffectPreviewPage(widget, onReturnCallback);
+        this.effectPreviewPage = new EffectPreviewPage(widget, () => {
+            this.preview.stopVideo();
+            onReturnCallback();
+        });
         this.preview = new Preview(widget, (id) => {
+            this.removedItems[id] = true;
             onItemRemovedCallback(id);
+            this.preview.stopVideo();
             onReturnCallback();
         }, this.onTrainingStarted.bind(this));
+        this.preview.setVideoPlayStartListener(this.onVideoPlayStart.bind(this));
+        this.preview.setVideoPlayStopListener(this.onVideoPlayStop.bind(this));
         const separator = new Ui.Separator(Ui.Orientation.Vertical, Ui.Shadow.Plain, widget);
         separator.setFixedWidth(Ui.Sizes.SeparatorLineWidth);
         layout.addWidgetWithStretch(this.effectPreviewPage.widget, 0, Ui.Alignment.AlignLeft);
@@ -70,6 +78,9 @@ export class AnimatorPage {
             this.effectPreviewPage.setDate(data.createdAt);
         }
     }
+    importToProject(data) {
+        this.preview.import(data.outputModelUrl, data.mp3Url);
+    }
     updateAnimatorData(data) {
         if (data.id === this.curId && data.state === "PREVIEW_SUCCESS") {
             this.preview.setState(data.state);
@@ -98,7 +109,7 @@ export class AnimatorPage {
         spinner.start();
         layout.addWidgetWithStretch(spinner, 0, Ui.Alignment.AlignCenter);
         this.progressLabel = new Ui.Label(widget);
-        this.progressLabel.text = "10%";
+        this.progressLabel.text = "0%";
         this.progressLabel.foregroundRole = Ui.ColorRole.BrightText;
         layout.addWidgetWithStretch(this.progressLabel, 0, Ui.Alignment.AlignCenter);
         layout.addStretch(1);
@@ -112,6 +123,7 @@ export class AnimatorPage {
         this.popup.layout = popupLayout;
         popupLayout.setContentsMargins(8, 0, 8, 0);
         const infoImage = new Ui.ImageView(this.popup);
+        infoImage.scaledContents = true;
         infoImage.pixmap = new Ui.Pixmap(import.meta.resolve('./Resources/warning.svg'));
         infoImage.setFixedWidth(16);
         infoImage.setFixedHeight(16);
@@ -121,7 +133,7 @@ export class AnimatorPage {
         this.popup.visible = false;
         this.popup.setFixedHeight(32);
         this.popup.setFixedWidth(368);
-        this.popup.move(46, 4);
+        this.popup.move(216, 4);
         this.popupLabel.text = "Limit reached - A maximum of 2 models can be trained at once";
         popupLayout.addWidgetWithStretch(this.popupLabel, 1, Ui.Alignment.AlignLeft | Ui.Alignment.AlignCenter);
     }
@@ -148,8 +160,18 @@ export class AnimatorPage {
             }
         });
     }
+    onVideoPlayStart() {
+        this.effectPreviewPage.playVideo();
+    }
+    onVideoPlayStop() {
+        this.effectPreviewPage.pauseVideo();
+    }
     checkGenerationState(id, intervalVal) {
         const checkState = (id) => {
+            if (this.removedItems[id]) {
+                clearInterval(interval);
+                return;
+            }
             getAnimatorById(id, (response) => {
                 if (response.statusCode !== 200) {
                     return;
@@ -160,6 +182,7 @@ export class AnimatorPage {
                 }
                 else {
                     if (this.curId === curSettings.id) {
+                        this.updateItemDataCallback(JSON.parse(response.body));
                         this.progressLabel.text = Math.floor(curSettings.progressPercent) + "%";
                     }
                 }

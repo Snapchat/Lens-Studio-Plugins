@@ -5,8 +5,18 @@ function findOrCreateCameraObject(scene, parentObject) {
 
     const mainCamera = scene.mainCamera;
 
-    if (mainCamera === null) {
+    if (mainCamera === null || mainCamera.cameraType == Editor.Components.CameraType.Orthographic) {
         result = parentObject;
+
+        if (!result) {
+            scene.rootSceneObjects.forEach(element => {
+                const camera = element.getComponent("Camera");
+
+                if (camera && camera.cameraType == Editor.Components.CameraType.Perspective) {
+                    result = element;
+                }
+            });
+        }
 
         if (!result) {
             result = scene.addSceneObject(null);

@@ -1,8 +1,6 @@
 // @ts-nocheck
 import * as Ui from "LensStudio:Ui";
 import { ColorRole } from "LensStudio:Ui";
-import * as MultimediaWidgets from 'LensStudio:MultimediaWidgets';
-import { MediaState } from 'LensStudio:MultimediaWidgets';
 export class EffectPreviewPage {
     constructor(parent, onReturnCallback) {
         this.connections = [];
@@ -31,10 +29,13 @@ export class EffectPreviewPage {
         // Header
         const headerLayout = new Ui.BoxLayout();
         headerLayout.setDirection(Ui.Direction.LeftToRight);
-        const arrow = new Ui.ImageView(widget);
-        arrow.responseHover = true;
         const defaultImage = new Ui.Pixmap(import.meta.resolve('./Resources/arrow.svg'));
         const hoveredImage = new Ui.Pixmap(import.meta.resolve('./Resources/arrow_h.svg'));
+        const arrow = new Ui.ImageView(widget);
+        arrow.responseHover = true;
+        arrow.scaledContents = true;
+        arrow.setFixedWidth(16);
+        arrow.setFixedHeight(16);
         arrow.pixmap = defaultImage;
         this.connections.push(arrow.onClick.connect(() => {
             onReturnCallback();
@@ -72,6 +73,7 @@ export class EffectPreviewPage {
         const lockedBox = new Ui.ImageView(widget);
         lockedBox.setFixedWidth(164);
         lockedBox.setFixedHeight(20);
+        lockedBox.scaledContents = true;
         lockedBox.pixmap = new Ui.Pixmap(import.meta.resolve('./Resources/locked_box.svg'));
         const lockedBoxLayout = new Ui.BoxLayout();
         lockedBoxLayout.setContentsMargins(Ui.Sizes.HalfPadding, Ui.Sizes.HalfPadding, Ui.Sizes.HalfPadding, Ui.Sizes.HalfPadding);
@@ -88,32 +90,41 @@ export class EffectPreviewPage {
         contentLayout.addLayout(createdOnLayout);
         layout.addWidget(contentWidget);
         // Video Preview
-        this.videoWidget = new MultimediaWidgets.VideoWidget(widget);
-        this.videoWidget.setFixedWidth(288);
-        this.videoWidget.setFixedHeight(288);
-        this.videoWidget.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
-        this.mediaPlayer = new MultimediaWidgets.MediaPlayer();
-        this.connections.push(this.mediaPlayer.onStateChanged.connect((newState) => {
-            //@ts-ignore
-            if (newState === MediaState.StoppedState) {
-                this.mediaPlayer.play();
-            }
-        }));
-        layout.addWidgetWithStretch(this.videoWidget, 0, (Ui.Alignment.AlignCenter));
+        const videoView = new Ui.VideoView(widget);
+        videoView.setFixedWidth(288);
+        videoView.setFixedHeight(288);
+        videoView.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
+        videoView.radius = 8;
+        videoView.muted = true;
+        this.videoView = videoView;
+        this.videoView.onShow.connect(() => {
+            videoView.play();
+        });
+        this.videoView.onHide.connect(() => {
+            videoView.pause();
+        });
+        layout.addWidgetWithStretch(videoView, 0, (Ui.Alignment.AlignCenter));
         layout.addStretch(1);
         widget.layout = layout;
         return widget;
     }
     setPreview(path) {
-        this.mediaPlayer.stop();
-        this.mediaPlayer.setMedia(path);
-        this.mediaPlayer.setVideoOutput(this.videoWidget);
-        this.mediaPlayer.play();
+        this.videoView.stop();
+        this.videoView.setSource(path);
+        this.videoView.loopCount = -1;
+        this.videoView.play();
     }
     setDate(newDate) {
         if (this.lockedLabel) {
             this.lockedLabel.text = this.convertDate(newDate);
         }
+    }
+    playVideo() {
+        this.videoView.stop();
+        this.videoView.play();
+    }
+    pauseVideo() {
+        this.videoView.pause();
     }
     get widget() {
         return this.mainWidget;

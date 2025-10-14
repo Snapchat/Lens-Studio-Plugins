@@ -51,6 +51,9 @@ export class ScriptInstantiator extends AssetInstantiator {
         };
         return descriptor;
     }
+    prepareDependencies(asset, assetManager) {
+        return Promise.resolve([]);
+    }
     instantiate(asset, scene, target) {
         const rootAsset = this.getNativePackageDescriptor(asset);
         // If a setup script exists, execute it.

@@ -1,7 +1,19 @@
-export const isValidComponentToEdit = (entity) => {
-    return !!(entity.isOfType("JavaScriptAsset") 
-        || entity.isOfType("TypeScriptAsset") 
-        || entity.isOfType("MarkdownAsset"));
+const isScriptAsset = (entity) => {
+    return entity.getTypeName() === "JavaScriptAsset"
+        || entity.getTypeName() === "TypeScriptAsset";
+}
+
+export const isValidScriptToEdit = (entity) => {
+    // TODO: It might be better to have an allow list of expected script file extensions
+    // Any studio asset could create internal script assets that may not be expected to be parsed
+    const isVfxFile = (file) => {
+        return file.toLowerCase().endsWith('.vfxgraph');
+    }
+    return !!(isScriptAsset(entity) && entity.fileMeta?.sourcePath && !isVfxFile(entity.fileMeta.sourcePath.toString()));
+}
+
+export const isValidEntityToEdit = (entity) => {
+    return isScriptAsset(entity) || entity.getTypeName() === "MarkdownAsset";
 }
 
 export const getLanguageFromFilePath = (filePath) => {
@@ -12,4 +24,8 @@ export const getLanguageFromFilePath = (filePath) => {
     } else if (filePath.endsWith('.md')) {
         return 'markdown';
     }
+}
+
+export const isCustomComponentFile = (filePath) => {
+    return filePath.toLowerCase().endsWith('.lsc');
 }

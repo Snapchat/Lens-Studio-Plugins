@@ -1,9 +1,9 @@
-import CoreService from "LensStudio:CoreService";
+import GuiService from "LensStudio:GuiService";
 import * as Ui from "LensStudio:Ui";
 
 import { ScriptEditor } from "./main";
 
-export class AssetMenuItem extends CoreService {
+export class AssetMenuItem extends GuiService {
     static descriptor() {
         return {
             id: "Com.Snap.EditMarkdownContextMenuItemService",

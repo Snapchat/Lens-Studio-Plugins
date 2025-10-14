@@ -13,15 +13,16 @@ export class InfoPage {
     private stackedWidget: Ui.StackedWidget
     private gridWasUpdated: boolean = false;
     private authComponent: Editor.IAuthorization;
+    private removedItems: any = {}
     private onItemDataChangedCallback: Function = () => {};
     private checkGenerationState: Function = () => {};
 
-    constructor(parent: Ui.Widget, onTileClickedCallback: Function, onItemDataChangedCallback: Function, checkGenerationState: Function, authComponent: Editor.IAuthorization) {
+    constructor(parent: Ui.Widget, onTileClickedCallback: Function, onItemDataChangedCallback: Function, checkGenerationState: Function, onImportToProjectClickedCallback: Function, authComponent: Editor.IAuthorization) {
         this.onItemDataChangedCallback = onItemDataChangedCallback;
         this.checkGenerationState = checkGenerationState;
         this.authComponent = authComponent;
         this.tempDir = FileSystem.TempDir.create();
-        this.gallery = new Gallery(onTileClickedCallback);
+        this.gallery = new Gallery(onTileClickedCallback, onImportToProjectClickedCallback);
         const widget = new Ui.Widget(parent);
 
         widget.setContentsMargins(0, 0, 0, 0);
@@ -112,10 +113,18 @@ export class InfoPage {
                 }
 
                 if (item.state === "GENERATION_QUEUED" || item.state === "GENERATION_RUNNING") {
+                    newItem.showLoadingOverlay();
                     this.checkGenerationState(item.id, 60000);
                 }
 
+                if (item.state === "GENERATION_SUCCESS") {
+                    newItem.setTrained();
+                }
+
                 this.downloadPreview(item.uploadUrl, item.id + "_preview" + ".mp4", (path: Editor.Path) => {
+                    if (item.state !== "PREVIEW_QUEUED" && item.state !== "PREVIEW_RUNNING") {
+                        newItem.hideLoading();
+                    }
                     newItem.setPreview(path);
                 })
             })
@@ -124,6 +133,10 @@ export class InfoPage {
 
     private checkAnimatorState(id: string, intervalVal: number) {
         const checkState = (id: string) => {
+            if (this.removedItems[id]) {
+                clearInterval(interval);
+                return;
+            }
             getAnimatorById(id, (response: any) => {
                 if (response.statusCode !== 200) {
                     return;
@@ -170,6 +183,7 @@ export class InfoPage {
     }
 
     removeById(id: string) {
+        this.removedItems[id] = true;
         deleteAnimatorById(id);
         this.gallery.removeById(id);
     }

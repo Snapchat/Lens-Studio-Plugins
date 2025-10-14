@@ -2,8 +2,6 @@
 import * as Ui from "LensStudio:Ui";
 import { downloadFile } from "./api.js";
 import * as FileSystem from "LensStudio:FileSystem";
-import * as MultimediaWidgets from 'LensStudio:MultimediaWidgets';
-import { MediaState } from 'LensStudio:MultimediaWidgets';
 import { Importer } from "./Importer.js";
 import app from "./app";
 import { logEventImport } from "./analytics";
@@ -18,16 +16,22 @@ export class Preview {
         this.previews = {};
         this.id = "";
         this.previewId = 0;
+        this.isMuted = false;
         this.mode = PreviewMode.target;
         this.outputModelUrl = "";
         this.mp3Url = "";
+        this.importToProject = () => { };
         this.onItemRemovedCallback = () => { };
         this.onTrainingStartedCallback = () => { };
+        this.onVideoPlayStartCallback = () => { };
+        this.onVideoPlayStopCallback = () => { };
         this.tempDir = FileSystem.TempDir.create();
         this.onItemRemovedCallback = onItemRemovedCallback;
         this.onTrainingStartedCallback = onTrainingStartedCallback;
         this.importer = new Importer();
         this.defaultImage = new Ui.Pixmap(import.meta.resolve('./Resources/no_preview.svg'));
+        this.mutedImage = new Ui.Pixmap(import.meta.resolve('./Resources/muted.svg'));
+        this.unmutedImage = new Ui.Pixmap(import.meta.resolve('./Resources/unmuted.svg'));
         const widget = new Ui.Widget(parent);
         widget.setContentsMargins(0, 0, 0, 0);
         widget.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
@@ -121,6 +125,7 @@ export class Preview {
                 });
             }
         };
+        this.importToProject = importToProject;
         this.createWarningDialog(() => {
             if (this.importButton) {
                 this.importButton.enabled = false;
@@ -133,16 +138,7 @@ export class Preview {
             importToProject(null, "failed");
         });
         importButton.onClick.connect(() => {
-            var _a;
-            if (this.mp3Url) {
-                (_a = this.warningDialog) === null || _a === void 0 ? void 0 : _a.show();
-            }
-            else {
-                if (this.importButton) {
-                    this.importButton.enabled = false;
-                }
-                importToProject(null, "failed");
-            }
+            this.onImportButtonClicked();
         });
         return widget;
     }
@@ -177,6 +173,7 @@ export class Preview {
         this.imageView.setFixedHeight(534);
         this.imageView.setFixedWidth(300);
         this.imageView.scaledContents = true;
+        this.imageView.radius = 4;
         this.imageView.pixmap = this.defaultImage;
         this.imageView.visible = false;
         const imageViewLayout = new Ui.BoxLayout();
@@ -196,20 +193,39 @@ export class Preview {
         this.generatingPreviewLabel.visible = false;
         layout.addWidgetWithStretch(this.imageView, 0, Ui.Alignment.AlignCenter);
         // Video Preview
-        const videoWidget = new MultimediaWidgets.VideoWidget(widget);
-        videoWidget.setFixedWidth(300);
-        videoWidget.setFixedHeight(534);
-        videoWidget.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
-        videoWidget.visible = true;
-        this.videoWidget = videoWidget;
-        this.mediaPlayer = new MultimediaWidgets.MediaPlayer();
-        this.connections.push(this.mediaPlayer.onStateChanged.connect((newState) => {
-            //@ts-ignore
-            if (newState === MediaState.StoppedState) {
-                this.mediaPlayer.play();
+        const videoView = new Ui.VideoView(widget);
+        videoView.setFixedWidth(300);
+        videoView.setFixedHeight(534);
+        videoView.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
+        videoView.radius = 8;
+        videoView.loopCount = -1;
+        // videoView.volume = 1;
+        videoView.visible = true;
+        this.videoView = videoView;
+        this.videoView.onShow.connect(() => {
+            videoView.play();
+        });
+        this.videoView.onHide.connect(() => {
+            videoView.pause();
+        });
+        const muteButton = new Ui.ImageView(videoView);
+        muteButton.pixmap = this.unmutedImage;
+        muteButton.setFixedWidth(56);
+        muteButton.setFixedHeight(20);
+        muteButton.scaledContents = true;
+        muteButton.move(8, 506);
+        muteButton.onClick.connect(() => {
+            this.isMuted = !this.isMuted;
+            if (this.isMuted) {
+                muteButton.pixmap = this.mutedImage;
+                videoView.muted = true;
             }
-        }));
-        layout.addWidgetWithStretch(this.videoWidget, 0, Ui.Alignment.AlignCenter);
+            else {
+                muteButton.pixmap = this.unmutedImage;
+                videoView.muted = false;
+            }
+        });
+        layout.addWidgetWithStretch(this.videoView, 0, Ui.Alignment.AlignCenter);
         const rightArrow = new Ui.ImageView(widget);
         rightArrow.setFixedWidth(36);
         rightArrow.setFixedHeight(36);
@@ -229,26 +245,30 @@ export class Preview {
             this.onRightArrowClicked();
         }));
         this.ctaButton = new Ui.ImageView(widget);
-        this.ctaButton.setFixedWidth(36);
-        this.ctaButton.setFixedHeight(28);
+        this.ctaButton.setFixedWidth(28);
+        this.ctaButton.setFixedHeight(20);
         this.ctaButton.pixmap = new Ui.Pixmap(import.meta.resolve('./Resources/cta_button.svg'));
-        this.ctaButton.responseHover = true;
-        this.ctaButton.move(250, 420);
-        this.ctaButton.visible = false;
+        this.ctaButton.move(326, 520);
+        this.ctaButton.scaledContents = true;
+        this.ctaButton.visible = true;
         this.ctaButton.raise();
         this.connections.push(this.ctaButton.onClick.connect(() => {
             if (this.mode === PreviewMode.target) {
                 this.mode = PreviewMode.source;
-                if (this.imageView && this.videoWidget) {
-                    this.videoWidget.visible = false;
+                if (this.imageView && this.videoView) {
+                    this.videoView.stop();
+                    this.videoView.visible = false;
                     this.imageView.visible = true;
                 }
             }
             else {
                 this.mode = PreviewMode.target;
-                if (this.imageView && this.videoWidget) {
+                if (this.imageView && this.videoView) {
+                    this.videoView.stop();
+                    this.videoView.play();
+                    this.onVideoPlayStartCallback();
                     this.imageView.visible = false;
-                    this.videoWidget.visible = true;
+                    this.videoView.visible = true;
                 }
             }
         }));
@@ -256,6 +276,23 @@ export class Preview {
         this.rightArrow = rightArrow;
         widget.layout = layout;
         return widget;
+    }
+    onImportButtonClicked() {
+        var _a;
+        if (this.mp3Url) {
+            (_a = this.warningDialog) === null || _a === void 0 ? void 0 : _a.show();
+        }
+        else {
+            if (this.importButton) {
+                this.importButton.enabled = false;
+            }
+            this.importToProject(null, "failed");
+        }
+    }
+    import(dnnUrl, mp3Url) {
+        this.outputModelUrl = dnnUrl;
+        this.mp3Url = mp3Url;
+        this.onImportButtonClicked();
     }
     setId(newId) {
         this.id = newId;
@@ -295,9 +332,10 @@ export class Preview {
         }
     }
     setDefaultPreviewState() {
-        this.videoWidget.visible = false;
+        this.videoView.visible = false;
         this.imageView.pixmap = this.defaultImage;
         this.imageView.visible = true;
+        this.ctaButton.visible = false;
         if (this.leftArrow && this.rightArrow && this.spinner && this.generatingPreviewLabel) {
             this.leftArrow.visible = false;
             this.rightArrow.visible = false;
@@ -308,25 +346,53 @@ export class Preview {
     getId() {
         return this.id;
     }
+    setVideoPlayStartListener(callback) {
+        this.onVideoPlayStartCallback = callback;
+    }
+    setVideoPlayStopListener(callback) {
+        this.onVideoPlayStopCallback = callback;
+    }
+    stopVideo() {
+        this.videoView.stop();
+    }
     onLeftArrowClicked() {
         this.previewId--;
         this.previewId = this.mod(this.previewId, this.previewUrls.length);
+        this.videoView.stop();
+        if (this.mode === PreviewMode.target) {
+            this.onVideoPlayStopCallback();
+        }
         this.previewIdxChanged(this.id, this.previewId);
     }
     onRightArrowClicked() {
         this.previewId++;
         this.previewId = this.mod(this.previewId, this.previewUrls.length);
+        this.videoView.stop();
+        if (this.mode === PreviewMode.target) {
+            this.onVideoPlayStopCallback();
+        }
         this.previewIdxChanged(this.id, this.previewId);
     }
     previewIdxChanged(id, previewId) {
         if (this.previews[id][previewId]) {
             this.imageView.pixmap = new Ui.Pixmap(this.previews[id][previewId].sourceImagePath);
-            this.mediaPlayer.setMedia(this.previews[id][previewId].outputVideoPath);
-            this.mediaPlayer.setVideoOutput(this.videoWidget);
-            this.mediaPlayer.play();
+            this.videoView.stop();
+            this.videoView.setSource(this.previews[id][previewId].outputVideoPath);
+            this.ctaButton.visible = true;
+            if (this.mode === PreviewMode.source) {
+                this.videoView.visible = false;
+                this.imageView.visible = true;
+            }
+            else if (this.mode === PreviewMode.target) {
+                this.videoView.play();
+                this.onVideoPlayStartCallback();
+                this.imageView.visible = false;
+                this.videoView.visible = true;
+            }
         }
         else {
             this.previews[id][previewId] = { "sourceImagePath": null, "outputVideoPath": null };
+            this.ctaButton.visible = false;
             if (this.imageView) {
                 this.imageView.visible = false;
             }
@@ -336,25 +402,28 @@ export class Preview {
                     if (this.imageView) {
                         this.imageView.pixmap = new Ui.Pixmap(path);
                         if (this.mode === PreviewMode.source) {
+                            this.videoView.visible = false;
                             this.imageView.visible = true;
+                            this.ctaButton.visible = true;
                         }
                     }
                 }
             });
-            if (this.videoWidget) {
-                this.videoWidget.visible = false;
+            if (this.videoView) {
+                this.videoView.visible = false;
             }
             this.downloadAsset(this.previewUrls[previewId].outputVideoUrl, id + "_" + previewId + "_outputVideo.mp4", (path) => {
                 this.previews[id][previewId].outputVideoPath = path;
                 if (this.id === id && previewId === this.previewId) {
-                    if (this.videoWidget) {
-                        this.mediaPlayer.setMedia(path);
-                        this.mediaPlayer.setVideoOutput(this.videoWidget);
-                        this.mediaPlayer.play();
+                    if (this.videoView) {
+                        this.videoView.stop();
+                        this.videoView.setSource(path);
                         if (this.mode === PreviewMode.target) {
-                            this.timeout = setTimeout(() => {
-                                this.videoWidget.visible = true;
-                            }, 100);
+                            this.videoView.play();
+                            this.onVideoPlayStartCallback();
+                            this.imageView.visible = false;
+                            this.videoView.visible = true;
+                            this.ctaButton.visible = true;
                         }
                     }
                 }

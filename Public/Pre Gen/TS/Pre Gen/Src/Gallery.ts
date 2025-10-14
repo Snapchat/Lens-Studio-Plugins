@@ -9,21 +9,24 @@ export class Gallery {
     private parent: Ui.Widget | undefined;
     private gridLayout: Ui.GridLayout | undefined;
     private spacer: Ui.Widget | undefined;
+    private spinner: Ui.ProgressIndicator;
     private onTileClickCallback: Function;
+    private onImportClickCallback: Function;
     private isWaitingForCallback: boolean = false;
     private pendingPreviews: Record<string, GalleryItem> = {};
-    private tilesPerRow = 6;
+    private tilesPerRow = 3;
 
-    constructor(onTileClickCallback: Function) {
+    constructor(onTileClickCallback: Function, onImportClickCallback: Function) {
         this.onTileClickCallback = onTileClickCallback;
+        this.onImportClickCallback = onImportClickCallback;
     }
 
     create(parent: Ui.Widget): Ui.Widget {
         const widget = new Ui.Widget(parent);
         widget.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Expanding);
         widget.setContentsMargins(0, 0, 0, 0);
-        // widget.autoFillBackground = true;
-        // widget.backgroundRole = Ui.ColorRole.Dark;
+        widget.autoFillBackground = true;
+        widget.backgroundRole = Ui.ColorRole.Base;
 
         this.spacer = new Ui.Widget(widget);
         this.spacer.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Expanding);
@@ -47,15 +50,26 @@ export class Gallery {
         this.gridLayout = grid;
         this.parent = widget;
 
+        const spinner = new Ui.ProgressIndicator(widget);
+        spinner.setFixedWidth(32);
+        spinner.setFixedHeight(32);
+        spinner.start();
+        spinner.visible = false;
+        spinner.move(178, 250);
+
+        this.spinner = spinner;
+
         widget.layout = scrollLayout;
 
         return widget;
     }
 
-    addItem(id: string, previewUrl: string, isDefault: boolean = false, inProgress: boolean = false, isTraining: boolean = false) {
+    addItem(id: string, previewUrl: string, isDefault: boolean = false, inProgress: boolean = false, isTraining: boolean = false, isTrained: boolean = false) {
         if (!this.parent || !this.gridLayout) {
             return;
         }
+
+        this.spinner.visible = false;
 
         const item = new GalleryItem(this.parent, id);
         if (isDefault) {
@@ -74,6 +88,9 @@ export class Gallery {
             this.pendingPreviews[id] = item;
             item.showLoadingOverlay();
         }
+        else if (isTrained) {
+            item.setTrained();
+        }
 
         item.setOnClickCallback((id: string) => {
             if (this.isWaitingForCallback) {
@@ -87,6 +104,10 @@ export class Gallery {
                 }
                 this.isWaitingForCallback = false;
             });
+        })
+
+        item.setOnImportClickCallback((id: string) => {
+            this.onImportClickCallback(id);
         })
 
         this.allItems.push(item);
@@ -146,7 +167,7 @@ export class Gallery {
         this.visibleItems = [];
         this.pendingPreviews = {};
         this.isWaitingForCallback = false;
-        this.addDefaultItem();
         this.arrangeLayout();
+        this.spinner.visible = true;
     }
 }

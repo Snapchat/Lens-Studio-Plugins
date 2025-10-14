@@ -4,9 +4,10 @@ import { Gallery } from "./Gallery.js";
 import { getMyAnimators, downloadFile, deleteAnimatorById, getAnimatorById } from "./api.js";
 import * as FileSystem from 'LensStudio:FileSystem';
 export class InfoPage {
-    constructor(parent, onTileClickedCallback, onItemDataChangedCallback, checkGenerationState, authComponent) {
+    constructor(parent, onTileClickedCallback, onItemDataChangedCallback, checkGenerationState, onImportToProjectClickedCallback, authComponent) {
         this.connections = [];
         this.gridWasUpdated = false;
+        this.removedItems = {};
         this.onItemDataChangedCallback = () => { };
         this.checkGenerationState = () => { };
         this.onNewAnimatorCreated = (animatorData) => {
@@ -21,7 +22,7 @@ export class InfoPage {
         this.checkGenerationState = checkGenerationState;
         this.authComponent = authComponent;
         this.tempDir = FileSystem.TempDir.create();
-        this.gallery = new Gallery(onTileClickedCallback);
+        this.gallery = new Gallery(onTileClickedCallback, onImportToProjectClickedCallback);
         const widget = new Ui.Widget(parent);
         widget.setContentsMargins(0, 0, 0, 0);
         widget.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
@@ -92,9 +93,16 @@ export class InfoPage {
                     this.checkAnimatorState(item.id, 5000);
                 }
                 if (item.state === "GENERATION_QUEUED" || item.state === "GENERATION_RUNNING") {
+                    newItem.showLoadingOverlay();
                     this.checkGenerationState(item.id, 60000);
                 }
+                if (item.state === "GENERATION_SUCCESS") {
+                    newItem.setTrained();
+                }
                 this.downloadPreview(item.uploadUrl, item.id + "_preview" + ".mp4", (path) => {
+                    if (item.state !== "PREVIEW_QUEUED" && item.state !== "PREVIEW_RUNNING") {
+                        newItem.hideLoading();
+                    }
                     newItem.setPreview(path);
                 });
             });
@@ -102,6 +110,10 @@ export class InfoPage {
     }
     checkAnimatorState(id, intervalVal) {
         const checkState = (id) => {
+            if (this.removedItems[id]) {
+                clearInterval(interval);
+                return;
+            }
             getAnimatorById(id, (response) => {
                 if (response.statusCode !== 200) {
                     return;
@@ -133,6 +145,7 @@ export class InfoPage {
         });
     }
     removeById(id) {
+        this.removedItems[id] = true;
         deleteAnimatorById(id);
         this.gallery.removeById(id);
     }

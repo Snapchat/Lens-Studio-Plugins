@@ -1,7 +1,5 @@
 // @ts-nocheck
 import * as Ui from "LensStudio:Ui";
-import * as MultimediaWidgets from 'LensStudio:MultimediaWidgets';
-import {MediaState} from 'LensStudio:MultimediaWidgets';
 import {deleteAnimatorById} from "./api";
 
 export class GalleryItem {
@@ -9,17 +7,22 @@ export class GalleryItem {
     private frame: Ui.ImageView;
     private frame1: Ui.ImageView;
     private border: Ui.ImageView;
+    private importButton: Ui.PushButton;
+    private loadingOverlay: Ui.ImageView;
     private tileWidth: number = 122;
     private tileHeight: number = 122;
-    private videoWidget: MultimediaWidgets.VideoWidget;
-    private mediaPlayer: MultimediaWidgets.MediaPlayer;
+    private videoView: Ui.VideoView;
+    private movieView: Ui.MovieView;
     private previewPath: Editor.Path | null = null
+    private loading = Ui.ProgressIndicator;
     private connections: Array<any> = [];
     private onClickCallback: Function = () => {};
+    private onImportClickCallback: Function = () => {};
     private onRemoveCallback: Function =  () => {};
     private itemData: any = {};
     private isFailed: boolean = false;
     private isRemoved: boolean = false;
+    private isTrained: boolean = false
 
     constructor(parent: Ui.Widget) {
         this.frame = new Ui.ImageView(parent);
@@ -27,7 +30,41 @@ export class GalleryItem {
         this.frame.setFixedHeight(this.tileHeight);
         this.frame.scaledContents = true;
         this.frame.responseHover = true;
-        this.frame.pixmap = new Ui.Pixmap(import.meta.resolve('./Resources/black_tile.svg'));
+        this.frame.pixmap = new Ui.Pixmap(import.meta.resolve('./Resources/default_tile.svg'));
+
+        const videoView = new Ui.VideoView(this.frame);
+        videoView.setFixedWidth(this.tileWidth);
+        videoView.setFixedHeight(this.tileHeight);
+        videoView.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
+        videoView.radius = 6;
+        videoView.muted = true;
+        videoView.loopCount = -1;
+        videoView.visible = false;
+
+        this.videoView = videoView;
+
+        this.loadingOverlay = new Ui.ImageView(this.frame);
+        this.loadingOverlay.setFixedWidth(this.tileWidth);
+        this.loadingOverlay.setFixedHeight(this.tileHeight);
+        this.loadingOverlay.scaledContents = true;
+        this.loadingOverlay.pixmap = new Ui.Pixmap(import.meta.resolve('./Resources/grey_rectangle.svg'));
+
+        const spinner = new Ui.ProgressIndicator(this.loadingOverlay);
+        spinner.setFixedWidth(32);
+        spinner.setFixedHeight(32);
+        spinner.start();
+        spinner.visible = true;
+        spinner.move(47, 47);
+
+        this.movieView = spinner;
+
+        const trainingLabel = new Ui.Label(this.loadingOverlay);
+        trainingLabel.text = '<center>' + 'Training<br>in progress' + '</center>';
+        trainingLabel.foregroundRole = Ui.ColorRole.BrightText;
+        trainingLabel.setFixedWidth(100);
+        trainingLabel.move(11, 81);
+
+        this.loadingOverlay.visible = false;
 
         this.border = new Ui.ImageView(this.frame);
         this.border.scaledContents = true;
@@ -38,47 +75,66 @@ export class GalleryItem {
         this.border.pixmap = new Ui.Pixmap(import.meta.resolve('./Resources/full_frame_hover.svg'));
         this.border.visible = false;
 
-        this.videoWidget = new MultimediaWidgets.VideoWidget(this.frame);
-        this.videoWidget.setFixedWidth(116);
-        this.videoWidget.setFixedHeight(116);
-        this.videoWidget.move(3, 3);
-        this.videoWidget.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
-        this.videoWidget.visible = true;
-
-        this.mediaPlayer = new MultimediaWidgets.MediaPlayer();
+        this.loading = new Ui.ProgressIndicator(this.frame);
+        this.loading.start();
+        this.loading.visible = true;
+        this.loading.move(6, 100);
 
         this.connections.push(this.frame.onHover.connect((hovered) => {
-            if (!this.isFailed) {
-                return;
+            this.border.visible = hovered;
+            if (hovered) {
+                videoView.play();
+            }
+            else {
+                videoView.pause();
             }
 
-            this.border.visible = hovered;
+            if (this.isTrained) {
+                if (hovered) {
+                    this.importButton.text = 'Import';
+                    this.importButton.setFixedWidth(72);
+                } else {
+                    this.importButton.text = '';
+                    this.importButton.setFixedWidth(32);
+                }
+            }
         }));
 
-        this.connections.push(this.mediaPlayer.onStateChanged.connect((newState: any) => {
-            if (newState === MediaState.PlayingState) {
-                const timeout = setTimeout(() => {
-                    this.mediaPlayer.pause();
-                }, 200);
+        const items = [this.frame, this.videoView, this.border];
 
-                this.connections.push(timeout);
-            }
-        }))
+        items.forEach((item) => {
+            this.connections.push(item.onClick.connect(() => {
+                if (this.isFailed) {
+                    return;
+                }
+                if (this.itemData.previewPath) {
+                    this.onClickCallback(this.itemData);
+                }
+            }))
+        })
 
-        this.connections.push(this.frame.onClick.connect(() => {
-            if (this.isFailed) {
-                return;
-            }
-            if (this.itemData.previewPath) {
-                this.onClickCallback(this.itemData);
-            }
-        }))
+        this.importButton = new Ui.PushButton(this.frame);
+        this.importButton.setIconWithMode(Editor.Icon.fromFile(import.meta.resolve('./Resources/import.svg')), Ui.IconMode.MonoChrome);
+        this.importButton.primary = true;
+        this.importButton.visible = false;
+        this.importButton.move(6, 96);
+
+        this.connections.push(this.importButton.onClick.connect(() => {
+            this.onImportClickCallback(this.itemData);
+        }));
     }
 
     setPreview(path: string) {
-        this.mediaPlayer.setMedia(path);
-        this.mediaPlayer.setVideoOutput(this.videoWidget);
-        this.mediaPlayer.play();
+        this.videoView.stop();
+        this.videoView.visible = true;
+        this.videoView.setSource(path);
+        this.videoView.play();
+
+        const timeout = setTimeout(() => {
+            this.videoView.pause();
+        }, 300);
+
+        this.connections.push(timeout);
 
         this.previewPath = path;
         this.itemData.previewPath = path;
@@ -86,8 +142,9 @@ export class GalleryItem {
 
     setFailed() {
         this.isFailed = true;
+        this.loading.visible = false;
         this.frame.pixmap = new Ui.Pixmap(import.meta.resolve('./Resources/default_tile.svg'));
-        this.videoWidget.visible = false;
+        this.videoView.visible = false;
 
         this.border.pixmap = new Ui.Pixmap(import.meta.resolve('./Resources/failed_frame_hover.svg'));
 
@@ -111,11 +168,13 @@ export class GalleryItem {
         trashCanImageView.pixmap = new Ui.Pixmap(import.meta.resolve('./Resources/trashCan.svg'));
         trashCanImageView.setFixedHeight(16);
         trashCanImageView.setFixedWidth(16);
+        trashCanImageView.scaledContents = true;
         layout.addWidgetWithStretch(trashCanImageView, 0, Ui.Alignment.AlignCenter);
 
         const errorImage = new Ui.ImageView(this.frame);
         errorImage.setFixedWidth(16);
         errorImage.setFixedHeight(16);
+        errorImage.scaledContents = true;
         errorImage.pixmap = new Ui.Pixmap(import.meta.resolve('./Resources/error.svg'));
 
         errorImage.move(8, 98);
@@ -130,8 +189,17 @@ export class GalleryItem {
         })
     }
 
+    showLoadingOverlay() {
+        this.loadingOverlay.visible = true;
+        this.loading.visible = false;
+    }
+
     setOnClickCallback(callback: Function) {
         this.onClickCallback = callback;
+    }
+
+    setOnImportClickCallback(callback: Function) {
+        this.onImportClickCallback = callback;
     }
 
     setOnRemoveCallback(callback: Function) {
@@ -147,6 +215,16 @@ export class GalleryItem {
 
     getId(): string {
         return this.itemData.id;
+    }
+
+    setTrained() {
+        this.isTrained = true;
+        this.importButton.visible = true;
+        this.loading.visible = false;
+    }
+
+    hideLoading() {
+        this.loading.visible = false;
     }
 
     get removed() {

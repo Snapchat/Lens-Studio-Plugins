@@ -113,7 +113,7 @@ export class OrganizeFolderStructureService extends CoreService {
             case "ShaderGraphPass":
                 return "Materials";
             case "VFXAsset":
-                return "VFX 2.0";
+                return "VFX";
             case "FileMesh":
                 return "Meshes";
             case "Font":

@@ -4,7 +4,7 @@ import { ColorRole } from "LensStudio:Ui";
 import { UploadVideoPage } from "./UploadVideoPage.js";
 import { InfoPage } from "./InfoPage.js";
 export class GeneratePage {
-    constructor(onTileClickedCallback, onItemDataChangedCallback, checkGenerationState) {
+    constructor(onTileClickedCallback, onItemDataChangedCallback, checkGenerationState, onImportToProjectClickedCallback) {
         this.onNewAnimatorCreated = (animatorData) => {
             if (this.infoPage) {
                 this.infoPage.onNewAnimatorCreated(animatorData);
@@ -13,6 +13,7 @@ export class GeneratePage {
         this.onTileClickedCallback = onTileClickedCallback;
         this.onItemDataChangedCallback = onItemDataChangedCallback;
         this.checkGenerationState = checkGenerationState;
+        this.onImportToProjectClickedCallback = onImportToProjectClickedCallback;
     }
     create(parent, authComponent) {
         const widget = new Ui.Widget(parent);
@@ -27,7 +28,9 @@ export class GeneratePage {
         layout.setContentsMargins(0, 0, 0, 0);
         layout.spacing = 0;
         this.uploadVideoPage = new UploadVideoPage(widget, this.onNewAnimatorCreated.bind(this));
-        this.infoPage = new InfoPage(widget, this.onTileClickedCallback, this.onItemDataChangedCallback, this.checkGenerationState, authComponent);
+        this.uploadVideoPage.setVideoProcessingStartListener(this.onVideoProcessingStart.bind(this));
+        this.uploadVideoPage.setVideoProcessingEndListener(this.onVideoProcessingEnd.bind(this));
+        this.infoPage = new InfoPage(widget, this.onTileClickedCallback, this.onItemDataChangedCallback, this.checkGenerationState, this.onImportToProjectClickedCallback, authComponent);
         const separator = new Ui.Separator(Ui.Orientation.Vertical, Ui.Shadow.Plain, widget);
         separator.setFixedWidth(Ui.Sizes.SeparatorLineWidth);
         layout.addWidgetWithStretch(this.uploadVideoPage.widget, 0, Ui.Alignment.AlignLeft);
@@ -46,5 +49,17 @@ export class GeneratePage {
     }
     updateGrid() {
         this.infoPage.updateGrid();
+    }
+    onVideoProcessingStart() {
+        this.onVideoProcessingStartCallback();
+    }
+    onVideoProcessingEnd() {
+        this.onVideoProcessingEndCallback();
+    }
+    setVideoProcessingStartListener(callback) {
+        this.onVideoProcessingStartCallback = callback;
+    }
+    setVideoProcessingEndListener(callback) {
+        this.onVideoProcessingEndCallback = callback;
     }
 }

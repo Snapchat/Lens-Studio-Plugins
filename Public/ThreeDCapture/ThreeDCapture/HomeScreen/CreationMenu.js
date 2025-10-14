@@ -154,7 +154,7 @@ export class CreationMenu {
     }
 
     checkInputs() {
-        this.generateButton.enabled = (this.controls["promptPicker"].value.length > 0 && this.controls["imageReferencePicker"].value.length > 0) && !this.stopped;
+        this.generateButton.enabled = (this.controls["promptPicker"].value.length > 3 && this.controls["imageReferencePicker"].value.length > 0) && !this.stopped;
     }
 
     createMenu(parent) {

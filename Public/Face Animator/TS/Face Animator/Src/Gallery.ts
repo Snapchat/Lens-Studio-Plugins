@@ -11,11 +11,13 @@ export class Gallery {
     private spacer: Ui.Widget | undefined;
     private tilesPerRow = 3;
     private onTileClickCallback: Function;
+    private onImportToProjectClickedCallback: Function;
     private removedItems: any = {}
     private itemsMap: any = {};
 
-    constructor(onTileClickCallback: Function) {
+    constructor(onTileClickCallback: Function, onImportToProjectClickedCallback: Function) {
         this.onTileClickCallback = onTileClickCallback;
+        this.onImportToProjectClickedCallback = onImportToProjectClickedCallback;
     }
 
     create(parent: Ui.Widget): Ui.Widget {
@@ -66,6 +68,10 @@ export class Gallery {
             this.onTileClickCallback(itemData);
         })
 
+        item.setOnImportClickCallback((itemData: any) => {
+            this.onImportToProjectClickedCallback(itemData);
+        })
+
         item.setOnRemoveCallback(this.onItemRemove.bind(this));
 
         return item;
@@ -84,6 +90,10 @@ export class Gallery {
             this.onTileClickCallback(itemData);
         })
 
+        item.setOnImportClickCallback((itemData: any) => {
+            this.onImportToProjectClickedCallback(itemData);
+        })
+
         item.setOnRemoveCallback(this.onItemRemove.bind(this));
 
         return item;
@@ -94,6 +104,13 @@ export class Gallery {
         if (animatorData.state == "PREVIEW_FAILED") {
             this.itemsMap[animatorData.id].setFailed();
         }
+        else if (animatorData.state === "GENERATION_QUEUED" || animatorData.state === "GENERATION_RUNNING") {
+            this.itemsMap[animatorData.id].showLoadingOverlay();
+        }
+
+        if (animatorData.state !== "PREVIEW_QUEUED" && animatorData.state !== "PREVIEW_RUNNING") {
+            this.itemsMap[animatorData.id].hideLoading();
+        }
     }
 
     private onItemRemove() {
@@ -101,6 +118,9 @@ export class Gallery {
         this.allItems.forEach((item) => {
             if (!item.removed && !this.removedItems[item.getId()]) {
                 this.visibleItems.push(item);
+            }
+            else {
+                item.widget.visible = false;
             }
         })
 

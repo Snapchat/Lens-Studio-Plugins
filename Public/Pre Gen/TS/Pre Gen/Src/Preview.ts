@@ -64,12 +64,14 @@ export class Preview {
         this.imageView.layout = imageViewLayout;
 
         this.spinner = new Ui.ProgressIndicator(this.imageView);
+        this.spinner.setFixedHeight(32);
+        this.spinner.setFixedWidth(32);
         this.spinner.start();
 
         imageViewLayout.addWidgetWithStretch(this.spinner, 0, Ui.Alignment.AlignCenter);
 
         this.generatingPreviewLabel = new Ui.Label(widget);
-        this.generatingPreviewLabel.text = '<center>' + 'Generating previews...<br>At this time, generations can take an hour or two<br>due to the technical limitations and high<br>demand. We are working to improve this time.' + '</center>';
+        this.generatingPreviewLabel.text = '<center>' + 'Generating previews...<br>At this time, generations can take an hour or two due to<br>the technical limitations and high demand.<br>We are working to improve this time.<br><br>You can close this window and return later' + '</center>';
         this.generatingPreviewLabel.setFixedWidth(350);
         this.generatingPreviewLabel.setFixedHeight(90);
         this.generatingPreviewLabel.move(35, 298);
@@ -81,6 +83,7 @@ export class Preview {
         this.ctaButton = new Ui.ImageView(this.imageView);
         this.ctaButton.setFixedWidth(36);
         this.ctaButton.setFixedHeight(28);
+        this.ctaButton.scaledContents = true;
         this.ctaButton.pixmap = new Ui.Pixmap(import.meta.resolve('./Resources/cta_button.svg'));
         this.ctaButton.move(264, 504);
         this.ctaButton.visible = false;

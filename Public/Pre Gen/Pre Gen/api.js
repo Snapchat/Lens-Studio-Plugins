@@ -10,6 +10,7 @@ export function getMyDreams(callback, pageToken = null) {
     }
     Network.performAuthorizedHttpRequest(request, (response) => {
         callback(response);
+        // console.log(response.body);
         //@ts-ignore
         if (JSON.parse(response.body).nextPageToken) {
             //@ts-ignore

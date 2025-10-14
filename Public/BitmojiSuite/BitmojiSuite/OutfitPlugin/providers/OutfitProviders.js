@@ -2,7 +2,7 @@ import { ContentProvider } from "./ContentProvider.js";
 import { BM_BUILDER_BASE_URL } from "./constants.js";
 
 const transformOptions = (optionId, type, tones) => {
-    if (tones.length === 0) {
+    if (tones == null ||tones.length === 0) {
         return {
             optionId,
             colors: null,
@@ -40,6 +40,8 @@ function parseOptions(options, globalType) {
                 metaResult.push(optionTop);
                 const optionBottom = transformOptions(optionId, "bottom", tones);
                 metaResult.push(optionBottom);
+            } else if (type == "hat") {
+                return;
             } else if (type == "sock") {
                 return;
             } else {
@@ -84,7 +86,6 @@ class OutfitProvider {
 
             const response = await ContentProvider.fetch(BM_BUILDER_BASE_URL + "/sections/" + this.id + "/options", { type: "string", authorized: true });
             const options = JSON.parse(response).options;
-
             const parsedOptions = parseOptions(options, this.type);
 
             if (this.emptyOption) {

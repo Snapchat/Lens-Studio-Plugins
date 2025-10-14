@@ -3,8 +3,6 @@ import * as Ui from "LensStudio:Ui";
 import {Pixmap} from "LensStudio:Ui";
 import {downloadFile} from "./api.js";
 import * as FileSystem from "LensStudio:FileSystem";
-import * as MultimediaWidgets from 'LensStudio:MultimediaWidgets';
-import {MediaState} from 'LensStudio:MultimediaWidgets';
 import {Importer} from "./Importer.js";
 import app from "./app";
 import {logEventImport} from "./analytics";
@@ -22,8 +20,7 @@ export class Preview {
     private tempDir: FileSystem.TempDir;
     private connections: Array<any> = [];
     private imageView: Ui.ImageView | undefined;
-    private videoWidget: MultimediaWidgets.VideoWidget | undefined;
-    private mediaPlayer: MultimediaWidgets.MediaPlayer;
+    private videoView: Ui.VideoView | undefined;
     private leftArrow: Ui.ImageView | undefined;
     private rightArrow: Ui.ImageView | undefined;
     private spinner: Ui.ProgressIndicator | undefined;
@@ -31,6 +28,8 @@ export class Preview {
     private ctaButton: Ui.ImageView | undefined;
     private generatingPreviewLabel: Ui.Label | undefined;
     private defaultImage: Pixmap;
+    private mutedImage: Pixmap;
+    private unmutedImage: Pixmap;
     private trainModelButton: Ui.PushButton | undefined;
     private importButton: Ui.PushButton | undefined;
     private previews: Record<string, Record<number, any>> = {};
@@ -39,12 +38,16 @@ export class Preview {
     private previewUrls: any;
     private id: string = "";
     private previewId: number = 0;
+    private isMuted: boolean = false;
     private mode: PreviewMode = PreviewMode.target;
     private outputModelUrl: string = "";
     private mp3Url: any = "";
     private timeout: any;
+    private importToProject: Function = () => {};
     private onItemRemovedCallback: Function = () => {};
     private onTrainingStartedCallback: Function = () => {};
+    private onVideoPlayStartCallback: Function = () => {};
+    private onVideoPlayStopCallback: Function = () => {};
 
     constructor(parent: Ui.Widget, onItemRemovedCallback: Function, onTrainingStartedCallback: Function) {
         this.tempDir = FileSystem.TempDir.create();
@@ -52,6 +55,8 @@ export class Preview {
         this.onTrainingStartedCallback = onTrainingStartedCallback;
         this.importer = new Importer();
         this.defaultImage = new Ui.Pixmap(import.meta.resolve('./Resources/no_preview.svg'));
+        this.mutedImage = new Ui.Pixmap(import.meta.resolve('./Resources/muted.svg'));
+        this.unmutedImage = new Ui.Pixmap(import.meta.resolve('./Resources/unmuted.svg'));
 
         const widget = new Ui.Widget(parent);
 
@@ -166,6 +171,8 @@ export class Preview {
             }
         }
 
+        this.importToProject = importToProject;
+
         this.createWarningDialog(() => {
             if (this.importButton) {
                 this.importButton.enabled = false;
@@ -180,15 +187,7 @@ export class Preview {
         });
 
         importButton.onClick.connect(() => {
-            if (this.mp3Url) {
-                this.warningDialog?.show();
-            }
-            else {
-                if (this.importButton) {
-                    this.importButton.enabled = false;
-                }
-                importToProject(null, "failed");
-            }
+            this.onImportButtonClicked();
         })
 
         return widget;
@@ -232,6 +231,7 @@ export class Preview {
         this.imageView.setFixedHeight(534);
         this.imageView.setFixedWidth(300);
         this.imageView.scaledContents = true;
+        this.imageView.radius = 4;
         this.imageView.pixmap = this.defaultImage;
         this.imageView.visible = false;
 
@@ -259,23 +259,45 @@ export class Preview {
 
         // Video Preview
 
-        const videoWidget = new MultimediaWidgets.VideoWidget(widget);
-        videoWidget.setFixedWidth(300);
-        videoWidget.setFixedHeight(534);
-        videoWidget.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
-        videoWidget.visible = true;
-        this.videoWidget = videoWidget;
+        const videoView = new Ui.VideoView(widget);
+        videoView.setFixedWidth(300);
+        videoView.setFixedHeight(534);
+        videoView.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
+        videoView.radius = 8;
+        videoView.loopCount = -1;
+        // videoView.volume = 1;
+        videoView.visible = true;
 
-        this.mediaPlayer = new MultimediaWidgets.MediaPlayer();
+        this.videoView = videoView;
 
-        this.connections.push(this.mediaPlayer.onStateChanged.connect((newState: any) => {
-            //@ts-ignore
-            if (newState === MediaState.StoppedState) {
-                this.mediaPlayer.play();
+        this.videoView.onShow.connect(() => {
+            videoView.play();
+        })
+
+        this.videoView.onHide.connect(() => {
+            videoView.pause();
+        })
+
+        const muteButton = new Ui.ImageView(videoView);
+        muteButton.pixmap = this.unmutedImage;
+        muteButton.setFixedWidth(56);
+        muteButton.setFixedHeight(20);
+        muteButton.scaledContents = true;
+        muteButton.move(8, 506);
+        
+        muteButton.onClick.connect(() => {
+            this.isMuted = !this.isMuted;
+            if (this.isMuted) {
+                muteButton.pixmap = this.mutedImage;
+                videoView.muted = true;
             }
-        }))
+            else {
+                muteButton.pixmap = this.unmutedImage;
+                videoView.muted = false;
+            }
+        })
 
-        layout.addWidgetWithStretch(this.videoWidget, 0, Ui.Alignment.AlignCenter);
+        layout.addWidgetWithStretch(this.videoView, 0, Ui.Alignment.AlignCenter);
 
         const rightArrow = new Ui.ImageView(widget);
         rightArrow.setFixedWidth(36);
@@ -300,27 +322,31 @@ export class Preview {
         }))
 
         this.ctaButton = new Ui.ImageView(widget);
-        this.ctaButton.setFixedWidth(36);
-        this.ctaButton.setFixedHeight(28);
+        this.ctaButton.setFixedWidth(28);
+        this.ctaButton.setFixedHeight(20);
         this.ctaButton.pixmap = new Ui.Pixmap(import.meta.resolve('./Resources/cta_button.svg'));
-        this.ctaButton.responseHover = true;
-        this.ctaButton.move(250, 420);
-        this.ctaButton.visible = false;
+        this.ctaButton.move(326, 520);
+        this.ctaButton.scaledContents = true;
+        this.ctaButton.visible = true;
         this.ctaButton.raise();
 
         this.connections.push(this.ctaButton.onClick.connect(() => {
             if (this.mode === PreviewMode.target) {
                 this.mode = PreviewMode.source;
-                if (this.imageView && this.videoWidget) {
-                    this.videoWidget.visible = false;
+                if (this.imageView && this.videoView) {
+                    this.videoView.stop();
+                    this.videoView.visible = false;
                     this.imageView.visible = true;
                 }
             }
             else {
                 this.mode = PreviewMode.target;
-                if (this.imageView && this.videoWidget) {
+                if (this.imageView && this.videoView) {
+                    this.videoView.stop();
+                    this.videoView.play();
+                    this.onVideoPlayStartCallback();
                     this.imageView.visible = false;
-                    this.videoWidget.visible = true;
+                    this.videoView.visible = true;
                 }
             }
 
@@ -332,6 +358,24 @@ export class Preview {
         widget.layout = layout;
 
         return widget;
+    }
+
+    private onImportButtonClicked() {
+        if (this.mp3Url) {
+            this.warningDialog?.show();
+        }
+        else {
+            if (this.importButton) {
+                this.importButton.enabled = false;
+            }
+            this.importToProject(null, "failed");
+        }
+    }
+
+    import(dnnUrl: string, mp3Url: any) {
+        this.outputModelUrl = dnnUrl;
+        this.mp3Url = mp3Url;
+        this.onImportButtonClicked();
     }
 
     setId(newId: string) {
@@ -377,9 +421,10 @@ export class Preview {
     }
 
     setDefaultPreviewState() {
-        this.videoWidget.visible = false;
+        this.videoView.visible = false;
         this.imageView.pixmap = this.defaultImage;
         this.imageView.visible = true;
+        this.ctaButton.visible = false;
         if (this.leftArrow && this.rightArrow && this.spinner && this.generatingPreviewLabel) {
             this.leftArrow.visible = false;
             this.rightArrow.visible = false;
@@ -392,28 +437,58 @@ export class Preview {
         return this.id;
     }
 
+    setVideoPlayStartListener(callback: Function) {
+        this.onVideoPlayStartCallback = callback;
+    }
+
+    setVideoPlayStopListener(callback: Function) {
+        this.onVideoPlayStopCallback = callback;
+    }
+
+    stopVideo() {
+        this.videoView.stop();
+    }
+
     private onLeftArrowClicked() {
         this.previewId--;
         this.previewId = this.mod(this.previewId, this.previewUrls.length);
+        this.videoView.stop();
+        if (this.mode === PreviewMode.target) {
+            this.onVideoPlayStopCallback();
+        }
         this.previewIdxChanged(this.id, this.previewId);
     }
 
     private onRightArrowClicked() {
         this.previewId++;
         this.previewId = this.mod(this.previewId, this.previewUrls.length);
+        this.videoView.stop();
+        if (this.mode === PreviewMode.target) {
+            this.onVideoPlayStopCallback();
+        }
         this.previewIdxChanged(this.id, this.previewId);
     }
 
     private previewIdxChanged(id: string, previewId: number): void {
-
         if (this.previews[id][previewId]) {
             this.imageView.pixmap = new Ui.Pixmap(this.previews[id][previewId].sourceImagePath);
-            this.mediaPlayer.setMedia(this.previews[id][previewId].outputVideoPath);
-            this.mediaPlayer.setVideoOutput(this.videoWidget);
-            this.mediaPlayer.play();
+            this.videoView.stop();
+            this.videoView.setSource(this.previews[id][previewId].outputVideoPath);
+            this.ctaButton.visible = true;
+            if (this.mode === PreviewMode.source) {
+                this.videoView.visible = false;
+                this.imageView.visible = true;
+            }
+            else if (this.mode === PreviewMode.target) {
+                this.videoView.play();
+                this.onVideoPlayStartCallback();
+                this.imageView.visible = false;
+                this.videoView.visible = true;
+            }
         }
         else {
             this.previews[id][previewId] = {"sourceImagePath" : null, "outputVideoPath" : null};
+            this.ctaButton.visible = false;
             if (this.imageView) {
                 this.imageView.visible = false;
             }
@@ -424,28 +499,31 @@ export class Preview {
                     if (this.imageView) {
                         this.imageView.pixmap = new Ui.Pixmap(path);
                         if (this.mode === PreviewMode.source) {
+                            this.videoView.visible = false;
                             this.imageView.visible = true;
+                            this.ctaButton.visible = true;
                         }
                     }
                 }
 
             })
-            if (this.videoWidget) {
-                this.videoWidget.visible = false;
+            if (this.videoView) {
+                this.videoView.visible = false;
             }
             this.downloadAsset(this.previewUrls[previewId].outputVideoUrl, id + "_" + previewId + "_outputVideo.mp4", (path: string) => {
                 this.previews[id][previewId].outputVideoPath = path;
 
                 if (this.id === id && previewId === this.previewId) {
-                    if (this.videoWidget) {
-                        this.mediaPlayer.setMedia(path);
-                        this.mediaPlayer.setVideoOutput(this.videoWidget);
-                        this.mediaPlayer.play();
+                    if (this.videoView) {
+                        this.videoView.stop();
+                        this.videoView.setSource(path);
 
                         if (this.mode === PreviewMode.target) {
-                            this.timeout = setTimeout(() => {
-                                this.videoWidget.visible = true;
-                            }, 100);
+                            this.videoView.play();
+                            this.onVideoPlayStartCallback();
+                            this.imageView.visible = false;
+                            this.videoView.visible = true;
+                            this.ctaButton.visible = true;
                         }
                     }
                 }

@@ -16,51 +16,36 @@ export class EffectGallery {
     private settings: Record<string, object> = {};
     private authComponent: Editor.IAuthorization | undefined;
 
-    constructor(parent: Ui.Widget, openEffectSettingsPage: Function, checkDreamStateById: Function) {
-        this.gallery = new Gallery(this.onTileClicked.bind(this));
-        this.curWidget = this.create(parent);
+    constructor(parent: Ui.Widget, openEffectSettingsPage: Function, checkDreamStateById: Function, onImportClickCallback: Function, showLoginPageCallback: Function, showPluginPageCallback: Function) {
+        this.gallery = new Gallery(this.onTileClicked.bind(this), onImportClickCallback);
+        this.curWidget = this.create(parent, showLoginPageCallback, showPluginPageCallback);
         this.openEffectSettingsPage = openEffectSettingsPage;
         this.checkDreamStateById = checkDreamStateById;
 
         this.settings['00'] = {"state" : "DEFAULT", "prompt" : ""};
     }
 
-    private create(parent: Ui.Widget): Ui.Widget {
+    private create(parent: Ui.Widget, showLoginPageCallback: Function, showPluginPageCallback: Function): Ui.Widget {
         const widget = new Ui.Widget(parent);
         widget.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Expanding);
         widget.autoFillBackground = true;
         widget.backgroundRole = ColorRole.Base;
+        widget.setFixedHeight(563);
+        widget.setFixedWidth(421);
 
         const layout = new Ui.BoxLayout();
         layout.setDirection(Ui.Direction.TopToBottom);
         layout.spacing = Ui.Sizes.DoublePadding;
-        layout.setContentsMargins(Ui.Sizes.DoublePadding, Ui.Sizes.DoublePadding, Ui.Sizes.DoublePadding, Ui.Sizes.DoublePadding)
-
-        const label = new Ui.Label(widget);
-        label.text = 'Effect gallery';
-        label.fontRole = Ui.FontRole.TitleBold;
-        label.foregroundRole = Ui.ColorRole.BrightText;
-        layout.addWidgetWithStretch(label, 0, Ui.Alignment.AlignTop | Ui.Alignment.AlignCenter)
-
-        const searchLine = new Ui.SearchLineEdit(widget);
-        searchLine.setFixedWidth(384);
-        layout.addWidgetWithStretch(searchLine, 0, Ui.Alignment.AlignTop | Ui.Alignment.AlignCenter)
-        layout.addStretch(0);
+        layout.setContentsMargins(Ui.Sizes.DoublePadding, Ui.Sizes.DoublePadding, 19, 0)
 
         this.stackedWidget = new Ui.StackedWidget(widget);
         this.stackedWidget.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Expanding);
-        this.stackedWidget.setFixedHeight(520);
 
         const initWidget = this.createInitWidget(this.stackedWidget);
         this.stackedWidget.addWidget(initWidget);
 
         const galleryWidget = this.gallery.create(this.stackedWidget);
         this.stackedWidget.addWidget(galleryWidget);
-        this.gallery.addDefaultItem();
-
-        const loginWidget = this.createLoginWidget(this.stackedWidget);
-        this.stackedWidget.addWidget(loginWidget);
-
 
         layout.addWidget(this.stackedWidget);
 
@@ -68,23 +53,17 @@ export class EffectGallery {
 
         this.authComponent = app.pluginSystem?.findInterface(Editor.IAuthorization) as Editor.IAuthorization;
 
-        if (this.authComponent.isAuthorized) {
-            this.stackedWidget.currentIndex = 0;
-        }
-        else {
-            this.stackedWidget.currentIndex = 2;
-        }
-
         this.authComponent.onAuthorizationChange.connect((authStatus) => {
             if (!this.stackedWidget) {
                 return;
             }
             if (authStatus) {
                 this.stackedWidget.currentIndex = 0;
+                showPluginPageCallback();
                 this.updateGallery();
             }
             else {
-                this.stackedWidget.currentIndex = 2;
+                showLoginPageCallback();
             }
         })
 
@@ -101,56 +80,24 @@ export class EffectGallery {
         imageView.setFixedWidth(180);
         imageView.setFixedHeight(180);
         imageView.pixmap = new Ui.Pixmap(import.meta.resolve('./Resources/init.svg'));
-        imageView.move(310, 104);
+        imageView.move(104, 120);
 
         const label = new Ui.Label(widget);
-        label.text = '<center>' + 'You don’t have any generated effects yet. Try creating a new one!' + '</center>';
+        label.text = '<center>' + 'Welcome to<br>' +
+            'Lens Studio Gen AI' + '</center>';
+        label.fontRole = Ui.FontRole.LargeTitle;
+        label.foregroundRole = Ui.ColorRole.BrightText;
+        label.setFixedHeight(100);
         label.setFixedWidth(360);
-        label.move(220, 274);
+        label.move(15, 273);
 
-        const createNewButton = new Ui.PushButton(widget);
-        createNewButton.text = 'Create New';
-        createNewButton.primary = true;
-        createNewButton.setFixedWidth(78);
-        createNewButton.setFixedHeight(24);
-        createNewButton.move(361, 310);
-
-        this.connections.push(createNewButton.onClick.connect(() => {
-            this.openEffectSettingsPage(this.settings["00"]);
-        }));
-
-        widget.layout = layout;
-
-        return widget;
-    }
-
-    private createLoginWidget(parent: Ui.Widget): Ui.Widget {
-        const widget = new Ui.Widget(parent);
-
-        const layout = new Ui.BoxLayout();
-        layout.setDirection(Ui.Direction.TopToBottom);
-
-        const imageView = new Ui.ImageView(widget);
-        imageView.setFixedWidth(180);
-        imageView.setFixedHeight(180);
-        imageView.pixmap = new Ui.Pixmap(import.meta.resolve('./Resources/init.svg'));
-        imageView.move(310, 104);
-
-        const label = new Ui.Label(widget);
-        label.text = '<center>' + 'Log-in to MyLenses account <br>to get access for Gen AI tools' + '</center>';
-        label.setFixedWidth(280);
-        label.move(260, 264);
-
-        const createNewButton = new Ui.PushButton(widget);
-        createNewButton.text = 'Login';
-        createNewButton.primary = true;
-        createNewButton.setFixedWidth(78);
-        createNewButton.setFixedHeight(24);
-        createNewButton.move(361, 310);
-
-        this.connections.push(createNewButton.onClick.connect(() => {
-            this.authComponent?.authorize();
-        }));
+        const label1 = new Ui.Label(widget);
+        label1.text = '<center>' + 'You don\'t have any generated effects yet. <br>' +
+            'Try creating a new one!' + '</center>';
+        label1.fontRole = Ui.FontRole.Default;
+        label1.foregroundRole = Ui.ColorRole.Text;
+        label1.setFixedWidth(360);
+        label1.move(15, 359);
 
         widget.layout = layout;
 
@@ -171,6 +118,9 @@ export class EffectGallery {
                 JSON.parse(response.body).items.forEach((item: any) => {
                     if (item.state.startsWith("PACK") && item.state !== "PACK_FAILED" && item.state !== "PACK_SUCCESS") {
                         this.gallery.addItem(item.id, item.previewUrl, false, false, true);
+                    }
+                    else if (item.state === "PACK_SUCCESS") {
+                        this.gallery.addItem(item.id, item.previewUrl, false, false, false, true);
                     }
                     else if (item.state === "SUCCESS" || item.state === "PACK_SUCCESS") {
                         this.gallery.addItem(item.id, item.previewUrl);

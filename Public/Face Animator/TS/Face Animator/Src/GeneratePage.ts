@@ -11,11 +11,15 @@ export class GeneratePage {
     private onTileClickedCallback: Function;
     private onItemDataChangedCallback: Function;
     private checkGenerationState: Function;
+    private onVideoProcessingStartCallback: Function;
+    private onVideoProcessingEndCallback: Function;
+    private onImportToProjectClickedCallback: Function;
 
-    constructor(onTileClickedCallback: Function, onItemDataChangedCallback: Function, checkGenerationState) {
+    constructor(onTileClickedCallback: Function, onItemDataChangedCallback: Function, checkGenerationState: Function, onImportToProjectClickedCallback: Function) {
         this.onTileClickedCallback = onTileClickedCallback;
         this.onItemDataChangedCallback = onItemDataChangedCallback;
         this.checkGenerationState = checkGenerationState;
+        this.onImportToProjectClickedCallback = onImportToProjectClickedCallback;
     }
 
     create(parent: Ui.Widget, authComponent: Editor.IAuthorization): Ui.Widget {
@@ -33,7 +37,9 @@ export class GeneratePage {
         layout.spacing = 0;
 
         this.uploadVideoPage = new UploadVideoPage(widget, this.onNewAnimatorCreated.bind(this));
-        this.infoPage = new InfoPage(widget, this.onTileClickedCallback, this.onItemDataChangedCallback, this.checkGenerationState, authComponent);
+        this.uploadVideoPage.setVideoProcessingStartListener(this.onVideoProcessingStart.bind(this));
+        this.uploadVideoPage.setVideoProcessingEndListener(this.onVideoProcessingEnd.bind(this));
+        this.infoPage = new InfoPage(widget, this.onTileClickedCallback, this.onItemDataChangedCallback, this.checkGenerationState, this.onImportToProjectClickedCallback, authComponent);
         const separator = new Ui.Separator(Ui.Orientation.Vertical, Ui.Shadow.Plain, widget);
         separator.setFixedWidth(Ui.Sizes.SeparatorLineWidth);
 
@@ -64,5 +70,21 @@ export class GeneratePage {
 
     updateGrid() {
         this.infoPage.updateGrid();
+    }
+
+    onVideoProcessingStart() {
+        this.onVideoProcessingStartCallback();
+    }
+
+    onVideoProcessingEnd() {
+        this.onVideoProcessingEndCallback();
+    }
+
+    setVideoProcessingStartListener(callback: Function) {
+        this.onVideoProcessingStartCallback = callback;
+    }
+
+    setVideoProcessingEndListener(callback: Function) {
+        this.onVideoProcessingEndCallback = callback;
     }
 }

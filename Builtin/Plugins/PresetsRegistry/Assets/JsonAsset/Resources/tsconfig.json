@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "target": "es2019",
+    "target": "es2021",
     "isolatedModules": true,
     "noEmit": true,
     "skipDefaultLibCheck": true,
     "allowJs": true,
-    "lib": ["es2019"],
+    "lib": ["es2021"],
     "types": [],
     "paths": {
       "*" : ["./*", "../Packages/*", "../Cache/TypeScript/Src/Packages/*"]

@@ -1,6 +1,6 @@
 // @ts-nocheck
 import * as Ui from "LensStudio:Ui";
-import {Direction} from "LensStudio:Ui";
+import {ColorRole, Direction} from "LensStudio:Ui";
 import {Preview} from "./Preview.js";
 import {EffectSettingsPage} from "./EffectSettingsPage.js";
 import {createDream, createPack, downloadFile, getDreamByID} from "./api.js";
@@ -19,11 +19,13 @@ export class EffectSettings {
     private importButton: Ui.PushButton | undefined;
     private reusePromptButton: Ui.PushButton | undefined;
     private statusWidget: Ui.Widget | undefined;
+    private stackedWidget: Ui.StackedWidget | undefined;
     private settings: Record<string, any> = {};
     private previews: Record<string, Record<number, any>> = {};
     private tempDir: FileSystem.TempDir;
     private curId: string = "";
     private connections: Array<any> = [];
+    private removedItems: any = {}
     private dreamId = 0;
     private popup: Ui.CalloutFrame | undefined;
     private popupLabel: Ui.Label | undefined;
@@ -40,10 +42,13 @@ export class EffectSettings {
         this.importer = new Importer();
         this.tempDir = FileSystem.TempDir.create();
         this.preview = new Preview(this.previewIdxChanged.bind(this));
-        this.effectSettingsPage = new EffectSettingsPage(onReturnCallback, this.onPromptChanged.bind(this), onNewDreamCreatedCallback, resetGallery);
+        this.effectSettingsPage = new EffectSettingsPage(onReturnCallback, this.onPromptChanged.bind(this), onNewDreamCreatedCallback, (removedId) => {
+            this.removedItems[removedId] = true;
+            resetGallery();
+        });
     }
 
-    create(parent: Ui.Widget): Ui.Widget {
+    create(parent: Ui.Widget, effectGalleryWidget: Ui.Widget): Ui.Widget {
         const widget = new Ui.Widget(parent);
         widget.setContentsMargins(0, 0, 0, 0);
 
@@ -68,8 +73,22 @@ export class EffectSettings {
         separator.setFixedHeight(563);
         contentLayout.addWidgetWithStretch(separator, 0, Ui.Alignment.AlignLeft | Ui.Alignment.AlignTop);
 
+        this.stackedWidget = new Ui.StackedWidget(parent);
+        this.stackedWidget.setContentsMargins(0, 0, 0, 0);
+        this.stackedWidget.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Expanding);
+        this.stackedWidget.autoFillBackground = true;
+        this.stackedWidget.backgroundRole = ColorRole.Base;
+        this.stackedWidget.setFixedHeight(563);
+        this.stackedWidget.setFixedWidth(421);
+
         const previewWidget = this.preview.create(widget);
-        contentLayout.addWidget(previewWidget);
+        this.stackedWidget.addWidget(previewWidget);
+
+        this.stackedWidget.addWidget(effectGalleryWidget);
+
+        this.stackedWidget.currentIndex = 1;
+
+        contentLayout.addWidget(this.stackedWidget);
 
         contentWidget.layout = contentLayout;
         layout.addWidget(contentWidget);
@@ -90,6 +109,7 @@ export class EffectSettings {
         popupLayout.setContentsMargins(8, 0, 8, 0);
 
         const infoImage = new Ui.ImageView(this.popup);
+        infoImage.scaledContents = true;
         infoImage.pixmap = new Ui.Pixmap(import.meta.resolve('./Resources/warning.svg'));
         infoImage.setFixedWidth(16);
         infoImage.setFixedHeight(16);
@@ -120,7 +140,7 @@ export class EffectSettings {
         layout.setContentsMargins(Ui.Sizes.DoublePadding, Ui.Sizes.DoublePadding, Ui.Sizes.DoublePadding, Ui.Sizes.DoublePadding);
 
         this.reusePromptButton = new Ui.PushButton(widget);
-        this.reusePromptButton.text = 'Reuse Prompt';
+        this.reusePromptButton.text = 'Copy Settings';
         this.reusePromptButton.visible = false;
 
         this.connections.push(this.reusePromptButton.onClick.connect(() => {
@@ -130,15 +150,16 @@ export class EffectSettings {
         layout.addWidgetWithStretch(this.reusePromptButton, 0, Ui.Alignment.AlignLeft | Ui.Alignment.AlignCenter);
 
         this.trainLabel = new Ui.Label(widget);
-        this.trainLabel.text = '<center>' + 'At this time, generations can take a day or two due to the technical limitations and high<br>demand. We are working to improve this time.' + '</center>';
+        // this.trainLabel.text = '<center>' + 'At this time, generations can take a day or two due to the technical limitations and high<br>demand. We are working to improve this time.' + '</center>';
+        this.trainLabel.text = "";
         this.trainLabel.visible = false;
 
         layout.addWidgetWithStretch(this.trainLabel, 0, Ui.Alignment.AlignCenter);
 
         const previewEffectButton = new Ui.PushButton(widget);
 
-        previewEffectButton.text = 'Preview Effect';
-        previewEffectButton.primary = true;
+        previewEffectButton.text = 'Generate previews';
+        previewEffectButton.primary = false;
         previewEffectButton.enabled = false;
 
         this.connections.push(previewEffectButton.onClick.connect(() => {
@@ -157,9 +178,6 @@ export class EffectSettings {
             trainModelButton.visible = false;
             if (this.trainLabel) {
                 this.trainLabel.visible = false;
-            }
-            if (this.statusWidget) {
-                this.statusWidget.visible = true;
             }
             this.createDreamPack();
         }))
@@ -182,32 +200,34 @@ export class EffectSettings {
             logEventImport("SUCCESS");
         }))
 
-        layout.addWidgetWithStretch(importButton, 0, Ui.Alignment.AlignRight | Ui.Alignment.AlignCenter);
-
         const statusWidget = new Ui.Widget(widget);
-        statusWidget.setFixedWidth(704);
+        statusWidget.setFixedWidth(564);
         statusWidget.setFixedHeight(24);
         const statusLayout = new Ui.BoxLayout();
         statusLayout.setDirection(Ui.Direction.LeftToRight);
         statusLayout.setContentsMargins(0, 0, 0, 0);
+        statusLayout.spacing = 12;
         statusWidget.layout = statusLayout;
         statusLayout.addStretch(0);
 
         const statusLabel = new Ui.Label(statusWidget);
-        statusLabel.text = '<center>' + 'Model training in progress. At this time, generations can take a day or two due to the technical limitations and high<br>demand. We are working to improve this time.' + '</center>';
+        statusLabel.foregroundRole = Ui.ColorRole.PlaceholderText;
+        statusLabel.text = '<div style="text-align: right;">' + 'Model training in progress. At this time, generations can take a day or two due to the<br>technical limitations and high demand. We are working to improve this time.' + '</div>';
         statusLabel.setFixedHeight(24);
 
         const loading = new Ui.ProgressIndicator(statusWidget);
         loading.start();
         loading.visible = true;
 
-        statusLayout.addWidgetWithStretch(statusLabel, 0, Ui.Alignment.AlignCenter);
-        statusLayout.addWidgetWithStretch(loading, 0, Ui.Alignment.AlignCenter);
+        statusLayout.addStretch(0);
+        statusLayout.addWidgetWithStretch(statusLabel, 0, Ui.Alignment.AlignRight | Ui.Alignment.AlignCenter);
+        statusLayout.addWidgetWithStretch(loading, 0, Ui.Alignment.AlignRight | Ui.Alignment.AlignCenter);
         statusLayout.addStretch(0);
 
         statusWidget.visible = false;
 
         layout.addWidgetWithStretch(statusWidget, 0, Ui.Alignment.AlignRight | Ui.Alignment.AlignCenter);
+        layout.addWidgetWithStretch(importButton, 0, Ui.Alignment.AlignRight | Ui.Alignment.AlignCenter);
 
         this.statusWidget = statusWidget;
         this.previewEffectButton = previewEffectButton;
@@ -256,6 +276,8 @@ export class EffectSettings {
                 this.preview.setPreviewState(settings.id);
                 this.effectSettingsPage.setId(settings.id);
                 this.statusWidget.visible = true;
+                this.importButton.visible = true;
+                this.importButton.enabled = false;
             }
             else {
                 this.preview.setWaitingState(settings.id);
@@ -320,12 +342,29 @@ export class EffectSettings {
         }
     }
 
+    openGallery(): void {
+        if (!this.stackedWidget) {
+            return;
+        }
+        this.effectSettingsPage.showGalleryHeader();
+        this.stackedWidget.currentIndex = 1;
+    }
+
+    openSettingsPage(): void {
+        if (!this.stackedWidget) {
+            return;
+        }
+
+        this.effectSettingsPage.showEffectHeader();
+        this.stackedWidget.currentIndex = 0;
+    }
+
     private previewEffect(): void {
         if (this.previewEffectButton) {
             this.previewEffectButton.enabled = false;
         }
 
-        const prompt = this.effectSettingsPage.prompt;
+        let prompt = this.effectSettingsPage.prompt;
         const seed = this.effectSettingsPage.seed + "";
 
         this.effectSettingsPage.lock();
@@ -339,12 +378,14 @@ export class EffectSettings {
         this.preview.setWaitingState(this.curId);
         this.effectSettingsPage.setId(this.curId);
 
+        this.openSettingsPage();
+
         createDream(prompt, seed, (response: any) => {
             if (response.statusCode == 200) {
                 this.onNewDreamCreatedCallback();
             }
             else {
-                if (this.curId === this.preview.getId()) {
+                if (this.curId !== undefined && this.curId !== null && this.curId === this.preview.getId()) {
                     this.preview.setDefaultState();
                     this.showPromptPopup();
                 }
@@ -353,7 +394,7 @@ export class EffectSettings {
                     logEventCreate("GUIDELINES_VIOLATION", "NEW", "PROMPT_TEXT");
                 }
                 else if (response.statusCode == 429) {
-                    if (this.curId === this.preview.getId()) {
+                    if (this.curId !== undefined && this.curId !== null && this.curId === this.preview.getId()) {
                         this.preview.setDefaultState();
                         this.showPreviewLimitReachedPopup();
                     }
@@ -364,13 +405,17 @@ export class EffectSettings {
 
     private checkDreamState(id: string, intervalVal: number): void {
         const checkState = (id: string) => {
+            if (this.removedItems[id]) {
+                clearInterval(interval);
+                return;
+            }
             getDreamByID(id, (response: any) => {
                 const curSettings = JSON.parse(response.body);
                 if (curSettings.state == "SUCCESS") {
                     clearInterval(interval);
                     this.settings[curSettings.id] = curSettings;
                     this.previews[curSettings.id] = {};
-                    if (this.preview.getId() + "" === curSettings.id + "" || (this.curId !== undefined && this.curId.startsWith("new_dream_") && this.curId === this.preview.getId())) {
+                    if (this.preview.getId() + "" === curSettings.id + "" || (this.curId !== undefined && this.curId !== null && this.curId.startsWith("new_dream_") && this.curId === this.preview.getId())) {
                         this.setSettings(curSettings);
                     }
                     this.updateSettings(this.settings[JSON.parse(response.body).id]);
@@ -381,7 +426,7 @@ export class EffectSettings {
                     clearInterval(interval);
                     this.settings[curSettings.id] = curSettings;
                     this.previews[curSettings.id] = {};
-                    if (this.preview.getId() + "" === curSettings.id + "" || (this.curId !== undefined && this.curId.startsWith("new_dream_") && this.curId === this.preview.getId())) {
+                    if (this.preview.getId() + "" === curSettings.id + "" || (this.curId !== undefined && this.curId !== null &&  this.curId.startsWith("new_dream_") && this.curId === this.preview.getId())) {
                         this.setSettings(curSettings);
                     }
                     this.updateSettings(this.settings[JSON.parse(response.body).id]);
@@ -404,10 +449,15 @@ export class EffectSettings {
                 this.settings[JSON.parse(response.body).id] = JSON.parse(response.body);
                 this.updateSettings(this.settings[JSON.parse(response.body).id]);
                 this.onNewDreamCreatedCallback();
+                if (this.statusWidget && this.curId !== undefined && this.curId !== null && this.curId === this.preview.getId()) {
+                    this.statusWidget.visible = true;
+                    this.importButton.visible = true;
+                    this.importButton.enabled = false
+                }
                 logEventEffectTraining("SUCCESS");
             }
             else if (response.statusCode == 429) {
-                if (this.curId === this.preview.getId()) {
+                if (this.curId !== undefined && this.curId !== null && this.curId === this.preview.getId()) {
                     this.showLimitReachedPopup();
                 }
                 logEventEffectTraining("RATE_LIMITED");
@@ -421,6 +471,20 @@ export class EffectSettings {
     private importToProject() {
         if (this.settings[this.curId].packId) {
             this.importer.importToProject(this.settings[this.curId].packId);
+        }
+    }
+
+    importById(id: string) {
+        if (this.settings[id] && this.settings[id].packId) {
+            this.importer.importToProject(this.settings[id].packId);
+        }
+        else {
+            getDreamByID(id, (response: any) => {
+                if (response.statusCode == 200) {
+                    this.settings[id] = JSON.parse(response.body);
+                    this.importer.importToProject(this.settings[id].packId);
+                }
+            });
         }
     }
 
@@ -481,7 +545,7 @@ export class EffectSettings {
 
     onPromptChanged(): void {
         if (this.previewEffectButton) {
-            this.previewEffectButton.enabled = this.effectSettingsPage.prompt.length > 0;
+            this.previewEffectButton.enabled = this.effectSettingsPage.prompt.length > 19;
         }
     }
 

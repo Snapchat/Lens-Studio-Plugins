@@ -2,29 +2,54 @@
 export function defaultPrompts() {
     return [
         {
-            "person": "A person wearing the oversized grey-white leopard's pattern sweater with a fur red heart print on it and black pants.",
-            "action": "Standing calm and still and making a closeup selfie and happy smiling.",
-            "scene": "The location is Amsterdam city center with a lot of buildings and canals and trees. A bicycle parked on the fence near the canal. There is a cafe on the background. The vibe is cloudy golden hour with a sunset lighting."
+            "person": "Young person with stylish wavy hair 1990. Dressed in a shiny outfit,  glitter green jacket and shirt, made of Christmas tree decorations.",
+            "action": "Holds a snowflake-shaped toy above head.",
+            "scene": "Still from a 1990s movie. Camera flash on. Retro Christmas atmosphere, tree in the background and tinsel. Lots of annoying particles"
         },
         {
-            "person": "An extra closeup photo portrait of a person with a big messy hair. Wearing a striped texture collared shirt closed up to the neck.",
-            "action": "The face is shocked laughing with opened mouth, eyes and brows up.",
-            "scene": "The background is simple wall with a texture of flowers on it. The lighting is soft. The view is closeup head portrait."
+            "person": "Hair retro style 1980s. Dressed in a fluffy oversize sweater with cartoon 1980s, long pants, long striped socks.",
+            "action": "Sits on the floor under the tree and leans on a chair.",
+            "scene": "Old style retro damaged over-lighted film grain. Flash. A frame from a retro movie from 1980. There is a cozy Christmas atmosphere around, presents on the floor, vintage wallpaper"
         },
         {
-            "person": "A photo of a person wearing in a sleek cyberpunk jacket with a black punk tshirt under on a top and with asymmetrical cargo pants with chains and leather boots.",
-            "action": "Standing still with a crossed hands and a smile on a face.",
-            "scene": "On the edge of a crumbling city skyline overtaken by nature and neon cyberpunk lights. A surreal blend of dream and futuristic. Frontal full body shot with a shallow depth of field. Golden hour sunlight filtering through the environment. Light mist swirling around the character’s feet."
+            "person": "A cheerful person wearing a light green sweater, a vibrant green bowler hat, oversized round glasses with green shamrock frames, and a clover charm necklace. Hair hidden under a hat",
+            "action": "Taking a funny fisheye selfie and making an \"OK\" sign.",
+            "scene": "European crowded, wearing in green, street bustling with St. Patrick’s Day celebrations. The cobblestone road is decorated with green flags, garlands of clovers, and glowing lights, with a stall in the background showcasing pots of gold."
         },
         {
-            "person": "A person is wearing a fully covered metallic, silver-pearl reflected colour futuristic oversized suit combinezon, closed up to the neck and oversized pants with details.",
-            "action": "Slowly walking forward and hold a dogs collar with a robot-dog with in a cyborg style. The robot-dog is medium size and made of reflected metal with futuristic design.",
-            "scene": "In a high-tech market alley filled with neon signs and digital screens. Calm intensity vibe with a hint of mystery. Side profile in a dynamic diagonal layout. Cold blue light from electronic panels mixed with soft white glow."
+            "person": "Depicting cheerful Royal Sweetheart in his crystal crown and  iridescent  lavender attire in  Renaissance style, voluminous hair.",
+            "action": "dancing in a baroque ballroom",
+            "scene": "a vhs movie still of 20's century dark fantasy movie. With glowing light effects around the head and body. with a 1970s movie aesthetic, live action movie, 70's dark fantasy. cinematic, vhs grain"
         },
         {
-            "person": "A Roman gladiator wearing a bronze armor and a red cape.",
-            "action": "Taking a close-up selfie.",
-            "scene": "Harsh midday sun, dust in the air. Inside a grand stone empty arena. Behind in a roaring crown, banners waving, and fellow warriors rising swords. Dramatic, historical energy."
+            "person": "A Roman gladiator wearing bronze armor and a red cape.",
+            "action": "taking a close-up selfie",
+            "scene": "Harsh midday sun, dust in the air. Inside a grand stone empty arena. Behind is a roaring crowd, banners waving, and fellow warriors raising swords. Dramatic, historical energy."
+        },
+        {
+            "person": "They are dressed in a luxurious ensemble that gleams under the vintage lighting-either a sleek, satin-lapelled tuxedo in a deep red hue or a flowing, form-fitting evening gown, with its color subtly visible through the warm sepia tones.",
+            "action": "A person stands amidst a flurry of flashing lights, holding a cylindrical award.",
+            "scene": "A retro sepia-toned monochrome photograph capturing a mesmerizing 1950s film awards ceremony, evoking the nostalgia of cinema’s golden age. The background is alive with the energy of flashing paparazzi cameras, their bright bursts."
+        },
+        {
+            "person": "A person is wearing a gray suit jacket paired with a white dress shirt and a blue striped tie; bright red Hawaiian-style shorts with a white floral and tropical print. A person has an orange inflatable swim ring around his waist.",
+            "action": "standing on a photo studio.",
+            "scene": "A humorous scene. The background is a tropical-themed wallpaper, showcasing a bright blue sky and ocean, all illuminated by artificial lighting, flash, shadow. The overall scene conveys a humorous combination of business and vacation."
+        },
+        {
+            "person": "Beautiful glowing skin. Wearing a cozy white waffle-textured robe and a towel wrapped around their head.",
+            "action": "standing on a photo studio.",
+            "scene": "Morning sunlight and shadows in a stylish modern grey room."
+        },
+        {
+            "person": "A nobleman dressed in dark golden, richly embroidered attire, adorned with pearls and gemstones. A person wears a large lace ruff collar edged with pearls, and a white powdered wig styled in elegant, cascading curls.",
+            "action": "A person points forward with both index fingers, directing the attention.",
+            "scene": "This Baroque oil painting depicts the dark background, with lush green drapery, enhances the vibrancy of the nobleman's attire and emphasizes the grandeur of the scene."
+        },
+        {
+            "person": "Photo of an stylish teenager. Stylish haircut 90s. Wearing a christmas holiday oversize style pyjamas, cute pattern on pyjamas, silk, cozy.",
+            "action": "Holding a small white Pomeranian dog. Standing in front of a Christmas tree.",
+            "scene": "Nostalgy photography in the style of 90s. 90s Room decorated in Christmas style. Retro light photo."
         }
     ];
 }

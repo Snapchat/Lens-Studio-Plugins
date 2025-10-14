@@ -6,7 +6,7 @@ import {
     parseTypedefs,
     updateCompletionData
 } from "./completion.js";
-import { getLanguageFromFilePath } from "../index.js";
+import { getLanguageFromFilePath, isCustomComponentFile } from "../index.js";
 
 function _resolvedPath(fileMeta, filePath) {
     try {
@@ -80,7 +80,7 @@ export class FileManager {
     }
 
     async _getPackedStatus(physicalPath) {
-        if (physicalPath.toLowerCase().endsWith('.lsc')) {
+        if (isCustomComponentFile(physicalPath)) {
             return {isPacked: true, fileMeta: null};
         }
 

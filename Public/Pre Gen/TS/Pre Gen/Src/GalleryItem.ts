@@ -14,9 +14,12 @@ export class GalleryItem {
     private tempDir: FileSystem.TempDir;
     private id: string;
     private isFailed: boolean = false;
+    private isTrained: boolean = false
+    private importButton: Ui.PushButton;
     private connections: Array<any> = [];
     private curState: string = "RUNNING";
     private onClickCallback: Function = () => {};
+    private onImportClickCallback: Function = () => {};
 
     constructor(parent: Ui.Widget, id: string) {
         this.id = id;
@@ -36,9 +39,11 @@ export class GalleryItem {
         this.loadingOverlay.pixmap = new Ui.Pixmap(import.meta.resolve('./Resources/grey_rectangle.svg'));
 
         const spinner = new Ui.ProgressIndicator(this.loadingOverlay);
+        spinner.setFixedWidth(32);
+        spinner.setFixedHeight(32);
         spinner.start();
         spinner.visible = true;
-        spinner.move(51, 95);
+        spinner.move(45, 85);
 
         const trainingLabel = new Ui.Label(this.loadingOverlay);
         trainingLabel.text = '<center>' + 'Training<br>in progress' + '</center>';
@@ -63,6 +68,15 @@ export class GalleryItem {
                 return;
             }
             this.border.visible = hovered;
+            if (this.isTrained) {
+                if (hovered) {
+                    this.importButton.text = 'Import';
+                    this.importButton.setFixedWidth(72);
+                } else {
+                    this.importButton.text = '';
+                    this.importButton.setFixedWidth(32);
+                }
+            }
         }));
 
         [this.frame, this.border].forEach((item: Ui.ImageView) => {
@@ -74,7 +88,20 @@ export class GalleryItem {
         this.loading = new Ui.ProgressIndicator(this.frame);
         this.loading.start();
         this.loading.visible = true;
-        this.loading.move(8, 182);
+        this.loading.setFixedWidth(32);
+        this.loading.setFixedHeight(32);
+        this.loading.move(45, 85);
+        // this.loading.move(8, 182);
+
+        this.importButton = new Ui.PushButton(this.frame);
+        this.importButton.setIconWithMode(Editor.Icon.fromFile(import.meta.resolve('./Resources/import.svg')), Ui.IconMode.MonoChrome);
+        this.importButton.primary = true;
+        this.importButton.visible = false;
+        this.importButton.move(8, 178);
+
+        this.connections.push(this.importButton.onClick.connect(() => {
+            this.onImportClickCallback(this.id);
+        }));
     }
 
     addPreview(previewUrl: string) {
@@ -116,6 +143,10 @@ export class GalleryItem {
         this.onClickCallback = callback;
     }
 
+    setOnImportClickCallback(callback: Function) {
+        this.onImportClickCallback = callback;
+    }
+
     enableLoading() {
         this.loading.visible = true;
     }
@@ -135,6 +166,11 @@ export class GalleryItem {
         label.text = "Failed";
 
         label.move(44, 94);
+    }
+
+    setTrained() {
+        this.isTrained = true;
+        this.importButton.visible = true;
     }
 
     get state() {

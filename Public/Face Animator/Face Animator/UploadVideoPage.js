@@ -1,10 +1,6 @@
 // @ts-nocheck
 import * as Ui from "LensStudio:Ui";
 import { Alignment, ColorRole } from "LensStudio:Ui";
-//@ts-ignore
-import * as MultimediaWidgets from 'LensStudio:MultimediaWidgets';
-//@ts-ignore
-import { MediaState } from 'LensStudio:MultimediaWidgets';
 import app from "./app.js";
 import { uploadVideo } from "./api";
 import { logEventCreate } from "./analytics.js";
@@ -49,7 +45,7 @@ export class UploadVideoPage {
         const label = new Ui.Label(parent);
         label.wordWrap = true;
         label.text = "Choose a file to upload. Once uploaded, video will be analyzed to detect audio and facial expressions.<br><br>" +
-            "• Format: <b>.mp4 only</b><br>" +
+            "• Format: <b>.mp4, .mov</b><br>" +
             "• Max File Size: <b>20 MB</b><br><br>" +
             "Only the first 20 seconds will be processed.";
         contentLayout.addWidget(label);
@@ -57,6 +53,7 @@ export class UploadVideoPage {
         // Video Upload
         const videoUpload = new Ui.ImageView(parent);
         videoUpload.responseHover = true;
+        videoUpload.scaledContents = true;
         videoUpload.pixmap = this.defaultBackground;
         videoUpload.setFixedWidth(288);
         videoUpload.setFixedHeight(288);
@@ -71,16 +68,23 @@ export class UploadVideoPage {
         buttonLabel.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Preferred);
         buttonLabel.setFixedWidth(72);
         buttonLabel.wordWrap = true;
-        buttonLabel.text = '<center>' + 'Upload Video <br> <br> .mp4' + '</center>';
+        buttonLabel.text = '<center>' + 'Upload Video <br> <br> .mp4, .mov' + '</center>';
         buttonLabel.move(109, 159);
-        //@ts-ignore
-        const videoWidget = new MultimediaWidgets.VideoWidget(videoUpload);
-        videoWidget.setFixedWidth(288);
-        videoWidget.setFixedHeight(288);
-        videoWidget.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
-        videoWidget.visible = false;
-        //@ts-ignore
-        const mediaPlayer = new MultimediaWidgets.MediaPlayer();
+        const unsuccessfulImage = new Ui.ImageView(videoUpload);
+        unsuccessfulImage.setFixedHeight(260);
+        unsuccessfulImage.setFixedWidth(260);
+        unsuccessfulImage.scaledContents = true;
+        unsuccessfulImage.pixmap = new Ui.Pixmap(import.meta.resolve('./Resources/unsuccessful.svg'));
+        unsuccessfulImage.move(14, 14);
+        unsuccessfulImage.visible = false;
+        const videoView = new Ui.VideoView(videoUpload);
+        videoView.setFixedWidth(288);
+        videoView.setFixedHeight(288);
+        videoView.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
+        videoView.radius = 8;
+        videoView.muted = true;
+        // videoView.volume = 1;
+        videoView.visible = false;
         contentLayout.addWidgetWithStretch(videoUpload, 0, (Ui.Alignment.AlignCenter));
         contentLayout.addStretch(0);
         //Process Button
@@ -122,55 +126,52 @@ export class UploadVideoPage {
             }
         }));
         let uploadIsInProgress = false;
-        const buttonItems = [videoUpload, iconView, buttonLabel];
+        const buttonItems = [videoUpload, iconView, buttonLabel, videoView, unsuccessfulImage];
         buttonItems.forEach((item) => {
             this.connections.push(item.onClick.connect(() => {
                 if (uploadIsInProgress) {
                     return;
                 }
-                const filePath = app.findInterface(Ui.IGui).dialogs.selectFileToOpen({ 'caption': 'Select file to open', 'filter': '*.mp4' }, '');
+                unsuccessfulImage.visible = false;
+                const filePath = app.findInterface(Ui.IGui).dialogs.selectFileToOpen({ 'caption': 'Select file to open', 'filter': '*.mp4 *.mov' }, '');
                 if (!filePath.isEmpty) {
                     this.currentVideoFilePath = filePath;
-                    videoWidget.visible = true;
-                    mediaPlayer.setMedia(filePath);
-                    mediaPlayer.setVideoOutput(videoWidget);
-                    mediaPlayer.play();
+                    videoView.visible = true;
+                    videoView.stop();
+                    videoView.setSource(filePath);
+                    videoView.loopCount = -1;
+                    videoView.play();
                     processVideoButton.enabled = true;
                     processVideoButton.primary = true;
                 }
             }));
         });
-        this.connections.push(mediaPlayer.onStateChanged.connect((newState) => {
-            //@ts-ignore
-            if (newState === MediaState.StoppedState) {
-                mediaPlayer.play();
-            }
-        }));
         processVideoButton.onClick.connect(() => {
             uploadIsInProgress = true;
             processVideoButton.enabled = false;
             if (this.popup) {
                 this.popup.visible = false;
             }
-            mediaPlayer.pause();
+            videoView.pause();
             if (this.currentVideoFilePath) {
+                this.onVideoProcessingStartCallback();
                 const fileName = this.currentVideoFilePath.toString().split('/').pop();
                 uploadVideo(this.currentVideoFilePath, fileName, (response) => {
                     uploadIsInProgress = false;
                     this.currentVideoFilePath = null;
-                    videoWidget.visible = false;
+                    videoView.visible = false;
+                    this.onVideoProcessingEndCallback();
                     if (response.statusCode === 201) {
                         logEventCreate("SUCCESS", "NEW", "PROMPT_VIDEO");
                         this.onNewAnimatorCreatedCallback(JSON.parse(response.body));
                     }
                     else {
-                        processVideoButton.enabled = true;
-                        mediaPlayer.play();
                         if (response.statusCode === 429) {
                             if (this.popup) {
                                 this.popup.visible = true;
                             }
                         }
+                        unsuccessfulImage.visible = true;
                         if (response.statusCode === 400) {
                             logEventCreate("GUIDELINES_VIOLATION", "NEW", "PROMPT_VIDEO");
                         }
@@ -222,9 +223,16 @@ export class UploadVideoPage {
         this.popup.visible = false;
         this.popup.setFixedHeight(32);
         this.popup.setFixedWidth(374);
+        // this.popup.move(213, 4);
         this.popup.move(2, 4);
         this.popupLabel.text = "Limit reached - A maximum of 5 previews can be trained at once.";
         popupLayout.addWidgetWithStretch(this.popupLabel, 1, Ui.Alignment.AlignLeft | Ui.Alignment.AlignCenter);
+    }
+    setVideoProcessingStartListener(callback) {
+        this.onVideoProcessingStartCallback = callback;
+    }
+    setVideoProcessingEndListener(callback) {
+        this.onVideoProcessingEndCallback = callback;
     }
     createColor(r, g, b, a) {
         const color = new Ui.Color();

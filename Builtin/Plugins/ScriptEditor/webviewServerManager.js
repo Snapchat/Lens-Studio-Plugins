@@ -5,7 +5,7 @@ import * as Ui from 'LensStudio:Ui';
 import * as Script from 'LensStudio:ScriptEditor';
 import {generateInputDeclarations} from "./utils/files/completion.js";
 import {EDITOR_EVENTS, FILE_EVENTS} from "./lib/Resources/Common.js";
-import { isValidComponentToEdit } from './utils/index.js';
+import { isValidScriptToEdit, isCustomComponentFile } from './utils/index.js';
 
 const scriptPath = import.meta.url.replace('file://', '');
 const scriptDir = scriptPath.substring(0, scriptPath.lastIndexOf('/'));
@@ -52,7 +52,7 @@ function generateTypeMap(definitionsContent, projectScripts, assetManager) {
     const assetsDirectoryPath = assetManager.assetsDirectory;
 
     projectScripts.forEach(script => {
-        if (script.filePath.toLowerCase().endsWith('.lsc')) {
+        if (isCustomComponentFile(script.filePath)) {
             return;
         }
 
@@ -96,7 +96,7 @@ async function handleEditorMessage(socket, message, serverManager) {
                 const definitionsContent = fs.readFile(scriptingDefPath).toString() + scriptDef;
 
                 const projectScripts = serverManager.assetManager.assets
-                    .filter(isValidComponentToEdit)
+                    .filter(isValidScriptToEdit)
                     .map(asset => ({
                         filePath: asset.fileMeta.sourcePath.toString(),
                         componentId: asset.id.toString()

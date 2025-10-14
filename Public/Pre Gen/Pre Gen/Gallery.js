@@ -2,20 +2,21 @@
 import * as Ui from "LensStudio:Ui";
 import { GalleryItem } from "./GalleryItem.js";
 export class Gallery {
-    constructor(onTileClickCallback) {
+    constructor(onTileClickCallback, onImportClickCallback) {
         this.allItems = [];
         this.visibleItems = [];
         this.isWaitingForCallback = false;
         this.pendingPreviews = {};
-        this.tilesPerRow = 6;
+        this.tilesPerRow = 3;
         this.onTileClickCallback = onTileClickCallback;
+        this.onImportClickCallback = onImportClickCallback;
     }
     create(parent) {
         const widget = new Ui.Widget(parent);
         widget.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Expanding);
         widget.setContentsMargins(0, 0, 0, 0);
-        // widget.autoFillBackground = true;
-        // widget.backgroundRole = Ui.ColorRole.Dark;
+        widget.autoFillBackground = true;
+        widget.backgroundRole = Ui.ColorRole.Base;
         this.spacer = new Ui.Widget(widget);
         this.spacer.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Expanding);
         const grid = new Ui.GridLayout();
@@ -33,13 +34,21 @@ export class Gallery {
         scrollLayout.setContentsMargins(0, 0, 0, 0);
         this.gridLayout = grid;
         this.parent = widget;
+        const spinner = new Ui.ProgressIndicator(widget);
+        spinner.setFixedWidth(32);
+        spinner.setFixedHeight(32);
+        spinner.start();
+        spinner.visible = false;
+        spinner.move(178, 250);
+        this.spinner = spinner;
         widget.layout = scrollLayout;
         return widget;
     }
-    addItem(id, previewUrl, isDefault = false, inProgress = false, isTraining = false) {
+    addItem(id, previewUrl, isDefault = false, inProgress = false, isTraining = false, isTrained = false) {
         if (!this.parent || !this.gridLayout) {
             return;
         }
+        this.spinner.visible = false;
         const item = new GalleryItem(this.parent, id);
         if (isDefault) {
             item.addDefaultItemPreview();
@@ -56,6 +65,9 @@ export class Gallery {
             this.pendingPreviews[id] = item;
             item.showLoadingOverlay();
         }
+        else if (isTrained) {
+            item.setTrained();
+        }
         item.setOnClickCallback((id) => {
             if (this.isWaitingForCallback) {
                 return;
@@ -68,6 +80,9 @@ export class Gallery {
                 }
                 this.isWaitingForCallback = false;
             });
+        });
+        item.setOnImportClickCallback((id) => {
+            this.onImportClickCallback(id);
         });
         this.allItems.push(item);
         this.visibleItems.push(item);
@@ -115,7 +130,7 @@ export class Gallery {
         this.visibleItems = [];
         this.pendingPreviews = {};
         this.isWaitingForCallback = false;
-        this.addDefaultItem();
         this.arrangeLayout();
+        this.spinner.visible = true;
     }
 }

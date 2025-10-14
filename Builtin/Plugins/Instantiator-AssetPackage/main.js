@@ -33,6 +33,9 @@ export class PackageInstantiator extends AssetInstantiator {
         };
         return descriptor;
     }
+    prepareDependencies(asset, assetManager) {
+	return Promise.resolve([]);
+    }
     instantiate(asset, scene, target) {
         const model = this.pluginSystem.findInterface(Editor.Model.IModel);
         // If a setup script exists:

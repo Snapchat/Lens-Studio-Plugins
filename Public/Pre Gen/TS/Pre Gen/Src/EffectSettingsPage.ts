@@ -11,9 +11,12 @@ export class EffectSettingsPage {
     private onRemoveCallback: Function;
     private resetGallery: Function;
     private removeButton: Ui.PushButton | undefined;
+    private headerStackedWidget: Ui.StackedWidget | undefined;
     private textFields: TextField[] = [];
     private seedField: Seed | undefined;
     private curId: string = "";
+    private maxSymbols: number = 560;
+    private reservedSymbolsCount: number = 19;
 
     constructor(onReturnCallback: Function, onPromptChangedCallback: Function, onRemoveCallback: Function, resetGallery: Function) {
         this.onReturnCallback = onReturnCallback;
@@ -34,8 +37,19 @@ export class EffectSettingsPage {
         layout.setContentsMargins(Ui.Sizes.DoublePadding, Ui.Sizes.Padding, Ui.Sizes.DoublePadding, Ui.Sizes.Padding);
         layout.spacing = Ui.Sizes.Padding;
 
+        this.headerStackedWidget = new Ui.StackedWidget(widget);
+        this.headerStackedWidget.setContentsMargins(0, 0, 0, 0);
+        this.headerStackedWidget.setFixedHeight(24);
+
         const header = this.createHeader(widget, 'Effect Settings', this.onReturnCallback);
-        layout.addWidgetWithStretch(header, 0, Ui.Alignment.AlignTop);
+        this.headerStackedWidget.addWidget(header);
+
+        const newEffectHeader = this.createNewEffectHeader(widget, 'New Effect');
+        this.headerStackedWidget.addWidget(newEffectHeader);
+
+        this.showGalleryHeader();
+
+        layout.addWidgetWithStretch(this.headerStackedWidget, 0, Ui.Alignment.AlignTop);
 
         const guidelinesLink = 'https://developers.snap.com/lens-studio/features/genai-suite/ai-portraits';
         const guideUrlString = Ui.getUrlString('guidelines', guidelinesLink);
@@ -51,20 +65,38 @@ export class EffectSettingsPage {
 
         layout.addWidgetWithStretch(terms, 0, Ui.Alignment.AlignTop);
 
-        this.textFields.push(new TextField(widget, 'Person', 'Describe the Person..', this.onSurpriseMeButtonClicked.bind(this)));
-        this.textFields.push(new TextField(widget, 'Action', 'Describe the Action..', ));
-        this.textFields.push(new TextField(widget, 'Scene', 'Describe the Scene..', ));
+        const promptWidget = new Ui.ImageView(widget);
+        promptWidget.pixmap = new Ui.Pixmap(import.meta.resolve('./Resources/prompt_frame.svg'));
+        promptWidget.scaledContents = true;
+        promptWidget.setFixedHeight(354);
+
+        const promptLayout = new Ui.BoxLayout();
+        promptLayout.setDirection(Ui.Direction.TopToBottom);
+        promptWidget.layout = promptLayout;
+
+        const limitationLabel = new Ui.Label(promptWidget);
+        limitationLabel.text = "0 / " + this.maxSymbols;
+        limitationLabel.foregroundRole = Ui.ColorRole.PlaceholderText;
+        promptLayout.addWidgetWithStretch(limitationLabel, 0, Ui.Alignment.AlignRight | Ui.Alignment.AlignTop);
+
+        this.textFields.push(new TextField(promptWidget, 'Person', 'Describe the Person..', this.onSurpriseMeButtonClicked.bind(this)));
+        this.textFields.push(new TextField(promptWidget, 'Action', 'Describe the Action..', ));
+        this.textFields.push(new TextField(promptWidget, 'Scene', 'Describe the Scene..', ));
 
         this.textFields.forEach((textField: TextField) => {
-            layout.addWidgetWithStretch(textField.widget, 0, Ui.Alignment.AlignTop);
+            promptLayout.addWidgetWithStretch(textField.widget, 0, Ui.Alignment.AlignTop);
             textField.addOnTextChangeCallback((text: string) => {
+                if (this.prompt.length > this.maxSymbols + this.reservedSymbolsCount) {
+                    textField.trimEndChars(this.prompt.length - this.maxSymbols - this.reservedSymbolsCount);
+                }
+                limitationLabel.text = (this.prompt.length - this.reservedSymbolsCount) + " / " + this.maxSymbols;
                 this.onPromptChanged();
             })
         })
 
-        // const seedField = this.createSeedWidget(widget);
-        this.seedField = new Seed(widget);
+        layout.addWidgetWithStretch(promptWidget, 0, Ui.Alignment.AlignTop);
 
+        this.seedField = new Seed(widget);
         layout.addWidgetWithStretch(this.seedField.widget, 0, Ui.Alignment.AlignTop);
 
         layout.addStretch(1);
@@ -84,10 +116,14 @@ export class EffectSettingsPage {
         layout.spacing = Ui.Sizes.DoublePadding;
 
         const imageView = new Ui.ImageView(widget);
+        imageView.scaledContents = true;
         imageView.responseHover = true;
         const defaultImage = new Ui.Pixmap(import.meta.resolve('./Resources/arrow.svg'));
         const hoveredImage = new Ui.Pixmap(import.meta.resolve('./Resources/arrow_h.svg'));
         imageView.pixmap = defaultImage
+        imageView.setFixedHeight(16);
+        imageView.setFixedWidth(16);
+
         this.connections.push(imageView.onClick.connect(() => {
             onReturnClicked();
         }));
@@ -120,6 +156,7 @@ export class EffectSettingsPage {
         trashCanImageView.pixmap = new Ui.Pixmap(import.meta.resolve('./Resources/trashCan.svg'));
         trashCanImageView.setFixedHeight(16);
         trashCanImageView.setFixedWidth(16);
+        trashCanImageView.scaledContents = true;
         removeButtonLayout.addWidgetWithStretch(trashCanImageView, 0, Ui.Alignment.AlignCenter);
 
         // this.removeButton.visible = false;
@@ -130,7 +167,7 @@ export class EffectSettingsPage {
         items.forEach((item) => {
             item.onClick.connect(() => {
                 if (this.curId !== "DEFAULT" && !this.curId.startsWith("new_dream_")) {
-                    this.resetGallery();
+                    this.resetGallery(this.curId);
                     deleteById(this.curId, () => {
                         this.onRemoveCallback();
                     });
@@ -138,6 +175,27 @@ export class EffectSettingsPage {
                 onReturnClicked();
             });
         })
+
+        widget.layout = layout;
+
+        return widget;
+    }
+
+    private createNewEffectHeader(parent: Ui.Widget, text: string) {
+        const widget = new Ui.Widget(parent);
+        widget.setFixedHeight(24);
+
+        const layout = new Ui.BoxLayout();
+        layout.setDirection(Ui.Direction.LeftToRight);
+        layout.setContentsMargins(0, 0, 0, 0);
+        layout.spacing = Ui.Sizes.DoublePadding;
+
+        const title = new Ui.Label(widget);
+        title.text = text;
+        title.fontRole = Ui.FontRole.MediumTitleBold;
+        title.foregroundRole = Ui.ColorRole.BrightText;
+
+        layout.addWidgetWithStretch(title, 0, Ui.Alignment.AlignCenter);
 
         widget.layout = layout;
 
@@ -235,6 +293,18 @@ export class EffectSettingsPage {
         this.textFields[2].setText(prompt.scene);
     }
 
+    showGalleryHeader() {
+        if (this.headerStackedWidget) {
+            this.headerStackedWidget.currentIndex = 1;
+        }
+    }
+
+    showEffectHeader() {
+        if (this.headerStackedWidget) {
+            this.headerStackedWidget.currentIndex = 0;
+        }
+    }
+
     private createColor(r: number, g: number, b: number, a: number) {
         const color = new Ui.Color();
         color.red = r;
@@ -297,6 +367,9 @@ class TextField {
         if (onSurpriseMeButtonClickCallback) {
             this.surpriseMeLabel.visible = true;
             this.connections.push(this.surpriseMeLabel.onClick.connect(() => {
+                if (this.lockedBox.visible) {
+                    return;
+                }
                 onSurpriseMeButtonClickCallback();
             }));
         }
@@ -326,7 +399,7 @@ class TextField {
         this.textEdit.visible = true;
 
         this.lockedBox = new Ui.ImageView(widget);
-        this.lockedBox.setFixedWidth(346);
+        this.lockedBox.setFixedWidth(328);
         this.lockedBox.setFixedHeight(72);
         this.lockedBox.pixmap = new Ui.Pixmap(import.meta.resolve('./Resources/multi_line_box.svg'));
 
@@ -336,7 +409,7 @@ class TextField {
 
         this.lockedLabel = new Ui.Label(this.lockedBox);
         this.lockedLabel.wordWrap = true;
-        this.lockedLabel.setFixedWidth(338);
+        this.lockedLabel.setFixedWidth(324);
 
         lockedBoxLayout.addWidgetWithStretch(this.lockedLabel, 0, Ui.Alignment.AlignTop | Ui.Alignment.AlignLeft);
 
@@ -379,6 +452,19 @@ class TextField {
         }
     }
 
+    trimEndChars(count: number) {
+        this.textEdit.blockSignals(true);
+        this.textEdit.plainText = this.textEdit.plainText.slice(0, -count);
+        this.moveCursorToEnd();
+        this.textEdit.blockSignals(false);
+    }
+
+    private moveCursorToEnd() {
+        const cursor = this.textEdit.textCursor;
+        cursor.movePosition(Ui.TextCursor.MoveOperation.End, Ui.TextCursor.MoveMode.MoveAnchor);
+        this.textEdit.textCursor = cursor;
+    }
+
     get text(): string {
         return this.textEdit.plainText;
     }
@@ -407,10 +493,14 @@ class Seed {
         const label = new Ui.Label(widget);
         label.text = 'Seed';
         layout.addWidget(label);
+        layout.spacing = 4;
 
         // const spacer = new Ui.Widget(widget);
         // spacer.setFixedWidth(8);
         // layout.addWidget(spacer);
+
+        const infoIcon = this.createInfoIcon(widget);
+        layout.addWidget(infoIcon);
 
         const spinBox = new Ui.SpinBox(widget);
         spinBox.setRange(0, 2147483647);
@@ -431,6 +521,7 @@ class Seed {
         randomButton.layout = randomButtonLayout;
 
         const diceImageView = new Ui.ImageView(randomButton);
+        diceImageView.scaledContents = true;
         diceImageView.pixmap = new Ui.Pixmap(import.meta.resolve('./Resources/dice.svg'));
         diceImageView.setFixedHeight(16);
         diceImageView.setFixedWidth(16);
@@ -477,6 +568,56 @@ class Seed {
     private getRandomInt(): number {
         const max = 2147483648;
         return Math.floor(Math.random() * max);
+    }
+
+    private createInfoIcon(parent) {
+        const infoImage = new Ui.Pixmap(import.meta.resolve('./Resources/small_info.svg'));
+
+        const info = new Ui.ImageView(parent);
+        info.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
+        info.setFixedHeight(Ui.Sizes.IconSide);
+        info.setFixedWidth(Ui.Sizes.IconSide);
+        info.scaledContents = true;
+
+        info.pixmap = infoImage;
+        info.responseHover = true;
+
+        const popupWidget = new Ui.PopupWithArrow(info, Ui.ArrowPosition.Top);
+        popupWidget.setContentsMargins(Ui.Sizes.Padding, Ui.Sizes.Padding, Ui.Sizes.Padding, Ui.Sizes.Padding);
+
+        popupWidget.setMainWidget(this.createHint(popupWidget, "Seed", "Control randomness with a seed. Use the same number to recreate the same look, or try different ones for new variations!"));
+
+        const connection = info.onHover.connect((hovered) => {
+            if (hovered) {
+                popupWidget.popup(info);
+            } else {
+                popupWidget.close();
+                parent.activateWindow();
+            }
+        });
+
+        return info;
+    }
+
+    private createHint(parent, title, text) {
+        const layout = new Ui.BoxLayout();
+        layout.setDirection(Ui.Direction.TopToBottom);
+
+        const content = new Ui.Widget(parent);
+
+        const header = new Ui.Label(content);
+        header.text = title;
+        header.fontRole = Ui.FontRole.TitleBold;
+
+        const desc = new Ui.Label(content);
+        desc.text = text;
+        desc.wordWrap = true;
+
+        layout.addWidget(header);
+        layout.addWidget(desc);
+
+        content.layout = layout;
+        return content;
     }
 
     setValue(value: number): void {

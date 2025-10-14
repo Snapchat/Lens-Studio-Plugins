@@ -1,16 +1,12 @@
 // @ts-nocheck
 import * as Ui from "LensStudio:Ui";
 import {ColorRole} from "LensStudio:Ui";
-import * as MultimediaWidgets from 'LensStudio:MultimediaWidgets';
-import {MediaState} from 'LensStudio:MultimediaWidgets';
 
 export class EffectPreviewPage {
 
     private mainWidget: Ui.Widget;
     private connections: Array<any> = [];
-    private videoWidget: MultimediaWidgets.VideoWidget;
-    private mediaPlayer: MultimediaWidgets.MediaPlayer;
-    private timeout: any;
+    private videoView: Ui.VideoView;
     private lockedLabel: Ui.Label | undefined;
 
     constructor(parent: Ui.Widget, onReturnCallback: Function) {
@@ -48,11 +44,16 @@ export class EffectPreviewPage {
         const headerLayout = new Ui.BoxLayout();
         headerLayout.setDirection(Ui.Direction.LeftToRight);
 
-        const arrow = new Ui.ImageView(widget);
-        arrow.responseHover = true;
         const defaultImage = new Ui.Pixmap(import.meta.resolve('./Resources/arrow.svg'));
         const hoveredImage = new Ui.Pixmap(import.meta.resolve('./Resources/arrow_h.svg'));
+
+        const arrow = new Ui.ImageView(widget);
+        arrow.responseHover = true;
+        arrow.scaledContents = true;
+        arrow.setFixedWidth(16);
+        arrow.setFixedHeight(16);
         arrow.pixmap = defaultImage
+
         this.connections.push(arrow.onClick.connect(() => {
             onReturnCallback();
         }));
@@ -99,6 +100,7 @@ export class EffectPreviewPage {
         const lockedBox = new Ui.ImageView(widget);
         lockedBox.setFixedWidth(164);
         lockedBox.setFixedHeight(20);
+        lockedBox.scaledContents = true;
         lockedBox.pixmap = new Ui.Pixmap(import.meta.resolve('./Resources/locked_box.svg'));
 
         const lockedBoxLayout = new Ui.BoxLayout();
@@ -122,21 +124,24 @@ export class EffectPreviewPage {
 
         // Video Preview
 
-        this.videoWidget = new MultimediaWidgets.VideoWidget(widget);
-        this.videoWidget.setFixedWidth(288);
-        this.videoWidget.setFixedHeight(288);
-        this.videoWidget.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
+        const videoView = new Ui.VideoView(widget);
+        videoView.setFixedWidth(288);
+        videoView.setFixedHeight(288);
+        videoView.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
+        videoView.radius = 8;
+        videoView.muted = true;
 
-        this.mediaPlayer = new MultimediaWidgets.MediaPlayer();
+        this.videoView = videoView;
 
-        this.connections.push(this.mediaPlayer.onStateChanged.connect((newState: any) => {
-            //@ts-ignore
-            if (newState === MediaState.StoppedState) {
-                this.mediaPlayer.play();
-            }
-        }))
+        this.videoView.onShow.connect(() => {
+            videoView.play();
+        })
 
-        layout.addWidgetWithStretch(this.videoWidget, 0, (Ui.Alignment.AlignCenter));
+        this.videoView.onHide.connect(() => {
+            videoView.pause();
+        })
+
+        layout.addWidgetWithStretch(videoView, 0, (Ui.Alignment.AlignCenter));
 
         layout.addStretch(1);
 
@@ -146,16 +151,25 @@ export class EffectPreviewPage {
     }
 
     setPreview(path: Editor.Path): void {
-        this.mediaPlayer.stop();
-        this.mediaPlayer.setMedia(path);
-        this.mediaPlayer.setVideoOutput(this.videoWidget);
-        this.mediaPlayer.play();
+        this.videoView.stop();
+        this.videoView.setSource(path);
+        this.videoView.loopCount = -1;
+        this.videoView.play();
     }
 
     setDate(newDate: string) {
         if (this.lockedLabel) {
             this.lockedLabel.text = this.convertDate(newDate);
         }
+    }
+
+    playVideo() {
+        this.videoView.stop();
+        this.videoView.play();
+    }
+
+    pauseVideo() {
+        this.videoView.pause();
     }
 
     get widget(): Ui.Widget {

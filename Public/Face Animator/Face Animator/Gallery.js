@@ -2,13 +2,14 @@
 import * as Ui from "LensStudio:Ui";
 import { GalleryItem } from "./GalleryItem.js";
 export class Gallery {
-    constructor(onTileClickCallback) {
+    constructor(onTileClickCallback, onImportToProjectClickedCallback) {
         this.allItems = [];
         this.visibleItems = [];
         this.tilesPerRow = 3;
         this.removedItems = {};
         this.itemsMap = {};
         this.onTileClickCallback = onTileClickCallback;
+        this.onImportToProjectClickedCallback = onImportToProjectClickedCallback;
     }
     create(parent) {
         const widget = new Ui.Widget(parent);
@@ -45,6 +46,9 @@ export class Gallery {
         item.setOnClickCallback((itemData) => {
             this.onTileClickCallback(itemData);
         });
+        item.setOnImportClickCallback((itemData) => {
+            this.onImportToProjectClickedCallback(itemData);
+        });
         item.setOnRemoveCallback(this.onItemRemove.bind(this));
         return item;
     }
@@ -58,6 +62,9 @@ export class Gallery {
         item.setOnClickCallback((itemData) => {
             this.onTileClickCallback(itemData);
         });
+        item.setOnImportClickCallback((itemData) => {
+            this.onImportToProjectClickedCallback(itemData);
+        });
         item.setOnRemoveCallback(this.onItemRemove.bind(this));
         return item;
     }
@@ -66,12 +73,21 @@ export class Gallery {
         if (animatorData.state == "PREVIEW_FAILED") {
             this.itemsMap[animatorData.id].setFailed();
         }
+        else if (animatorData.state === "GENERATION_QUEUED" || animatorData.state === "GENERATION_RUNNING") {
+            this.itemsMap[animatorData.id].showLoadingOverlay();
+        }
+        if (animatorData.state !== "PREVIEW_QUEUED" && animatorData.state !== "PREVIEW_RUNNING") {
+            this.itemsMap[animatorData.id].hideLoading();
+        }
     }
     onItemRemove() {
         this.visibleItems = [];
         this.allItems.forEach((item) => {
             if (!item.removed && !this.removedItems[item.getId()]) {
                 this.visibleItems.push(item);
+            }
+            else {
+                item.widget.visible = false;
             }
         });
         this.arrangeLayout();
