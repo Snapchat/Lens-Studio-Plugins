@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "target": "ES2019",
+        "module": "ES2020",
+        "rootDir": "./src",
+        "outDir": "./dist",
+        "strict": false,
+        "lib": [
+            "ES2020"
+        ],
+        "baseUrl": "./",
+        "moduleResolution": "bundler",
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "allowJs": true,
+        "skipLibCheck": true
+    },
+    "include": [
+        "../EditorLib.d.ts",
+        "src/**/*"
+    ]
+}

@@ -27,7 +27,7 @@ export class ScriptEditor extends EditorPlugin {
         return {
             id: PluginSettings.PluginID,
             name: PluginSettings.PluginName,
-            description: 'Lens Studio Script Editor',
+            description: 'Lens Studio Text Editor',
             canEdit: entity => {
                 return isValidEntityToEdit(entity);
             },
@@ -85,7 +85,7 @@ export class ScriptEditor extends EditorPlugin {
         loadingLayout.setDirection(Ui.Direction.TopToBottom);
         loadingWidget.layout = loadingLayout;
 
-        this.loadingIndicator = new Ui.StatusIndicator('Loading Script Editor...', loadingWidget);
+        this.loadingIndicator = new Ui.StatusIndicator('Loading Text Editor...', loadingWidget);
         this.loadingIndicator.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Expanding);
         loadingLayout.addWidget(this.loadingIndicator);
         this.loadingIndicator.start();
@@ -137,7 +137,7 @@ export class ScriptEditor extends EditorPlugin {
             const defaultButton = Ui.MessageBox.StandardButton.Save;
             const userChoice = Ui.MessageBox.warning(
                 "",
-                "Would you like to save modified scripts?",
+                "Would you like to save modified assets?",
                 buttons,
                 defaultButton
             );
@@ -176,7 +176,7 @@ export class ScriptEditor extends EditorPlugin {
                 if (assetToOpen.primaryAsset && isValidEntityToEdit(assetToOpen.primaryAsset)) {
                     assetToOpen = assetToOpen.primaryAsset;
                 } else {
-                    console.warn(`[Script Editor] Selected packed Custom Component has no primary asset. Aborting open.`);
+                    console.warn(`[Text Editor] Selected packed Custom Component has no primary asset. Aborting open.`);
                     return false;
                 }
             }

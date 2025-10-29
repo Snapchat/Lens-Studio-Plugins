@@ -373,7 +373,8 @@ export class EffectSettings {
         }
 
         this.dreamId++;
-        this.curId = "new_dream_" + this.dreamId;
+        const previewId = "new_dream_" + this.dreamId;
+        this.curId = previewId;
 
         this.preview.setWaitingState(this.curId);
         this.effectSettingsPage.setId(this.curId);
@@ -382,10 +383,14 @@ export class EffectSettings {
 
         createDream(prompt, seed, (response: any) => {
             if (response.statusCode == 200) {
+                if (previewId === this.curId) {
+                    this.preview.setWaitingState(JSON.parse(response.body).id);
+                }
                 this.onNewDreamCreatedCallback();
             }
             else {
-                if (this.curId !== undefined && this.curId !== null && this.curId === this.preview.getId()) {
+                if (previewId === this.curId) {
+                    this.preview.setId(JSON.parse(response.body).id)
                     this.preview.setDefaultState();
                     this.showPromptPopup();
                 }
@@ -394,7 +399,8 @@ export class EffectSettings {
                     logEventCreate("GUIDELINES_VIOLATION", "NEW", "PROMPT_TEXT");
                 }
                 else if (response.statusCode == 429) {
-                    if (this.curId !== undefined && this.curId !== null && this.curId === this.preview.getId()) {
+                    if (previewId === this.curId) {
+                        this.preview.setId(JSON.parse(response.body).id)
                         this.preview.setDefaultState();
                         this.showPreviewLimitReachedPopup();
                     }
@@ -415,7 +421,7 @@ export class EffectSettings {
                     clearInterval(interval);
                     this.settings[curSettings.id] = curSettings;
                     this.previews[curSettings.id] = {};
-                    if (this.preview.getId() + "" === curSettings.id + "" || (this.curId !== undefined && this.curId !== null && this.curId.startsWith("new_dream_") && this.curId === this.preview.getId())) {
+                    if (this.preview.getId() + "" === curSettings.id + "" && this.preview.isVisible()) {
                         this.setSettings(curSettings);
                     }
                     this.updateSettings(this.settings[JSON.parse(response.body).id]);
@@ -426,7 +432,7 @@ export class EffectSettings {
                     clearInterval(interval);
                     this.settings[curSettings.id] = curSettings;
                     this.previews[curSettings.id] = {};
-                    if (this.preview.getId() + "" === curSettings.id + "" || (this.curId !== undefined && this.curId !== null &&  this.curId.startsWith("new_dream_") && this.curId === this.preview.getId())) {
+                    if (this.preview.getId() + "" === curSettings.id + "" && this.preview.isVisible()) {
                         this.setSettings(curSettings);
                     }
                     this.updateSettings(this.settings[JSON.parse(response.body).id]);

@@ -15,7 +15,7 @@ export class SettingsDescriptor {
                     'class': ClothSelection,
                     'parent': parent,
                     'name': 'garmentType',
-                    'label': 'Type',
+                    'label': 'Select Type',
                     'importer': null,
                     'exporter': (option) => {
                         switch (option) {

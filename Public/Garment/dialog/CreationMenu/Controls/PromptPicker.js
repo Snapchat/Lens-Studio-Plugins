@@ -22,7 +22,7 @@ export class PromptPicker extends Control {
         const layout = new Ui.BoxLayout();
         layout.setDirection(Ui.Direction.TopToBottom);
         layout.spacing = Ui.Sizes.Padding;
-        layout.setContentsMargins(0, 0, 0, 0);
+        layout.setContentsMargins(0, Ui.Sizes.Padding, 0, 0);
 
         const promptHeaderWidget = this['createPromptHeaderWidget'](this.widget, label, hint);
 

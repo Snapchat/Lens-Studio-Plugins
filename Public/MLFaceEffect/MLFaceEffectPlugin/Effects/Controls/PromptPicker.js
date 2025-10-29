@@ -1,6 +1,6 @@
 import * as Ui from 'LensStudio:Ui';
 
-import { getRandomPrompt } from '../../utils.js';
+import {getRandomEnhancedPrompt, getRandomPrompt} from '../../utils.js';
 import { Control } from './Control.js';
 
 import { TabSelection } from './TabSelection.js';
@@ -126,7 +126,7 @@ export class PromptPicker extends Control {
         promptHeaderLayout.addWidget(promptLabel);
 
         if (prompt_hint) {
-            const infoIconImage = new Ui.Pixmap(new Editor.Path(import.meta.resolve('../../Resources/info.svg')));
+            const infoIconImage = new Ui.Pixmap(new Editor.Path(import.meta.resolve('../../Resources/info_icon.svg')));
             this.promptToolTip = new Ui.ImageView(promptHeaderWidget);
 
             this.promptToolTip.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
@@ -155,7 +155,7 @@ export class PromptPicker extends Control {
         }
 
         if (image_hint) {
-            const infoIconImage = new Ui.Pixmap(new Editor.Path(import.meta.resolve('../../Resources/info.svg')));
+            const infoIconImage = new Ui.Pixmap(new Editor.Path(import.meta.resolve('../../Resources/info_icon.svg')));
             this.imageToolTip = new Ui.ImageView(promptHeaderWidget);
 
             this.imageToolTip.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
@@ -189,7 +189,12 @@ export class PromptPicker extends Control {
         this.surpriseMeLabel.text = Ui.getUrlString('Surprise me', '');
 
         this.connections.push(this.surpriseMeLabel.onClick.connect(function() {
-            this.textEdit.value = getRandomPrompt();
+            let newPrompt = getRandomPrompt();
+            let maxCnt = 5;
+            while (this.textEdit.value === newPrompt && --maxCnt >= 0) {
+                newPrompt = getRandomPrompt();
+            }
+            this.textEdit.value = newPrompt;
         }.bind(this)));
 
         promptHeaderLayout.addStretch(0);

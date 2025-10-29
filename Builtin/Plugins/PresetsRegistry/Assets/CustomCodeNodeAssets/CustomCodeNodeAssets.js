@@ -13,4 +13,4 @@ function createCustomCodeNodePreset(name) {
     });
 }
 
-export const DefaultCustomCodePreset = createCustomCodeNodePreset("Default Custom Code Node Asset");
+export const DefaultCustomCodePreset = createCustomCodeNodePreset("Custom Code Node Asset");

@@ -59,7 +59,8 @@ export function tieWidgets(keyWidget, valueWidget, parent) {
     parent.layout = layout;
 }
 
-const infoImage = new Ui.Pixmap(new Editor.Path(import.meta.resolve('Resources/info.svg')));
+const infoImage = new Ui.Pixmap(new Editor.Path(import.meta.resolve('Resources/info_icon.svg')));
+const calloutInfoImage = new Ui.Pixmap(new Editor.Path(import.meta.resolve('Resources/info.svg')));
 
 export function addHint(widget, parent, hint_id) {
     const info = new Ui.ImageView(parent);
@@ -100,6 +101,7 @@ export function addHint(widget, parent, hint_id) {
 
 function createCalloutWidget(parent, text, link) {
     const frame = new Ui.CalloutFrame(parent);
+    frame.setBackgroundColor(createColor(68, 74, 85, 255));
 
     const frameLayout = new Ui.BoxLayout();
     frameLayout.setDirection(Ui.Direction.LeftToRight);
@@ -122,6 +124,15 @@ function createCalloutWidget(parent, text, link) {
     return frame;
 }
 
+function createColor(r, g, b, a) {
+    const color = new Ui.Color();
+    color.red = r;
+    color.green = g;
+    color.blue = b;
+    color.alpha = a;
+    return color;
+}
+
 export function createTermsWidget(parent) {
     const urlString = Ui.getUrlString('Generative Lens Tools Terms', termsLink);
 
@@ -134,7 +145,7 @@ export function createGuidelinesWidget(parent) {
     return createCalloutWidget(parent, 'Check our ' + urlString + ' for examples, prompting best practices and usage guidelines.', guidelinesLink);
 }
 
-export function createGennerationInProgressWidget(parent) {
+export function createGenerationInProgressWidget(parent, isStandard = false) {
     const frame = new Ui.Widget(parent);
 
     frame.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Expanding);
@@ -152,13 +163,10 @@ export function createGennerationInProgressWidget(parent) {
 
     const icon = new Ui.ProgressIndicator(header);
     icon.start();
-    const headerLabel = new Ui.Label(header);
-
-    headerLabel.text = 'In Progress';
-    headerLabel.fontRole = Ui.FontRole.TitleBold;
+    icon.setFixedHeight(32);
+    icon.setFixedWidth(32);
 
     headerLayout.addWidget(icon);
-    headerLayout.addWidget(headerLabel);
 
     header.layout = headerLayout;
 
@@ -166,7 +174,12 @@ export function createGennerationInProgressWidget(parent) {
     frameLayout.addWidgetWithStretch(header, 0, Ui.Alignment.AlignCenter);
 
     const disclaimerLabel = new Ui.Label(frame);
-    disclaimerLabel.text = '<center>Generation is running.</center><center>Please, return back later.</center>';
+    if (isStandard) {
+        disclaimerLabel.text = '<center>Generating preview...<br>This may take up to 10-15 minutes.<br><br>You can close this window and return later.</center>';
+    }
+    else {
+        disclaimerLabel.text = '<center>Generating preview...<br>This may take up to 5 minutes.<br><br>You can close this window and return later.</center>';
+    }
 
     frameLayout.addWidgetWithStretch(disclaimerLabel, 0, Ui.Alignment.AlignCenter);
     frameLayout.addStretch(0);
@@ -180,7 +193,7 @@ export function createErrorIcon(parent) {
 }
 
 export function createInfoIcon(parent) {
-    return createIcon(parent, infoImage);
+    return createIcon(parent, calloutInfoImage);
 }
 
 function createIcon(parent, iconImage) {
@@ -271,6 +284,26 @@ export function getRandomPrompt() {
         'No brows, crazy big smile, big face, big cheeks',
         'Yawning with wide open mouth and closed eyes face',
         'Huge head, big cheeks, big lips, happy'
+    ];
+
+    return prompts[Math.floor(Math.random() * prompts.length)];
+}
+
+export function getRandomEnhancedPrompt() {
+    const prompts = [
+        'human realistic cat head',
+        'tiger face paint, golden and white fur-like patterns around the eyes and cheeks',
+        'a super cute furry squirrel with sparkling eyes, soft fur, rendered 3D',
+        'realistic 3D orc with green skin, bald head',
+        'a quokka 3D cute and simple character',
+        'golden mask, human skull',
+        'humanoid, human skull underneath, the head bald',
+        'a hybrid animal-man, half frog and half human, with a face featuring green skin like a frog',
+        '3D anthropomorphic pink color panther character. Realistic fur texture, elegant and confident expression, detailed digital art',
+        '3D stylized caricature of an older man, deep wrinkles, sad expression, realistic texture, highly detailed character render',
+        '3D stylized caricature of an elderly woman with exaggerated facial features, grey hair, red lips in a kissing expression, highly detailed render',
+        'Fantasy creature with pointed ears, wrinkled skin, dark purple eye sockets, bold purple lips, dark clothing, highly detailed',
+        'a stylized dragon with red scales, oversized green eyes, and glowing wings, designed in a detailed 3D style'
     ];
 
     return prompts[Math.floor(Math.random() * prompts.length)];

@@ -120,6 +120,7 @@ export class Importer {
             const rootSO = scene.addSceneObject(null);
             cameraObject = createOrthographicCameraObject(model, rootSO);
         }
+        
         // Ortho cam exists, add a child scene object and the screen image to the child
         const so = scene.addSceneObject(cameraObject);
         so.layer = Editor.Model.LayerId.Ortho;

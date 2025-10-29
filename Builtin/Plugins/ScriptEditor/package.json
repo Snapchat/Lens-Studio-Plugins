@@ -2,7 +2,7 @@
   "name": "monaco-editor-plugin",
   "version": "1.0.0",
   "private": true,
-  "description": "Script Editor.",
+  "description": "Text Editor.",
   "dependencies": {
     "monaco-editor": "^0.52.2"
   }

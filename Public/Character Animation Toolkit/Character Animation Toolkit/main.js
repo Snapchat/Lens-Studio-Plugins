@@ -1,9 +1,9 @@
 // @ts-nocheck
-import { CoreService } from 'LensStudio:CoreService';
+import { GuiService } from "LensStudio:GuiService";
 import * as Ui from "LensStudio:Ui";
 import { Dialog } from "./Dialog.js";
 import { dependencyContainer, DependencyKeys } from "./DependencyContainer.js";
-export class CharacterAnimationToolkit extends CoreService {
+export class CharacterAnimationToolkit extends GuiService {
     static descriptor() {
         return {
             id: "Com.Snap.CharacterAnimation",

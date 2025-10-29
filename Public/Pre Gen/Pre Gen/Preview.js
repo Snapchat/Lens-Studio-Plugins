@@ -22,6 +22,7 @@ export class Preview {
         widget.setFixedWidth(421);
         widget.autoFillBackground = true;
         widget.backgroundRole = Ui.ColorRole.Mid;
+        this.mainWidget = widget;
         const layout = new Ui.BoxLayout();
         layout.setDirection(Ui.Direction.LeftToRight);
         layout.setContentsMargins(8, 0, 8, 0);
@@ -151,6 +152,12 @@ export class Preview {
     }
     getId() {
         return this.id;
+    }
+    setId(newId) {
+        this.id = newId;
+    }
+    isVisible() {
+        return this.mainWidget && this.mainWidget.visible;
     }
     setPreviewImage() {
         if (!this.imageView || !this.previewImages) {

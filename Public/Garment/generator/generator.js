@@ -91,20 +91,8 @@ export class Generator {
     }
 
     changeState(state, payload) {
-        const stateToLog = {
-            [GeneratorState.Failed]: () => {
-                if (payload && payload.message) {
-                    app.log(payload.message);
-                } else {
-                    app.log("Generation has been failed. Please, try again.");
-                }
-            },
-            [GeneratorState.Running]: () => { app.log("Generating garment...", { 'enabled': true, 'progressBar': true }); },
-            [GeneratorState.Success]: () => { app.log("Garment has been succesfully generated and could be imported into the project.") }
-        }
-
-        if (stateToLog[state]) {
-            stateToLog[state]();
+        if (state === GeneratorState.Failed) {
+            app.log("Generation has been failed. Please, try again.");
         }
 
         this.mState = state;

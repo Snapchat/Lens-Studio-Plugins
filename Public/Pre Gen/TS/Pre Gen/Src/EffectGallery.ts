@@ -15,9 +15,10 @@ export class EffectGallery {
     private connections: Array<any> = [];
     private settings: Record<string, object> = {};
     private authComponent: Editor.IAuthorization | undefined;
+    private lastRequestId = 0;
 
     constructor(parent: Ui.Widget, openEffectSettingsPage: Function, checkDreamStateById: Function, onImportClickCallback: Function, showLoginPageCallback: Function, showPluginPageCallback: Function) {
-        this.gallery = new Gallery(this.onTileClicked.bind(this), onImportClickCallback);
+        this.gallery = new Gallery(this.onTileClicked.bind(this), onImportClickCallback, this.updateGallery.bind(this));
         this.curWidget = this.create(parent, showLoginPageCallback, showPluginPageCallback);
         this.openEffectSettingsPage = openEffectSettingsPage;
         this.checkDreamStateById = checkDreamStateById;
@@ -36,7 +37,7 @@ export class EffectGallery {
         const layout = new Ui.BoxLayout();
         layout.setDirection(Ui.Direction.TopToBottom);
         layout.spacing = Ui.Sizes.DoublePadding;
-        layout.setContentsMargins(Ui.Sizes.DoublePadding, Ui.Sizes.DoublePadding, 19, 0)
+        layout.setContentsMargins(Ui.Sizes.DoublePadding, Ui.Sizes.Padding, 19, 0)
 
         this.stackedWidget = new Ui.StackedWidget(widget);
         this.stackedWidget.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Expanding);
@@ -108,8 +109,10 @@ export class EffectGallery {
         if (!this.authComponent || !this.authComponent.isAuthorized) {
             return;
         }
+        this.lastRequestId++;
+        const currentRequestId = this.lastRequestId;
         getMyDreams((response: any) => {
-            if (response.statusCode !== 200) {
+            if (response.statusCode !== 200 || currentRequestId != this.lastRequestId) {
                 return;
             }
 
@@ -117,16 +120,16 @@ export class EffectGallery {
                 this.stackedWidget.currentIndex = 1;
                 JSON.parse(response.body).items.forEach((item: any) => {
                     if (item.state.startsWith("PACK") && item.state !== "PACK_FAILED" && item.state !== "PACK_SUCCESS") {
-                        this.gallery.addItem(item.id, item.previewUrl, false, false, true);
+                        this.gallery.addItem(item.id, item.prompt, item.previewUrl, false, false, true);
                     }
                     else if (item.state === "PACK_SUCCESS") {
-                        this.gallery.addItem(item.id, item.previewUrl, false, false, false, true);
+                        this.gallery.addItem(item.id, item.prompt, item.previewUrl, false, false, false, true);
                     }
                     else if (item.state === "SUCCESS" || item.state === "PACK_SUCCESS") {
-                        this.gallery.addItem(item.id, item.previewUrl);
+                        this.gallery.addItem(item.id, item.prompt, item.previewUrl);
                     }
                     else {
-                        this.gallery.addItem(item.id, item.previewUrl, false, true);
+                        this.gallery.addItem(item.id, item.prompt, item.previewUrl, false, true);
                         if (item.state === "FAILED" || item.state === "PACK_FAILED") {
                             this.gallery.setFailed(item.id);
                         }
@@ -157,6 +160,7 @@ export class EffectGallery {
     }
 
     resetGallery() {
+        this.lastRequestId++;
         this.gallery.reset();
     }
 

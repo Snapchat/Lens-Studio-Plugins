@@ -14,6 +14,7 @@ export class GalleryItem {
         this.onImportClickCallback = () => { };
         this.id = id;
         this.tempDir = FileSystem.TempDir.create();
+        this.description = "";
         this.frame = new Ui.ImageView(parent);
         this.frame.setFixedWidth(this.tileWidth);
         this.frame.setFixedHeight(this.tileHeight);
@@ -137,6 +138,13 @@ export class GalleryItem {
     setTrained() {
         this.isTrained = true;
         this.importButton.visible = true;
+    }
+    addDescription(newDescription) {
+        this.description = newDescription.replace(/(?<!\d)([1-3])\./g, ' ').replace(/\s+/g, ' ').trim();
+        // console.log(newDescription + "\n" + this.description);
+    }
+    getDescription() {
+        return this.description;
     }
     get state() {
         return this.curState;

@@ -1,0 +1,23 @@
+{
+    "displayName": "API-Definition",
+    "canBeReferencedInPrompt": true,
+    "icon": "$(files)",
+    "name": "API-Definition",
+    "tags": [
+        "API",
+        "Get-Properties"
+    ],
+    "modelDescription": "This tool queries what API is available built-in to the Lens environment in a TypeScript definition format. Useful for finding out types of specific properties or enum member names ",
+    "inputSchema": {
+        "type": "object",
+        "required": [
+            "className"
+        ],
+        "properties": {
+            "className": {
+                "type": "string",
+                "modelDescription": "The class name of the API to get the definition of."
+            }
+        }
+    }
+}

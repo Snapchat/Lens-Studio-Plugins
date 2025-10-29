@@ -441,7 +441,7 @@ class WebviewServerManager {
         const defaultButton = Ui.MessageBox.StandardButton.Save;
         const userChoice = Ui.MessageBox.warning(
             "",
-            "Do you want to save this script?",
+            "Do you want to save this file?",
             buttons,
             defaultButton
         );

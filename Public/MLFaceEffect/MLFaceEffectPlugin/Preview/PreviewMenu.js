@@ -9,18 +9,32 @@ import { Slider, createSlider } from '../Effects/Controls/Slider.js';
 import { UserNotesPicker, createUserNotesPicker } from '../Effects/Controls/UserNotesPicker.js';
 import { SettingsDescriptor } from '../Effects/SettingsDescriptor.js';
 import { createEffect, createPostProcessing } from '../api.js';
-import { buildEffectDataFromResponse, buildPostProcessingDataFromResponse } from '../Effects/EffectFactory.js';
+import {
+    buildEffectDataFromPreset,
+    buildEffectDataFromResponse, buildPostProcessingDataFromPreset,
+    buildPostProcessingDataFromResponse
+} from '../Effects/EffectFactory.js';
 
 import app from '../../application/app.js';
 
 import { logEventAssetCreation } from '../../application/analytics.js';
+import {createModelType} from "../Effects/Controls/ModelType";
+import {EnhancedSettingsDescriptor} from "../Effects/EnhancedSettingsDescriptor";
+import {createEnhancedPromptPicker, EnhancedPromptPicker} from "../Effects/Controls/EnhancedPromptPicker";
+import {createSeed, Seed} from "../Effects/Controls/Seed";
+import {HintID} from "../Hints/HintFactory";
 
 export class PreviewMenu {
-    constructor(onStateChanged, resetParent) {
+    constructor(onStateChanged, resetParent, setDefaultState, setPreviewState) {
         this.connections = [];
         this.onStateChanged = onStateChanged;
         this.controls = {};
+        this.presetList = ['Default', 'Emotions', 'Beauty', 'Cartoon', 'Fun', 'Creepy'];
         this.resetParent = resetParent;
+        this.setDefaultState = setDefaultState;
+        this.setPreviewState = setPreviewState;
+        this.presetCustomizedFlag = false;
+        this.wasPresetTapped = false;
     }
 
     createEffect(controls) {
@@ -28,15 +42,44 @@ export class PreviewMenu {
 
         app.log(`Creating new ${app.name}...`, { 'progressBar': true });
 
-        const effectData = buildEffectDataFromResponse(this.effectSettings, controls);
-        const inputFormat = controls['promptPicker'].mode == "Image" ? "PROMPT_IMAGE" : "PROMPT_TEXT";
+        let effectData;
+        if (this.wasPresetTapped) {
+            effectData = buildEffectDataFromPreset(this.presetControl.value, controls);
+        }
+        else {
+            effectData = buildEffectDataFromResponse(this.effectSettings, controls);
+        }
+
+        let inputFormat = controls['promptPicker'].mode == "Image" ? "PROMPT_IMAGE" : "PROMPT_TEXT";
+
+        if (this.settingsWidget.currentIndex === 0) {
+            effectData = {
+                "userNotes": "",
+                "effectTypeId": "face-enhanced",
+                "settings": {
+                    "image_prompts": controls['enhancedPromptPicker'].imageValue,
+                    "text_prompt": controls['enhancedPromptPicker'].textValue,
+                    "image_reference_strength": this.convertSliderValue(controls['referenceStrength'].value, 1.0, 10.0, 0.5, 2.5),
+                    "attributes_preservation": this.convertSliderValue(controls['attributesPreservation'].value, 1.0, 10.0, 1.0, 2.0),
+                    "seed": this.controls['seed'].value
+                }
+            }
+
+            inputFormat = "TEXT_AND_IMAGE";
+        }
 
         createEffect(effectData, (effectResponse) => {
             if (effectResponse.statusCode == 201) {
                 const effectBody = JSON.parse(effectResponse.body.toString());
                 const effectId = effectBody.id;
 
-                const postProcessingData = buildPostProcessingDataFromResponse(this.postProcessingSettings, controls, effectId);
+                let postProcessingData;
+                if (this.wasPresetTapped) {
+                    postProcessingData = buildPostProcessingDataFromPreset(this.presetControl.value, controls, effectId);
+                }
+                else {
+                    postProcessingData = buildPostProcessingDataFromResponse(this.postProcessingSettings, controls, effectId);
+                }
 
                 createPostProcessing(postProcessingData, (postProcessingResponse) => {
                     if (postProcessingResponse.statusCode == 201) {
@@ -46,7 +89,12 @@ export class PreviewMenu {
                             'creation': true,
                         });
                         logEventAssetCreation("SUCCESS", "UPDATE_EXISTING", inputFormat);
-                        app.log(`${app.name} is queued. ${app.name} creation is estimated to take 10-15 min, please check back later.`);
+                        if (effectBody.effectTypeId === 'face-enhanced') {
+                            app.log(`${app.name} is queued. ${app.name} creation is estimated to take up to 5 minutes, please check back later.`, {'progressBar': true});
+                        }
+                        else {
+                            app.log(`${app.name} is queued. ${app.name} creation is estimated to take 10-15 min, please check back later.`, {'progressBar': true});
+                        }
                     } else {
                         app.log('Something went wrong, please try again.');
                         logEventAssetCreation("FAILED", "UPDATE_EXISTING", inputFormat);
@@ -72,22 +120,41 @@ export class PreviewMenu {
 
         if (effect_settings) {
             // choose model type
-            if (effect_settings.effectTypeId == 'face-text') {
-                this.controls['promptPicker'].mode = 'Image';
-                this.controls['promptPicker'].value = [];
-                this.controls['promptPicker'].mode = 'Text';
-                this.controls['promptPicker'].value = effect_settings.settings.target_class;
+            if (effect_settings.effectTypeId == 'face-enhanced') {
+                this.settingsWidget.currentIndex = 0;
+                this.controls['modelType'].showEnhancedButton();
+                this.controls['enhancedPromptPicker'].textValue = effect_settings.settings.text_prompt;
+                this.controls['enhancedPromptPicker'].imageValue = JSON.parse(JSON.stringify(effect_settings.settings.image_prompts));
 
-            } else if (effect_settings.effectTypeId == 'face-image') {
-                this.controls['promptPicker'].mode = 'Text';
-                this.controls['promptPicker'].value = '';
-                this.controls['promptPicker'].mode = 'Image';
-                this.controls['promptPicker'].value = JSON.parse(JSON.stringify(effect_settings.settings.target_images));
+                this.controls['referenceStrength'].value = this.convertSliderValue(effect_settings.settings.image_reference_strength, 0.5, 2.5, 1.0, 10.0);
+                this.controls['attributesPreservation'].value = this.convertSliderValue(effect_settings.settings.attributes_preservation, 1.0, 2.0, 1.0, 10.0);
+                this.controls['seed'].value = effect_settings.settings.seed;
+
+                this.lockEnhanced();
             }
-            this.controls['promptPicker'].widget.enabled = true;
+            else {
+                this.settingsWidget.currentIndex = 1;
+                this.controls['modelType'].showStandardButton();
+                if (effect_settings.effectTypeId == 'face-text') {
+                    this.controls['promptPicker'].mode = 'Image';
+                    this.controls['promptPicker'].value = [];
+                    this.controls['promptPicker'].mode = 'Text';
+                    this.controls['promptPicker'].value = effect_settings.settings.target_class;
 
-            this.controls['effectIntensitySettings'].backendValue = effect_settings.settings.num_steps;
-            this.controls['effectIntensitySettings'].widget.enabled = true;
+                } else if (effect_settings.effectTypeId == 'face-image') {
+                    this.controls['promptPicker'].mode = 'Text';
+                    this.controls['promptPicker'].value = '';
+                    this.controls['promptPicker'].mode = 'Image';
+                    this.controls['promptPicker'].value = JSON.parse(JSON.stringify(effect_settings.settings.target_images));
+                }
+
+                this.controls['promptPicker'].widget.enabled = true;
+
+                this.controls['effectIntensitySettings'].backendValue = effect_settings.settings.num_steps;
+                this.controls['effectIntensitySettings'].widget.enabled = true;
+
+                this.lockStandard();
+            }
         } else {
             this.status = 'FAILED';
             this.editEffectButton.enabled = false;
@@ -112,16 +179,7 @@ export class PreviewMenu {
             this.controls['faceContourPreservationSettings'].backendValue = post_processing_settings.postprocessingSettings.user_settings.face_parts.face_shape.geometry_source;
             this.controls['hairPreservationSettings'].backendValue = post_processing_settings.postprocessingSettings.user_settings.face_parts.hair.preserve_content;
 
-            this.controls['userSkinTextureSettings'].widget.enabled = true;
-            this.controls['userSkinToneSettings'].widget.enabled = true;
-            this.controls['userIdentitySettings'].widget.enabled = true;
-            this.controls['eyesPreservationSettings'].widget.enabled = true;
-            this.controls['mouthPreservationSettings'].widget.enabled = true;
-            this.controls['nosePreservationSettings'].widget.enabled = true;
-            this.controls['earsPreservationSettings'].widget.enabled = true;
-            this.controls['browsPreservationSettings'].widget.enabled = true;
-            this.controls['faceContourPreservationSettings'].widget.enabled = true;
-            this.controls['hairPreservationSettings'].widget.enabled = true;
+            // this.setStandardSettingsState(true);
         } else {
             this.status = 'FAILED';
             this.editEffectButton.enabled = false;
@@ -137,25 +195,72 @@ export class PreviewMenu {
             this.controls['faceContourPreservationSettings'].reset();
             this.controls['hairPreservationSettings'].reset();
 
-            this.controls['userSkinTextureSettings'].widget.enabled = false;
-            this.controls['userSkinToneSettings'].widget.enabled = false;
-            this.controls['userIdentitySettings'].widget.enabled = false;
-            this.controls['eyesPreservationSettings'].widget.enabled = false;
-            this.controls['mouthPreservationSettings'].widget.enabled = false;
-            this.controls['nosePreservationSettings'].widget.enabled = false;
-            this.controls['earsPreservationSettings'].widget.enabled = false;
-            this.controls['browsPreservationSettings'].widget.enabled = false;
-            this.controls['faceContourPreservationSettings'].widget.enabled = false;
-            this.controls['hairPreservationSettings'].widget.enabled = false;
+            this.setStandardSettingsState(false);
         }
     }
 
+    lockEnhanced() {
+        this.generateButton.visible = false;
+        this.controls['enhancedPromptPicker'].lock();
+        this.controls['referenceStrength'].widget.enabled = false;
+        this.controls['attributesPreservation'].widget.enabled = false;
+        this.controls['seed'].widget.enabled = false;
+    }
+
+    unlockEnhanced() {
+        this.generateButton.visible = true;
+        this.controls['enhancedPromptPicker'].unlock();
+        this.controls['referenceStrength'].widget.enabled = this.controls['enhancedPromptPicker'].imagePickerValue.length > 0 && !this.controls['enhancedPromptPicker'].locked;
+        this.controls['attributesPreservation'].widget.enabled = true;
+        this.controls['seed'].widget.enabled = true;
+    }
+
+    lockStandard() {
+        this.generateButton.visible = false;
+        this.controls['promptPicker'].widget.enabled = false;
+        this.controls['effectIntensitySettings'].widget.enabled = false;
+        this.presetControl.widget.enabled = false;
+        this.setStandardSettingsState(false);
+    }
+
+    unlockStandard() {
+        this.generateButton.visible = true;
+        this.controls['promptPicker'].widget.enabled = true;
+        this.controls['effectIntensitySettings'].widget.enabled = true;
+        this.presetControl.widget.enabled = true;
+        this.setStandardSettingsState(true);
+    }
+
+    setStandardSettingsState(state) {
+        this.controls['userSkinTextureSettings'].widget.enabled = state;
+        this.controls['userSkinToneSettings'].widget.enabled = state;
+        this.controls['userIdentitySettings'].widget.enabled = state;
+        this.controls['eyesPreservationSettings'].widget.enabled = state;
+        this.controls['mouthPreservationSettings'].widget.enabled = state;
+        this.controls['nosePreservationSettings'].widget.enabled = state;
+        this.controls['earsPreservationSettings'].widget.enabled = state;
+        this.controls['browsPreservationSettings'].widget.enabled = state;
+        this.controls['faceContourPreservationSettings'].widget.enabled = state;
+        this.controls['hairPreservationSettings'].widget.enabled = state;
+    }
+
+    convertSliderValue(sliderValue, xMin, xMax, yMin, yMax) {
+        const scale = (sliderValue - xMin) / (xMax - xMin);
+        return yMin + scale * (yMax - yMin);
+    }
+
     reset() {
+        this.presetControl.value = 'Default';
         this.controls['userNotes'].value = "";
         this.fillSettings(this.effectSettings, this.postProcessingSettings);
+        this.presetCustomizedFlag = false;
+        this.wasPresetTapped = false;
     }
 
     updatePreview(state) {
+        this.presetControl.value = 'Default';
+        this.editEffectButton.visible = true;
+        this.setPreviewState();
         this.createdOnValue.text = convertDate(state.created_on);
         if (state.userNotes) {
             this.controls['userNotes'].value = state.userNotes;
@@ -164,6 +269,12 @@ export class PreviewMenu {
         }
 
         this.fillSettings(state.effect_get_response, state.post_processing_get_response);
+        this.presetCustomizedFlag = false;
+        this.wasPresetTapped = false;
+    }
+
+    isLocked() {
+        return !this.generateButton.visible;
     }
 
     createHeader(parent) {
@@ -172,7 +283,7 @@ export class PreviewMenu {
 
         const headerLayout = new Ui.BoxLayout();
         headerLayout.setDirection(Ui.Direction.LeftToRight);
-        headerLayout.setContentsMargins(8, 8, 8, 8);
+        headerLayout.setContentsMargins(8, 8, 16, 8);
 
         const arrowImage = new Ui.Pixmap(new Editor.Path(import.meta.resolve('../Resources/arrow.svg')));
 
@@ -194,38 +305,64 @@ export class PreviewMenu {
         app.log('', { 'enabled': false });
 
         this.headerTitle = new Ui.Label(this.header);
-        this.headerTitle.text = app.name;
+        this.headerTitle.text = "Effect Settings";
         this.headerTitle.fontRole = Ui.FontRole.TitleBold;
+        this.headerTitle.foregroundRole = Ui.ColorRole.BrightText;
 
         headerLayout.addWidget(this.backButton);
-        headerLayout.addStretch(0);
+
+        const spacer = new Ui.Widget(this.header);
+        spacer.setFixedWidth(8);
+        headerLayout.addWidget(spacer);
         headerLayout.addWidget(this.headerTitle);
         headerLayout.addStretch(0);
+
+        this.deleteButton = new Ui.PushButton(this.header);
+        this.deleteButton.setFixedHeight(20);
+        this.deleteButton.text = '';
+        const deleteImagePath = new Editor.Path(import.meta.resolve('../Resources/delete.svg'));
+        this.deleteButton.setIconWithMode(Editor.Icon.fromFile(deleteImagePath), Ui.IconMode.MonoChrome);
+
+        headerLayout.addWidgetWithStretch(this.deleteButton, 0, Ui.Alignment.AlignRight | Ui.Alignment.AlignCenter);
 
         this.header.layout = headerLayout;
         return this.header;
     }
 
+    getDeleteButton() {
+        return this.deleteButton;
+    }
+
+    setGenerateButton(button) {
+        this.generateButton = button;
+        this.connections.push(this.generateButton.onClick.connect(() => {
+            this.generateButton.enabled = false;
+            this.createEffect(this.controls);
+        }));
+    }
+
     createFooter(parent) {
         this.footer = new Ui.Widget(parent);
-        this.footer.setFixedHeight(65);
+        this.footer.setFixedHeight(56);
 
         const footerLayout = new Ui.BoxLayout();
         footerLayout.setDirection(Ui.Direction.LeftToRight);
-        footerLayout.setContentsMargins(8, 12, 8, 8);
+        footerLayout.setContentsMargins(16, 0, 16, 0);
 
         this.editEffectButton = new Ui.PushButton(this.footer);
-        this.editEffectButton.text = `Update ${app.name}`;
-        const editImagePath = new Editor.Path(import.meta.resolve('../Resources/edit.svg'));
-        this.editEffectButton.setIconWithMode(Editor.Icon.fromFile(editImagePath), Ui.IconMode.MonoChrome);
+        this.editEffectButton.text = `Copy Settings`;
 
         this.connections.push(this.editEffectButton.onClick.connect(() => {
-            this.createEffect(this.controls);
+            // this.createEffect(this.controls);
+            this.editEffectButton.visible = false;
+            this.unlockEnhanced();
+            this.unlockStandard();
+            this.setDefaultState();
         }));
 
-        footerLayout.addStretch(0);
-        footerLayout.addWidgetWithStretch(this.editEffectButton, 0, Ui.Alignment.AlignTop);
-        footerLayout.addStretch(0);
+        // footerLayout.addStretch(0);
+        footerLayout.addWidgetWithStretch(this.editEffectButton, 0, Ui.Alignment.AlignLeft | Ui.Alignment.AlignCenter);
+        // footerLayout.addStretch(0);
 
         this.footer.layout = footerLayout;
         return this.footer;
@@ -258,6 +395,9 @@ export class PreviewMenu {
         this.menuLayout.addWidget(guidelines);
         this.menuLayout.addWidget(createdOnSettings);
 
+        // Preset
+        this.presetControl = new ComboBox(this.menu, 'Preset', null, null, this.presetList);
+
         const createControl = (scheme) => {
             switch (scheme.class) {
                 case TabSelection:
@@ -269,6 +409,9 @@ export class PreviewMenu {
                 case PromptPicker:
                     this.controls[scheme.name] = createPromptPicker(scheme);
                     break;
+                case EnhancedPromptPicker:
+                    this.controls[scheme.name] = createEnhancedPromptPicker(scheme);
+                    break;
                 case ComboBox:
                     this.controls[scheme.name] = createComboBox(scheme);
                     break;
@@ -278,6 +421,22 @@ export class PreviewMenu {
                 case UserNotesPicker:
                     this.controls[scheme.name] = createUserNotesPicker(scheme);
                     break;
+                case Seed:
+                    this.controls[scheme.name] = createSeed(scheme);
+                    break;
+            }
+
+            if (scheme.preset_based) {
+                this.presetControl.addOnValueChanged((preset) => {
+                    const control = this.controls[scheme.name];
+                    control.value = scheme.preset_values[preset];
+                    this.presetCustomizedFlag = false;
+                    this.wasPresetTapped = true;
+                });
+
+                this.controls[scheme.name].addOnValueChanged((value) => {
+                    this.presetCustomizedFlag = true;
+                });
             }
 
             return this.controls[scheme.name];
@@ -296,7 +455,7 @@ export class PreviewMenu {
             collapsePanel.overrideBackgroundRole = false;
             collapsePanel.setContentsMargins(0, 0, 0, 0);
             collapsePanel.autoFillBackground = true;
-            collapsePanel.backgroundRole = Ui.ColorRole.Midlight;
+            collapsePanel.backgroundRole = Ui.ColorRole.Base;
             collapsePanel.expand(scheme.expanded);
 
             scheme.items.forEach((item) => {
@@ -313,32 +472,88 @@ export class PreviewMenu {
         };
 
         const createSeparator = (scheme) => {
-            const separator = new Ui.Separator(Ui.Orientation.Horizontal, Ui.Shadow.Plain, scheme.parent);
+            const separator = new Ui.Separator(Ui.Orientation.Horizontal, Ui.Shadow.Raised, scheme.parent);
             separator.foregroundRole = Ui.ColorRole.BrightText;
             separator.setContentsMargins(0, 0, 0, 0);
             return separator;
         };
 
+        this.controls['modelType'] = createModelType(this.menu, "Model Type", HintID.standard_mode, HintID.enhanced_mode);
+        this.menuLayout.addWidget(this.controls['modelType'].widget);
+
+        this.settingsWidget = new Ui.StackedWidget(this.menu);
+
+        this.standardSettingsWidget = new Ui.Widget(this.settingsWidget);
+        this.standardSettingsLayout = new Ui.BoxLayout();
+        this.standardSettingsLayout.setDirection(Ui.Direction.TopToBottom);
+        this.standardSettingsLayout.setContentsMargins(0, 0, 0, 0);
+        this.standardSettingsWidget.layout = this.standardSettingsLayout;
+
+        this.enhancedSettingsWidget = new Ui.Widget(this.settingsWidget);
+        this.enhancedSettingsLayout = new Ui.BoxLayout();
+        this.enhancedSettingsLayout.setDirection(Ui.Direction.TopToBottom);
+        this.enhancedSettingsLayout.setContentsMargins(0, 0, 0, 0);
+        this.enhancedSettingsWidget.layout = this.enhancedSettingsLayout;
+
+        this.settingsWidget.addWidget(this.enhancedSettingsWidget);
+        this.settingsWidget.addWidget(this.standardSettingsWidget);
+
+        this.settingsWidget.currentIndex = 1;
+
+        this.controls['modelType'].addOnValueChanged((value) => {
+            this.settingsWidget.currentIndex = value;
+        });
+
         this.settingsScheme = new SettingsDescriptor().getSettingsDescriptor(this.menu);
+        this.enhancedSettingsScheme = new EnhancedSettingsDescriptor().getSettingsDescriptor(this.enhancedSettingsWidget);
 
         this.settingsScheme.items.forEach((settingItem) => {
             switch (settingItem.type) {
                 case 'control':
-                    this.menuLayout.addWidget(createControl(settingItem).widget);
+                    this.standardSettingsLayout.addWidget(createControl(settingItem).widget);
                     break;
                 case 'group':
-                    this.menuLayout.addWidget(createGroup(settingItem));
+                    this.standardSettingsLayout.addWidget(createGroup(settingItem));
                     break;
                 case 'separator':
-                    this.menuLayout.addWidget(createSeparator(settingItem));
+                    this.standardSettingsLayout.addWidget(createSeparator(settingItem));
+                    break;
+                case 'presetPicker':
+                    this.standardSettingsLayout.addWidget(this.presetControl.widget);
                     break;
             }
         });
 
+        this.enhancedSettingsScheme.items.forEach((settingItem) => {
+            switch (settingItem.type) {
+                case 'control':
+                    this.enhancedSettingsLayout.addWidget(createControl(settingItem).widget);
+                    break;
+                case 'separator':
+                    this.enhancedSettingsLayout.addWidget(createSeparator(settingItem));
+                    break;
+            }
+        })
+
         this.controls['promptPicker'].addOnValueChanged((value) => {
             this.editEffectButton.enabled = value.length > 0 && this.status == 'SUCCESS';
+            if (this.generateButton) {
+                this.generateButton.enabled = value.length > 0 && this.status == 'SUCCESS';
+            }
         });
 
+        this.controls['enhancedPromptPicker'].addOnValueChanged((value) => {
+            this.editEffectButton.enabled = this.controls['enhancedPromptPicker'].valueExists && this.status == 'SUCCESS';
+            this.controls['referenceStrength'].widget.enabled = this.controls['enhancedPromptPicker'].imagePickerValue.length > 0 && !this.controls['enhancedPromptPicker'].locked;
+            if (this.generateButton) {
+                this.generateButton.enabled = this.controls['enhancedPromptPicker'].valueExists && this.status == 'SUCCESS';
+            }
+        });
+
+        this.standardSettingsLayout.addStretch(0);
+        this.enhancedSettingsLayout.addStretch(0);
+
+        this.menuLayout.addWidget(this.settingsWidget);
         this.menuLayout.addStretch(0);
 
         this.menuLayout.setContentsMargins(16, 8, 16, 8);
@@ -351,7 +566,7 @@ export class PreviewMenu {
         const verticalScrollArea = new Ui.VerticalScrollArea(this.menu);
         verticalScrollArea.setWidget(scrollWidget);
         verticalScrollArea.setFixedHeight(520);
-        verticalScrollArea.setFixedWidth(320);
+        verticalScrollArea.setFixedWidth(378);
         const scrollLayout = new Ui.BoxLayout();
         scrollLayout.setDirection(Ui.Direction.TopToBottom);
         scrollLayout.setContentsMargins(0, 0, 0, 0);
@@ -367,7 +582,7 @@ export class PreviewMenu {
 
     create(parent) {
         this.widget = new Ui.Widget(parent);
-        this.widget.setFixedWidth(320);
+        this.widget.setFixedWidth(378);
         this.widget.setFixedHeight(620);
 
         this.widget.setContentsMargins(0, 0, 0, 0);
@@ -381,10 +596,10 @@ export class PreviewMenu {
         this.layout.setContentsMargins(0, 0, 0, 0);
 
         this.layout.addWidget(header);
-        const separator1 = new Ui.Separator(Ui.Orientation.Horizontal, Ui.Shadow.Plain, this.widget);
-        separator1.setFixedHeight(Ui.Sizes.SeparatorLineWidth);
+        // const separator1 = new Ui.Separator(Ui.Orientation.Horizontal, Ui.Shadow.Plain, this.widget);
+        // separator1.setFixedHeight(Ui.Sizes.SeparatorLineWidth);
 
-        this.layout.addWidget(separator1);
+        // this.layout.addWidget(separator1);
         this.layout.addWidget(menu);
         this.layout.addStretch(0);
 
@@ -394,7 +609,7 @@ export class PreviewMenu {
 
         this.layout.addWidget(footer);
 
-        this.widget.backgroundRole = Ui.ColorRole.Midlight;
+        this.widget.backgroundRole = Ui.ColorRole.Base;
         this.widget.autoFillBackground = true;
         this.layout.spacing = 0;
         this.widget.layout = this.layout;

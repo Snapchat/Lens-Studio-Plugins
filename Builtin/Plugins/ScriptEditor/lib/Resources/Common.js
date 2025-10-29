@@ -1,6 +1,6 @@
 export const PluginSettings = {
     PluginID: 'Snap.Plugin.Gui.ScriptEditor',
-    PluginName: 'Script Editor',
+    PluginName: 'Text Editor',
 }
 
 export const EDITOR_EVENTS = {

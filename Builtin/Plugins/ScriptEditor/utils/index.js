@@ -13,7 +13,7 @@ export const isValidScriptToEdit = (entity) => {
 }
 
 export const isValidEntityToEdit = (entity) => {
-    return isScriptAsset(entity) || entity.getTypeName() === "MarkdownAsset";
+    return isValidScriptToEdit(entity) || entity.getTypeName() === "MarkdownAsset" || entity.getTypeName() === "JsonAsset" || entity.getTypeName() === "CustomCodeNodeAsset";
 }
 
 export const getLanguageFromFilePath = (filePath) => {
@@ -23,6 +23,10 @@ export const getLanguageFromFilePath = (filePath) => {
         return 'javascript';
     } else if (filePath.endsWith('.md')) {
         return 'markdown';
+    } else if (filePath.endsWith('.json')) {
+        return 'json';
+    } else if (filePath.endsWith('.customCode')) {
+        return 'CustomCodeNodeGlsl';
     }
 }
 

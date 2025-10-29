@@ -1,0 +1,50 @@
+{
+  "componentName": "[Replace with your custom component name]",
+  "description": "A detailed description of what this does and its purpose. This should explain the functionality, use cases, and benefits of using this component.",
+  "renderLayer": "Replace with your chosen Render Layer",
+  "compositionNotes": "These notes are used by the system to determine component inclusion in a lens. Describe any dependencies, requirements, or constraints for using this component with other components.",
+  "designNotes": "These notes influence how the system populates the component's inputs. Please provide some examples of input values and explain how they affect the component's behavior. For example: 'Use bright colors for energetic effects, muted tones for subtle enhancements.'",
+  "codingNotes": "These notes are for the coding agent, describe how to use the API of your component (inputs/functions/events) for different scenarios. Include code examples and best practices.",
+    "inputs": [
+      {
+      "name": "simpleInput",
+      "description": "This is an example of a simple input where no generator is used.",
+      "type": "float",
+      "default": "1.0"
+    },
+    {
+      "name": "prefabInput",
+      "description": "This is an example of generating a 3D object to be used as an input.",
+      "type": "Asset.ObjectPrefab",
+      "assetProvider": "3D Object",
+      "assetStyle": "Low poly, stylized, fantasy theme"
+    }
+  ],
+  "functions": [
+    {
+      "name": "exampleFunction",
+      "description": "This is an example of a function that returns a boolean value. It was exposed in the script as `script.exampleFunction = function (exampleArg: float) {return true;}`.",
+      "returnType": "boolean",
+      "arguments": [
+        {
+          "name": "exampleArg",
+          "type": "float",
+          "description": "Description of the argument a Lens Controller should pass in."
+        }
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "exampleEvent", 
+      "description": "This is an example of an event. It was exposed in the script as `script.exampleEvent = new eventModule.EventWrapper();` where you can get eventModule from the Asset Library.",
+      "arguments": [
+        {
+          "name": "examplePassedInArg",
+          "type": "float",
+          "description": "Description of the passed in value."
+        }
+      ]
+    }
+  ]
+}

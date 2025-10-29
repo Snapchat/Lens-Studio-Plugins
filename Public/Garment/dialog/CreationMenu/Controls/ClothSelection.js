@@ -15,7 +15,7 @@ export class ClothSelection extends Control {
         const layout = new Ui.BoxLayout();
         layout.setDirection(Ui.Direction.TopToBottom);
         layout.spacing = Ui.Sizes.Padding;
-        layout.setContentsMargins(0, 0, 0, Ui.Sizes.Padding);
+        layout.setContentsMargins(0, Ui.Sizes.Padding, 0, 0);
 
         layout.addWidget(this.mLabelBox);
         layout.addWidget(this.mControl.widget);
@@ -168,8 +168,6 @@ class Selector {
         this.onValueChangedCallbackList.forEach((cb) => cb());
     }
 }
-
-
 
 export function createClothSelection(scheme) {
     return new ClothSelection(scheme.parent, scheme.label, scheme.importer, scheme.exporter, scheme.options, scheme.hint, scheme.default_value);

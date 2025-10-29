@@ -2,7 +2,7 @@
 import * as Ui from "LensStudio:Ui";
 import { GalleryItem } from "./GalleryItem.js";
 export class Gallery {
-    constructor(onTileClickCallback, onImportClickCallback) {
+    constructor(onTileClickCallback, onImportClickCallback, onReloadClickCallback) {
         this.allItems = [];
         this.visibleItems = [];
         this.isWaitingForCallback = false;
@@ -10,6 +10,8 @@ export class Gallery {
         this.tilesPerRow = 3;
         this.onTileClickCallback = onTileClickCallback;
         this.onImportClickCallback = onImportClickCallback;
+        this.onReloadClickCallback = onReloadClickCallback;
+        this.searchText = "";
     }
     create(parent) {
         const widget = new Ui.Widget(parent);
@@ -17,15 +19,22 @@ export class Gallery {
         widget.setContentsMargins(0, 0, 0, 0);
         widget.autoFillBackground = true;
         widget.backgroundRole = Ui.ColorRole.Base;
+        const layout = new Ui.BoxLayout();
+        layout.setDirection(Ui.Direction.TopToBottom);
+        layout.setContentsMargins(0, 0, 0, 0);
+        layout.spacing = Ui.Sizes.DoublePadding;
+        const header = this.createHeader(widget);
         this.spacer = new Ui.Widget(widget);
         this.spacer.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Expanding);
+        const gridWidget = new Ui.Widget(widget);
+        gridWidget.setContentsMargins(0, 0, 0, 0);
         const grid = new Ui.GridLayout();
         grid.spacing = 8;
         grid.setContentsMargins(0, 0, 0, 0);
-        const scrollWidget = new Ui.Widget(widget);
+        const scrollWidget = new Ui.Widget(gridWidget);
         scrollWidget.setContentsMargins(0, 0, 16, 0);
         scrollWidget.layout = grid;
-        const verticalScrollArea = new Ui.VerticalScrollArea(widget);
+        const verticalScrollArea = new Ui.VerticalScrollArea(gridWidget);
         verticalScrollArea.setWidget(scrollWidget);
         const scrollLayout = new Ui.BoxLayout();
         scrollLayout.setDirection(Ui.Direction.TopToBottom);
@@ -33,18 +42,48 @@ export class Gallery {
         scrollLayout.spacing = 0;
         scrollLayout.setContentsMargins(0, 0, 0, 0);
         this.gridLayout = grid;
-        this.parent = widget;
-        const spinner = new Ui.ProgressIndicator(widget);
+        this.parent = gridWidget;
+        const spinner = new Ui.ProgressIndicator(gridWidget);
         spinner.setFixedWidth(32);
         spinner.setFixedHeight(32);
         spinner.start();
         spinner.visible = false;
-        spinner.move(178, 250);
+        spinner.move(178, 240);
         this.spinner = spinner;
-        widget.layout = scrollLayout;
+        gridWidget.layout = scrollLayout;
+        layout.addWidget(header);
+        layout.addWidget(gridWidget);
+        widget.layout = layout;
         return widget;
     }
-    addItem(id, previewUrl, isDefault = false, inProgress = false, isTraining = false, isTrained = false) {
+    createHeader(parent) {
+        const widget = new Ui.Widget(parent);
+        widget.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Expanding);
+        widget.setContentsMargins(0, 0, 0, 0);
+        widget.autoFillBackground = true;
+        widget.backgroundRole = Ui.ColorRole.Base;
+        widget.setFixedHeight(20);
+        const layout = new Ui.BoxLayout();
+        layout.setDirection(Ui.Direction.LeftToRight);
+        layout.setContentsMargins(0, 0, 0, 0);
+        layout.spacing = Ui.Sizes.HalfPadding;
+        const reloadButton = new Ui.ToolButton(widget);
+        reloadButton.scaledContents = true;
+        const reloadIconPath = new Editor.Path(import.meta.resolve('./Resources/refresh.svg'));
+        reloadButton.setIcon(Editor.Icon.fromFile(reloadIconPath));
+        const searchLine = new Ui.SearchLineEdit(widget);
+        layout.addWidget(reloadButton);
+        layout.addWidget(searchLine);
+        widget.layout = layout;
+        searchLine.onTextChange.connect((text) => {
+            this.onSearchTextChanged(text.toLowerCase());
+        });
+        reloadButton.onClick.connect(() => {
+            this.onReloadClickCallback();
+        });
+        return widget;
+    }
+    addItem(id, description, previewUrl, isDefault = false, inProgress = false, isTraining = false, isTrained = false) {
         if (!this.parent || !this.gridLayout) {
             return;
         }
@@ -84,12 +123,12 @@ export class Gallery {
         item.setOnImportClickCallback((id) => {
             this.onImportClickCallback(id);
         });
+        item.addDescription(description);
         this.allItems.push(item);
-        this.visibleItems.push(item);
+        if (this.shouldItemBeVisible(item)) {
+            this.visibleItems.push(item);
+        }
         this.arrangeLayout();
-    }
-    addDefaultItem() {
-        this.addItem("00", "", true);
     }
     addPreview(id, previewUrl) {
         if (this.pendingPreviews[id]) {
@@ -121,6 +160,29 @@ export class Gallery {
         });
         this.gridLayout.addWidgetAt(this.spacer, row, col, Ui.Alignment.Default);
         this.gridLayout.setRowStretch(row + 1, 1);
+    }
+    onSearchTextChanged(newSearchText) {
+        this.searchText = newSearchText;
+        this.selectVisibleItems();
+    }
+    selectVisibleItems() {
+        this.visibleItems = [];
+        this.allItems.forEach((item) => {
+            if (this.shouldItemBeVisible(item)) {
+                item.widget.visible = true;
+                this.visibleItems.push(item);
+            }
+            else {
+                item.widget.visible = false;
+            }
+        });
+        this.arrangeLayout();
+    }
+    shouldItemBeVisible(item) {
+        if ((this.searchText === "" || item.getDescription().toLowerCase().search(this.searchText) !== -1)) {
+            return true;
+        }
+        return false;
     }
     reset() {
         this.allItems.forEach((item, i) => {

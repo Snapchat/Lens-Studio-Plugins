@@ -1,0 +1,10 @@
+{
+  "type": "module",
+  "scripts": {
+    "clean": "rm -rf dist",
+    "buildPlugin": "npx tsc",
+    "compileSource": "npx ts-node helpers/compileSource.ts",
+    "build": "npm run clean && npm run buildPlugin && npm run compileSource",
+    "export": "mkdir -p resources && zip -r resources/ChatTools-ApiDefinition.zip dist module.json"
+  }
+}

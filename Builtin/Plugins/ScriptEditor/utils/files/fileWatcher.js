@@ -1,6 +1,4 @@
-const isValidScriptComponent = (entity) => {
-    return !!(entity && (entity.isOfType("JavaScriptAsset") || entity.isOfType("TypeScriptAsset")));
-};
+import { isValidEntityToEdit } from '../index.js';
 
 export class FileWatcher {
     constructor(model, webSocketManager) {
@@ -26,7 +24,7 @@ export class FileWatcher {
 
         // Handles adding a new script asset to the project
         this.connections.push(project.onEntityAdded("ScriptAsset").connect((entity) => {
-            if (isValidScriptComponent(entity)) {
+            if (isValidEntityToEdit(entity)) {
                 this.webSocketManager.loadDependency(entity.fileMeta.sourcePath.toString(), entity.id.toString());
             }
         }));
@@ -37,14 +35,14 @@ export class FileWatcher {
 
             if (primaryAsset && primaryAsset.isOfType("NativePackageDescriptor")) {
                 this.handlePackageRename(entity);
-            } else if (primaryAsset && isValidScriptComponent(primaryAsset)) {
+            } else if (primaryAsset && isValidEntityToEdit(primaryAsset)) {
                 this.notifyPathChange(primaryAsset);
             }
         }));
 
         // Handles external content updates and path changes from repacking
         this.connections.push(project.onEntityUpdated("ScriptAsset").connect((entity) => {
-            if (isValidScriptComponent(entity)) {
+            if (isValidEntityToEdit(entity)) {
                 this.notifyPathChange(entity);
                 this.webSocketManager.notifyFileContentChanged(entity.id.toString());
             }
@@ -58,7 +56,7 @@ export class FileWatcher {
         }));
 
         this.connections.push(project.onEntityUpdated("Asset").connect((entity) => {
-            if (isValidScriptComponent(entity)) {
+            if (isValidEntityToEdit(entity)) {
                 this.webSocketManager.notifyFileContentChanged(entity.id.toString());
                 this.webSocketManager.updateFileReadOnlyStatus(entity.id.toString());
             }
@@ -77,7 +75,7 @@ export class FileWatcher {
     }
 
     notifyPathChange(asset) {
-        if (!isValidScriptComponent(asset)) {
+        if (!isValidEntityToEdit(asset)) {
             return;
         }
 

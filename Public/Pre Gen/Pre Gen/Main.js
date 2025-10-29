@@ -1,9 +1,9 @@
 // @ts-nocheck
-import { CoreService } from "LensStudio:CoreService";
+import { GuiService } from "LensStudio:GuiService";
 import * as Ui from "LensStudio:Ui";
 import { Dialog } from "./Dialog.js";
 import app from "./app.js";
-export class PreGen extends CoreService {
+export class PreGen extends GuiService {
     static descriptor() {
         return {
             id: "Com.Snap.PreGen",

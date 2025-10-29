@@ -365,6 +365,7 @@ class TextField {
         this.surpriseMeLabel = surpriseMeLabel;
 
         if (onSurpriseMeButtonClickCallback) {
+            this.hasSurpriseMeButton = true;
             this.surpriseMeLabel.visible = true;
             this.connections.push(this.surpriseMeLabel.onClick.connect(() => {
                 if (this.lockedBox.visible) {

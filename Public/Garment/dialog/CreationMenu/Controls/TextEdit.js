@@ -38,7 +38,6 @@ export class TextEdit extends Control {
                     this.moveCursorToEnd();
                     this.mControl.blockSignals(false);
                 }
-
                 limitationLabel.text = this.value.length + " / " + this.maxSymbols;
             });
 

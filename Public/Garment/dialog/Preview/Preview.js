@@ -2,13 +2,9 @@ import * as Ui from 'LensStudio:Ui';
 import * as Shell from 'LensStudio:Shell';
 
 import app from '../../application/app.js';
-import { DIALOG_HEIGHT } from '../GarmentDialog.js';
 import { createErrorIcon } from '../utils.js';
 import { GeneratorState } from '../../generator/generator.js';
-import { logEventAssetImport } from '../../application/analytics.js';
-
-const PREVIEW_IMAGE_WIDTH = 320;
-const PREVIEW_IMAGE_HEIGHT = 480;
+import { UIConfig } from '../UIConfig.js';
 
 const PreviewState = {
     Login: 0,
@@ -33,7 +29,7 @@ export class Preview {
             [GeneratorState.RequestedTermsAndConditions]: this.showTerms,
             [GeneratorState.Idle]: this.showHomeScreen,
             [GeneratorState.Loading]: this.showLoading,
-            [GeneratorState.Running]: this.showLoading,
+            [GeneratorState.Running]: this.showRunning,
             [GeneratorState.Success]: this.showTexture,
             [GeneratorState.ConnectionFailed]: this.showReload,
             [GeneratorState.Failed]: this.showFailed
@@ -72,7 +68,9 @@ export class Preview {
     showHomeScreen() {
         this.state = PreviewState.HomeScreen;
 
-        this.disclaimer.text = '<center>Create garment by<br>specifiying type and prompt.</center>';
+        this.logo.visible = true;
+        this.disclaimer.text = '<center>You don\'t have any generated effects yet.<br>Try creating a new one!</center>';
+        this.welcomeText.visible = true;
         this.disclaimer.visible = true;
         this.ctaButton.visible = false;
         this.loading.visible = false;
@@ -89,17 +87,32 @@ export class Preview {
         this.stackedWidget.currentIndex = 0;
         this.importToProjectButton.enabled = true;
     }
+    
+    showRunning() {
+        this.state = PreviewState.Running;
 
-    showFailed() {
-        this.state = PreviewState.Failed;
+        this.logo.visible = false;
+        this.welcomeText.visible = false;
+        this.disclaimer.text = '<center>Generating preview...<br> This may take up to 10 seconds.</center>';
+        this.disclaimer.visible = true;
+        this.ctaButton.visible = false;
+        this.loading.visible = true;
 
-        this.stackedWidget.currentIndex = 1;
+        this.stackedWidget.currentIndex = 2;
         this.importToProjectButton.enabled = false;
     }
 
+    showFailed() {
+        this.state = PreviewState.Failed;
+        
+        this.stackedWidget.currentIndex = 1;
+        this.importToProjectButton.enabled = false;
+    }
+    
     showLogin() {
         this.state = PreviewState.Login;
-
+        
+        this.welcomeText.visible = true;
         this.disclaimer.text = '<center>Log-in to MyLenses account <br>to get access for Gen AI tools</center>';
         this.disclaimer.visible = true;
         this.ctaButton.text = '   Login   ';
@@ -113,6 +126,8 @@ export class Preview {
     showApiVersion() {
         this.state = PreviewState.ApiVersion;
 
+        this.logo.visible = true;
+        this.welcomeText.visible = false;
         this.disclaimer.text = '<center>Please, update the plugin to <br>newer version to continue.</center>';
         this.disclaimer.visible = true;
         this.ctaButton.text = '   Update   ';
@@ -126,7 +141,9 @@ export class Preview {
     showLoading() {
         this.state = PreviewState.Loading;
 
+        this.logo.visible = false;
         this.ctaButton.visible = false;
+        this.welcomeText.visible = false;
         this.disclaimer.visible = false;
         this.loading.visible = true;
 
@@ -134,13 +151,15 @@ export class Preview {
         this.importToProjectButton.enabled = false;
     }
 
+
     showReload() {
         this.state = PreviewState.Reload;
 
+        this.logo.visible = false;
         this.ctaButton.visible = true;
         this.ctaButton.text = '   Reload   ';
         this.disclaimer.text = '<center>Oops, something went wrong,<br> please reaload the page to try again.</center>';
-        this.disclaimer.visible = true;
+        this.welcomeText.visible = false;
         this.disclaimer.visible = true;
         this.loading.visible = false;
 
@@ -151,6 +170,7 @@ export class Preview {
     showTerms() {
         this.state = PreviewState.Terms;
 
+        this.logo.visible = true;
         this.ctaButton.visible = true;
         this.ctaButton.text = '   Read and Accept   ';
         this.disclaimer.text = '<center>Please, accept terms and <br>conditions to continue.</center>';
@@ -168,8 +188,8 @@ export class Preview {
 
         this.previewImage = new Ui.ImageView(this.preview);
         this.previewImage.scaledContents = true;
-        this.previewImage.setFixedHeight(PREVIEW_IMAGE_HEIGHT);
-        this.previewImage.setFixedWidth(PREVIEW_IMAGE_WIDTH);
+        this.previewImage.setFixedHeight(UIConfig.PREVIEW.IMAGE_HEIGHT);
+        this.previewImage.setFixedWidth(UIConfig.PREVIEW.IMAGE_WIDTH);
 
         layout.addStretch(0);
         layout.addWidget(this.previewImage);
@@ -223,8 +243,8 @@ export class Preview {
     createHomeScreen(parent) {
         this.homeScreen = new Ui.Widget(parent);
         this.homeScreen.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
-        this.homeScreen.setFixedWidth(480);
-        this.homeScreen.setFixedHeight(620);
+        this.homeScreen.setFixedHeight(UIConfig.PREVIEW.HEIGHT);
+        this.homeScreen.setFixedWidth(UIConfig.PREVIEW.WIDTH);
 
         const layout = new Ui.BoxLayout();
         layout.setDirection(Ui.Direction.TopToBottom);
@@ -236,9 +256,17 @@ export class Preview {
         this.logo.setFixedHeight(180);
         this.logo.scaledContents = true;
 
+        this.welcomeText = new Ui.Label(this.homeScreen);
+        this.welcomeText.text = '<center>Welcome to<br>Lens Studio Gen AI</center>';
+        this.welcomeText.fontRole = Ui.FontRole.LargeTitle;
+        this.welcomeText.foregroundRole = Ui.ColorRole.BrightText;
+        this.welcomeText.setFixedHeight(42);
+        this.welcomeText.setFixedWidth(360);
+
         this.disclaimer = new Ui.Label(this.homeScreen);
         this.disclaimer.wordWrap = true;
         this.disclaimer.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Preferred);
+        this.disclaimer.setFixedHeight(28);
         this.disclaimer.setFixedWidth(300);
         this.disclaimer.text = '<center>Log-in to MyLenses account <br>to get access for Gen AI tools</center>';
 
@@ -258,10 +286,11 @@ export class Preview {
 
         layout.addStretch(1);
         layout.addWidgetWithStretch(this.logo, 0, Ui.Alignment.AlignCenter);
+        layout.addWidgetWithStretch(this.welcomeText, 0, Ui.Alignment.AlignCenter);
+        layout.addWidgetWithStretch(this.loading, 0, Ui.Alignment.AlignCenter);
         layout.addWidgetWithStretch(this.disclaimer, 0, Ui.Alignment.AlignCenter);
         layout.addWidgetWithStretch(this.ctaButton, 0, Ui.Alignment.AlignCenter);
-        layout.addWidgetWithStretch(this.loading, 0, Ui.Alignment.AlignCenter);
-        layout.addStretch(2);
+        layout.addStretch(1);
 
         layout.spacing = Ui.Sizes.Padding;
 
@@ -279,24 +308,12 @@ export class Preview {
         this.importToProjectButton.visible = true;
     }
 
-    onImportClicked() {
-        app.log('Importing Garment to the project...', { 'enabled': true, 'progressBar': true });
-        app.importer.import(app.generator.textureBytes, app.generator.maskBytes).then(() => {
-            logEventAssetImport("SUCCESS");
-            app.log('Garment has been imported succesfully.');
-        }).catch((error) => {
-            logEventAssetImport("FAILED");
-            app.log('Failed to import Garment, please try again.');
-        });
-    }
-
     createFooter(parent) {
         this.footer = new Ui.Widget(parent);
-        this.footer.setFixedHeight(65);
 
         const footerLayout = new Ui.BoxLayout();
         footerLayout.setDirection(Ui.Direction.LeftToRight);
-        footerLayout.setContentsMargins(8, 12, 8, 8);
+        footerLayout.setContentsMargins(16, 16, 16, 16);
 
         // Import To Project button
         this.importToProjectButton = new Ui.PushButton(this.footer);
@@ -316,8 +333,8 @@ export class Preview {
 
     create(parent) {
         this.widget = new Ui.Widget(parent);
-        this.widget.setFixedWidth(480);
-        this.widget.setFixedHeight(DIALOG_HEIGHT);
+        this.widget.setFixedHeight(UIConfig.PREVIEW.HEIGHT);
+        this.widget.setFixedWidth(UIConfig.PREVIEW.WIDTH);
         this.layout = new Ui.BoxLayout();
         this.layout.setDirection(Ui.Direction.TopToBottom);
         this.layout.setContentsMargins(0, 0, 0, 0);
@@ -333,13 +350,10 @@ export class Preview {
         this.layout.addWidget(this.stackedWidget);
         this.layout.addStretch(0);
 
-        const separator = new Ui.Separator(Ui.Orientation.Horizontal, Ui.Shadow.Plain, this.widget);
-        separator.setFixedHeight(Ui.Sizes.SeparatorLineWidth);
-        this.layout.addWidget(separator);
-
-        this.layout.addWidget(this.createFooter(this.widget));
+        this.createFooter(this.widget)
 
         this.layout.spacing = 0;
+        this.widget.backgroundRole = Ui.ColorRole.Midlight;
         this.widget.layout = this.layout;
 
         return this.widget;

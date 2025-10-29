@@ -27,8 +27,8 @@ export function logEventOpen() {
 /**
  * @param {"SUCCESS" | "FAILED" | "GUIDELINES_VIOLATION"} status
  * @param {"NEW" | "UPDATE_EXISTING"} origin
- * @param {"PROMPT_TEXT" | "PROMPT_IMAGE"} inputFormat
- * @param {"DEFAULT" | "EMOTIONS" | "BEAUTY" | "CARTOON" | "FUN" | "CREEPY"} preset
+ * @param {"PROMPT_TEXT" | "PROMPT_IMAGE" | "TEXT_AND_IMAGE"} inputFormat
+ * @param {"DEFAULT" | "EMOTIONS" | "BEAUTY" | "CARTOON" | "FUN" | "CREEPY" | ""} preset
  * @param {"DEFAULT" | "CUSTOM"} settings
  */
 export function logEventAssetCreation(status, origin, inputFormat, preset = "", settings = "") {

@@ -1,18 +1,13 @@
 let dynamicTypeMap = {};
-let projectFiles = [];
 let fileManagerRef = null;
 
 export function setCompletionData(data) {
     dynamicTypeMap = {...data.typeMap};
-    projectFiles = data.scripts || [];
 }
 
-export function updateCompletionData(typeMap, scripts) {
+export function updateCompletionData(typeMap) {
     if (typeMap) {
         dynamicTypeMap = {...dynamicTypeMap, ...typeMap};
-    }
-    if (scripts) {
-        projectFiles = scripts;
     }
 }
 

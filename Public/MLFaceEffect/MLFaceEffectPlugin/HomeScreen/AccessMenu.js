@@ -68,8 +68,8 @@ export class AccessMenu {
     createPreview(parent) {
         this.preview = new Ui.Widget(parent);
         this.preview.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
-        this.preview.setFixedWidth(480);
-        this.preview.setFixedHeight(620);
+        this.preview.setFixedWidth(422);
+        this.preview.setFixedHeight(563);
 
         const layout = new Ui.BoxLayout();
         layout.setDirection(Ui.Direction.TopToBottom);
@@ -122,15 +122,34 @@ export class AccessMenu {
         return this.preview;
     }
 
+    createFooter(parent) {
+        this.footer = new Ui.Widget(parent);
+        this.footer.setFixedHeight(56);
+
+        const footerLayout = new Ui.BoxLayout();
+        footerLayout.setDirection(Ui.Direction.LeftToRight);
+        footerLayout.setContentsMargins(8, 12, 8, 8);
+        footerLayout.spacing = 0;
+
+        this.footer.layout = footerLayout;
+        return this.footer;
+    }
+
     create(parent) {
         this.widget = new Ui.Widget(parent);
-        this.widget.setFixedWidth(480);
+        this.widget.setFixedWidth(422);
         this.widget.setFixedHeight(620);
         this.layout = new Ui.BoxLayout();
         this.layout.setDirection(Ui.Direction.TopToBottom);
         this.layout.setContentsMargins(0, 0, 0, 0);
 
         this.layout.addWidget(this.createPreview(this.widget));
+
+        const separator2 = new Ui.Separator(Ui.Orientation.Horizontal, Ui.Shadow.Plain, this.widget);
+        separator2.setFixedHeight(Ui.Sizes.SeparatorLineWidth);
+        this.layout.addWidget(separator2);
+
+        this.layout.addWidget(this.createFooter(this.widget));
 
         this.layout.spacing = 0;
         this.widget.layout = this.layout;

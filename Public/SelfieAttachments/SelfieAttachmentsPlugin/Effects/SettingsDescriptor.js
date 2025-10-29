@@ -29,7 +29,7 @@ export class SettingsDescriptor {
                     'class': ImageReferencePicker,
                     'parent': parent,
                     'name': 'imageReferencePicker',
-                    'label': 'Image Reference (Beta)',
+                    'label': 'Image Reference',
                     'importer': null,
                     'exporter': null,
                     'preset_based': false,

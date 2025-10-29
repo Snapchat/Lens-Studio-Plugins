@@ -10,6 +10,7 @@ class Application {
 
         this.mPluginSystem = null;
         this.mGui = null;
+        this.mMainWidget = null;
         this.mAuthComponent = null;
 
         this.mName = 'Face Generator';
@@ -96,6 +97,14 @@ class Application {
 
     get dialog() {
         return this.mPlugin.dialog;
+    }
+
+    set mainWidget(mainWidget) {
+        this.mMainWidget = mainWidget
+    }
+
+    get mainWidget() {
+        return this.mMainWidget;
     }
 
     // utils

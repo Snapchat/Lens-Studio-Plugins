@@ -1,18 +1,20 @@
 import * as Ui from 'LensStudio:Ui';
 
 import { listEffects, getEffect, getPostProcessing, getModels, deleteEffect, updateFavorites, deleteFavorites } from '../api.js';
-import { downloadFileFromBucket } from '../utils.js';
+import {downloadFileFromBucket, importToProject} from '../utils.js';
 import { Filter } from './Filter.js';
 import { RequestTokenManager } from './RequestTokenManager.js';
 
 import app from '../../application/app.js';
+import {logEventAssetImport} from "../../application/analytics";
 
 const COLUMN_SIZE = 3;
 
 export class GalleryView {
-    constructor(onStateChanged) {
+    constructor(onStateChanged, onPreviewGenerated) {
         this.connections = [];
         this.onStateChanged = onStateChanged;
+        this.onPreviewGenerated = onPreviewGenerated;
         this.imageViews = [];
         this.failedViews = [];
         this.queuedViews = [];
@@ -23,6 +25,10 @@ export class GalleryView {
         this.statusCircles = [];
         this.deleteButtons = [];
         this.favoritesButtons = [];
+        this.isFavoriteButtonChecked = [];
+        this.importButtons = [];
+        this.loadingOverlays = [];
+        this.idToOverlay = {};
         this.nextPageToken = null;
         this.renderedViews = 0;
         this.lastListRequestId = 0;
@@ -33,6 +39,7 @@ export class GalleryView {
         this.downloaded = [];
         this.effectResponse = {};
         this.postProcessingResponse = {};
+        this.modelData = {};
 
         // special connections that need to be disconnected on
         // each gallery update (to unlink from unrelevant tiles)
@@ -43,19 +50,21 @@ export class GalleryView {
         this.deleteButtonConnections = {};
         this.favoriteConnections = {};
 
-        this.TILE_WIDTH = 144;
-        this.TILE_HEIGHT = 144;
+        this.TILE_WIDTH = 122;
+        this.TILE_HEIGHT = 122;
         this.TILE_MARGIN = 8;
+        this.TILE_CNT = 15;
 
         this.requestTokenManager = new RequestTokenManager();
 
         this.borderImage = new Ui.Pixmap(new Editor.Path(import.meta.resolve('../Resources/ml_face_hover.svg')));
         this.failedImage = new Ui.Pixmap(new Editor.Path(import.meta.resolve('../Resources/failed.svg')));
         this.deleteImagePath = new Editor.Path(import.meta.resolve('../Resources/delete.svg'));
+        this.importImageIcon = Editor.Icon.fromFile(new Editor.Path(import.meta.resolve('../Resources/import.svg')));
         this.deleteImageIcon = Editor.Icon.fromFile(this.deleteImagePath);
 
-        this.favoriteTrueIcon = Editor.Icon.fromFile(new Editor.Path(import.meta.resolve("../Resources/favorite_true.svg")));
-        this.favoriteFalseIcon = Editor.Icon.fromFile(new Editor.Path(import.meta.resolve("../Resources/favorite_false.svg")));
+        this.favoriteTrueIcon = new Ui.Pixmap(new Editor.Path(import.meta.resolve("../Resources/favorite_true.svg")));
+        this.favoriteFalseIcon = new Ui.Pixmap(new Editor.Path(import.meta.resolve("../Resources/favorite_false.svg")));
 
         this.searchQuery = '';
         this.filterQuery = '';
@@ -258,18 +267,26 @@ export class GalleryView {
             button.visible = false;
         });
 
+        this.importButtons.forEach(function(button) {
+            button.visible = false;
+        })
+
+        this.loadingOverlays.forEach((loadingOverlay) => {
+            loadingOverlay.visible = false;
+        })
+
         this.requestTokenManager.invalidateTokenAll();
         this.effectIds = [];
         this.effectStatus = [];
         this.postProcessingStatus = [];
         this.downloaded = [];
 
-        for (let i = 0; i < 12; i++) {
+        for (let i = 0; i < this.TILE_CNT; i++) {
             this.gridLayout.setColumnMinimumWidth(i % COLUMN_SIZE, this.TILE_WIDTH + this.TILE_MARGIN);
             this.gridLayout.setRowMinimumHeight(i / COLUMN_SIZE, this.TILE_HEIGHT + this.TILE_MARGIN);
         }
 
-        for (let i = 12; i < this.frames.length; i++) {
+        for (let i = this.TILE_CNT; i < this.frames.length; i++) {
             this.gridLayout.setColumnMinimumWidth(i % COLUMN_SIZE, 0);
             this.gridLayout.setRowMinimumHeight(i / COLUMN_SIZE, 0);
         }
@@ -294,6 +311,25 @@ export class GalleryView {
         connections = {};
     }
 
+    checkModelStatus(id, callback) {
+        getModels(id, (modelsResponse) => {
+            if (modelsResponse.length > 0) {
+                this.modelData[id] = modelsResponse[0];
+            }
+            else {
+                this.modelData[id] = null;
+            }
+            callback();
+        })
+    }
+
+    onTrainingStarted(id) {
+        if (this.idToOverlay[id]) {
+            this.checkModelStatus(id, () => {});
+            this.idToOverlay[id].visible = true;
+        }
+    }
+
     downloadEffect(item, i, requestToken, previewUrl) {
         if (!this.requestTokenManager.isValid(requestToken)) {
             return;
@@ -310,29 +346,31 @@ export class GalleryView {
                     const onOpen = () => {
                         if (this.getRequestGuard == false) {
                             this.getRequestGuard = true;
-                            this.statusIndicators[i].visible = true;
+                            if (!this.importButtons[i].visible && !this.loadingOverlays[i].visible) {
+                                this.statusIndicators[i].visible = true;
+                            }
 
                             app.log('', { 'enabled': false });
                             try {
                                 getModels(item.id, (modelsResponse) => {
-                                    this.statusIndicators[i].visible = false;
-                                    this.getRequestGuard = false;
+                                        this.statusIndicators[i].visible = false;
+                                        this.getRequestGuard = false;
 
-                                    const modelData = modelsResponse.find(
-                                        item => item.trainingState !== 'FAILED' &&
-                                        item.settings.modelSize === 'base' &&
-                                        (item.trainingState !== "SUCCESS" || item.objectLsUrl !== null)
-                                    ) || null;
+                                        const modelData = modelsResponse.find(
+                                            item => item.trainingState !== 'FAILED' &&
+                                                item.settings.modelSize === 'base' &&
+                                                (item.trainingState !== "SUCCESS" || item.objectLsUrl !== null)
+                                        ) || null;
 
-                                    this.onStateChanged({
-                                        'screen': 'preview',
-                                        'effect_id': item.id,
-                                        'created_on': item.createdAt,
-                                        'effect_get_response': this.effectResponse[item.id],
-                                        'post_processing_get_response': this.postProcessingResponse[item.id],
-                                        'models_response': modelData,
-                                        'userNotes': item.userNotes,
-                                    });
+                                        this.onStateChanged({
+                                            'screen': 'preview',
+                                            'effect_id': item.id,
+                                            'created_on': item.createdAt,
+                                            'effect_get_response': this.effectResponse[item.id],
+                                            'post_processing_get_response': this.postProcessingResponse[item.id],
+                                            'models_response': modelData,
+                                            'userNotes': item.userNotes,
+                                        });
                                 });
                             } catch (error) {
                                 this.statusIndicators[i].visible = false;
@@ -346,12 +384,19 @@ export class GalleryView {
                     const con1 = this.borders[i].onClick.connect(onOpen);
                     // in case if hover hasn't been registered
                     const con2 = this.imageViews[i].onClick.connect(onOpen);
+                    const con3 = this.loadingOverlays[i].onClick.connect(onOpen);
 
-                    this.tilesConnections[i] = [ con1, con2 ];
+                    this.tilesConnections[i] = [ con1, con2, con3 ];
 
                     if (item.state == 'SUCCESS') {
                         this.statusIndicators[i].visible = false;
                     }
+
+                    this.onPreviewGenerated(item, (needsOpening) => {
+                        if (needsOpening) {
+                            onOpen();
+                        }
+                    });
                 }
             });
         } catch (error) {
@@ -407,25 +452,27 @@ export class GalleryView {
             let queuedView;
             let deleteButton;
             let favoriteButton;
+            let importButton;
+            let loadingOverlay;
 
-            const updateButton = (button, id) => {
-                if (button.checked) {
-                    button.setIcon(this.favoriteTrueIcon);
+            const updateButton = (button, id, buttonId) => {
+                if (this.isFavoriteButtonChecked[buttonId]) {
+                    button.pixmap = this.favoriteTrueIcon;
                     if (id) {
                         updateFavorites(id, (response) => {
                             if (response.statusCode != 204) {
-                                button.checked = !button.checked;
-                                button.setIcon(this.favoriteFalseIcon);
+                                this.isFavoriteButtonChecked[buttonId] = !this.isFavoriteButtonChecked[buttonId];
+                                button.pixmap = this.favoriteFalseIcon;
                             }
                         });
                     }
                 } else {
-                    button.setIcon(this.favoriteFalseIcon);
+                    button.pixmap = this.favoriteFalseIcon;
                     if (id) {
                         deleteFavorites(id, (response) => {
                             if (response.statusCode != 204) {
-                                button.checked = !button.checked;
-                                button.setIcon(this.favoriteTrueIcon);
+                                this.isFavoriteButtonChecked[buttonId] = !this.isFavoriteButtonChecked[buttonId];
+                                button.pixmap = this.favoriteTrueIcon;
                             }
                         });
                     }
@@ -455,9 +502,22 @@ export class GalleryView {
                 deleteButton.visible = false;
 
                 favoriteButton = this.favoritesButtons[i];
-                favoriteButton.checked = item.isFavorite;
-                updateButton(favoriteButton);
-                favoriteButton.visible = favoriteButton.checked;
+                this.isFavoriteButtonChecked[i] = item.isFavorite;
+                updateButton(favoriteButton, null, i);
+                favoriteButton.visible = this.isFavoriteButtonChecked[i];
+
+                this.idToOverlay[item.id] = this.loadingOverlays[i];
+                if (this.modelData[item.id] && (this.modelData[item.id].trainingState !== "SUCCESS" && this.modelData[item.id].trainingState !== "FAILED")) {
+                    this.loadingOverlays[i].visible = true;
+                }
+
+                importButton = this.importButtons[i];
+                if (this.modelData[item.id] && this.modelData[item.id].trainingState === "SUCCESS") {
+                    importButton.visible = true;
+                }
+                else {
+                    importButton.visible = false;
+                }
 
                 // setup queued
                 queuedView = this.queuedViews[i];
@@ -519,8 +579,8 @@ export class GalleryView {
                 queuedView = new Ui.ImageView(frame);
                 this.queuedViews.push(queuedView);
 
-                queuedView.setFixedWidth(144);
-                queuedView.setFixedHeight(144);
+                queuedView.setFixedWidth(this.TILE_WIDTH);
+                queuedView.setFixedHeight(this.TILE_HEIGHT);
                 queuedView.setContentsMargins(0, 0, 0, 0);
                 queuedView.scaledContents = true;
                 queuedView.visible = false;
@@ -554,6 +614,27 @@ export class GalleryView {
                 failedView.scaledContents = true;
                 failedView.visible = false;
 
+                loadingOverlay = new Ui.ImageView(imageView);
+                loadingOverlay.setFixedWidth(this.TILE_WIDTH);
+                loadingOverlay.setFixedHeight(this.TILE_HEIGHT);
+                loadingOverlay.scaledContents = true;
+                loadingOverlay.pixmap = new Ui.Pixmap(import.meta.resolve('../Resources/grey_rectangle.svg'));
+
+                const spinner = new Ui.ProgressIndicator(loadingOverlay);
+                spinner.setFixedWidth(32);
+                spinner.setFixedHeight(32);
+                spinner.start();
+                spinner.visible = true;
+                spinner.move(47, 47);
+
+                const trainingLabel = new Ui.Label(loadingOverlay);
+                trainingLabel.text = '<center>' + 'Training<br>in progress' + '</center>';
+                trainingLabel.foregroundRole = Ui.ColorRole.BrightText;
+                trainingLabel.setFixedWidth(100);
+                trainingLabel.move(11, 81);
+
+                loadingOverlay.visible = false;
+
                 border = new Ui.ImageView(imageView);
                 this.borders.push(border);
                 border.scaledContents = true;
@@ -565,23 +646,23 @@ export class GalleryView {
 
                 border.visible = false;
 
-                favoriteButton = new Ui.PushButton(imageView);
-                favoriteButton.setFixedWidth(Ui.Sizes.ButtonHeight * 1.6);
-                favoriteButton.setFixedHeight(Ui.Sizes.ButtonHeight);
-                favoriteButton.move(144 - Ui.Sizes.Padding - Ui.Sizes.ButtonHeight * 1.6, Ui.Sizes.Padding);
-                favoriteButton.checkable = true;
-                favoriteButton.checked = item.isFavorite;
+                favoriteButton = new Ui.ImageView(imageView);
+                favoriteButton.setFixedWidth(24);
+                favoriteButton.setFixedHeight(20);
+                favoriteButton.move(this.TILE_WIDTH - Ui.Sizes.Padding - 24, Ui.Sizes.Padding);
+                this.isFavoriteButtonChecked.push(item.isFavorite);
 
-                updateButton(favoriteButton);
+                updateButton(favoriteButton, null, this.isFavoriteButtonChecked.length - 1);
 
-                favoriteButton.visible = favoriteButton.checked;
+                favoriteButton.visible = this.isFavoriteButtonChecked[this.isFavoriteButtonChecked.length - 1];
 
                 if (this.favoriteConnections[i]) {
                     this.failedConnections[i].disconnect();
                 }
 
                 this.favoriteConnections[i] = favoriteButton.onClick.connect(() => {
-                    updateButton(favoriteButton, item.id);
+                    this.isFavoriteButtonChecked[i] = !this.isFavoriteButtonChecked[i];
+                    updateButton(favoriteButton, item.id, i);
                 });
 
                 this.favoritesButtons.push(favoriteButton);
@@ -592,7 +673,7 @@ export class GalleryView {
                 deleteButton.text = '';
 
                 deleteButton.setIconWithMode(this.deleteImageIcon, Ui.IconMode.MonoChrome);
-                deleteButton.move(144 - Ui.Sizes.Padding - Ui.Sizes.ButtonHeight * 1.6, Ui.Sizes.Padding);
+                deleteButton.move(this.TILE_WIDTH - Ui.Sizes.Padding - Ui.Sizes.ButtonHeight * 1.6, Ui.Sizes.Padding);
                 deleteButton.visible = false;
                 this.deleteButtons.push(deleteButton);
 
@@ -606,7 +687,7 @@ export class GalleryView {
                     app.log('', { 'enabled' : false });
                 });
 
-                statusIndicator = new Ui.Widget(frame);
+                statusIndicator = new Ui.Widget(imageView);
                 this.statusIndicators.push(statusIndicator);
 
                 statusIndicatorCircle = new Ui.ProgressIndicator(statusIndicator);
@@ -632,6 +713,35 @@ export class GalleryView {
                 frameLayout.addStretch(0);
                 frameLayout.addWidget(statusIndicator);
 
+                importButton = new Ui.PushButton(imageView);
+                importButton.setFixedWidth(Ui.Sizes.ButtonHeight * 1.6);
+                importButton.setFixedHeight(Ui.Sizes.ButtonHeight);
+                importButton.text = '';
+
+                importButton.setIconWithMode(this.importImageIcon, Ui.IconMode.MonoChrome);
+                importButton.move(Ui.Sizes.Padding, this.TILE_HEIGHT - Ui.Sizes.Padding - Ui.Sizes.ButtonHeight);
+                importButton.primary = true;
+                importButton.visible = false;
+                this.importButtons.push(importButton);
+
+                this.idToOverlay[item.id] = loadingOverlay;
+                this.loadingOverlays.push(loadingOverlay);
+
+                importButton.onClick.connect(() => {
+                    this.onImportToProject(this.modelData[this.effectIds[i]].objectLsUrl)
+                });
+
+                this.checkModelStatus(item.id, () => {
+                    if (this.modelData[item.id] && this.modelData[item.id].trainingState === "SUCCESS") {
+                        importButton.visible = true;
+                        statusIndicator.visible = false;
+                        importButton.raise();
+                    }
+                    if (this.modelData[item.id] && (this.modelData[item.id].trainingState !== "SUCCESS" && this.modelData[item.id].trainingState !== "FAILED")) {
+                        loadingOverlay.visible = true;
+                    }
+                })
+
                 frame.layout = frameLayout;
 
                 this.downloaded.push(false);
@@ -653,8 +763,12 @@ export class GalleryView {
             this.hoverConnections[i] = [(imageView.onHover.connect((hovered) => {
                 if (hovered) {
                     favoriteButton.visible = true;
+                    importButton.text = 'Import';
+                    importButton.setFixedWidth(Ui.Sizes.ButtonHeight * 3.6);
                 } else {
-                    favoriteButton.visible = favoriteButton.checked;
+                    favoriteButton.visible = this.isFavoriteButtonChecked[i];
+                    importButton.text = '';
+                    importButton.setFixedWidth(Ui.Sizes.ButtonHeight * 1.6);
                 }
 
                 border.visible = hovered;
@@ -677,6 +791,15 @@ export class GalleryView {
                 this.gridLayout.setRowMinimumHeight(i / COLUMN_SIZE, this.TILE_HEIGHT + this.TILE_MARGIN);
             }
         }
+    }
+
+    onImportToProject(url) {
+        app.log(`Importing ${app.name} to the project...`, { 'progressBar': true });
+
+        importToProject(url, function(success) {
+            logEventAssetImport(success ? "SUCCESS" : "FAILED");
+            app.log(success ? 'Effect is succesfully imported to the project' : 'Import failed, please try again');
+        }.bind(this));
     }
 
     resetSearchBar() {
@@ -707,7 +830,7 @@ export class GalleryView {
 
         const requestToken = this.requestTokenManager.generateToken();
 
-        listEffects(12, (response) => {
+        listEffects(this.TILE_CNT, (response) => {
             // guarantee that our response is still relevant
             // if other request was sent after this one, there
             // is no need to render current response
@@ -784,7 +907,7 @@ export class GalleryView {
 
         const requestToken = this.requestTokenManager.generateToken();
 
-        listEffects(12, (response) => {
+        listEffects(this.TILE_CNT, (response) => {
 
             // guarantee that our response is still relevant
             // if other request was sent after this one, there
@@ -831,7 +954,7 @@ export class GalleryView {
     createEmptyPlaceholder(parent) {
         this.emptyPlaceholder = new Ui.Widget(parent);
         this.emptyPlaceholder.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
-        this.emptyPlaceholder.setFixedWidth(480);
+        this.emptyPlaceholder.setFixedWidth(422);
         this.emptyPlaceholder.setFixedHeight(480);
 
         const layout = new Ui.BoxLayout();
@@ -875,7 +998,7 @@ export class GalleryView {
         this.gridLayout = new Ui.GridLayout();
 
         this.gridLayout.spacing = 0;
-        this.gridLayout.setContentsMargins(0, 0, Ui.Sizes.Padding, 0);
+        this.gridLayout.setContentsMargins(Ui.Sizes.Padding, Ui.Sizes.Padding, Ui.Sizes.Padding, Ui.Sizes.Padding);
 
         this.scrollWidget = new Ui.Widget(this.galleryGridWidget);
         this.scrollWidget.layout = this.gridLayout;
@@ -908,13 +1031,11 @@ export class GalleryView {
     }
 
     createDeletionDialog() {
-        // Deletion dialog
         const gui = app.gui;
 
         this.deletionDialog = gui.createDialog();
-        this.deletionDialog.windowTitle = `Delete ${app.name}`;
 
-        this.deletionDialog.resize(460, 140);
+        this.deletionDialog.resize(310, 94);
 
         const boxLayout1 = new Ui.BoxLayout();
         boxLayout1.setDirection(Ui.Direction.TopToBottom);
@@ -922,10 +1043,11 @@ export class GalleryView {
         const captionWidget = new Ui.Widget(this.deletionDialog);
         const captionLayout = new Ui.BoxLayout();
         captionLayout.setDirection(Ui.Direction.LeftToRight);
+        captionLayout.spacing = 16;
 
         const alertWidget = new Ui.ImageView(captionWidget);
 
-        const alertImagePath = new Editor.Path(import.meta.resolve('../Resources/alert_icon.png'));
+        const alertImagePath = new Editor.Path(import.meta.resolve('../Resources/alertIcon.png'));
         const alertImage = new Ui.Pixmap(alertImagePath);
 
         alertWidget.setFixedWidth(56);
@@ -937,15 +1059,11 @@ export class GalleryView {
         const textLayout = new Ui.BoxLayout();
         textLayout.setDirection(Ui.Direction.TopToBottom);
 
-        const headerLabel = new Ui.Label(textWidget);
         const paragraphLabel = new Ui.Label(textWidget);
-
-        headerLabel.text = `Delete the ${app.name}?`;
-        headerLabel.fontRole = Ui.FontRole.TitleBold;
-        paragraphLabel.text = `This will delete ${app.name} permanently. You cannot undo this action.`;
+        paragraphLabel.fontRole = Ui.FontRole.Title;
+        paragraphLabel.text = `Permanently delete this effect?<br>This action cannot be undone.`;
 
         textLayout.setContentsMargins(0, 0, 0, 0);
-        textLayout.addWidget(headerLabel);
         textLayout.addWidget(paragraphLabel);
 
         textWidget.layout = textLayout;
@@ -953,16 +1071,20 @@ export class GalleryView {
         alertWidget.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
         textWidget.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Fixed);
 
-        captionLayout.addWidget(alertWidget);
-        captionLayout.addWidget(textWidget);
+        captionLayout.addWidgetWithStretch(alertWidget, 0, Ui.Alignment.AlignLeft | Ui.Alignment.AlignCenter);
+        captionLayout.addWidgetWithStretch(textWidget, 0, Ui.Alignment.AlignTop);
         captionWidget.layout = captionLayout;
 
         const buttonsWidget = new Ui.Widget(this.deletionDialog);
         const buttonsLayout = new Ui.BoxLayout();
         buttonsLayout.setDirection(Ui.Direction.LeftToRight);
+        buttonsLayout.setContentsMargins(0, 8, 0, 0);
 
         const cancelButton = new Ui.PushButton(buttonsWidget);
         const deleteButton = new Ui.PushButton(buttonsWidget);
+
+        cancelButton.setFixedHeight(20);
+        deleteButton.setFixedHeight(20);
 
         cancelButton.text = 'Cancel';
         deleteButton.text = 'Delete';
@@ -976,15 +1098,15 @@ export class GalleryView {
             this.onDelete(this.id_to_delete);
         }.bind(this)));
 
-        buttonsLayout.addStretch(0);
         buttonsLayout.addWidget(cancelButton);
         buttonsLayout.addWidget(deleteButton);
+        buttonsLayout.addStretch(0);
 
         buttonsWidget.layout = buttonsLayout;
 
         boxLayout1.addWidget(captionWidget);
         boxLayout1.addStretch(0);
-        boxLayout1.addWidget(buttonsWidget);
+        textLayout.addWidget(buttonsWidget);
 
         this.deletionDialog.layout = boxLayout1;
 
@@ -1053,18 +1175,56 @@ export class GalleryView {
         layout.addWidget(this.filter.widget);
 
         widget.layout = layout;
+        widget.visible = false;
         return widget;
+    }
+
+    getGenerateButton() {
+        return this.generateButton;
+    }
+
+    createFooter(parent) {
+        this.footer = new Ui.Widget(parent);
+        this.footer.setFixedHeight(56);
+
+        const footerLayout = new Ui.BoxLayout();
+        footerLayout.setDirection(Ui.Direction.LeftToRight);
+        footerLayout.setContentsMargins(8, 0, 16, 0);
+        footerLayout.spacing = 0;
+
+        this.generateButton = new Ui.PushButton(this.footer);
+        this.generateButton.text = 'Generate previews';
+        this.generateButton.enabled = false;
+        // const editImagePath = new Editor.Path(import.meta.resolve('../Resources/lens_studio_ai.svg'));
+        // this.generateButton.setIconWithMode(Editor.Icon.fromFile(editImagePath), Ui.IconMode.MonoChrome);
+        // this.connections.push(this.generateButton.onClick.connect(function() {
+        //     this.generateEffect(this.controls);
+        // }.bind(this)));
+
+        // footerLayout.addStretch(0);
+        footerLayout.addWidgetWithStretch(this.generateButton, 0, Ui.Alignment.AlignRight | Ui.Alignment.AlignCenter);
+        // footerLayout.addStretch(0);
+
+        this.footer.layout = footerLayout;
+        return this.footer;
     }
 
     create(parent) {
         this.widget = new Ui.Widget(parent);
         this.layout = new Ui.BoxLayout();
         this.layout.setDirection(Ui.Direction.TopToBottom);
+        this.layout.spacing = 0;
 
         this.layout.addWidget(this.createHeader(this.widget));
         this.layout.addWidget(this.createGalleryGrid(this.widget));
 
-        this.layout.setContentsMargins(Ui.Sizes.Padding, Ui.Sizes.Padding, Ui.Sizes.Padding, 0);
+        const separator2 = new Ui.Separator(Ui.Orientation.Horizontal, Ui.Shadow.Plain, this.widget);
+        separator2.setFixedHeight(Ui.Sizes.SeparatorLineWidth);
+        this.layout.addWidget(separator2);
+
+        this.layout.addWidget(this.createFooter(this.widget));
+
+        this.layout.setContentsMargins(0, 0, 12, 0);
         this.widget.layout = this.layout;
 
         this.dialog = this.createDeletionDialog();

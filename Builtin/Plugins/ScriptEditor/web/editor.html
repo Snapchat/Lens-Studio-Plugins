@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
-    <title>Lens Studio Script Editor</title>
+    <title>Lens Studio Text Editor</title>
     <link rel="stylesheet" href="./editor_style.css">
 </head>
 <div id="navigation-container">
@@ -19,6 +19,8 @@
     import {FileManager} from '../utils/files/fileManager.js';
     import {NetworkManager} from "../utils/network/network.js";
     import {EDITOR_EVENTS, FILE_EVENTS} from "../lib/Resources/Common.js";
+    import {glslLanguageConfig, glslLanguageDefinition} from '../utils/languages/glsl.js';
+    import {initializeGlslCompletionProvider} from '../utils/languages/glslCompletion.js';
 
     let editor;
     let isInitialSetupComplete = false;
@@ -34,6 +36,10 @@
     });
 
     require(['vs/editor/editor.main'], function () {
+        monaco.languages.register({ id: 'CustomCodeNodeGlsl' });
+        monaco.languages.setMonarchTokensProvider('CustomCodeNodeGlsl', glslLanguageDefinition);
+        monaco.languages.setLanguageConfiguration('CustomCodeNodeGlsl', glslLanguageConfig);
+        
         window.addEventListener('keydown', (e) => {
             if (!editor) {
                 return;
@@ -130,6 +136,7 @@
         const networkManager = new NetworkManager()
         const fileManager = new FileManager(editor, tabBarElement, networkManager);
         initializeCompletionProvider(monaco, fileManager);
+        initializeGlslCompletionProvider(monaco);
 
         window.addEventListener('beforeunload', () => {
             try {

@@ -12,7 +12,14 @@ export const HintID = {
     'brows_preservation': 8,
     'face_contour_preservation': 9,
     'hair_preservation': 10,
-    'prompt': 11
+    'prompt': 11,
+    'effect_prompt': 12,
+    'image_reference': 13,
+    'reference_strength': 14,
+    'attributes_preservation': 15,
+    'seed': 16,
+    'standard_mode': 17,
+    'enhanced_mode': 18
 };
 
 const hintScheme = {
@@ -100,7 +107,41 @@ const hintScheme = {
     [HintID.image]: {
         'title': 'Image Reference',
         'text': 'Provide up to 5 images emphasizing the features you want to generate. For example: images of smiling people'
-    }
+    },
+    [HintID.effect_prompt]: {
+        'title': 'Effect Prompt',
+        'text': 'Describe the effect you’d like to create. For more consistent and predictable results, we recommend also adding an Image Reference.'
+    },
+    [HintID.image_reference]: {
+        'title': 'Image Reference',
+        'text': 'Add an image reference to guide the effect. This is the most informative input to shape the result.'
+    },
+    [HintID.reference_strength]: {
+        'title': 'Reference Strength',
+        'text': 'Controls how strongly the effect follows the Image Reference. A higher value makes the result closer to the Image Reference, but reduces similarity to the original user photo.'
+    },
+    [HintID.attributes_preservation]: {
+        'title': 'Attributes preservation',
+        'text': 'Affects the hair and headwear area the most. When increasing the value, the model maintains greater consistency in the hair area and does not remove hair or headwear from the head.'
+    },
+    [HintID.seed]: {
+        'title': 'Seed',
+        'text': 'Control randomness with a seed. Use the same number to recreate the same look, or try different ones for new variations!'
+    },
+    [HintID.standard_mode] : {
+        'image_width': 256,
+        'image_height': 86,
+        'image_path': new Editor.Path(import.meta.resolve('./Resources/standard_mode.png')),
+        'title': 'Standard Model',
+        'text': 'A familiar mode featuring classic face transformations.'
+    },
+    [HintID.enhanced_mode] : {
+        'image_width': 256,
+        'image_height': 86,
+        'image_path': new Editor.Path(import.meta.resolve('./Resources/enhanced_mode.png')),
+        'title': 'Enhanced Model',
+        'text': 'Good for morphs, characters, and animal transformations, while preserving identity.'
+    },
 };
 
 class HintFactory {

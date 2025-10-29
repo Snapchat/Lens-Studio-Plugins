@@ -91,6 +91,7 @@ export function listEffects(maxPageSize, callback, searchQuery, pageToken) {
     }
 
     if (searchQuery) {
+        searchQuery += ",face-enhanced"
         url += searchQuery;
     }
 
@@ -111,7 +112,7 @@ export function getEffect(id, callback) {
         try {
             callback(JSON.parse(response.body.toString()));
         } catch(error) {
-            console.log(`[${app.name}]`, "Failed to load effect.");
+            // console.log(`[${app.name}]`, "Failed to load effect.");
         }
     });
 }
@@ -125,7 +126,7 @@ export function getPostProcessing(id, callback) {
         try {
             callback(JSON.parse(response.body.toString()));
         } catch(error) {
-            console.log(`[${app.name}]`, "Failed to load effect.");
+            // console.log(`[${app.name}]`, "Failed to load effect.");
         }
     });
 }

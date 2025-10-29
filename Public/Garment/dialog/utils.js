@@ -82,23 +82,34 @@ export function createErrorIcon(parent) {
     return createIcon(parent, new Ui.Pixmap(import.meta.resolve('Resources/error_icon.svg')));
 }
 
+function createColor(r, g, b, a) {
+    const color = new Ui.Color();
+    color.red = r;
+    color.green = g;
+    color.blue = b;
+    color.alpha = a;
+    return color;
+}
+
 function createCalloutWidget(parent, text, link) {
     const frame = new Ui.CalloutFrame(parent);
+    frame.setBackgroundColor(createColor(68, 74, 85, 255));
 
     const frameLayout = new Ui.BoxLayout();
     frameLayout.setDirection(Ui.Direction.LeftToRight);
-    frameLayout.setContentsMargins(Ui.Sizes.HalfPadding, Ui.Sizes.HalfPadding, Ui.Sizes.HalfPadding, Ui.Sizes.HalfPadding);
-    frameLayout.spacing = Ui.Sizes.Spacing;
+    frameLayout.setContentsMargins(Ui.Sizes.Padding, Ui.Sizes.Padding, Ui.Sizes.Padding, Ui.Sizes.Padding);
+    frameLayout.spacing = Ui.Sizes.Padding;
 
     const info = createInfoIcon(frame);
 
     frameLayout.addWidget(info);
+    frameLayout.addStretch(0);
 
     const guidelinesLabel = new Ui.ClickableLabel(frame);
     guidelinesLabel.text = text;
     guidelinesLabel.wordWrap = true;
     guidelinesLabel.openExternalLinks = true;
-    guidelinesLabel.onClick.connect(() => logEventLinkOpen(link));
+    guidelinesLabel.onClick.connect(() => { logEventLinkOpen(link) });
 
     frameLayout.addWidgetWithStretch(guidelinesLabel, 1, Ui.Alignment.Default);
 
@@ -109,12 +120,12 @@ function createCalloutWidget(parent, text, link) {
 export function createTermsWidget(parent) {
     const urlString = Ui.getUrlString('Generative Lens Tools Terms', termsLink);
 
-    return createCalloutWidget(parent, 'By using the feature, you agree to our ' + urlString, termsLink)
+    return createCalloutWidget(parent, 'By using the feature, you agree to our ' + urlString, termsLink);
 }
 
 export function createGuidelinesWidget(parent) {
     const urlString = Ui.getUrlString('guidelines', guidelinesLink);
-
+    
     return createCalloutWidget(parent, 'Check our ' + urlString + ' for examples, prompting best practices and usage guidelines.', guidelinesLink);
 }
 

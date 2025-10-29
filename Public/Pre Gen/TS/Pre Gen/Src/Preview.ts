@@ -9,6 +9,7 @@ enum PreviewMode {
 
 export class Preview {
 
+    private mainWidget: Ui.Widget | undefined;
     private imageView: Ui.ImageView | undefined;
     private defaultImage: Pixmap;
     private transparentImage: Pixmap;
@@ -37,6 +38,7 @@ export class Preview {
         widget.setFixedWidth(421);
         widget.autoFillBackground = true;
         widget.backgroundRole = Ui.ColorRole.Mid;
+        this.mainWidget = widget;
 
         const layout = new Ui.BoxLayout();
         layout.setDirection(Ui.Direction.LeftToRight);
@@ -195,6 +197,14 @@ export class Preview {
 
     getId(): string {
         return this.id;
+    }
+
+    setId(newId: string) {
+        this.id = newId;
+    }
+
+    isVisible(): boolean {
+        return this.mainWidget && this.mainWidget.visible;
     }
 
     private setPreviewImage() {

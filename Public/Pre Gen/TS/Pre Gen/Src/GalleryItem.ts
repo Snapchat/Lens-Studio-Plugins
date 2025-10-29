@@ -15,6 +15,7 @@ export class GalleryItem {
     private id: string;
     private isFailed: boolean = false;
     private isTrained: boolean = false
+    private description: string;
     private importButton: Ui.PushButton;
     private connections: Array<any> = [];
     private curState: string = "RUNNING";
@@ -24,6 +25,7 @@ export class GalleryItem {
     constructor(parent: Ui.Widget, id: string) {
         this.id = id;
         this.tempDir = FileSystem.TempDir.create();
+        this.description = "";
 
         this.frame = new Ui.ImageView(parent);
         this.frame.setFixedWidth(this.tileWidth);
@@ -171,6 +173,15 @@ export class GalleryItem {
     setTrained() {
         this.isTrained = true;
         this.importButton.visible = true;
+    }
+
+    addDescription(newDescription: string) {
+        this.description = newDescription.replace(/(?<!\d)([1-3])\./g, ' ').replace(/\s+/g, ' ').trim();
+        // console.log(newDescription + "\n" + this.description);
+    }
+
+    getDescription() {
+        return this.description;
     }
 
     get state() {

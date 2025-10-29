@@ -10,6 +10,7 @@ export class Slider extends Control {
         this.min = min;
         this.max = max;
         this.step = step;
+        this.label = label;
 
         const sliderWidget = this['createSilderWidget'](this.widget, min, max, step);
 
@@ -50,6 +51,7 @@ export class Slider extends Control {
         this.mControl.singleStep = step;
 
         const spinbox = new Ui.DoubleSpinBox(widget);
+        spinbox.setFixedWidth(48);
         spinbox.setRange(min, max);
         spinbox.singleStep = step;
 
