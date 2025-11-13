@@ -4,9 +4,11 @@ This extension allows Claude Desktop to interact with Snap's Lens Studio applica
 
 **Important: Make sure Lens Studio is running before using this extension.**
 
+<img src="lens-studio-claude-desktop.png" alt="Lens Studio Claude Desktop Integration" width="600">
+
 ## How It Works
 
-The extension runs a local server on port 50050 that connects to Lens Studio. This allows you to use Claude to control Lens Studio.
+The extension runs a local server on port 50050 that connects to Lens Studio. This allows Claude to interact with Lens Studio via MCP tools as described in the [Lens Studio AI documentation](https://developers.snap.com/lens-studio/features/lens-studio-ai/developer-mode).
 
 ## Installing from Claude Desktop
 
