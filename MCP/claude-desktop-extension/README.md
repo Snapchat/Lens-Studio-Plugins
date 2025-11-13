@@ -1,4 +1,4 @@
-# Lens Studio MCP Extension for Claude Desktop
+# Claude Desktop extension for Lens Studio
 
 This extension allows Claude Desktop to interact with Snap's Lens Studio application.
 
