@@ -16,7 +16,7 @@
         "properties": {
             "className": {
                 "type": "string",
-                "modelDescription": "The class name of the API to get the definition of."
+                "modelDescription": "The class or enum name of the API to get the definition of."
             }
         }
     }

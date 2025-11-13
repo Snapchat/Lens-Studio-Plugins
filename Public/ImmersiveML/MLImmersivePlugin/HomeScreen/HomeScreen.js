@@ -11,9 +11,9 @@ import { versions, me, acceptTerms } from '../api.js';
 const autoAcceptedTerms = ['ls_terms_1'];
 
 export class HomeScreen {
-    constructor(onStateChanged) {
+    constructor(onStateChanged, onPreviewGenerated) {
         this.connections = [];
-        this.galleryView = new GalleryView(onStateChanged);
+        this.galleryView = new GalleryView(onStateChanged, onPreviewGenerated);
         this.creationMenu = new CreationMenu(onStateChanged, this.reset.bind(this));
         this.onStateChanged = onStateChanged;
 
@@ -108,18 +108,18 @@ export class HomeScreen {
         }
     }
 
+    onTrainingStarted(id) {
+        this.galleryView.onTrainingStarted(id);
+    }
+
     create(parent) {
         this.widget = new Ui.Widget(parent);
         const layout = new Ui.BoxLayout();
         layout.setDirection(Ui.Direction.LeftToRight);
 
-        this.menuWidget = this.creationMenu.create(this.widget);
-
-        layout.addWidget(this.menuWidget);
         const separator = new Ui.Separator(Ui.Orientation.Vertical, Ui.Shadow.Plain, this.widget);
         separator.setFixedWidth(Ui.Sizes.SeparatorLineWidth);
-
-        layout.addWidget(separator);
+        separator.setFixedHeight(564);
 
         this.stackedWidget = new Ui.StackedWidget(this.widget);
         this.stackedWidget.setContentsMargins(0, 0, 0, 0);
@@ -127,8 +127,14 @@ export class HomeScreen {
         this.galleryViewWidget = this.galleryView.create(this.stackedWidget);
         this.accessMenuWidget = this.accessMenu.create(this.stackedWidget);
 
+        this.creationMenu.setGenerateButton(this.galleryView.getGenerateButton());
+        this.menuWidget = this.creationMenu.create(this.widget);
+
         this.stackedWidget.addWidget(this.galleryViewWidget);
         this.stackedWidget.addWidget(this.accessMenuWidget);
+
+        layout.addWidget(this.menuWidget);
+        layout.addWidgetWithStretch(separator, 0, Ui.Alignment.AlignTop);
 
         layout.addWidget(this.stackedWidget);
         layout.setContentsMargins(0, 0, 0, 0);

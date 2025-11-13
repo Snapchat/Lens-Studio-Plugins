@@ -39,16 +39,40 @@ export class CreationMenu {
         this.controls['promptPicker'].value = '';
         this.controls['promptPicker'].mode = 'Image';
         this.controls['promptPicker'].value = [];
+        this.controls['promptPicker'].resetMode();
 
-        this.controls['userNotes'].value = '';
+        this.controls['promptPicker'].enhanceTextPromptValue = '';
+        this.controls['promptPicker'].enhanceImagePromptValue = [];
+        this.controls['promptPicker'].referenceStrengthValue = 7;
+        this.controls['promptPicker'].seedValue = 56;
+
+        this.controls['promptPicker'].disableReferenceStrengthSlider();
+
+        // this.controls['userNotes'].value = '';
     }
 
     generateEffect(controls) {
         this.generateButton.enabled = false;
         app.log('Creating new effect...', { 'progressBar': true });
 
-        const effectData = buildEffectData(controls);
-        const inputFormat = controls['promptPicker'].mode == "Image" ? "PROMPT_IMAGE" : "PROMPT_TEXT";
+        let effectData = buildEffectData(controls);
+        let inputFormat = controls['promptPicker'].mode == "Image" ? "PROMPT_IMAGE" : "PROMPT_TEXT";
+
+        if (controls['promptPicker'].isEnhanced()) {
+            effectData = {
+                "userNotes": "",
+                "effectTypeId": "full-frame-enhanced",
+                "settings": {
+                    "image_prompts": controls['promptPicker'].enhanceImagePromptValue,
+                    "text_prompt": controls['promptPicker'].enhanceTextPromptValue,
+                    "reference_strength": this.convertSliderValue(controls['promptPicker'].referenceStrengthValue, 1.0, 10.0, 0.5, 1),
+                    "seed": controls['promptPicker'].seedValue
+                }
+            }
+
+            inputFormat = "TEXT_AND_IMAGE";
+        }
+
         createEffect(effectData, (effectResponse) => {
             if (effectResponse.statusCode == 201) {
                 const effectBody = JSON.parse(effectResponse.body.toString());
@@ -63,7 +87,12 @@ export class CreationMenu {
                             'needsUpdate': true
                         });
 
-                        app.log(`${app.name} is queued. ${app.name} creation is estimated to take 10-15 min, please check back later.`, { 'progressBar': true });
+                        if (effectBody.effectTypeId === 'full-frame-enhanced') {
+                            app.log(`${app.name} is queued. ${app.name} creation is estimated to take up to 5 minutes, please check back later.`, {'progressBar': true});
+                        }
+                        else {
+                            app.log(`${app.name} is queued. ${app.name} creation is estimated to take 10-15 min, please check back later.`, {'progressBar': true});
+                        }
                     } else {
                         logEventAssetCreation("FAILED", "NEW", inputFormat);
                         app.log('Something went wrong during post-processing creation, please try again.');
@@ -88,8 +117,9 @@ export class CreationMenu {
         headerLayout.setContentsMargins(8, 8, 8, 8);
 
         this.headerTitle = new Ui.Label(this.header);
-        this.headerTitle.text = app.name;
+        this.headerTitle.text = "New Effect";
         this.headerTitle.fontRole = Ui.FontRole.TitleBold;
+        this.headerTitle.foregroundRole = Ui.ColorRole.BrightText;
 
         headerLayout.addStretch(0);
         headerLayout.addWidget(this.headerTitle);
@@ -101,26 +131,12 @@ export class CreationMenu {
 
     createFooter(parent) {
         this.footer = new Ui.Widget(parent);
-        this.footer.setFixedHeight(65);
+        this.footer.setFixedHeight(56);
 
         const footerLayout = new Ui.BoxLayout();
         footerLayout.setDirection(Ui.Direction.LeftToRight);
         footerLayout.setContentsMargins(8, 12, 8, 8);
         footerLayout.spacing = 0;
-
-        this.generateButton = new Ui.PushButton(this.footer);
-        this.generateButton.text = 'Generate';
-        this.generateButton.enabled = false;
-        this.generateButton.primary = true;
-        const editImagePath = new Editor.Path(import.meta.resolve('../Resources/lens_studio_ai.svg'));
-        this.generateButton.setIconWithMode(Editor.Icon.fromFile(editImagePath), Ui.IconMode.MonoChrome);
-        this.connections.push(this.generateButton.onClick.connect(function() {
-            this.generateEffect(this.controls);
-        }.bind(this)));
-
-        footerLayout.addStretch(0);
-        footerLayout.addWidgetWithStretch(this.generateButton, 0, Ui.Alignment.AlignTop);
-        footerLayout.addStretch(0);
 
         this.footer.layout = footerLayout;
         return this.footer;
@@ -178,7 +194,7 @@ export class CreationMenu {
             collapsePanel.overrideBackgroundRole = false;
             collapsePanel.setContentsMargins(0, 0, 0, 0);
             collapsePanel.autoFillBackground = true;
-            collapsePanel.backgroundRole = Ui.ColorRole.Midlight;
+            collapsePanel.backgroundRole = Ui.ColorRole.Base;
             collapsePanel.expand(scheme.expanded);
 
             scheme.items.forEach((item) => {
@@ -216,7 +232,18 @@ export class CreationMenu {
         });
 
         this.controls['promptPicker'].addOnValueChanged((value) => {
-            this.generateButton.enabled = (value.length > 0) && !this.stopped;
+            if (this.controls['promptPicker'].isEnhanced()) {
+                this.generateButton.enabled = !this.stopped && (this.controls['promptPicker'].enhanceTextPromptValue.length > 0 || this.controls['promptPicker'].enhanceImagePromptValue.length > 0);
+                if (this.controls['promptPicker'].enhanceImagePromptValue.length > 0) {
+                    this.controls['promptPicker'].enableReferenceStrengthSlider();
+                }
+                else {
+                    this.controls['promptPicker'].disableReferenceStrengthSlider();
+                }
+            }
+            else {
+                this.generateButton.enabled = (value.length > 0) && !this.stopped;
+            }
         });
 
         this.menuLayout.addStretch(0);
@@ -231,7 +258,7 @@ export class CreationMenu {
         const verticalScrollArea = new Ui.VerticalScrollArea(this.menu);
         verticalScrollArea.setWidget(scrollWidget);
         verticalScrollArea.setFixedHeight(520);
-        verticalScrollArea.setFixedWidth(320);
+        verticalScrollArea.setFixedWidth(378);
         const scrollLayout = new Ui.BoxLayout();
         scrollLayout.setDirection(Ui.Direction.TopToBottom);
         scrollLayout.setContentsMargins(0, 0, 0, 0);
@@ -247,10 +274,17 @@ export class CreationMenu {
         return this.menu;
     }
 
+    setGenerateButton(button) {
+        this.generateButton = button;
+        this.connections.push(this.generateButton.onClick.connect(function() {
+            this.generateEffect(this.controls);
+        }.bind(this)));
+    }
+
     create(parent) {
         this.widget = new Ui.Widget(parent);
 
-        this.widget.setFixedWidth(320);
+        this.widget.setFixedWidth(378);
         this.widget.setFixedHeight(620);
 
         this.widget.setContentsMargins(0, 0, 0, 0);
@@ -264,10 +298,10 @@ export class CreationMenu {
         const menu = this.createMenu(this.widget);
 
         this.layout.addWidget(header);
-        const separator1 = new Ui.Separator(Ui.Orientation.Horizontal, Ui.Shadow.Plain, this.widget);
-        separator1.setFixedHeight(Ui.Sizes.SeparatorLineWidth);
-
-        this.layout.addWidget(separator1);
+        // const separator1 = new Ui.Separator(Ui.Orientation.Horizontal, Ui.Shadow.Plain, this.widget);
+        // separator1.setFixedHeight(Ui.Sizes.SeparatorLineWidth);
+        //
+        // this.layout.addWidget(separator1);
         this.layout.addWidget(menu);
 
         const separator2 = new Ui.Separator(Ui.Orientation.Horizontal, Ui.Shadow.Plain, this.widget);
@@ -276,11 +310,16 @@ export class CreationMenu {
 
         this.layout.addWidget(footer);
 
-        this.widget.backgroundRole = Ui.ColorRole.Midlight;
+        this.widget.backgroundRole = Ui.ColorRole.Base;
         this.widget.autoFillBackground = true;
         this.layout.spacing = 0;
         this.widget.layout = this.layout;
 
         return this.widget;
+    }
+
+    convertSliderValue(sliderValue, xMin, xMax, yMin, yMax) {
+        const scale = (sliderValue - xMin) / (xMax - xMin);
+        return yMin + scale * (yMax - yMin);
     }
 };

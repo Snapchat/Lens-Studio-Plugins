@@ -19,7 +19,7 @@ export function buildEffectData(controls) {
         request.settings.image_prompts = controls['promptPicker'].value;
     }
 
-    request.userNotes = controls["userNotes"].value;
+    // request.userNotes = controls["userNotes"].value;
 
     return request;
 }
@@ -45,7 +45,7 @@ export function buildEffectDataFromResponse(response, controls) {
         request.settings.image_prompts = controls['promptPicker'].value;
     }
 
-    request.userNotes = controls["userNotes"].value;
+    // request.userNotes = controls["userNotes"].value;
 
     return request;
 }

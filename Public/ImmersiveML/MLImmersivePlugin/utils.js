@@ -59,7 +59,8 @@ export function tieWidgets(keyWidget, valueWidget, parent) {
     parent.layout = layout;
 }
 
-const infoImage = new Ui.Pixmap(new Editor.Path(import.meta.resolve('Resources/info.svg')));
+const infoImage = new Ui.Pixmap(new Editor.Path(import.meta.resolve('Resources/info_icon.svg')));
+const calloutInfoImage = new Ui.Pixmap(new Editor.Path(import.meta.resolve('Resources/info.svg')));
 
 export function addHint(widget, parent, hint_id) {
     const info = new Ui.ImageView(parent);
@@ -100,6 +101,7 @@ export function addHint(widget, parent, hint_id) {
 
 function createCalloutWidget(parent, text, link) {
     const frame = new Ui.CalloutFrame(parent);
+    frame.setBackgroundColor(createColor(68, 74, 85, 255));
 
     const frameLayout = new Ui.BoxLayout();
     frameLayout.setDirection(Ui.Direction.LeftToRight);
@@ -123,6 +125,15 @@ function createCalloutWidget(parent, text, link) {
     return frame;
 }
 
+function createColor(r, g, b, a) {
+    const color = new Ui.Color();
+    color.red = r;
+    color.green = g;
+    color.blue = b;
+    color.alpha = a;
+    return color;
+}
+
 export function createTermsWidget(parent) {
     const urlString = Ui.getUrlString('Generative Lens Tools Terms', termsLink);
 
@@ -140,7 +151,7 @@ export function createErrorIcon(parent) {
 }
 
 export function createInfoIcon(parent) {
-    return createIcon(parent, infoImage);
+    return createIcon(parent, calloutInfoImage);
 }
 
 function createIcon(parent, iconImage) {
@@ -198,7 +209,7 @@ export function createGenerationErrorWidget(parent) {
     return frame;
 }
 
-export function createGennerationInProgressWidget(parent) {
+export function createGenerationInProgressWidget(parent, isStandard = false) {
     const frame = new Ui.Widget(parent);
 
     frame.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Expanding);
@@ -216,13 +227,10 @@ export function createGennerationInProgressWidget(parent) {
 
     const icon = new Ui.ProgressIndicator(header);
     icon.start();
-    const headerLabel = new Ui.Label(header);
-
-    headerLabel.text = 'In Progress';
-    headerLabel.fontRole = Ui.FontRole.TitleBold;
+    icon.setFixedHeight(32);
+    icon.setFixedWidth(32);
 
     headerLayout.addWidget(icon);
-    headerLayout.addWidget(headerLabel);
 
     header.layout = headerLayout;
 
@@ -230,7 +238,12 @@ export function createGennerationInProgressWidget(parent) {
     frameLayout.addWidgetWithStretch(header, 0, Ui.Alignment.AlignCenter);
 
     const disclaimerLabel = new Ui.Label(frame);
-    disclaimerLabel.text = '<center>Generation is running.</center><center>Please, return back later.</center>';
+    if (isStandard) {
+        disclaimerLabel.text = '<center>Generating preview...<br>This may take up to 10-15 minutes.<br><br>You can close this window and return later.</center>';
+    }
+    else {
+        disclaimerLabel.text = '<center>Generating preview...<br>This may take up to 5 minutes.<br><br>You can close this window and return later.</center>';
+    }
 
     frameLayout.addWidgetWithStretch(disclaimerLabel, 0, Ui.Alignment.AlignCenter);
     frameLayout.addStretch(0);
@@ -302,6 +315,24 @@ export function getRealisticRandomPrompt() {
         'punk mohawk with yellow-red-pink-green colors hairstyle, black leather jacket completely covered with silver spikes, graffiti alley background, dramatic lighting',
         'elaborate white huge wig adorned with roses and pearl accents, lifelike realistic hair, detailed rococo male figure wearing pastel blue and pale pink embroidered high-neck attire, ornate rococo garden with overflowing rose bushes, a decorative palace in the distance, soft golden sunlight casting delicate shadows, intricate textures on fabric and flowers, glowing highlights on the wig and pearls, ultra-detailed rococo architecture, cinematic lighting, 8k textures, smooth gradients for realism',
         'waist-up rococo figure, white wig with pearls and roses, pastel embroidered male jacket with intricate gold details, soft daylight, realistic textures, ornate style, pastel colors, clear details, lush rococo garden filled with blooming rose bushes'
+    ];
+
+    return prompts[Math.floor(Math.random() * prompts.length)];
+}
+
+export function getEnhancedRandomPrompt() {
+    const prompts = [
+        'retro comic art, crisp lines, graphic style, high quality, vibrant, cute features',
+        '2d art, detailed illustration, cute, soft colors, blush, background city park, green jacket, shadows, ginger, sunset, falling leaves, fully dressed',
+        'pencil drawing, line art, linear artistic style, stylized graphic portrait, sketch, graphic, blue-toned, sepia, expressive sketch art with a focus on realism and abstraction, intricate linework, monochromatic palette, hyper-realistic features, abstract flow, cloth, stylized exaggeration',
+        'pixel art, brown, mint, pink, blue, minimalistic, vibrant, fully dressed',
+        'detailed 2d illustration, 2d art, cute, drawn hair, fully covered outfit, background open space, a lot of stars, clean skin, soft freckles, dressed',
+        'neon, vivid pink neon light, saturated hues, softly illuminated, futuristic, dynamic aesthetic, dark black background, cute, modern, warm tones',
+        '2d art, high quality, illustration, sharp edges, night sky, moon, stars, clouds, soft pink and soft blue, fully covered outfit',
+        'oil painting, brush strokes texture, flowers, hydrangea, fully dressed',
+        'low-poly style, blocks, planes, sculpt, sharp edges, visible brush strokes texture, cold-toned, (pink, blue, teal, purple)',
+        'soft pink, magic aesthetics, glowing, charming, soft rose-pink, sparkles, dark pink background, cinematic lighting, fully dressed, beige, red, pink, purple',
+        'pink magic glowing background, charming, beautiful soft rose-pink, glitter, sparkles, dark background, cinematic lighting, fully dressed, pink, nostalgic'
     ];
 
     return prompts[Math.floor(Math.random() * prompts.length)];

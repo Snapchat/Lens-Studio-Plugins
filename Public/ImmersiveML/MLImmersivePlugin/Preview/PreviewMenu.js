@@ -15,19 +15,36 @@ import app from '../../application/app.js';
 import { logEventAssetCreation } from '../../application/analytics.js';
 
 export class PreviewMenu {
-    constructor(onStateChanged, resetParent) {
+    constructor(onStateChanged, resetParent, setDefaultState, setPreviewState) {
         this.connections = [];
         this.onStateChanged = onStateChanged;
         this.controls = {};
         this.resetParent = resetParent;
+        this.setDefaultState = setDefaultState;
+        this.setPreviewState = setPreviewState;
     }
 
     createEffect(controls) {
         this.editEffectButton.enabled = false;
         app.log('Creating new effect...', { 'progressBar': true });
 
-        const effectData = buildEffectDataFromResponse(this.effectSettings, controls);
-        const inputFormat = controls['promptPicker'].mode == "Image" ? "PROMPT_IMAGE" : "PROMPT_TEXT";
+        let effectData = buildEffectDataFromResponse(this.effectSettings, controls);
+        let inputFormat = controls['promptPicker'].mode == "Image" ? "PROMPT_IMAGE" : "PROMPT_TEXT";
+
+        if (controls['promptPicker'].isEnhanced()) {
+            effectData = {
+                "userNotes": "",
+                "effectTypeId": "full-frame-enhanced",
+                "settings": {
+                    "image_prompts": controls['promptPicker'].enhanceImagePromptValue,
+                    "text_prompt": controls['promptPicker'].enhanceTextPromptValue,
+                    "reference_strength": this.convertSliderValue(controls['promptPicker'].referenceStrengthValue, 1.0, 10.0, 0.5, 1),
+                    "seed": controls['promptPicker'].seedValue
+                }
+            }
+
+            inputFormat = "TEXT_AND_IMAGE";
+        }
 
         createEffect(effectData, (effectResponse) => {
             if (effectResponse.statusCode == 201) {
@@ -44,7 +61,12 @@ export class PreviewMenu {
                             'creation': true,
                         });
                         logEventAssetCreation("SUCCESS", "UPDATE_EXISTING", inputFormat);
-                        app.log(`${app.name} is queued. ${app.name} creation is estimated to take 10-15 min, please check back later.`, { 'progressBar': true });
+                        if (effectBody.effectTypeId === 'full-frame-enhanced') {
+                            app.log(`${app.name} is queued. ${app.name} creation is estimated to take up to 5 minutes, please check back later.`, {'progressBar': true});
+                        }
+                        else {
+                            app.log(`${app.name} is queued. ${app.name} creation is estimated to take 10-15 min, please check back later.`, {'progressBar': true});
+                        }
                     } else if (postProcessingResponse.statusCode == 400) {
                         logEventAssetCreation("GUIDELINES_VIOLATION", "UPDATE_EXISTING", inputFormat);
                         app.log('The result violates our community guidelines');
@@ -71,25 +93,38 @@ export class PreviewMenu {
         this.effectSettings = effect_settings;
         this.postProcessingSettings = post_processing_settings;
 
+        this.lockSettings();
+
         if (effect_settings.effectTypeId == 'full-frame-text') {
             this.controls['promptPicker'].mode = 'Image';
             this.controls['promptPicker'].value = [];
             this.controls['promptPicker'].mode = 'Text';
-            this.controls['promptPicker'].value = effect_settings.settings.text_prompt;
             this.controls['promptPicker'].effectType = effect_settings.effectTypeId
+            this.controls['promptPicker'].value = effect_settings.settings.text_prompt;
         } else if (effect_settings.effectTypeId == 'full-frame-image') {
             this.controls['promptPicker'].mode = 'Text';
             this.controls['promptPicker'].value = '';
             this.controls['promptPicker'].mode = 'Image';
+            this.controls['promptPicker'].effectType = effect_settings.effectTypeId
             this.controls['promptPicker'].value = JSON.parse(JSON.stringify(effect_settings.settings.image_prompts));
         } else if (effect_settings.effectTypeId == 'full-frame-realistic-text') {
             this.controls['promptPicker'].mode = 'Image';
             this.controls['promptPicker'].value = [];
             this.controls['promptPicker'].mode = 'Text';
-            this.controls['promptPicker'].value = effect_settings.settings.text_prompt;
             this.controls['promptPicker'].effectType = effect_settings.effectTypeId
+            this.controls['promptPicker'].value = effect_settings.settings.text_prompt;
+        } else if (effect_settings.effectTypeId == 'full-frame-enhanced') {
+            // console.log("SETTINGS: " + JSON.stringify(effect_settings));
+            this.controls['promptPicker'].mode = 'Image';
+            this.controls['promptPicker'].value = [];
+            this.controls['promptPicker'].mode = 'Text';
+            this.controls['promptPicker'].effectType = effect_settings.effectTypeId
+            this.controls['promptPicker'].enhanceTextPromptValue = effect_settings.settings.text_prompt;
+            // console.log("IMAGES: " + effect_settings.settings.image_prompts)
+            this.controls['promptPicker'].enhanceImagePromptValue = effect_settings.settings.image_prompts;
+            this.controls['promptPicker'].referenceStrengthValue = Math.round(this.convertSliderValue(effect_settings.settings.reference_strength, 0.5, 1, 1.0, 10.0));
+            this.controls['promptPicker'].seedValue = effect_settings.settings.seed;
         }
-
     }
 
     reset() {
@@ -98,14 +133,44 @@ export class PreviewMenu {
 
     updatePreview(state) {
         this.createdOnValue.text = convertDate(state.created_on);
+        this.editEffectButton.visible = true;
+        this.setPreviewState();
 
-        if (state.userNotes) {
-            this.controls['userNotes'].value = state.userNotes;
-        } else {
-            this.controls['userNotes'].value = "";
-        }
+        // if (state.userNotes) {
+        //     this.controls['userNotes'].value = state.userNotes;
+        // } else {
+        //     this.controls['userNotes'].value = "";
+        // }
+
+        // console.log("RESPONSE: " + JSON.stringify(state.effect_get_response));
 
         this.fillSettings(state.effect_get_response, state.post_processing_get_response);
+    }
+
+    lockSettings() {
+        this.generateButton.visible = false;
+        this.controls['promptPicker'].widget.enabled = false;
+        this.controls['promptPicker'].lockReferenceStrengthSlider();
+        // this.controls['userNotes'].widget.enabled = false;
+    }
+
+    unlockSettings() {
+        this.generateButton.enabled = true;
+        this.generateButton.visible = true;
+        this.controls['promptPicker'].widget.enabled = true;
+        // this.controls['userNotes'].widget.enabled = true;
+        if (this.controls['promptPicker'].enhanceImagePromptValue.length > 0) {
+            this.controls['promptPicker'].unlockReferenceStrengthSlider();
+        }
+    }
+
+    convertSliderValue(sliderValue, xMin, xMax, yMin, yMax) {
+        const scale = (sliderValue - xMin) / (xMax - xMin);
+        return yMin + scale * (yMax - yMin);
+    }
+
+    isLocked() {
+        return !this.generateButton.visible;
     }
 
     createHeader(parent) {
@@ -136,38 +201,61 @@ export class PreviewMenu {
         }.bind(this)));
 
         this.headerTitle = new Ui.Label(this.header);
-        this.headerTitle.text = app.name;
+        this.headerTitle.text = "Effect Settings";
         this.headerTitle.fontRole = Ui.FontRole.TitleBold;
+        this.headerTitle.foregroundRole = Ui.ColorRole.BrightText;
 
         headerLayout.addWidget(this.backButton);
-        headerLayout.addStretch(0);
+
+        const spacer = new Ui.Widget(this.header);
+        spacer.setFixedWidth(8);
+        headerLayout.addWidget(spacer);
         headerLayout.addWidget(this.headerTitle);
         headerLayout.addStretch(0);
+
+        this.deleteButton = new Ui.PushButton(this.header);
+        this.deleteButton.setFixedHeight(20);
+        this.deleteButton.text = '';
+        const deleteImagePath = new Editor.Path(import.meta.resolve('../Resources/delete.svg'));
+        this.deleteButton.setIconWithMode(Editor.Icon.fromFile(deleteImagePath), Ui.IconMode.MonoChrome);
+
+        headerLayout.addWidgetWithStretch(this.deleteButton, 0, Ui.Alignment.AlignRight | Ui.Alignment.AlignCenter);
 
         this.header.layout = headerLayout;
         return this.header;
     }
 
+    getDeleteButton() {
+        return this.deleteButton;
+    }
+
+    setGenerateButton(button) {
+        this.generateButton = button;
+        this.connections.push(this.generateButton.onClick.connect(() => {
+            this.generateButton.enabled = false;
+            this.createEffect(this.controls);
+        }));
+    }
+
     createFooter(parent) {
         this.footer = new Ui.Widget(parent);
-        this.footer.setFixedHeight(65);
+        this.footer.setFixedHeight(56);
 
         const footerLayout = new Ui.BoxLayout();
         footerLayout.setDirection(Ui.Direction.LeftToRight);
-        footerLayout.setContentsMargins(8, 12, 8, 8);
+        footerLayout.setContentsMargins(16, 0, 16, 0);
 
         this.editEffectButton = new Ui.PushButton(this.footer);
-        this.editEffectButton.text = `Update Effect`;
-        const editImagePath = new Editor.Path(import.meta.resolve('../Resources/edit.svg'));
-        this.editEffectButton.setIconWithMode(Editor.Icon.fromFile(editImagePath), Ui.IconMode.MonoChrome);
+        this.editEffectButton.text = `Copy Settings`;
 
         this.connections.push(this.editEffectButton.onClick.connect(() => {
-            this.createEffect(this.controls);
+            // this.createEffect(this.controls);
+            this.editEffectButton.visible = false;
+            this.unlockSettings();
+            this.setDefaultState();
         }));
 
-        footerLayout.addStretch(0);
-        footerLayout.addWidgetWithStretch(this.editEffectButton, 0, Ui.Alignment.AlignTop);
-        footerLayout.addStretch(0);
+        footerLayout.addWidgetWithStretch(this.editEffectButton, 0, Ui.Alignment.AlignLeft | Ui.Alignment.AlignCenter);
 
         this.footer.layout = footerLayout;
         return this.footer;
@@ -238,7 +326,7 @@ export class PreviewMenu {
             collapsePanel.overrideBackgroundRole = false;
             collapsePanel.setContentsMargins(0, 0, 0, 0);
             collapsePanel.autoFillBackground = true;
-            collapsePanel.backgroundRole = Ui.ColorRole.Midlight;
+            collapsePanel.backgroundRole = Ui.ColorRole.Base;
             collapsePanel.expand(scheme.expanded);
 
             scheme.items.forEach((item) => {
@@ -278,7 +366,21 @@ export class PreviewMenu {
         });
 
         this.controls['promptPicker'].addOnValueChanged((value) => {
-            this.editEffectButton.enabled = value.length > 0;
+            if (this.controls['promptPicker'].isEnhanced()) {
+                this.editEffectButton.enabled = (this.controls['promptPicker'].enhanceTextPromptValue.length > 0 || this.controls['promptPicker'].enhanceImagePromptValue.length > 0);
+                // this.generateButton.enabled = this.editEffectButton.enabled;
+                this.generateButton.enabled = (this.controls['promptPicker'].enhanceTextPromptValue.length > 0 || this.controls['promptPicker'].enhanceImagePromptValue.length > 0);
+                if (this.controls['promptPicker'].enhanceImagePromptValue.length > 0) {
+                    this.controls['promptPicker'].unlockReferenceStrengthSlider();
+                }
+                else {
+                    this.controls['promptPicker'].lockReferenceStrengthSlider();
+                }
+            }
+            else {
+                this.editEffectButton.enabled = this.controls['promptPicker'].valueExists;
+                this.generateButton.enabled = this.controls['promptPicker'].valueExists;
+            }
         });
 
         this.menuLayout.addStretch(0);
@@ -293,7 +395,7 @@ export class PreviewMenu {
         const verticalScrollArea = new Ui.VerticalScrollArea(this.menu);
         verticalScrollArea.setWidget(scrollWidget);
         verticalScrollArea.setFixedHeight(520);
-        verticalScrollArea.setFixedWidth(320);
+        verticalScrollArea.setFixedWidth(378);
         const scrollLayout = new Ui.BoxLayout();
         scrollLayout.setDirection(Ui.Direction.TopToBottom);
         scrollLayout.setContentsMargins(0, 0, 0, 0);
@@ -309,7 +411,7 @@ export class PreviewMenu {
 
     create(parent) {
         this.widget = new Ui.Widget(parent);
-        this.widget.setFixedWidth(320);
+        this.widget.setFixedWidth(378);
         this.widget.setFixedHeight(620);
 
         this.widget.setContentsMargins(0, 0, 0, 0);
@@ -323,10 +425,6 @@ export class PreviewMenu {
         this.layout.setContentsMargins(0, 0, 0, 0);
 
         this.layout.addWidget(header);
-        const separator1 = new Ui.Separator(Ui.Orientation.Horizontal, Ui.Shadow.Plain, this.widget);
-        separator1.setFixedHeight(Ui.Sizes.SeparatorLineWidth);
-
-        this.layout.addWidget(separator1);
         this.layout.addWidget(menu);
         this.layout.addStretch(0);
 
@@ -336,7 +434,7 @@ export class PreviewMenu {
 
         this.layout.addWidget(footer);
 
-        this.widget.backgroundRole = Ui.ColorRole.Midlight;
+        this.widget.backgroundRole = Ui.ColorRole.Base;
         this.widget.autoFillBackground = true;
         this.layout.spacing = 0;
         this.widget.layout = this.layout;

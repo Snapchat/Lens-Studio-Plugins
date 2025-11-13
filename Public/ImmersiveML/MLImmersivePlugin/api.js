@@ -90,6 +90,7 @@ export function listEffects(maxPageSize, callback, searchQuery, pageToken) {
     }
 
     if (searchQuery) {
+        searchQuery += ",full-frame-enhanced"
         url += searchQuery;
     }
 

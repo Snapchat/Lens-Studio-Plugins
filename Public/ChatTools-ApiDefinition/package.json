@@ -1,10 +1,17 @@
 {
   "type": "module",
+  "main": "dist/index.js",
+  "version": "5.15.0",
   "scripts": {
     "clean": "rm -rf dist",
     "buildPlugin": "npx tsc",
     "compileSource": "npx ts-node helpers/compileSource.ts",
     "build": "npm run clean && npm run buildPlugin && npm run compileSource",
-    "export": "mkdir -p resources && zip -r resources/ChatTools-ApiDefinition.zip dist module.json"
+    "export": "mkdir -p storage/resources/$npm_package_version && zip -r storage/resources/$npm_package_version/package.zip dist module.json"
+  },
+  "dependencies": {
+    "@types/node": "^24.9.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
   }
 }

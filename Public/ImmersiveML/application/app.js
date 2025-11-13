@@ -11,6 +11,7 @@ class Application {
         this.mPluginSystem = null;
         this.mGui = null;
         this.mAuthComponent = null;
+        this.mMainWidget = null;
 
         this.mName = 'Style Generator';
         this.mIcon = Editor.Icon.fromFile(new Editor.Path(import.meta.resolve('resources/icon.svg')));
@@ -96,6 +97,14 @@ class Application {
 
     get dialog() {
         return this.mPlugin.dialog;
+    }
+
+    set mainWidget(mainWidget) {
+        this.mMainWidget = mainWidget
+    }
+
+    get mainWidget() {
+        return this.mMainWidget;
     }
 
     // utils

@@ -127,6 +127,10 @@ export class ImmersiveMLEffect {
         }
     }
 
+    trainingStarted(id) {
+        this.homeScreen.onTrainingStarted(id);
+    }
+
     hideError() {
         if (this.errorScreen) {
             this.errorScreen.currentIndex = 0;
@@ -181,20 +185,25 @@ export class ImmersiveMLEffect {
         this.dialog.windowTitle = name;
     }
 
+    previewGenerated(item, callback) {
+        this.preview.previewGenerated(item, callback);
+    }
+
     constructor(dialog) {
         this.width = 800;
         this.height = 620;
 
         this.dialog = dialog;
-
+        this.dialog.backgroundRole = Ui.ColorRole.Base;
         this.dialog.setFixedWidth(this.width);
         this.dialog.setFixedHeight(this.height);
+        app.mainWidget = dialog;
         this.dialog.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
 
         this.isActive = false;
 
-        this.preview = new Preview(this.stateChanged.bind(this));
-        this.homeScreen = new HomeScreen(this.stateChanged.bind(this));
+        this.preview = new Preview(this.stateChanged.bind(this), this.trainingStarted.bind(this));
+        this.homeScreen = new HomeScreen(this.stateChanged.bind(this), this.previewGenerated.bind(this));
 
         this.configureDialog();
 
@@ -239,10 +248,10 @@ export class ImmersiveMLEffect {
         this.errorScreen.currentIndex = 0;
 
         this.errorScreen.setFixedWidth(800);
-        this.errorScreen.setFixedHeight(20);
+        this.errorScreen.setFixedHeight(18);
 
         const positionX = 800 / 2 - this.errorScreen.width / 2;
-        const positionY = 600;
+        const positionY = 602;
         this.errorScreen.move(positionX, positionY);
 
         this.hideError();

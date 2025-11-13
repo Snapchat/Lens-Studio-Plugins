@@ -38,6 +38,8 @@ export class BodyMorphGallery {
         this.calloutWidget.setFixedHeight(32);
         this.calloutWidget.move(80, 500);
         widget.layout = layout;
+        const pluginSystem = dependencyContainer.get(DependencyKeys.PluginSystem);
+        this.assetLibImporter = new AssetLibImporter(pluginSystem);
         return widget;
     }
     createGrid(widget) {
@@ -112,8 +114,6 @@ export class BodyMorphGallery {
     onLibraryShown() {
         if (!this.hasBodyMorphList) {
             this.hasBodyMorphList = true;
-            const pluginSystem = dependencyContainer.get(DependencyKeys.PluginSystem);
-            this.assetLibImporter = new AssetLibImporter(pluginSystem);
             listMorphs(15, (response) => {
                 if (!this.isActive) {
                     return;

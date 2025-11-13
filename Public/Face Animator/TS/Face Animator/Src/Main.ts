@@ -1,10 +1,10 @@
 // @ts-nocheck
-import {CoreService} from "LensStudio:CoreService";
+import { EntityGenerator, Descriptor } from 'LensStudio:EntityGenerator';
 import * as Ui from "LensStudio:Ui";
 import {Dialog} from "./Dialog.js";
 import app from "./app.js";
 
-export class FaceAnimator extends CoreService {
+export class FaceAnimator extends EntityGenerator {
 
     private name: string = "Face Animator";
     private dialog: Dialog;
@@ -12,12 +12,17 @@ export class FaceAnimator extends CoreService {
     private guard: Array<any> = [];
 
     static override descriptor() {
-        return {
-            id: "Com.Snap.FaceAnimator",
-            name: this.name,
-            description: "Snap ML Kit / Face Animator",
-            dependencies: [Ui.IGui]
-        };
+        const descriptor = new Descriptor();
+
+        descriptor.id = "Com.Snap.FaceAnimator";
+        descriptor.name = "Face Animator";
+        descriptor.description = "Face Animator";
+        descriptor.dependencies = [];
+        descriptor.displayOrder = 8;
+        descriptor.icon = Editor.Icon.fromFile(import.meta.resolve('./Resources/mainIcon.svg'));
+        descriptor.entityType = 'RenderMesh';
+
+        return descriptor;
     }
 
     constructor(pluginSystem: Editor.PluginSystem) {
@@ -27,30 +32,8 @@ export class FaceAnimator extends CoreService {
         this.dialog = new Dialog(this.mGui.createDialog(), this.name);
     }
 
-    override start(): void {
-        const entityPrototypeRegistry: Editor.Model.IEntityPrototypeRegistry = this.pluginSystem.findInterface(Editor.Model.IEntityPrototypeRegistry);
-        this.guard.push(entityPrototypeRegistry.registerEntityPrototype(this.createPrototypeData()));
-    }
-
-    override stop(): void {
-        this.guard = [];
-        this.dialog.deinit();
-    }
-
-    createPrototypeData() {
-        const result = new Editor.Model.EntityPrototypeData();
-
-        result.caption = this.name;
-        result.baseEntityType = 'RenderMesh';
-        result.entityType = 'face_animator';
-        result.section = 'Generative AI';
-        result.icon = Editor.Icon.fromFile(import.meta.resolve('./Resources/mainIcon.svg'));
-
-        result.creator = () => {
-            this.dialog.show();
-            return null;
-        };
-
-        return result;
+    async generate() {
+        this.dialog.show();
+        return null;
     }
 }

@@ -58,6 +58,9 @@ export class BodyMorphGallery {
 
         widget.layout = layout;
 
+        const pluginSystem: Editor.PluginSystem = dependencyContainer.get(DependencyKeys.PluginSystem) as Editor.PluginSystem;
+        this.assetLibImporter = new AssetLibImporter(pluginSystem);
+
         return widget;
     }
 
@@ -150,9 +153,6 @@ export class BodyMorphGallery {
     onLibraryShown() {
         if (!this.hasBodyMorphList) {
             this.hasBodyMorphList = true;
-
-            const pluginSystem: Editor.PluginSystem = dependencyContainer.get(DependencyKeys.PluginSystem) as Editor.PluginSystem;
-            this.assetLibImporter = new AssetLibImporter(pluginSystem);
 
             listMorphs(15, (response: any) => {
                 if (!this.isActive) {

@@ -17,7 +17,9 @@
         "skipLibCheck": true
     },
     "include": [
-        "../EditorLib.d.ts",
         "src/**/*"
+    ],
+    "files": [
+        "../../shared-types/editor.d.ts"
     ]
 }

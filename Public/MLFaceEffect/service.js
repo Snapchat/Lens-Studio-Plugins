@@ -1,16 +1,21 @@
-import GuiService from 'LensStudio:GuiService';
 import app from './application/app.js';
-
 import { PluginID } from './application/common.js';
 
-export class FaceMLService extends GuiService {
+import { EntityGenerator, Descriptor } from 'LensStudio:EntityGenerator';
+
+export class FaceMLService extends EntityGenerator {
     static descriptor() {
-        return {
-            id: PluginID,
-            name: app.name,
-            description: app.name,
-            dependencies: [Editor.Model.IEntityPrototypeRegistry]
-        };
+        const descriptor = new Descriptor();
+
+        descriptor.id = PluginID;
+        descriptor.name = app.name;
+        descriptor.description = app.name;
+        descriptor.dependencies = [];
+        descriptor.displayOrder = 9;
+        descriptor.icon = app.icon;
+        descriptor.entityType = 'Texture';
+
+        return descriptor;
     }
 
     constructor(pluginSystem) {
@@ -18,35 +23,8 @@ export class FaceMLService extends GuiService {
         app.initialize(pluginSystem);
     }
 
-    createPrototypeData() {
-        const result = new Editor.Model.EntityPrototypeData();
-
-        result.caption = app.name;
-        result.baseEntityType = 'Texture';
-        result.entityType = "face_generator";
-        result.section = 'Generative AI';
-        result.icon = app.icon;
-
-        result.creator = () => {
-            app.show();
-
-            return null;
-        };
-
-        return result;
-    }
-
-    start() {
-        this.guard = [];
-        const entityPrototypeRegistry = this.findInterface(Editor.Model.IEntityPrototypeRegistry);
-        this.guard.push(entityPrototypeRegistry.registerEntityPrototype(this.createPrototypeData()));
-    }
-
-    stop() {
-        this.guard = [];
-    }
-
-    findInterface(interfaceID) {
-        return this.pluginSystem.findInterface(interfaceID);
+    async generate() {
+        app.show();
+        return null;
     }
 }

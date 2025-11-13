@@ -11,7 +11,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const inputRelativePath = '../Input/StudioLib.d.ts';
+const inputRelativePath = '../../../shared-types/editor.d.ts';
 const outputRelativeDir = '../dist/Data';
 const outputRelativeFile = 'ls-api-definition.json';
 
@@ -78,7 +78,7 @@ class DefinitionParser {
 
     private nodesToJson(nodes: {}): {} {
         let result = {};
-        
+
         for (var k in nodes) {
             const currentNode = nodes[k];
             result[k] = this.nodeToJson(currentNode);
@@ -100,7 +100,7 @@ class DefinitionParser {
                     result[k].members.push(this.getNameOfNode(member));
                 }
             });
-            
+
         }
 
         return result;
@@ -115,7 +115,7 @@ class DefinitionParser {
 
             foundNodes.forEach((node) => {
                 const currentNode = this.nodeToJson(node);
-                
+
                 // Store by kind since class/enum/interface may have the same name
                 if (!allNodes[currentNode.kind]) {
                     allNodes[currentNode.kind] = {}

@@ -1,10 +1,10 @@
 // @ts-nocheck
-import { CoreService } from 'LensStudio:CoreService';
+import { EntityGenerator, Descriptor } from 'LensStudio:EntityGenerator';
 import * as Ui from "LensStudio:Ui";
 import {Dialog} from "./Dialog.js";
 import {dependencyContainer, DependencyKeys} from "./DependencyContainer.js";
 
-export class CharacterAnimationToolkit extends CoreService {
+export class CharacterAnimationToolkit extends EntityGenerator {
 
     private name: string = "Character Animation";
     private guard: Array<any> = [];
@@ -12,12 +12,17 @@ export class CharacterAnimationToolkit extends CoreService {
     private mGui: Ui.IGui;
 
     static override descriptor() {
-        return {
-            id: "Com.Snap.CharacterAnimation",
-            name: "Character Animation",
-            description: "Snap ML Kit / Character Animation",
-            dependencies: [Ui.IGui]
-        };
+        const descriptor = new Descriptor();
+
+        descriptor.id = "Com.Snap.CharacterAnimation";
+        descriptor.name = "Character Animation";
+        descriptor.description = "Character Animation";
+        descriptor.dependencies = [];
+        descriptor.displayOrder = 7;
+        descriptor.icon = Editor.Icon.fromFile(import.meta.resolve('./Resources/mainIcon.svg'));
+        descriptor.entityType = 'RenderMesh';
+
+        return descriptor;
     }
 
     constructor(pluginSystem: Editor.PluginSystem) {
@@ -27,31 +32,9 @@ export class CharacterAnimationToolkit extends CoreService {
         this.dialog = new Dialog(this.mGui.createDialog(), this.name);
     }
 
-    override start(): void {
-        const entityPrototypeRegistry: Editor.Model.IEntityPrototypeRegistry = this.pluginSystem.findInterface(Editor.Model.IEntityPrototypeRegistry);
-        this.guard.push(entityPrototypeRegistry.registerEntityPrototype(this.createPrototypeData()));
-    }
-
-    override stop(): void {
-        this.guard = [];
-        this.dialog.deinit();
-    }
-
-    createPrototypeData() {
-        const result = new Editor.Model.EntityPrototypeData();
-
-        result.caption = this.name;
-        result.baseEntityType = 'RenderMesh';
-        result.entityType = 'character_animation';
-        result.section = 'Generative AI';
-        result.icon = Editor.Icon.fromFile(import.meta.resolve('./Resources/mainIcon.svg'));
-
-        result.creator = () => {
-            this.dialog.show();
-            return null;
-        };
-
-        return result;
+    async generate() {
+        this.dialog.show();
+        return null;
     }
 
 }

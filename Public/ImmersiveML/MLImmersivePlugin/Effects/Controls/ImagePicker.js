@@ -4,17 +4,17 @@ import { tieWidgets, concatArrays, downloadFileFromBucket, getContentType } from
 import { Control } from './Control.js';
 import { createAttachment } from '../../api.js';
 import * as fs from 'LensStudio:FileSystem';
-
 import app from '../../../application/app.js';
 
 export class ImagePicker extends Control {
-    constructor(parent, label, valueImporter, valueExporter) {
+    constructor(parent, label, valueImporter, valueExporter, maxPickedImages = 5) {
         super(parent, label, valueImporter, valueExporter);
         this.connections = [];
         this.gui = app.gui;
         this.imagesData = [];
         this.pickedImages = [];
         this.pickedCrosses = [];
+        this.maxPickedImages = maxPickedImages;
 
         this.imageGridLayout = new Ui.GridLayout();
 
@@ -22,9 +22,9 @@ export class ImagePicker extends Control {
         this.imageGridLayout.setContentsMargins(0, 0, 0, 0);
 
         this.importIconPath = new Editor.Path(import.meta.resolve('../../Resources/plus.svg'));
+        this.importHoveredIconPath = new Editor.Path(import.meta.resolve('../../Resources/plus_hovered.svg'));
         this.deleteIconPath = new Editor.Path(import.meta.resolve('../../Resources/delete.png'));
         this.transparentPath = new Editor.Path(import.meta.resolve('../../Resources/transparent.png'));
-        this.importHoveredIconPath = new Editor.Path(import.meta.resolve('../../Resources/plus_hovered.svg'));
 
         this.TILE_MAX_SIZE = 180;
 
@@ -128,7 +128,7 @@ export class ImagePicker extends Control {
         const image = new Ui.Pixmap(filePath);
 
         const imageView = new Ui.ImageView(this.parent);
-        imageView.radius = 8;
+        imageView.radius = 4;
         imageView.pixmap = this.resizeImage(image);
         imageView.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
         imageView.setFixedWidth(this.TILE_MAX_SIZE / 2);
@@ -168,8 +168,11 @@ export class ImagePicker extends Control {
 
         this.pickedImages.push(frame);
 
-        if (this.pickedImages.length < 5) {
+        if (this.pickedImages.length < this.maxPickedImages) {
             this.addImportButton();
+        }
+        else {
+            this.importButton.visible = false;
         }
 
         this.valueChanged();
@@ -186,8 +189,8 @@ export class ImagePicker extends Control {
             const imageData = fs.readBytes(filePath);
 
             createAttachment(imageData, getContentType(filePath), filePath.fileName.toString(), (response) => {
-                if (this.imagesData.length == 5) {
-                    console.log('Coudn\'t upload image from ' + filePath + ', because maximum limit (5) has been reached.');
+                if (this.imagesData.length == this.maxPickedImages) {
+                    console.log('Coudn\'t upload image from ' + filePath + `, because maximum limit (${this.maxPickedImages}) has been reached.`);
                 } else if (response.statusCode == 201) {
                     const body = JSON.parse(response.body.toString());
                     this.imagesData.push(body);
@@ -281,7 +284,7 @@ export class ImagePicker extends Control {
 
     set value(value) {
         this.reset();
-        this.imagesData = value;
+        this.imagesData = Array.from(value);
         this.updateUi();
     }
 

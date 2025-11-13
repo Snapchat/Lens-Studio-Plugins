@@ -1,16 +1,19 @@
 // @ts-nocheck
-import { GuiService } from "LensStudio:GuiService";
+import { EntityGenerator, Descriptor } from 'LensStudio:EntityGenerator';
 import * as Ui from "LensStudio:Ui";
 import { Dialog } from "./Dialog.js";
 import { dependencyContainer, DependencyKeys } from "./DependencyContainer.js";
-export class CharacterAnimationToolkit extends GuiService {
+export class CharacterAnimationToolkit extends EntityGenerator {
     static descriptor() {
-        return {
-            id: "Com.Snap.CharacterAnimation",
-            name: "Character Animation",
-            description: "Snap ML Kit / Character Animation",
-            dependencies: [Ui.IGui]
-        };
+        const descriptor = new Descriptor();
+        descriptor.id = "Com.Snap.CharacterAnimation";
+        descriptor.name = "Character Animation";
+        descriptor.description = "Character Animation";
+        descriptor.dependencies = [];
+        descriptor.displayOrder = 7;
+        descriptor.icon = Editor.Icon.fromFile(import.meta.resolve('./Resources/mainIcon.svg'));
+        descriptor.entityType = 'RenderMesh';
+        return descriptor;
     }
     constructor(pluginSystem) {
         super(pluginSystem);
@@ -20,25 +23,8 @@ export class CharacterAnimationToolkit extends GuiService {
         this.mGui = this.pluginSystem.findInterface(Ui.IGui);
         this.dialog = new Dialog(this.mGui.createDialog(), this.name);
     }
-    start() {
-        const entityPrototypeRegistry = this.pluginSystem.findInterface(Editor.Model.IEntityPrototypeRegistry);
-        this.guard.push(entityPrototypeRegistry.registerEntityPrototype(this.createPrototypeData()));
-    }
-    stop() {
-        this.guard = [];
-        this.dialog.deinit();
-    }
-    createPrototypeData() {
-        const result = new Editor.Model.EntityPrototypeData();
-        result.caption = this.name;
-        result.baseEntityType = 'RenderMesh';
-        result.entityType = 'character_animation';
-        result.section = 'Generative AI';
-        result.icon = Editor.Icon.fromFile(import.meta.resolve('./Resources/mainIcon.svg'));
-        result.creator = () => {
-            this.dialog.show();
-            return null;
-        };
-        return result;
+    async generate() {
+        this.dialog.show();
+        return null;
     }
 }

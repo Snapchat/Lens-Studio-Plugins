@@ -49,7 +49,7 @@ export class Slider extends Control {
         this.mControl.setRange(min, max);
         this.mControl.singleStep = step;
 
-        const spinbox = new Ui.DoubleSpinBox(widget);
+        const spinbox = new Ui.SpinBox(widget);
         spinbox.setRange(min, max);
         spinbox.signleStep = step;
 

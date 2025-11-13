@@ -68,7 +68,7 @@ export class AccessMenu {
     createPreview(parent) {
         this.preview = new Ui.Widget(parent);
         this.preview.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
-        this.preview.setFixedWidth(480);
+        this.preview.setFixedWidth(422);
         this.preview.setFixedHeight(620);
 
         const layout = new Ui.BoxLayout();
@@ -125,7 +125,7 @@ export class AccessMenu {
 
     create(parent) {
         this.widget = new Ui.Widget(parent);
-        this.widget.setFixedWidth(480);
+        this.widget.setFixedWidth(422);
         this.widget.setFixedHeight(620);
         this.layout = new Ui.BoxLayout();
         this.layout.setDirection(Ui.Direction.TopToBottom);
