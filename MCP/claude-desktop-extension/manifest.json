@@ -9,6 +9,10 @@
     "name": "Snap Inc.",
     "url": "https://ar.snap.com/lens-studio"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Snapchat/Lens-Studio-Plugins/tree/main/MCP/claude-desktop-extension"
+  },
   "homepage": "https://ar.snap.com/lens-studio",
   "documentation": "https://developers.snap.com/lens-studio/features/lens-studio-ai/overview",
   "support": "https://discord.com/invite/snapar",

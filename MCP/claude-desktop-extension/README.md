@@ -2,11 +2,16 @@
 
 This extension allows Claude Desktop to interact with Snap's Lens Studio application.
 
-> **⚠️ Beta Feature Notice:** This is a beta feature that won't work with the current Lens Studio release. It will be compatible with upcoming version(s) soon.
+**Important: Make sure Lens Studio is running before using this extension.**
 
 ## How It Works
 
 The extension runs a local server on port 50050 that connects to Lens Studio. This allows you to use Claude to control Lens Studio.
+
+## Installing from Claude Desktop
+
+1. In Claude Desktop, go to **Connectors** → **Desktop extensions**
+2. Find and install the **Lens Studio** extension
 
 ## Local Installation (for Development)
 
@@ -19,18 +24,13 @@ The extension runs a local server on port 50050 that connects to Lens Studio. Th
     ```bash
     npx mcpb pack
     ```
-    This will create a `lens-studio-mcp-proxy-x.x.x.mcpb` file.
+    This will create a `claude-desktop-extension.mcpb` file.
 
 3.  **Install in Claude Desktop:**
     Double-click the generated `.mcpb` file to install it.
 
-## First-Time Setup in Lens Studio
+## First-Time Setup
 
-1.  **Start Lens Studio** and open the MCP Configuration dialog:
-    `File` → `Assistant AI` → `MCP Settings`
+The first time the extension connects to Lens Studio, you'll see a popup asking for permission. Click **Yes** to allow Claude Desktop to connect.
 
-2.  **Start the MCP Server** in the dialog. This will start servers on both your user-configured port and the fixed port `50050` for this extension.
-
-3.  **Approve Connection:** The first time the extension connects, Lens Studio will show a dialog asking for permission. Click **Approve** to allow Claude Desktop to connect.
-
-You can now use Claude to interact with Lens Studio.
+That's it! You can now use Claude to interact with Lens Studio.
