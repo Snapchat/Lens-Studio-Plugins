@@ -1,0 +1,23 @@
+{
+  "name": "lens-studio",
+  "version": "0.1.0",
+  "description": "An agentic AI system that help you build, debug, and generate Lenses for Snapchat and Spectacles",
+  "type": "module",
+  "main": "server/index.js",
+  "license": "MIT",
+  "keywords": [
+    "lens-studio",
+    "3d",
+    "ar",
+    "snapchat",
+    "spectacles",
+    "mcp"
+  ],
+  "author": "Snap Inc.",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.18.0"
+  }
+}

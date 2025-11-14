@@ -1,0 +1,80 @@
+{
+  "manifest_version": "0.2",
+  "name": "lens-studio",
+  "display_name": "Lens Studio",
+  "version": "1.0.0",
+  "description": "An agentic AI system that help you build, debug, and generate Lenses for Snapchat and Spectacles",
+  "long_description": "**Important: Launch Lens Studio 5.15 or later before installing this extension. The extension requires an active Lens Studio session to connect properly.**\n\n---\n\nThe Lens Studio AI extension brings intelligent AR development assistance directly into your workflow. This agentic AI system lets you build, debug, and generate Lenses through natural language interactions.\n\n**Key Features:**\n- Build complete Lenses from text descriptions\n- Manipulate scene objects, components, and assets conversationally\n- Generate 3D models, textures, and face masks with GenAI\n- Debug and analyze your Lens with AI-powered insights\n- Search and install packages, music, and assets from libraries\n- Query Lens Studio's knowledge base for help and best practices\n\nLearn more about [how the system works](https://developers.snap.com/lens-studio/features/lens-studio-ai/overview).\n\n**Setup and Usage:** Make sure you have Lens Studio open. When you first use the extension, accept the authentication permission prompt. You won't need to do this again in subsequent sessions.",
+  "author": {
+    "name": "Snap Inc.",
+    "url": "https://ar.snap.com/lens-studio"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Snapchat/Lens-Studio-Plugins/tree/main/MCP/claude-desktop-extension"
+  },
+  "homepage": "https://ar.snap.com/lens-studio",
+  "documentation": "https://developers.snap.com/lens-studio/features/lens-studio-ai/overview",
+  "support": "https://discord.com/invite/snapar",
+  "icon": "icon.svg",
+  "privacy_policies": ["https://values.snap.com/privacy/privacy-policy"],
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
+      "env": {}
+    }
+  },
+  "tools": [
+    {
+      "name": "Set Lens Studio Property",
+      "description": "Sets the value of a property on a scene object, component, or asset in Lens Studio by object ID."
+    },
+    {
+      "name": "Install Lens Studio Package",
+      "description": "Installs a package from a URI. Can be used on any URI, both local and remote; Important: use this to import/install assets from the Asset Library Note: Some packages are automatically instantiated in the scene after installation. Use scene introspection before attempting instantiation to avoid duplicates."
+    },
+    {
+      "name": "Generate Texture",
+      "description": "Generates general-purpose textures using Snap's Aether Stable Diffusion text-to-image server. Creates PBR textures, tileable patterns, materials, and photorealistic textures based on text prompts."
+    }
+  ],
+  "tools_generated": true,
+  "prompts": [
+    {
+      "name": "scene_introspection",
+      "text": "What is in this scene?"
+    },
+    {
+      "name": "install_sik",
+      "text": "Install Spectacles Interaction Kit (SIK)"
+    },
+    {
+      "name": "generate_panda_face_mask",
+      "text": "Generate a panda face mask texture"
+    }
+  ],
+  "keywords": [
+    "lens-studio",
+    "3D",
+    "AR",
+    "Snapchat",
+    "Spectacles",
+    "mcp",
+    "lenses"
+  ],
+  "license": "MIT",
+  "compatibility": {
+    "platforms": [
+      "darwin",
+      "win32"
+    ],
+    "runtimes": {
+      "node": ">=16.0.0"
+    }
+  }
+}
