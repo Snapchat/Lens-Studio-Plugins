@@ -15,8 +15,8 @@ export class CharacterAnimationToolkit extends EntityGenerator {
         descriptor.entityType = 'RenderMesh';
         return descriptor;
     }
-    constructor(pluginSystem) {
-        super(pluginSystem);
+    constructor(pluginSystem, descriptor) {
+        super(pluginSystem, descriptor);
         this.name = "Character Animation";
         this.guard = [];
         dependencyContainer.register(DependencyKeys.PluginSystem, this.pluginSystem);

@@ -12,10 +12,6 @@ export class WebPlugin extends PanelPlugin {
 		};
 	}
 
-	constructor(pluginSystem) {
-		super(pluginSystem);
-	}
-
 	createWidget(parent) {
 		//make the widget fundementals
 		const widget = new Ui.Widget(parent);

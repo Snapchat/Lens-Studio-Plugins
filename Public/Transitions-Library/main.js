@@ -19,9 +19,6 @@ export class TransitionManagerPlugin extends PanelPlugin {
         };
     }
 
-    constructor(pluginSystem) {
-        super(pluginSystem);
-    }
     createWidget(parentWidget) {
 
         this.mainWidget = new Ui.Widget(parentWidget);

@@ -12,9 +12,6 @@ export class WorldMeshObjectPreset extends Preset {
             entityType: 'SceneObject'
         };
     }
-    constructor(pluginSystem) {
-        super(pluginSystem);
-    }
     async createAsync(parent) {
         const model = this.pluginSystem.findInterface(Editor.Model.IModel);
         const scene = model.project.scene;

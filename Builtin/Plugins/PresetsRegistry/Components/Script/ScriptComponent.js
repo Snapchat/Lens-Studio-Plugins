@@ -28,9 +28,6 @@ function createScriptComponentPreset(id, name, iconPath, createFn, entityType) {
                 entityType: entityType
             };
         }
-        constructor(pluginSystem) {
-            super(pluginSystem);
-        }
         async createAsync(parent) {
             const model = this.pluginSystem.findInterface(Editor.Model.IModel);
 

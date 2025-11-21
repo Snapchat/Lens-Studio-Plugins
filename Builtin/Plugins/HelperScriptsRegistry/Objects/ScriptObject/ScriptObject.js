@@ -32,9 +32,6 @@ function createJsObjectPreset(id, name, iconPath, objectName, ComponentPreset) {
                 entityType: 'SceneObject'
             };
         }
-        constructor(pluginSystem) {
-            super(pluginSystem);
-        }
         async createAsync(destination) {
             try {
                 const model = this.pluginSystem.findInterface(Editor.Model.IModel);

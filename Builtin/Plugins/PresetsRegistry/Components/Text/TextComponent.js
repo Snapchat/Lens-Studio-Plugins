@@ -18,9 +18,6 @@ export class TextComponentPreset extends Preset {
             entityType: 'Text'
         };
     }
-    constructor(pluginSystem) {
-        super(pluginSystem);
-    }
     create(destination) {
         const model = this.pluginSystem.findInterface(Editor.Model.IModel);
         return createTextComponent(model, destination);

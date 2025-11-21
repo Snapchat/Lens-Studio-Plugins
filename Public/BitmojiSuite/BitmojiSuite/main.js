@@ -55,8 +55,8 @@ export class BitmojiSuite extends EditorPlugin {
         return descriptor;
     }
 
-    constructor(pluginSystem) {
-        super(pluginSystem);
+    constructor(pluginSystem, descriptor) {
+        super(pluginSystem, descriptor);
 
         this.onSelectionChangeConnection = null;
         this.onProjectChangedConnection = null;

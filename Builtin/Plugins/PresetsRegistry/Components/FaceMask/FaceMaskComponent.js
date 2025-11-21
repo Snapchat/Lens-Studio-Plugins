@@ -21,9 +21,6 @@ export class FaceMaskComponentPreset extends Preset {
             entityType: 'FaceMaskVisual'
         };
     }
-    constructor(pluginSystem) {
-        super(pluginSystem);
-    }
     async createAsync(destination) {
         const model = this.pluginSystem.findInterface(Editor.Model.IModel);
         return await createFaceMaskComponent.call(this, model, destination);

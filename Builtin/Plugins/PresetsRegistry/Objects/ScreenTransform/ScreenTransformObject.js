@@ -77,9 +77,6 @@ export class ScreenTransformObjectPreset extends Preset {
             entityType: 'SceneObject'
         };
     }
-    constructor(pluginSystem) {
-        super(pluginSystem);
-    }
     create(destination) {
         const model = this.pluginSystem.findInterface(Editor.Model.IModel);
         const scene = model.project.scene;

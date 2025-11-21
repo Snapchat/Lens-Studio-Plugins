@@ -12,9 +12,6 @@ function createComponentOnlyObject(componentName, niceName, iconPath, group) {
                 entityType: 'SceneObject'
             };
         }
-        constructor(pluginSystem) {
-            super(pluginSystem);
-        }
         async createAsync(selectedObject) {
             try {
                 const model = this.pluginSystem.findInterface(Editor.Model.IModel);

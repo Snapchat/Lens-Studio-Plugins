@@ -12,9 +12,6 @@ export class ImageObjectPreset extends Preset {
             entityType: 'SceneObject'
         };
     }
-    constructor(pluginSystem) {
-        super(pluginSystem);
-    }
     async createAsync(destination) {
         const model = this.pluginSystem.findInterface(Editor.Model.IModel);
         const image = model.project.scene.createSceneObject('Image');

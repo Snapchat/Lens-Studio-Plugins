@@ -7,16 +7,16 @@ export class PreGen extends EntityGenerator {
     static descriptor() {
         const descriptor = new Descriptor();
         descriptor.id = "Com.Snap.PreGen";
-        descriptor.name = "AI Snap Generation";
-        descriptor.description = "AI Snap Generation";
+        descriptor.name = "AI Portraits Beta";
+        descriptor.description = "AI Portraits Beta";
         descriptor.dependencies = [];
         descriptor.displayOrder = 11;
         descriptor.icon = Editor.Icon.fromFile(import.meta.resolve('./Resources/mainIcon.svg'));
         descriptor.entityType = 'RenderMesh';
         return descriptor;
     }
-    constructor(pluginSystem) {
-        super(pluginSystem);
+    constructor(pluginSystem, descriptor) {
+        super(pluginSystem, descriptor);
         this.name = "AI Portraits Beta";
         this.guard = [];
         app.initialize(pluginSystem);

@@ -12,9 +12,6 @@ export class ObjectPrefabPreset extends Preset {
             entityType: 'ObjectPrefab'
         };
     }
-    constructor(pluginSystem) {
-        super(pluginSystem);
-    }
     create(destination) {
         const model = this.pluginSystem.findInterface(Editor.Model.IModel);
         const assetManager = model.project.assetManager;

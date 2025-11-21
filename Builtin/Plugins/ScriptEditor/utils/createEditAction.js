@@ -19,10 +19,6 @@ export function createAssetEditMenuItem({
         /**
          * @param {Editor.PluginSystem} pluginSystem
          */
-        constructor(pluginSystem) {
-            super(pluginSystem);
-        }
-
         createAssetAction(context) {
 
             const action = new Editor.ContextAction();

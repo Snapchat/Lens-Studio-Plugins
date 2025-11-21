@@ -27,9 +27,6 @@ export class FaceStretchObjectPreset extends Preset {
             entityType: 'SceneObject'
         };
     }
-    constructor(pluginSystem) {
-        super(pluginSystem);
-    }
     create(destination) {
         const model = this.pluginSystem.findInterface(Editor.Model.IModel);
         return createFaceStretchObject(model, destination);

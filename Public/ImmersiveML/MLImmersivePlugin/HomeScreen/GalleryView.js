@@ -1081,7 +1081,6 @@ export class GalleryView {
         })
 
         this.emptyGalleryPage.visible = false;
-
     }
 
     createGalleryGrid(parent) {

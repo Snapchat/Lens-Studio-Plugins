@@ -88,7 +88,7 @@ export class ThreeDAssetGenerationPlugin {
         //this.widget.windowTitle = name;
     }
 
-    constructor(pluginSystem) {
+    constructor(pluginSystem, descriptor) {
         app.initialize(this, pluginSystem);
     }
 

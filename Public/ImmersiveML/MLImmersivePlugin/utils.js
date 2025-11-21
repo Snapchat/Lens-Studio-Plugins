@@ -305,17 +305,17 @@ export function getRandomPrompt() {
 
 export function getRealisticRandomPrompt() {
     const prompts = [
-        'pale green hair styled in soft loose waves, dark green coat decorated with intricate floral patterns and brass accessories, top hat decorated with detailed gears, lenses and mechanical parts, steampunk functionality',
-        'frontal illustration of an angel looking up at the sky, with soft features, curly hair, and detailed wings. Surround the figure with a radiant, romantic Valentine’s Day atmosphere, including warm pastel tones, subtle heart motifs, and a serene background of glowing rays',
-        'detailed luxurious hat of crimson roses with golden highlights, paired with a detailed scarlet shirt adorned with bead embroidery, hair blowing dramatically, standing in the middle of a whirlwind of red rose petals, creating a surreal and enchanting effect, mystical fog of red and black and glitter around, confetti everywhere, rose petals levitate in the air',
-        'baseball player standing confidently on a professional field, dressed in a full uniform including a cap, jersey, pants, and cleats. Player holds a bat over their shoulder, exuding focus and determination, with a sunny sky and a lively stadium crowd in the background. The field features neatly trimmed grass, a well-maintained diamond, and bases visible in the distance. The scene captures the essence of America\'s pastime, with a sense of anticipation and athleticism',
-        'dressed in intricate theatrical clown costumes, made in the style of painterly digital illustration with a semi-realistic approach, a whimsical fantasy with an emphasis on a bright vintage circus aesthetic',
-        'fantasy that depicts characters dressed in luxurious golden attire with a celestial and royal aesthetic. The clothing includes flowing, radiant dresses made of multi-layered shimmering fabrics that mimic the glow of sunlight, details with gold embroidery, jewelry and natural motifs such as leaves and wings, ornate crowns, elegant clothing, wings are large and luminous, seeming translucent and shining with golden light, ethereal sparkles',
-        'vibrant flower crown adorning the head, hippie-inspired style, figure in a colorful hippie-inspired outfit layered with fringe accessories, standing in a sunlit meadow with wildflowers, sharp details and vivid textures illuminated by soft golden light',
+        'pale green hair styled in soft loose waves, dark green coat decorated with floral patterns and brass accessories, top hat decorated with detailed gears, lenses and mechanical parts, steampunk',
+        'frontal illustration of an angel looking up at the sky, with soft features, curly hair, and detailed wings. Surround the figure with a romantic atmosphere, including warm pastel tones, heart motives',
+        'detailed luxurious hat of crimson roses with golden highlights, paired with a detailed scarlet shirt adorned with bead embroidery, hair blowing dramatically, whirlwind of red rose petals',
+        'baseball player standing confidently on a professional field, dressed in a full uniform including a cap, jersey, pants, and cleats. Player holds a bat over their shoulder, stadium crowd in the back',
+        'dressed in intricate theatrical clown costumes, made in the style of painterly digital illustration with a semi-realistic approach, a whimsical fantasy with an emphasis on a vintage circus aesthetic',
+        'fantasy that depicts character dressed in luxurious golden attire with a royal aesthetic. Clothing includes flowing, radiant dresses, jewelry and natural motifs such as leaves and wings, ornate crowns',
+        'vibrant flower crown adorning the head, hippie-inspired style, figure in a colorful hippie-inspired outfit layered with fringe accessories, standing in a sunlit meadow with wildflowers, sharp details',
         'punk mohawk with yellow-red-pink-green colors hairstyle, black leather jacket completely covered with silver spikes, graffiti alley background, dramatic lighting',
-        'elaborate white huge wig adorned with roses and pearl accents, lifelike realistic hair, detailed rococo male figure wearing pastel blue and pale pink embroidered high-neck attire, ornate rococo garden with overflowing rose bushes, a decorative palace in the distance, soft golden sunlight casting delicate shadows, intricate textures on fabric and flowers, glowing highlights on the wig and pearls, ultra-detailed rococo architecture, cinematic lighting, 8k textures, smooth gradients for realism',
-        'waist-up rococo figure, white wig with pearls and roses, pastel embroidered male jacket with intricate gold details, soft daylight, realistic textures, ornate style, pastel colors, clear details, lush rococo garden filled with blooming rose bushes'
-    ];
+        'elaborate white huge wig adorned with roses and pearl accents, lifelike realistic hair, detailed rococo male figure wearing pastel blue and pale pink embroidered high-neck attire, garden with roses',
+        'waist-up rococo figure, white wig with pearls and roses, pastel embroidered male jacket with intricate gold details, soft daylight, realistic textures, ornate style, pastel colors, garden with roses'
+        ];
 
     return prompts[Math.floor(Math.random() * prompts.length)];
 }

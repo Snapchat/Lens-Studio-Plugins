@@ -20,9 +20,6 @@ function createMeshObjectClass(name, iconPath, assetMeshPreset, assetMaterialPre
                 entityType: 'SceneObject'
             };
         }
-        constructor(pluginSystem) {
-            super(pluginSystem);
-        }
         async createAsync(destination) {
             try {
                 // Create the required assets/settings

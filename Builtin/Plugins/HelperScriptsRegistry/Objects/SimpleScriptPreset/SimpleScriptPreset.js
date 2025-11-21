@@ -13,19 +13,25 @@ function createSimpleScriptPreset(name, relativePackagePath, relativeIconPath, d
                 entityType: 'SceneObject'
             };
         }
-        constructor(pluginSystem) {
-            super(pluginSystem);
-        }
         async createAsync(destination) {
-            const model = this.pluginSystem.findInterface(Editor.Model.IModel);
-            const absPackagePath = new Editor.Path(import.meta.resolve(relativePackagePath));
-            const assetManager = model.project.assetManager;
+            try {
+                const model = this.pluginSystem.findInterface(Editor.Model.IModel);
+                const absPackagePath = new Editor.Path(import.meta.resolve(relativePackagePath));
+                const assetManager = model.project.assetManager;
+                const importPath = new Editor.Model.SourcePath('',Editor.Model.SourceRootDirectory.Packages);
+                // Import the external file asynchronously
+                const importResult = await assetManager.importExternalFileAsync(absPackagePath, importPath, Editor.Model.ResultType.Auto);
 
-            // Import the external file asynchronously
-            const importResult = await assetManager.importExternalFileAsync(absPackagePath,new Editor.Path('../Packages'),Editor.Model.ResultType.Auto);
-            // Instantiate the imported asset
-            const res = await assetManager.instantiate([importResult.primary]);
-            return res.length == 0 ? destination : res[0];
+                // First: instantiate and wait for it to finish
+                const res = await assetManager.instantiate([importResult.primary]);
+                
+                // Second: only after instantiate finishes, unpack
+                const unpackedRes = await assetManager.unpack(importResult.primary.fileMeta.nativePackageRoot);
+                
+                return res.length == 0 ? destination : res[0];
+            } catch (e) {
+                console.log(`${e.message}\n${e.stack}`);
+            }
         }
 
     }

@@ -30,9 +30,6 @@ export class FaceInsetObjectPreset extends Preset {
             entityType: 'SceneObject'
         };
     }
-    constructor(pluginSystem) {
-        super(pluginSystem);
-    }
     create(destination) {
         const model = this.pluginSystem.findInterface(Editor.Model.IModel);
         return createFaceInsetObject.call(this, model, destination);

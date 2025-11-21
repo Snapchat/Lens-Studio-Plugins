@@ -12,8 +12,8 @@ export class OrganizeFolderStructureService extends CoreService {
         }
     }
 
-    constructor(pluginSystem) {
-        super(pluginSystem)
+    constructor(pluginSystem, descriptor) {
+        super(pluginSystem, descriptor)
         _this = this;
     }
 

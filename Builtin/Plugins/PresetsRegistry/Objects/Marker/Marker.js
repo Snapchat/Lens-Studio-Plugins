@@ -1,6 +1,7 @@
 import { Preset } from 'LensStudio:Preset';
 import { ImageMarkerAssetPreset } from '../../Assets/MarkerAsset/MarkerAsset.js';
 import * as Utils from 'LensStudio:Utils@1.0.js';
+import * as Ui from 'LensStudio:Ui';
 
 function createMarkerObjectPreset(name) {
     return class MarkerObjectPreset extends Preset {
@@ -11,12 +12,9 @@ function createMarkerObjectPreset(name) {
                 description: '',
                 icon: Editor.Icon.fromFile(import.meta.resolve(`Resources/${name} Marker.svg`)),
                 section: 'Tracking',
-                entityType: 'SceneObject'
+                entityType: 'SceneObject',
+                dependencies: [Ui.IGui]
             };
-        }
-
-        constructor(pluginSystem) {
-            super(pluginSystem);
         }
 
         async createAsync(destination) {

@@ -15,9 +15,6 @@ export class ObjectMenuItem extends CoreService {
     /**
      * @param {Editor.PluginSystem} pluginSystem
      */
-    constructor(pluginSystem) {
-        super(pluginSystem);
-    }
 
     // In the ungroup method
     /**

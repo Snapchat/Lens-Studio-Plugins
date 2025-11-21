@@ -15,8 +15,8 @@ export class FaceAnimator extends EntityGenerator {
         descriptor.entityType = 'RenderMesh';
         return descriptor;
     }
-    constructor(pluginSystem) {
-        super(pluginSystem);
+    constructor(pluginSystem, descriptor) {
+        super(pluginSystem, descriptor);
         this.name = "Face Animator";
         this.guard = [];
         app.initialize(pluginSystem);

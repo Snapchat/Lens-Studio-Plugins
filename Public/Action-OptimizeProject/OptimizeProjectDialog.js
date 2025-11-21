@@ -11,8 +11,8 @@ export class OptimizeProjectDialog extends DialogPlugin {
         };
     }
 
-    constructor(pluginSystem) {
-        super(pluginSystem);
+    constructor(pluginSystem, descriptor) {
+        super(pluginSystem, descriptor);
         this.selectedAssets = new Set();
         this.modelRoot = pluginSystem.findInterface(Editor.Model.IModel);
         this.project = this.modelRoot.project;

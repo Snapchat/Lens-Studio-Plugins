@@ -14,10 +14,6 @@ export class ImageMarkerAssetPreset extends Preset {
         };
     }
 
-    constructor(pluginSystem) {
-        super(pluginSystem);
-    }
-
     async createAsync(d) {
         try {
             const destination = d ? d : new Editor.Path('');

@@ -25,9 +25,6 @@ export class FaceMaskObjectPreset extends Preset {
             entityType: 'SceneObject'
         };
     }
-    constructor(pluginSystem) {
-        super(pluginSystem);
-    }
     async createAsync(destination) {
         const model = this.pluginSystem.findInterface(Editor.Model.IModel);
         return await createFaceMaskObject.call(this, model, destination);

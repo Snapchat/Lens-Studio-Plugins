@@ -42,3 +42,11 @@ export function logEventEffectTraining(status) {
     };
     logEvent(eventData);
 }
+export function logEventFeedback(stars, reason) {
+    const eventData = {
+        "event_name": "LENSSTUDIO_PLUGIN_EVENT_FEEDBACK",
+        "stars": stars,
+        "reason": reason
+    };
+    logEvent(eventData);
+}

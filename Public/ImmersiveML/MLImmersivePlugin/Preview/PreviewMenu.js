@@ -43,7 +43,15 @@ export class PreviewMenu {
                 }
             }
 
-            inputFormat = "TEXT_AND_IMAGE";
+            if (controls['promptPicker'].enhanceTextPromptValue.length > 0 && controls['promptPicker'].enhanceImagePromptValue.length > 0) {
+                inputFormat = "TEXT_AND_IMAGE";
+            }
+            else if (controls['promptPicker'].enhanceImagePromptValue.length > 0) {
+                inputFormat = "PROMPT_IMAGE";
+            }
+            else {
+                inputFormat = "PROMPT_TEXT";
+            }
         }
 
         createEffect(effectData, (effectResponse) => {

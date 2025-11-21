@@ -80,9 +80,6 @@ function createObjectTracking3DPreset(id, name, iconPath, createFn) {
                 entityType: 'SceneObject'
             };
         }
-        constructor(pluginSystem) {
-            super(pluginSystem);
-        }
         async createAsync(destination) {
             const model = this.pluginSystem.findInterface(Editor.Model.IModel);
             return await createFn.call(this, model, destination);

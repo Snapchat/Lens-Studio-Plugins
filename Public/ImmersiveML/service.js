@@ -18,8 +18,8 @@ export class ImmersiveMLService extends EntityGenerator {
         return descriptor;
     }
 
-    constructor(pluginSystem) {
-        super(pluginSystem);
+    constructor(pluginSystem, descriptor) {
+        super(pluginSystem, descriptor);
         app.initialize(pluginSystem);
     }
 

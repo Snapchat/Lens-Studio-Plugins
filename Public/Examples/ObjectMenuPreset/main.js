@@ -20,8 +20,8 @@ export class ObjectMenuPreset extends Preset {
     /**
      * @param {Editor.PluginSystem} pluginSystem
      */
-    constructor(pluginSystem) {
-        super(pluginSystem);
+    constructor(pluginSystem, descriptor) {
+        super(pluginSystem, descriptor);
         // Flags
         this.image = null;
         this.material = null;

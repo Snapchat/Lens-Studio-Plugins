@@ -57,9 +57,6 @@ function createSpecialMeshObject(id, name, iconPath, headMeshMode) {
                 entityType: 'SceneObject'
             };
         }
-        constructor(pluginSystem) {
-            super(pluginSystem);
-        }
         async createAsync(destination) {
             const model = this.pluginSystem.findInterface(Editor.Model.IModel);
             return await createFaceMeshObject.call(this, model, destination, headMeshMode);

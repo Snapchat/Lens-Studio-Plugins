@@ -1,5 +1,6 @@
 // @ts-nocheck
 import * as Ui from "LensStudio:Ui";
+import * as Shell from 'LensStudio:Shell';
 import { ColorRole } from "LensStudio:Ui";
 import { Gallery } from "./Gallery.js";
 import { getDreamByID, getMyDreams } from "./api.js";
@@ -7,6 +8,7 @@ import app from "./app.js";
 export class EffectGallery {
     constructor(parent, openEffectSettingsPage, checkDreamStateById, onImportClickCallback, showLoginPageCallback, showPluginPageCallback) {
         this.connections = [];
+        this.movieViews = [];
         this.settings = {};
         this.lastRequestId = 0;
         this.gallery = new Gallery(this.onTileClicked.bind(this), onImportClickCallback, this.updateGallery.bind(this));
@@ -29,7 +31,7 @@ export class EffectGallery {
         layout.setContentsMargins(Ui.Sizes.DoublePadding, Ui.Sizes.Padding, 19, 0);
         this.stackedWidget = new Ui.StackedWidget(widget);
         this.stackedWidget.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Expanding);
-        const initWidget = this.createInitWidget(this.stackedWidget);
+        const initWidget = this.createEmptyGalleryPage(this.stackedWidget);
         this.stackedWidget.addWidget(initWidget);
         const galleryWidget = this.gallery.create(this.stackedWidget);
         this.stackedWidget.addWidget(galleryWidget);
@@ -37,7 +39,7 @@ export class EffectGallery {
         widget.layout = layout;
         this.authComponent = (_a = app.pluginSystem) === null || _a === void 0 ? void 0 : _a.findInterface(Editor.IAuthorization);
         this.authComponent.onAuthorizationChange.connect((authStatus) => {
-            if (!this.stackedWidget) {
+            if (!this.stackedWidget || !this.stackedWidget.visible) {
                 return;
             }
             if (authStatus) {
@@ -77,6 +79,79 @@ export class EffectGallery {
         label1.move(15, 359);
         widget.layout = layout;
         return widget;
+    }
+    createEmptyGalleryPage(parent) {
+        const emptyGalleryPage = new Ui.Widget(parent);
+        emptyGalleryPage.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
+        emptyGalleryPage.setFixedWidth(390);
+        emptyGalleryPage.setFixedHeight(500);
+        const logo = new Ui.ImageView(emptyGalleryPage);
+        logo.pixmap = new Ui.Pixmap(new Editor.Path(import.meta.resolve('./Resources/mainIcon.svg')));
+        logo.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
+        logo.setFixedWidth(32);
+        logo.setFixedHeight(32);
+        logo.scaledContents = true;
+        logo.move(176, 69);
+        const title = new Ui.Label(emptyGalleryPage);
+        title.fontRole = Ui.FontRole.TitleBold;
+        title.foregroundRole = Ui.ColorRole.BrightText;
+        title.text = '<center>Welcome to<br><span style="font-size: 16px; font-weight: bold; color: #FFF0B9;">AI Portraits Beta</span><center>';
+        title.wordWrap = true;
+        title.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Preferred);
+        title.setFixedWidth(180);
+        title.move(105, 112);
+        const movieView = new Ui.MovieView(emptyGalleryPage);
+        movieView.setFixedWidth(122);
+        movieView.setFixedHeight(216);
+        movieView.radius = 8;
+        movieView.scaledContents = true;
+        movieView.animated = true;
+        const movie = new Ui.Movie(new Editor.Path(import.meta.resolve('./Resources/p_01.webp')));
+        movie.resize(122, 216);
+        movieView.movie = movie;
+        movieView.move(4, 170);
+        const movieView1 = new Ui.MovieView(emptyGalleryPage);
+        movieView1.setFixedWidth(122);
+        movieView1.setFixedHeight(216);
+        movieView1.radius = 8;
+        movieView1.scaledContents = true;
+        movieView1.animated = true;
+        const movie1 = new Ui.Movie(new Editor.Path(import.meta.resolve('./Resources/p_02.webp')));
+        movie1.resize(122, 216);
+        movieView1.movie = movie1;
+        movieView1.move(133, 170);
+        const movieView2 = new Ui.MovieView(emptyGalleryPage);
+        movieView2.setFixedWidth(122);
+        movieView2.setFixedHeight(216);
+        movieView2.radius = 8;
+        movieView2.scaledContents = true;
+        movieView2.animated = true;
+        const movie2 = new Ui.Movie(new Editor.Path(import.meta.resolve('./Resources/p_03.webp')));
+        movie2.resize(122, 216);
+        movieView2.movie = movie2;
+        movieView2.move(262, 170);
+        const disclaimer = new Ui.Label(emptyGalleryPage);
+        disclaimer.wordWrap = true;
+        disclaimer.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Preferred);
+        disclaimer.setFixedWidth(300);
+        disclaimer.text = `<center>You don’t have any generated effects yet.<br>Try creating a new one!<center>`;
+        disclaimer.move(45, 424);
+        const guidelinesButton = new Ui.PushButton(emptyGalleryPage);
+        guidelinesButton.text = 'Guidelines';
+        const importImagePath = new Editor.Path(import.meta.resolve('./Resources/Guides.svg'));
+        guidelinesButton.setIconWithMode(Editor.Icon.fromFile(importImagePath), Ui.IconMode.MonoChrome);
+        guidelinesButton.primary = false;
+        guidelinesButton.enabled = true;
+        guidelinesButton.visible = true;
+        guidelinesButton.move(148, 468);
+        guidelinesButton.onClick.connect(() => {
+            Shell.openUrl('https://developers.snap.com/lens-studio/features/genai-suite/ai-portraits', {});
+        });
+        this.movieViews.push(movieView);
+        this.movieViews.push(movieView1);
+        this.movieViews.push(movieView2);
+        // emptyGalleryPage.visible = false;
+        return emptyGalleryPage;
     }
     getDreamsGallery() {
         if (!this.authComponent || !this.authComponent.isAuthorized) {

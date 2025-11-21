@@ -19,9 +19,6 @@ export class ComponentPreset extends Preset {
     /**
      * @param {Editor.PluginSystem} pluginSystem
      */
-    constructor(pluginSystem) {
-        super(pluginSystem);
-    }
 
     /**
      * @param {Editor.Model.SceneObject} destination

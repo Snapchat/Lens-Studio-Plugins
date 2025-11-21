@@ -22,9 +22,6 @@ export class Text3DComponentPreset extends Preset {
             entityType: 'Text3D'
         };
     }
-    constructor(pluginSystem) {
-        super(pluginSystem);
-    }
     async createAsync(destination) {
         const model = this.pluginSystem.findInterface(Editor.Model.IModel);
         return await createText3DComponent.call(this, model, destination);

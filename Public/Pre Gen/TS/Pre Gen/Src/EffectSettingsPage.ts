@@ -79,9 +79,9 @@ export class EffectSettingsPage {
         limitationLabel.foregroundRole = Ui.ColorRole.PlaceholderText;
         promptLayout.addWidgetWithStretch(limitationLabel, 0, Ui.Alignment.AlignRight | Ui.Alignment.AlignTop);
 
-        this.textFields.push(new TextField(promptWidget, 'Person', 'Describe the Person..', this.onSurpriseMeButtonClicked.bind(this)));
-        this.textFields.push(new TextField(promptWidget, 'Action', 'Describe the Action..', ));
-        this.textFields.push(new TextField(promptWidget, 'Scene', 'Describe the Scene..', ));
+        this.textFields.push(new TextField(promptWidget, 'Person', 'Describe the Person..', import.meta.resolve('./Resources/person_hint.png'), this.onSurpriseMeButtonClicked.bind(this)));
+        this.textFields.push(new TextField(promptWidget, 'Action', 'Describe the Action..', import.meta.resolve('./Resources/action_hint.png')));
+        this.textFields.push(new TextField(promptWidget, 'Scene', 'Describe the Scene..', import.meta.resolve('./Resources/scene_hint.png')));
 
         this.textFields.forEach((textField: TextField) => {
             promptLayout.addWidgetWithStretch(textField.widget, 0, Ui.Alignment.AlignTop);
@@ -339,7 +339,7 @@ class TextField {
     private connections: Array<any> = [];
     private onTextChangeCallbacks: Function[] = [];
 
-    constructor(parent: Ui.Widget, text: string, placeholderText: string = "", onSurpriseMeButtonClickCallback: Function | null = null) {
+    constructor(parent: Ui.Widget, text: string, placeholderText: string = "", image_path: string | Editor.Path, onSurpriseMeButtonClickCallback: Function | null = null) {
         const widget = new Ui.Widget(parent);
 
         const layout = new Ui.BoxLayout();
@@ -358,6 +358,11 @@ class TextField {
         label.text = text;
 
         headerLayout.addWidget(label);
+
+        const infoIcon = this.createInfoIcon(widget, image_path);
+        headerLayout.addWidgetWithStretch(infoIcon, 0, Ui.Alignment.AlignLeft);
+
+        headerLayout.addStretch(0);
 
         const surpriseMeLabel = new Ui.ClickableLabel(header);
         surpriseMeLabel.text = Ui.getUrlString('Surprise Me', '');
@@ -420,6 +425,58 @@ class TextField {
 
         widget.layout = layout;
         this.mainWidget = widget;
+    }
+
+    private createInfoIcon(parent, image_path) {
+        const infoImage = new Ui.Pixmap(import.meta.resolve('./Resources/small_info.svg'));
+
+        const info = new Ui.ImageView(parent);
+        info.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
+        info.setFixedHeight(Ui.Sizes.IconSide);
+        info.setFixedWidth(Ui.Sizes.IconSide);
+        info.scaledContents = true;
+
+        info.pixmap = infoImage;
+        info.responseHover = true;
+
+        const popupWidget = new Ui.PopupWithArrow(info, Ui.ArrowPosition.Top);
+        popupWidget.setContentsMargins(Ui.Sizes.Padding, Ui.Sizes.Padding, Ui.Sizes.Padding, Ui.Sizes.Padding);
+
+        popupWidget.setMainWidget(this.createHint(popupWidget, image_path));
+
+        const connection = info.onHover.connect((hovered) => {
+            if (hovered) {
+                popupWidget.popup(info);
+            } else {
+                popupWidget.close();
+                parent.activateWindow();
+            }
+        });
+
+        return info;
+    }
+
+    private createHint(parent, image_path) {
+        const layout = new Ui.BoxLayout();
+        layout.setDirection(Ui.Direction.TopToBottom);
+        layout.setContentsMargins(0, 0, 0, 0);
+
+        const content = new Ui.Widget(parent);
+
+        const imageView = new Ui.ImageView(content);
+
+        const image = new Ui.Pixmap(image_path);
+
+        // image.resize(image_width * 2, image_height * 2);
+
+        imageView.pixmap = image;
+        imageView.setFixedWidth(120);
+        imageView.setFixedHeight(216);
+        imageView.scaledContents = true;
+        layout.addWidget(imageView);
+
+        content.layout = layout;
+        return content;
     }
 
     onTextChange(): void {

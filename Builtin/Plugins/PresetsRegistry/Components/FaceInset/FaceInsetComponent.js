@@ -23,9 +23,6 @@ export class FaceInsetComponentPreset extends Preset {
             entityType: 'FaceInsetVisual'
         };
     }
-    constructor(pluginSystem) {
-        super(pluginSystem);
-    }
     async createAsync(destination) {
         const model = this.pluginSystem.findInterface(Editor.Model.IModel);
         return await createFaceInsetComponent.call(this, model, destination);

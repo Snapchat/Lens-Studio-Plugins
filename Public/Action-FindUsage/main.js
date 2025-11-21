@@ -12,8 +12,8 @@ export class FindUsageContextMenuItemService extends CoreService {
         }
     }
 
-    constructor(pluginSystem) {
-        super(pluginSystem)
+    constructor(pluginSystem, descriptor) {
+        super(pluginSystem, descriptor)
         this.usageFinder = new UsageFinder(pluginSystem);
         this.sceneObjectSelector = new EntitiesSelector(pluginSystem);
         this.entityExtractor = new EntityFromContextExtractor();

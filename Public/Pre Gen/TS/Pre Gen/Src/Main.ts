@@ -6,7 +6,7 @@ import app from "./app.js";
 
 export class PreGen extends EntityGenerator {
 
-    private name: string = "AI Snap Generation";
+    private name: string = "AI Portraits Beta";
     private dialog: Dialog;
     private mGui: Ui.IGui;
     private guard: Array<any> = [];
@@ -15,8 +15,8 @@ export class PreGen extends EntityGenerator {
         const descriptor = new Descriptor();
 
         descriptor.id = "Com.Snap.PreGen";
-        descriptor.name = "AI Snap Generation";
-        descriptor.description = "AI Snap Generation";
+        descriptor.name = "AI Portraits Beta";
+        descriptor.description = "AI Portraits Beta";
         descriptor.dependencies = [];
         descriptor.displayOrder = 11;
         descriptor.icon = Editor.Icon.fromFile(import.meta.resolve('./Resources/mainIcon.svg'));

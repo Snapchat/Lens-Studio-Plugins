@@ -11,9 +11,6 @@ export class PhysicsWorldObjectPreset extends Preset {
             entityType: 'SceneObject'
         };
     }
-    constructor(pluginSystem) {
-        super(pluginSystem);
-    }
     async createAsync(destination) {
         try {
             const model = this.pluginSystem.findInterface(Editor.Model.IModel);

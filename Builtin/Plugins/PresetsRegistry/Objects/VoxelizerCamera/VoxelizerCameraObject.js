@@ -11,9 +11,6 @@ export class VoxelizerCameraObjectPreset extends Preset {
             entityType: 'SceneObject'
         };
     }
-    constructor(pluginSystem) {
-        super(pluginSystem);
-    }
 
 create(destination) {
     

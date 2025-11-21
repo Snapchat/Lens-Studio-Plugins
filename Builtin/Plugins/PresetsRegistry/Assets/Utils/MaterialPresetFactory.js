@@ -36,10 +36,6 @@ export function createMaterialPreset(params, section = 'Materials') {
                 entityType: 'Material'
             };
         }
-        constructor(pluginSystem) {
-            super(pluginSystem);
-
-        }
         async createAsync(d) {
             const destination = d ? d : new Editor.Path('');
 

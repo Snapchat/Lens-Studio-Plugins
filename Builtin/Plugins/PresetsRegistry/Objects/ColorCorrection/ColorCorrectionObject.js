@@ -56,9 +56,6 @@ function createColorCorrectionClass(name, assetMaterialPreset) {
                 entityType: 'SceneObject'
             };
         }
-        constructor(pluginSystem) {
-            super(pluginSystem);
-        }
         async createAsync(destination) {
 
             const materialPreset = new assetMaterialPreset(this.pluginSystem);

@@ -37,8 +37,8 @@ export class ScriptEditor extends EditorPlugin {
         };
     }
 
-    constructor(pluginSystem) {
-        super(pluginSystem);
+    constructor(pluginSystem, descriptor) {
+        super(pluginSystem, descriptor);
         const model = pluginSystem.findInterface(Editor.Model.IModel);
         this.assetManager = model.project.assetManager;
         this.mGui = pluginSystem.findInterface(Ui.IGui);

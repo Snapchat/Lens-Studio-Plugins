@@ -16,10 +16,6 @@ export class PanelWidgets extends PanelPlugin {
     /**
      * @param {Editor.PluginSystem} pluginSystem
      */
-    constructor(pluginSystem) {
-        super(pluginSystem);
-    }
-
 
     /**
      * Creates a widget and sets up the necessary layout and connections.

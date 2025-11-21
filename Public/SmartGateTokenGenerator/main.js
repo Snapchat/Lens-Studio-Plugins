@@ -11,8 +11,8 @@ export class TokenGeneratorPlugin extends DialogPlugin {
         };
     }
 
-    constructor(pluginSystem) {
-        super(pluginSystem);
+    constructor(pluginSystem, descriptor) {
+        super(pluginSystem, descriptor);
         this.tokenService = new TokenService();
         this.dialogUI = new SmartGateTokenDialog(this.tokenService, pluginSystem);
     }

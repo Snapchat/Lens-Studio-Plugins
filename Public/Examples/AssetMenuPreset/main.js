@@ -18,9 +18,6 @@ export class AssetMenuPreset extends Preset {
     /**
      * @param {Editor.PluginSystem} pluginSystem
      */
-    constructor(pluginSystem) {
-        super(pluginSystem);
-    }
 
     /**
      * @param {Editor.Path} destination

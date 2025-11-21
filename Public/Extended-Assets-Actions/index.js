@@ -23,8 +23,8 @@ function createAssetAction(descriptor, createObjectAction) {
                 description: descriptor.description
             }
         }
-        constructor(pluginSystem) {
-            super(pluginSystem)
+        constructor(pluginSystem, descriptor) {
+            super(pluginSystem, descriptor)
         }
         start() {
             /** @type {Editor.IContextActionRegistry} */

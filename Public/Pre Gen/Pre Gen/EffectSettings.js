@@ -7,6 +7,7 @@ import { createDream, createPack, downloadFile, getDreamByID } from "./api.js";
 import * as FileSystem from 'LensStudio:FileSystem';
 import { Importer } from "./Importer.js";
 import { logEventCreate, logEventEffectTraining, logEventImport } from "./analytics.js";
+import { FeedbackManager } from "./FeedbackManager.js";
 export class EffectSettings {
     constructor(onReturnCallback, onNewDreamCreatedCallback, onPreviewLoadedCallback, updateSettings, resetGallery) {
         this.settings = {};
@@ -20,6 +21,7 @@ export class EffectSettings {
         this.updateSettings = updateSettings;
         this.resetGallery = resetGallery;
         this.importer = new Importer();
+        this.feedbackManager = new FeedbackManager();
         this.tempDir = FileSystem.TempDir.create();
         this.preview = new Preview(this.previewIdxChanged.bind(this));
         this.effectSettingsPage = new EffectSettingsPage(onReturnCallback, this.onPromptChanged.bind(this), onNewDreamCreatedCallback, (removedId) => {
@@ -105,6 +107,10 @@ export class EffectSettings {
         this.trainLabel.text = "";
         this.trainLabel.visible = false;
         layout.addWidgetWithStretch(this.trainLabel, 0, Ui.Alignment.AlignCenter);
+        this.feedbackWidget = this.feedbackManager.create(widget);
+        layout.addStretch(0);
+        layout.addWidgetWithStretch(this.feedbackWidget, 0, Ui.Alignment.AlignRight);
+        this.feedbackManager.hide();
         const previewEffectButton = new Ui.PushButton(widget);
         previewEffectButton.text = 'Generate previews';
         previewEffectButton.primary = false;
@@ -120,6 +126,7 @@ export class EffectSettings {
         trainModelButton.primary = true;
         this.connections.push(trainModelButton.onClick.connect(() => {
             trainModelButton.visible = false;
+            this.feedbackManager.hide();
             if (this.trainLabel) {
                 this.trainLabel.visible = false;
             }
@@ -177,6 +184,8 @@ export class EffectSettings {
             this.previewEffectButton.visible = false;
             this.previewEffectButton.enabled = false;
             this.trainModelButton.visible = false;
+            this.feedbackManager.hide();
+            this.feedbackManager.reset();
             this.trainLabel.visible = false;
             this.importButton.visible = false;
             this.importButton.enabled = true;
@@ -235,6 +244,7 @@ export class EffectSettings {
         if (this.trainModelButton && this.importButton && this.trainLabel) {
             if (settings.state === "SUCCESS") {
                 this.trainModelButton.visible = true;
+                this.feedbackManager.show();
                 this.trainLabel.visible = true;
             }
             else if (settings.state === "PACK_SUCCESS") {

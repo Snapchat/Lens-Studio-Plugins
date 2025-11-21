@@ -16,9 +16,6 @@ export class AssetMenuItem extends CoreService {
     /**
      * @param {Editor.PluginSystem} pluginSystem
      */
-    constructor(pluginSystem) {
-        super(pluginSystem);
-    }
 
     createAssetAction(context) {
 

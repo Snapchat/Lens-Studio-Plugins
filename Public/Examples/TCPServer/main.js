@@ -74,8 +74,8 @@ export class TcpServerDemo extends CoreService {
     /**
      * @param {Editor.PluginSystem} pluginSystem
      */
-    constructor(pluginSystem) {
-        super(pluginSystem);
+    constructor(pluginSystem, descriptor) {
+        super(pluginSystem, descriptor);
 
         this.tcpServer = new TcpServerManager();
         this.serverAddr = "127.0.0.1";

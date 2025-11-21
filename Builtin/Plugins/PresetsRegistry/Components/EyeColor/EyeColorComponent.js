@@ -22,10 +22,6 @@ export class EyeColorComponentPreset extends Preset {
         };
     }
 
-    constructor(pluginSystem) {
-        super(pluginSystem);
-    }
-
     async createAsync(destination) {
         const model = this.pluginSystem.findInterface(Editor.Model.IModel);
         return await createEyeColorComponent.call(this, model, destination);

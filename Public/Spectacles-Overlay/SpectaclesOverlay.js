@@ -22,8 +22,8 @@ export class SpectaclesOverlay extends OverlayPlugin {
         };
     }
 
-    constructor(pluginSystem) {
-        super(pluginSystem);
+    constructor(pluginSystem, descriptor) {
+        super(pluginSystem, descriptor);
 
         if (fs.exists(configFilePath)) {
             this.config = JSON.parse(fs.readFile(configFilePath));
@@ -170,9 +170,6 @@ export class SpectaclesUriHandler extends UriHandlerPlugin {
                 return regex.test(url);
             },
         };
-    }
-    constructor(pluginSystem) {
-        super(pluginSystem);
     }
 
     handle(uri) {

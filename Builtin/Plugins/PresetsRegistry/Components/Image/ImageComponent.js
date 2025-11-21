@@ -23,9 +23,6 @@ export class ImageComponentPreset extends Preset {
             entityType: 'Image'
         };
     }
-    constructor(pluginSystem) {
-        super(pluginSystem);
-    }
     async createAsync(destination) {
         const model = this.pluginSystem.findInterface(Editor.Model.IModel);
         return await createImageComponent.call(this, model, destination);
