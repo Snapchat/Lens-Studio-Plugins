@@ -46,12 +46,16 @@ export async function createFaceMeshObject(model, sceneObject, headMeshMode) {
 }
 
 function createSpecialMeshObject(id, name, iconPath, headMeshMode) {
+    const materialType = headMeshMode ? 'PBR Material' : 'Face Mesh Material';
+    const geometryDetail = headMeshMode ? ' with skull geometry' : '';
+    const description = `Creates a scene object with RenderMeshVisual and ${materialType}${geometryDetail} for AR face effects.`;
+
     class SpecialMeshObjectPreset extends Preset {
         static descriptor() {
             return {
                 id: `Com.Snap.${id}ObjectPreset`,
                 name: name,
-                description: '',
+                description: description,
                 icon: Editor.Icon.fromFile(import.meta.resolve(iconPath)),
                 section: '3D',
                 entityType: 'SceneObject'

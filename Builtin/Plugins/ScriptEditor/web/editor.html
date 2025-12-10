@@ -39,7 +39,7 @@
         monaco.languages.register({ id: 'CustomCodeNodeGlsl' });
         monaco.languages.setMonarchTokensProvider('CustomCodeNodeGlsl', glslLanguageDefinition);
         monaco.languages.setLanguageConfiguration('CustomCodeNodeGlsl', glslLanguageConfig);
-        
+
         window.addEventListener('keydown', (e) => {
             if (!editor) {
                 return;
@@ -208,7 +208,11 @@
                 }
             },
             activeFileChanged: (payload) => {
-                fileManager.openAndSwitchToFile(payload.filePath, null, payload.componentId);
+                let position = null;
+                if (payload.lineNumber && payload.lineNumber > 0) {
+                    position = { lineNumber: payload.lineNumber, column: 1 };
+                }
+                fileManager.openAndSwitchToFile(payload.filePath, position, payload.componentId);
             },
             loadDependency: (payload) => {
                 fileManager.loadDependency(payload.filePath, payload.componentId);

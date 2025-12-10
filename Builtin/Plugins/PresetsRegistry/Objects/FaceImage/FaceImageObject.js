@@ -26,7 +26,7 @@ export class FaceImageObjectPreset extends Preset {
         return {
             id: 'Com.Snap.FaceImageObjectPreset',
             name: 'Face Image',
-            description: '',
+            description: 'Creates head-tracked Face Image object with Image component, scaled (5,5,1) and bound to face center.',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/FaceImage.svg')),
             section: 'Face',
             entityType: 'SceneObject'

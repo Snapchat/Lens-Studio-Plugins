@@ -15,7 +15,7 @@ export class ScreenRegionObjectPreset extends Preset {
         return {
             id: 'Com.Snap.ScreenRegionObjectPreset',
             name: 'Screen Region',
-            description: '',
+            description: 'Creates an object with ScreenTransform and ScreenRegionComponent for defining 2D layout boundaries. Defaults to Full Frame region.',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/ScreenRegion.svg')),
             section: '2D',
             entityType: 'SceneObject'

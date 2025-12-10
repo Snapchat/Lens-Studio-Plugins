@@ -15,7 +15,7 @@ export class EyeColorComponentPreset extends Preset {
         return {
             id: 'Com.Snap.EyeColorComponentPreset',
             name: 'Eye Color',
-            description: '',
+            description: 'EyeColorVisual component',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/EyeColor.svg')),
             section: 'Face',
             entityType: 'EyeColorVisual'

@@ -125,7 +125,7 @@ export function createTermsWidget(parent) {
 
 export function createGuidelinesWidget(parent) {
     const urlString = Ui.getUrlString('guidelines', guidelinesLink);
-    
+
     return createCalloutWidget(parent, 'Check our ' + urlString + ' for examples, prompting best practices and usage guidelines.', guidelinesLink);
 }
 

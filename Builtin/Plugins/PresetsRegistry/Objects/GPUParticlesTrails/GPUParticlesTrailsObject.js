@@ -7,7 +7,7 @@ export class GPUParticlesTrailsObjectPreset extends Preset {
         return {
             id: 'Com.Snap.GPUParticlesTrailsObjectPreset',
             name: 'GPU Particles Trails',
-            description: 'Adds a GPU Particles object to the scene which uses Trails settings',
+            description: 'GPU-based particle system with trails using RenderMeshVisual with GPU Particles Trails material and mesh. Creates particle effects with motion trails.',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/GPUParticles.svg')),
             section: 'Visual Effects',
             entityType: 'SceneObject'

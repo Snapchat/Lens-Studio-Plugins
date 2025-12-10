@@ -10,7 +10,7 @@ export class JavaScriptPreset extends Preset {
         return {
             id: 'Com.Snap.JavaScriptPreset',
             name: 'JavaScript File',
-            description: '',
+            description: 'Creates empty JavaScript asset file',
             icon: Editor.Icon.fromFile(import.meta.resolve('../Resources/JavaScript.svg')),
             section: 'Scripting',
             entityType: 'JavaScriptAsset'

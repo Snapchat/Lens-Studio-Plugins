@@ -4,7 +4,7 @@ const params = {
     'descriptor': {
         'id': 'Com.Snap.MaterialPreset.FaceInsetMaterialPreset',
         'name': 'Face Inset',
-        'description': 'Provides a section of the face as a texture (such eyes eyes, mouth, etc.). Use with FaceInset component.',
+        'description': 'Extracts face section as texture (eyes, mouth, etc.) for use with FaceInset component',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
     graph_path: import.meta.resolve('../Resources/flat.ss_graph'),

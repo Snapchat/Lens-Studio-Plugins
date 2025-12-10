@@ -3,7 +3,7 @@ import {createResourcePresetClass, PresetCreateMethod} from '../Utils/ResourcePr
 export const EmptyJsonAssetPreset = createResourcePresetClass({
     name: 'Empty JSON',
     id: 'Com.Snap.JsonAssetPreset.EmptyJson',
-    description: '',
+    description: 'Empty JSON file asset',
     icon: Editor.Icon.fromFile(import.meta.resolve('../Resources/JsonFile.svg')),
     section: 'General',
     entityType: "JsonAsset",

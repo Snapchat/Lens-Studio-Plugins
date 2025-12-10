@@ -5,7 +5,7 @@ export class PhysicsWorldObjectPreset extends Preset {
         return {
             id: `Com.Snap.PhysicsObjectPreset.World`,
             name: 'Physics World',
-            description: '',
+            description: 'Creates a Physics World object with WorldComponent for managing physics simulation environment and settings',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/Physics_World.svg')),
             section: 'Physics',
             entityType: 'SceneObject'

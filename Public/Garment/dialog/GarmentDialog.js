@@ -13,7 +13,7 @@ export class GarmentDialog {
     constructor(dialog) {
         this.connections = [];
         this.controls = {};
-        
+
         this.width = UIConfig.DIALOG.WIDTH;
         this.height = UIConfig.DIALOG.HEIGHT;
 
@@ -167,7 +167,7 @@ export class GarmentDialog {
             this.hideError();
             this.showCallout();
             app.generator.changeState(GeneratorState.Idle);
-            
+
             let timeout = setTimeout(() => {
                 this.hideCallout();
                 clearTimeout(timeout);
@@ -192,7 +192,7 @@ export class GarmentDialog {
         contentLayout.setDirection(Ui.Direction.LeftToRight);
         contentLayout.setContentsMargins(0, 0, 0, 0);
         contentLayout.spacing = 0;
-        
+
         const menuWidget = this.creationMenu.create(parent);
         contentLayout.addWidget(menuWidget);
 
@@ -212,7 +212,7 @@ export class GarmentDialog {
         const calloutFrame = new Ui.CalloutFrame(parent);
         calloutFrame.setFixedWidth(UIConfig.IMPORT_SUCCESS_BANNER.WIDTH);
         calloutFrame.setFixedHeight(UIConfig.IMPORT_SUCCESS_BANNER.HEIGHT);
-        
+
         const backgroundColor = new Ui.Color();
         backgroundColor.red = 154;
         backgroundColor.green = 112;
@@ -253,7 +253,7 @@ export class GarmentDialog {
         importSuccessWidget.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
         importSuccessWidget.setFixedWidth(UIConfig.DIALOG.WIDTH);
         importSuccessWidget.setFixedHeight(UIConfig.IMPORT_SUCCESS_BANNER.HEIGHT);
-        
+
         const importSuccessLayout = new Ui.BoxLayout();
         importSuccessLayout.setDirection(Ui.Direction.TopToBottom);
         importSuccessLayout.setContentsMargins(0, 0, 0, 0);
@@ -277,7 +277,7 @@ export class GarmentDialog {
         const stackedLayout = new Ui.StackedLayout();
         stackedLayout.stackingMode = Ui.StackingMode.StackAll;
         stackedLayout.setContentsMargins(0, 0, 0, 0);
-        
+
         stackedContainer.layout = stackedLayout;
 
         stackedLayout.addWidget(importSuccessWidget);
@@ -299,12 +299,12 @@ export class GarmentDialog {
         const contentWidget = this.createContentWidget(this.widget);
         this.importSuccessWidget = this.createImportSuccessWidget(this.widget);
         const stackedContainer = this.createStackedContainer(this.widget, contentWidget, this.importSuccessWidget);
-        
+
         const footer = this.footer.create(this.widget);
         this.connections.push(this.footer.generateButton.onClick.connect(() => this.onGenerationRequested()));
         this.connections.push(this.footer.regenerateButton.onClick.connect(() => this.onGenerationRequested()));
         this.connections.push(this.footer.importToProjectButton.onClick.connect(() => this.onImportClicked()));
-        
+
         const separatorFooter = new Ui.Separator(Ui.Orientation.Horizontal, Ui.Shadow.Plain, this.widget);
         separatorFooter.setContentsMargins(0, 0, 0, 0);
         separatorFooter.setFixedHeight(1);

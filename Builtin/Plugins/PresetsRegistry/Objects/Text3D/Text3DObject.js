@@ -16,7 +16,7 @@ export class Text3DObjectPreset extends Preset {
         return {
             id: 'Com.Snap.Text3DObjectPreset',
             name: 'Text3D',
-            description: '',
+            description: 'Creates a 3D text object with Text3D component for rendering extruded text in 3D space',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/Text3D.svg')),
             section: '3D',
             entityType: 'SceneObject'

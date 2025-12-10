@@ -10,7 +10,7 @@ export class MarkdownAssetPreset extends Preset {
         return {
             id: 'Com.Snap.MarkdownPreset',
             name: 'Markdown File',
-            description: '',
+            description: 'Markdown file asset',
             icon: Editor.Icon.fromFile(import.meta.resolve('../Resources/Markdown.svg')),
             section: 'Scripting',
             entityType: 'MarkdownAsset'

@@ -8,7 +8,7 @@ function createObjectTrackingPreset(id, niceName) {
             return {
                 id: `Com.Snap.ObjectTrackingPreset.${id}`,
                 name: niceName,
-                description: '',
+                description: `Creates screen transform with ObjectTracking component configured for 2D ${id} detection and tracking`,
                 icon: Editor.Icon.fromFile(import.meta.resolve('Resources/ObjectTracking.svg')),
                 section: 'Tracking',
                 entityType: 'SceneObject'

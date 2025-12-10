@@ -24,10 +24,10 @@ function createSimpleScriptPreset(name, relativePackagePath, relativeIconPath, d
 
                 // First: instantiate and wait for it to finish
                 const res = await assetManager.instantiate([importResult.primary]);
-                
+
                 // Second: only after instantiate finishes, unpack
                 const unpackedRes = await assetManager.unpack(importResult.primary.fileMeta.nativePackageRoot);
-                
+
                 return res.length == 0 ? destination : res[0];
             } catch (e) {
                 console.log(`${e.message}\n${e.stack}`);

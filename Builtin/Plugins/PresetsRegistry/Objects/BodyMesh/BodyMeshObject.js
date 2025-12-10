@@ -36,7 +36,7 @@ export class BodyMeshObjectPreset extends Preset {
         return {
             id: 'Com.Snap.BodyMeshObjectPreset',
             name: 'Full Body Mesh',
-            description: '',
+            description: 'Creates 3D body tracking object with RenderMeshVisual, Body Mesh Material, and Full Body Mesh.',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/FullBodyMesh.svg')),
             section: '3D',
             entityType: 'SceneObject'

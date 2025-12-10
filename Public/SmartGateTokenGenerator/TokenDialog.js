@@ -75,7 +75,7 @@ export default class TokenDialog {
     cleanup() {
         this.copyTimeouts.forEach(timeoutId => clearTimeout(timeoutId));
         this.copyTimeouts.clear();
-        
+
         if (this.authConnectionGuard) {
             this.authConnectionGuard.disconnect();
             this.authConnectionGuard = null;
@@ -118,14 +118,14 @@ export default class TokenDialog {
         const iconLayout = new Ui.BoxLayout();
         iconLayout.setDirection(Ui.Direction.LeftToRight);
         iconLayout.addStretch(1);
-        
+
         const warningIcon = new Ui.ImageView(dialog);
         const warningPixmap = new Ui.Pixmap(new Editor.Path(import.meta.resolve('./logo.svg')));
         warningPixmap.resize(200, 200);
         warningIcon.pixmap = warningPixmap;
         iconLayout.addWidget(warningIcon);
         iconLayout.addStretch(1);
-        
+
         vLayout.addLayout(iconLayout);
 
         vLayout.addWidget(this.createSpacer(dialog, 25));
@@ -208,17 +208,17 @@ export default class TokenDialog {
         introText.text = Strings.TITLE_LABEL;
         introText.openExternalLinks = true;
         vLayout.addWidget(introText);
-        
+
 
         vLayout.addWidget(this.createSpacer(dialog, 5));
 
         const tokenTypes = this.tokenService.getTokenTypes();
-        
+
         const tokenContainer = new Ui.Widget(dialog);
         const tokenContainerLayout = new Ui.BoxLayout();
         tokenContainerLayout.setDirection(Ui.Direction.TopToBottom);
         tokenContainerLayout.setContentsMargins(0, 0, 0, 0);
-        
+
         const topSeparator = new Ui.Separator(Ui.Orientation.Horizontal, Ui.Shadow.Plain, tokenContainer);
         topSeparator.setFixedHeight(1);
         topSeparator.setContentsMargins(10, 5, 10, 5);
@@ -227,7 +227,7 @@ export default class TokenDialog {
         tokenTypes.forEach((tokenType, index) => {
             const tokenRow = this.createTokenRow(tokenContainer, tokenType);
             tokenContainerLayout.addWidget(tokenRow);
-            
+
             if (index < tokenTypes.length - 1) {
                 const separator = new Ui.Separator(Ui.Orientation.Horizontal, Ui.Shadow.Plain, tokenContainer);
                 separator.setFixedHeight(1);
@@ -235,7 +235,7 @@ export default class TokenDialog {
                 tokenContainerLayout.addWidget(separator);
             }
         });
-        
+
         tokenContainer.layout = tokenContainerLayout;
         vLayout.addWidget(tokenContainer);
 
@@ -246,24 +246,24 @@ export default class TokenDialog {
     createTokenRow(dialog, tokenType) {
         const tokenRow = new Ui.Widget(dialog);
         tokenRow.setFixedHeight(ROW_HEIGHT);
-        
+
         const rowStackedLayout = new Ui.StackedLayout();
-        
+
         const normalView = this.createNormalTokenView(dialog, tokenType, rowStackedLayout);
         rowStackedLayout.addWidget(normalView);
-        
+
         const confirmationView = this.createConfirmationView(dialog, tokenType, rowStackedLayout, normalView);
         rowStackedLayout.addWidget(confirmationView);
-        
+
         rowStackedLayout.currentIndex = 0;
-        
+
         tokenRow.layout = rowStackedLayout;
         return tokenRow;
     }
 
     createNormalTokenView(dialog, tokenType, parentStackedLayout) {
         const tokenView = new Ui.Widget(dialog);
-        
+
         const mainLayout = new Ui.BoxLayout();
         mainLayout.setDirection(Ui.Direction.LeftToRight);
         mainLayout.setContentsMargins(10, 5, 10, 5);
@@ -290,7 +290,7 @@ export default class TokenDialog {
         leftLayout.addStretch(0);
 
         const issuedLabel = new Ui.Label(dialog);
-        const issuedText = existingToken && existingToken.timestamp 
+        const issuedText = existingToken && existingToken.timestamp
             ? `${Strings.ISSUED_LABEL} ${this.formatTimestamp(existingToken.timestamp)}`
             : Strings.ISSUED_PLACEHOLDER;
         issuedLabel.text = issuedText;
@@ -312,7 +312,7 @@ export default class TokenDialog {
         const updateButtonStates = () => {
             const currentToken = this.tokenService.getStoredToken(tokenType);
             const hasValidToken = this.hasValidToken(currentToken);
-            
+
             revokeButton.enabled = hasValidToken;
             copyButton.enabled = hasValidToken;
         };
@@ -333,7 +333,7 @@ export default class TokenDialog {
             tokenDisplay.plainText = Strings.LOADING;
             issuedLabel.text = "";
             updateButtonStates(); // Disable buttons while loading
-            
+
             this.tokenService.generateToken(
                 tokenType,
                 (tokenEntity) => {
@@ -360,19 +360,19 @@ export default class TokenDialog {
             if (this.hasValidToken(currentToken)) {
                 Clipboard.clipboard.text = currentToken.token;
                 copyButton.text = Strings.COPIED_BUTTON;
-                
+
                 const existingTimeout = this.copyTimeouts.get(tokenType);
                 if (existingTimeout) {
                     clearTimeout(existingTimeout);
                 }
-                
+
                 const timeoutId = setTimeout(() => {
                     if (copyButton && copyButton.text) {
                         copyButton.text = Strings.COPY_BUTTON;
                     }
                     this.copyTimeouts.delete(tokenType);
                 }, COPY_FEEDBACK_DURATION);
-                
+
                 this.copyTimeouts.set(tokenType, timeoutId);
             }
         });
@@ -389,7 +389,7 @@ export default class TokenDialog {
 
     createConfirmationView(dialog, tokenType, parentStackedLayout, normalView) {
         const confirmationWidget = new Ui.Widget(dialog);
-        
+
         const mainLayout = new Ui.BoxLayout();
         mainLayout.setDirection(Ui.Direction.TopToBottom);
         mainLayout.setContentsMargins(10, 5, 10, 5);
@@ -409,7 +409,7 @@ export default class TokenDialog {
         warningPixmap.resize(64, 64);
         warningIcon.pixmap = warningPixmap;
         horizontalLayout.addWidget(warningIcon);
-        
+
         const spacer = new Ui.Widget(dialog);
         spacer.setFixedWidth(5);
         horizontalLayout.addWidget(spacer);
@@ -470,11 +470,11 @@ export default class TokenDialog {
             const date = new Date(timestamp);
             const options = {
                 month: 'short',
-                day: 'numeric', 
+                day: 'numeric',
                 year: 'numeric',
                 hour: 'numeric',
                 minute: '2-digit',
-                hour12: true           
+                hour12: true
              };
             return date.toLocaleString('en-US', options);
         } catch (e) {

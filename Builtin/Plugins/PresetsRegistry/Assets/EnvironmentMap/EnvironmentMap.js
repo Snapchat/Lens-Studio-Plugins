@@ -7,7 +7,7 @@ function createEnvironmentMapClass(name, niceName) {
             return {
                 id: `Com.Snap.EnvironmentMap.${name}`,
                 name: niceName,
-                description: '',
+                description: 'Built-in environment map texture.',
                 icon: Editor.Icon.fromFile(import.meta.resolve('Resources/HDRTexture.svg')),
                 section: 'Textures',
                 entityType: 'Texture',

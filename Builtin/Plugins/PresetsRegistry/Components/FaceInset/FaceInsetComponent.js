@@ -17,7 +17,7 @@ export class FaceInsetComponentPreset extends Preset {
         return {
             id: 'Com.Snap.FaceInsetComponentPreset',
             name: 'Face Inset',
-            description: '',
+            description: 'FaceInsetVisual component',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/FaceInset.svg')),
             section: 'Face',
             entityType: 'FaceInsetVisual'

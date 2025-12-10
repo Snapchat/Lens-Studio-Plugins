@@ -16,7 +16,7 @@ export class Text3DComponentPreset extends Preset {
         return {
             id: 'Com.Snap.Text3DComponentPreset',
             name: 'Text3D',
-            description: '',
+            description: 'Text3D component with default Text3D material',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/Text3D.svg')),
             section: '3D',
             entityType: 'Text3D'

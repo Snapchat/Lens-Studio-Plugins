@@ -4,7 +4,7 @@ const params = {
     'descriptor': {
         'id': 'Com.Snap.MaterialPreset.ImageMaterialPreset',
         'name': 'Image',
-        'description': '',
+        'description': 'Default unlit material for Image component',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
     graph_path: import.meta.resolve('../Resources/flat.ss_graph'),

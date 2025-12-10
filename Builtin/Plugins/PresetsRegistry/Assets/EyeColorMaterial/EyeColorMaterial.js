@@ -4,7 +4,7 @@ const params = {
     'descriptor': {
         'id': 'Com.Snap.MaterialPreset.EyeColorMaterialPreset',
         'name': 'Eye Color',
-        'description': '',
+        'description': 'Applies tunable color tint to eyes',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
     graph_path: import.meta.resolve('../Resources/flat.ss_graph'),

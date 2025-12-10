@@ -43,7 +43,7 @@ export default class TokenService {
             GOOGLE: 'smart_gate_token_data_google',
             SNAP: 'smart_gate_token_data_snap'
         };
-        
+
         this.API_BASE_URL = 'https://gcp.api.snapchat.com/smart-gate/v2/token';
         this.DEVELOPMENT_MODE = true;
     }
@@ -110,11 +110,11 @@ export default class TokenService {
 
         Network.performAuthorizedHttpRequest(request, response => {
             this._devLog('Response:', request.url, response.statusCode, response.body);
-            
+
             if (response.statusCode === HTTP_SUCCESS) {
                 try {
                     const jsonResponse = this._parseResponseBody(response.body);
-                    
+
                     if (jsonResponse.token) {
                         const tokenEntity = Token.fromResponse(tokenType, jsonResponse);
                         this.storeToken(tokenEntity);
@@ -138,10 +138,10 @@ export default class TokenService {
     revokeToken(tokenType, onSuccess, onError) {
         const request = this._createRequest(Network.HttpRequest.Method.Delete, tokenType);
         this._devLog('Making request to:', request.url);
-        
+
         Network.performAuthorizedHttpRequest(request, response => {
             this._devLog('Response:', request.url, response.statusCode, response.body);
-            
+
             if (response.statusCode === HTTP_SUCCESS) {
                 try {
                     this.removeStoredToken(tokenType);
@@ -168,4 +168,3 @@ export default class TokenService {
         }
     }
 }
-

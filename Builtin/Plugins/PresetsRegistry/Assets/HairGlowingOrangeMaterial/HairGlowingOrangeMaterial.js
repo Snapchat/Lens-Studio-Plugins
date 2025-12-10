@@ -4,7 +4,7 @@ const params = {
     'descriptor': {
         'id': 'Com.Snap.MaterialPreset.HairGlowingOrange',
         'name': 'Hair Glowing Orange',
-        'description': '',
+        'description': 'Glowing orange hair material for HairVisual component with configurable growth, color, and lighting',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
     graph_path: import.meta.resolve('Resources/hair_glowing_orange.ss_graph'),

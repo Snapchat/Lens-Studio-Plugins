@@ -24,7 +24,7 @@ export class FaceInsetObjectPreset extends Preset {
         return {
             id: 'Com.Snap.FaceInsetObjectPreset',
             name: 'Face Inset',
-            description: '',
+            description: 'Creates head-tracked Face Inset object with FaceInsetVisual component for applying face overlays.',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/FaceInset.svg')),
             section: 'Face',
             entityType: 'SceneObject'

@@ -6,7 +6,7 @@ export class GPUParticlesObjectPreset extends Preset {
         return {
             id: 'Com.Snap.GPUParticlesObjectPreset',
             name: 'GPU Particles',
-            description: '',
+            description: 'GPU-based particle system using RenderMeshVisual with GPU Particles material and mesh. Creates high-performance particle effects.',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/GPUParticles.svg')),
             section: 'Visual Effects',
             entityType: 'SceneObject'

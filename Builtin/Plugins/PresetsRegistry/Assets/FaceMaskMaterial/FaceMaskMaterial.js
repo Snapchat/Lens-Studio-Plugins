@@ -4,7 +4,7 @@ const params = {
     'descriptor': {
         'id': 'Com.Snap.MaterialPreset.FaceMaskMaterialPreset',
         'name': 'Face Mask',
-        'description': '',
+        'description': 'Default material for FaceMaskVisual component',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
     graph_path: import.meta.resolve('../Resources/flat.ss_graph'),

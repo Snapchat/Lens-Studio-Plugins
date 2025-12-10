@@ -4,7 +4,7 @@ const params = {
     'descriptor': {
         'id': 'Com.Snap.MaterialPreset.OccluderMaterial',
         'name': 'Occluder',
-        'description': '',
+        'description': 'Occludes or masks other objects without rendering itself',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
     graph_path: import.meta.resolve('Resources/occluder.ss_graph'),

@@ -4,7 +4,7 @@ const params = {
     'descriptor': {
         'id': 'Com.Snap.MaterialPreset.GSMaterial',
         'name': 'Gaussian Splatting Material',
-        'description': 'For use with a Gaussian Splatting Visual',
+        'description': 'Material for Gaussian Splatting Visual component',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
     pass_info: {

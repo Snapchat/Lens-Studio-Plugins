@@ -13,7 +13,7 @@ export class TextObjectPreset extends Preset {
         return {
             id: 'Com.Snap.TextObjectPreset',
             name: 'Text',
-            description: '',
+            description: 'Creates a scene object with Text component for rendering 2D text labels in world space',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/Text.svg')),
             section: '2D',
             entityType: 'SceneObject'

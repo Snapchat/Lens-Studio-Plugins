@@ -202,6 +202,8 @@ export class IconCropper {
         this.iconCropperLBE.setFixedWidth(400);
         this.iconCropperLBE.setFixedHeight(400);
 
+        /// project binding is null therefore this has no effect
+        /// keeping it here to support previous LS versions
         const ignoredTypes = [
             "ScriptComponent",
             "AnimationPlayer",
@@ -234,6 +236,7 @@ export class IconCropper {
         this.iconCropperLBE.load({
             lens: import.meta.resolve("./Resources/lbe-archive.zip"),
             input: input,
+            binding: { project: null },
             ignoredTypes: ignoredTypes,
             useOverlayOutput: false
         });

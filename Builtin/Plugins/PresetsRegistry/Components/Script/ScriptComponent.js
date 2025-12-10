@@ -16,13 +16,13 @@ export async function createJavaScriptComponent(model, destinationObject) {
     return scriptComponent;
 }
 
-function createScriptComponentPreset(id, name, iconPath, createFn, entityType) {
+function createScriptComponentPreset(id, name, iconPath, createFn, entityType, description = 'Creates a ScriptComponent on a scene object') {
     class ScriptComponentPreset extends Preset {
         static descriptor() {
             return {
                 id: `Com.Snap.${id}ScriptComponentPreset`,
                 name: name,
-                description: '',
+                description: description,
                 icon: Editor.Icon.fromFile(import.meta.resolve(iconPath)),
                 section: 'Scripts',
                 entityType: entityType
@@ -45,7 +45,7 @@ function createScriptComponentPreset(id, name, iconPath, createFn, entityType) {
     return ScriptComponentPreset;
 }
 
-export const TypeScriptFileComponentPreset = createScriptComponentPreset('TypeScriptComponent', 'TypeScript', '../../Assets/Resources/TypeScript.svg', createTypeScriptComponent, 'ScriptComponent');
-export const JavaScriptFileComponentPreset = createScriptComponentPreset('JavaScriptComponent', 'JavaScript', '../../Assets/Resources/JavaScript.svg', createJavaScriptComponent, 'ScriptComponent');
-export const TypeScriptFileObjectPreset = createScriptComponentPreset('TypeScriptObject', 'TypeScript', '../../Assets/Resources/TypeScript.svg', createTypeScriptComponent, 'SceneObject');
-export const JavaScriptFileObjectPreset = createScriptComponentPreset('JavaScriptObject', 'JavaScript', '../../Assets/Resources/JavaScript.svg', createJavaScriptComponent, 'SceneObject');
+export const TypeScriptFileComponentPreset = createScriptComponentPreset('TypeScriptComponent', 'TypeScript', '../../Assets/Resources/TypeScript.svg', createTypeScriptComponent, 'ScriptComponent', 'ScriptComponent with empty TypeScript asset');
+export const JavaScriptFileComponentPreset = createScriptComponentPreset('JavaScriptComponent', 'JavaScript', '../../Assets/Resources/JavaScript.svg', createJavaScriptComponent, 'ScriptComponent', 'ScriptComponent with empty JavaScript asset');
+export const TypeScriptFileObjectPreset = createScriptComponentPreset('TypeScriptObject', 'TypeScript', '../../Assets/Resources/TypeScript.svg', createTypeScriptComponent, 'SceneObject','Creates scene object with ScriptComponent and empty TypeScript asset.');
+export const JavaScriptFileObjectPreset = createScriptComponentPreset('JavaScriptObject', 'JavaScript', '../../Assets/Resources/JavaScript.svg', createJavaScriptComponent, 'SceneObject','Creates scene object with ScriptComponent and empty JavaScript asset.');

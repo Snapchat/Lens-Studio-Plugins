@@ -13,7 +13,7 @@ export class VoxelizerCameraObjectPreset extends Preset {
     }
 
 create(destination) {
-    
+
         const model = this.pluginSystem.findInterface(Editor.Model.IModel);
         const scene = model.project.scene;
         destination = scene.addSceneObject(destination);

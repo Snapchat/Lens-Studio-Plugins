@@ -71,7 +71,7 @@ export class ScreenTransformObjectPreset extends Preset {
         return {
             id: 'Com.Snap.ScreenTransformObjectPreset',
             name: 'Screen Transform',
-            description: '',
+            description: 'Creates a sceneobject with ScreenTransform component for 2D positioning and layout. Creates requires Screen Hierarchy if not already present.',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/ScreenTransform.svg')),
             section: '2D',
             entityType: 'SceneObject'

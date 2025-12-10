@@ -87,7 +87,7 @@ export class Preview {
         this.stackedWidget.currentIndex = 0;
         this.importToProjectButton.enabled = true;
     }
-    
+
     showRunning() {
         this.state = PreviewState.Running;
 
@@ -104,14 +104,14 @@ export class Preview {
 
     showFailed() {
         this.state = PreviewState.Failed;
-        
+
         this.stackedWidget.currentIndex = 1;
         this.importToProjectButton.enabled = false;
     }
-    
+
     showLogin() {
         this.state = PreviewState.Login;
-        
+
         this.welcomeText.visible = true;
         this.disclaimer.text = '<center>Log-in to MyLenses account <br>to get access for Gen AI tools</center>';
         this.disclaimer.visible = true;

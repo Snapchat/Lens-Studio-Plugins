@@ -6,7 +6,7 @@ export class ObjectPrefabPreset extends Preset {
             id: 'Com.Snap.ObjectPrefabPreset',
             dependencies: [Editor.Model.IModel],
             name: 'Object Prefab',
-            description: '',
+            description: 'Empty object prefab.',
             icon: Editor.Icon.fromFile(import.meta.resolve('../Resources/ObjectPrefab.svg')),
             section: 'General',
             entityType: 'ObjectPrefab'

@@ -4,7 +4,7 @@ const params = {
     'descriptor': {
         'id': 'Com.Snap.MaterialPreset.GaussianBlurMaterial',
         'name': 'Gaussian Blur',
-        'description': '',
+        'description': 'PostEffectVisual material applying gaussian blur with optional area masking',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
     graph_path: import.meta.resolve('Resources/gauss_blur.ss_graph'),

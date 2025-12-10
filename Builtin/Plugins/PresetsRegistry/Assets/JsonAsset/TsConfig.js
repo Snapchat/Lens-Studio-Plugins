@@ -3,7 +3,7 @@ import {createResourcePresetClass, PresetCreateMethod} from '../Utils/ResourcePr
 export const TsConfigPreset = createResourcePresetClass({
     name: 'TS Config',
     id: 'Com.Snap.JsonAssetPreset.TsConfig',
-    description: '',
+    description: 'TypeScript configuration file asset',
     icon: Editor.Icon.fromFile(import.meta.resolve('../Resources/JsonFile.svg')),
     section: 'Scripting',
     entityType: "JsonAsset",

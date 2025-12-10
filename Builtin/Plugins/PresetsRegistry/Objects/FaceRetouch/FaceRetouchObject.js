@@ -19,7 +19,7 @@ export class FaceRetouchObjectPreset extends Preset {
         return {
             id: 'Com.Snap.FaceRetouchObjectPreset',
             name: 'Face Retouch',
-            description: '',
+            description: 'Creates a scene object with RetouchVisual component with default Retouch material',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/FaceRetouch.svg')),
             section: 'Face',
             entityType: 'SceneObject'

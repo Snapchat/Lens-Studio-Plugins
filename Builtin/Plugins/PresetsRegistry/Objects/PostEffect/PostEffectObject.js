@@ -21,7 +21,7 @@ function createPostEffectClass(name, assetMaterialPreset) {
             return {
                 id: `Com.Snap.PostEffectObjectPreset.${name}`,
                 name: name,
-                description: '',
+                description: `PostEffectVisual using ${name} material`,
                 icon: Editor.Icon.fromFile(import.meta.resolve('Resources/PostEffect.svg')),
                 section: 'Visual Effects',
                 entityType: 'SceneObject'

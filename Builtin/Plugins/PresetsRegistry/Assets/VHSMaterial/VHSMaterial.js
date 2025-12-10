@@ -4,7 +4,7 @@ const params = {
     'descriptor': {
         'id': 'Com.Snap.MaterialPreset.VHSMaterial',
         'name': 'VHS',
-        'description': 'Adds a visual effect similar to old VHS tapes, such as chromatic abberation.',
+        'description': 'PostEffectVisual material simulating VHS tape effects (chromatic aberration, distortion)',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
     graph_path: import.meta.resolve('Resources/vhs.ss_graph'),

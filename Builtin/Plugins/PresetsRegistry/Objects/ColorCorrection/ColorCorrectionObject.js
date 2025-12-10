@@ -50,7 +50,7 @@ function createColorCorrectionClass(name, assetMaterialPreset) {
             return {
                 id: `Com.Snap.ColorCorrectionObjectPreset.${name}`,
                 name: name,
-                description: '',
+                description: `PostEffectVisual with ${name} LUT`,
                 icon: Editor.Icon.fromFile(import.meta.resolve('Resources/PostEffect.svg')),
                 section: 'Color Correction',
                 entityType: 'SceneObject'

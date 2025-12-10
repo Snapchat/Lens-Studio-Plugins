@@ -6,7 +6,7 @@ export class WorldMeshObjectPreset extends Preset {
         return {
             id: 'Com.Snap.WorldMeshObjectPreset',
             name: 'World Mesh',
-            description: 'Adds a World Mesh, which dynamically changes to the surfaces seen in the camera',
+            description: 'Creates World Mesh that dynamically maps to camera-detected surfaces for AR world effects.',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/WorldMesh.svg')),
             section: 'World',
             entityType: 'SceneObject'

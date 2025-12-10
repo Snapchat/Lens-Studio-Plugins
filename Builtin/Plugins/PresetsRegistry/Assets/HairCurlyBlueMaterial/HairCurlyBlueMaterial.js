@@ -4,7 +4,7 @@ const params = {
     'descriptor': {
         'id': 'Com.Snap.MaterialPreset.HairCurlyBlue',
         'name': 'Hair Curly Blue',
-        'description': '',
+        'description': 'Curly blue hair material for HairVisual component with configurable growth, color, and lighting',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
     graph_path: import.meta.resolve('Resources/hair_curly_blue.ss_graph'),

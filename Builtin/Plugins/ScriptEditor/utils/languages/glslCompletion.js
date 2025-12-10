@@ -21,12 +21,12 @@ import {
  */
 function extractUserIdentifiers(documentText) {
     const identifiers = new Map(); // Use Map to avoid duplicates
-    
+
     // Remove comments to avoid false matches
     const textWithoutComments = documentText
         .replace(/\/\*[\s\S]*?\*\//g, '') // Remove block comments
         .replace(/\/\/.*/g, ''); // Remove line comments
-    
+
     // Match function declarations: type identifier(...)
     // Examples: int foo(), vec3 calculateNormal(), void process()
     const functionRegex = /\b(?:void|int|uint|float|bool|vec2|vec3|vec4|bvec2|bvec3|bvec4|ivec2|ivec3|ivec4|uvec2|uvec3|uvec4|mat2|mat3|mat4|[a-zA-Z_]\w*)\s+([a-zA-Z_]\w*)\s*\(/g;
@@ -34,7 +34,7 @@ function extractUserIdentifiers(documentText) {
     while ((match = functionRegex.exec(textWithoutComments)) !== null) {
         const funcName = match[1];
         // Skip built-in keywords and known functions
-        if (!glslKeywords.includes(funcName) && 
+        if (!glslKeywords.includes(funcName) &&
             !glslBuiltInFunctions.includes(funcName) &&
             !glslUtilityFunctions.includes(funcName)) {
             identifiers.set(funcName, {
@@ -46,7 +46,7 @@ function extractUserIdentifiers(documentText) {
             });
         }
     }
-    
+
     // Match variable declarations: type identifier [= value];
     // Examples: int someNumber = 2; float myValue; vec3 position;
     const variableRegex = /\b(?:const\s+)?(?:int|uint|float|bool|vec2|vec3|vec4|bvec2|bvec3|bvec4|ivec2|ivec3|ivec4|uvec2|uvec3|uvec4|mat2|mat3|mat4|color|input_\w+|output_\w+|global_\w+)\s+([a-zA-Z_]\w*)(?:\s*=|\s*;|\s*,)/g;
@@ -61,7 +61,7 @@ function extractUserIdentifiers(documentText) {
             });
         }
     }
-    
+
     // Match struct definitions: struct identifier {
     const structRegex = /\bstruct\s+([a-zA-Z_]\w*)\s*\{/g;
     while ((match = structRegex.exec(textWithoutComments)) !== null) {
@@ -75,7 +75,7 @@ function extractUserIdentifiers(documentText) {
             });
         }
     }
-    
+
     return Array.from(identifiers.values());
 }
 
@@ -94,14 +94,14 @@ export function initializeGlslCompletionProvider(monaco) {
             // Get text before cursor to check for prefixes
             const lineContent = model.getLineContent(position.lineNumber);
             const textBeforeCursor = lineContent.substring(0, position.column - 1);
-            
+
             // Check if we're after a prefix (e.g., "system.")
             // Match any identifier followed by a dot before the current word
             const prefixMatch = textBeforeCursor.match(/(\w+)\.(\w*)$/);
             const hasDotWithoutIdentifier = !prefixMatch && /\.(\w*)$/.test(textBeforeCursor);
             const isAfterPrefix = prefixMatch !== null || hasDotWithoutIdentifier;
             const prefixIdentifier = prefixMatch ? prefixMatch[1] : null;
-            
+
             const suggestions = [];
 
             // If we're after "system.", only show system getter functions
@@ -128,7 +128,7 @@ export function initializeGlslCompletionProvider(monaco) {
                         documentation: `VFX particle getter function`,
                         range: range
                     });
-                });                   
+                });
 
                 // Add VFX particle setter functions
                 // TODO: Should only be shown for Spawn or Update Nodes
@@ -154,7 +154,7 @@ export function initializeGlslCompletionProvider(monaco) {
                         documentation: `VFX vertex output function`,
                         range: range
                     });
-                });                
+                });
 
                 // Add VFX pixel output functions
                 // TODO: Should only be shown IsVFXOutputPixel
@@ -167,7 +167,7 @@ export function initializeGlslCompletionProvider(monaco) {
                         documentation: `VFX pixel output function`,
                         range: range
                     });
-                });                
+                });
 
                 return { suggestions };
             }
@@ -178,11 +178,11 @@ export function initializeGlslCompletionProvider(monaco) {
             }
 
             // Otherwise, show general completions (keywords, types, standalone functions)
-            
+
             // Extract user-defined identifiers from the document
             const documentText = model.getValue();
             const userIdentifiers = extractUserIdentifiers(documentText);
-            
+
             // Add user-defined identifiers as completions
             userIdentifiers.forEach(identifier => {
                 suggestions.push({
@@ -194,7 +194,7 @@ export function initializeGlslCompletionProvider(monaco) {
                     range: range
                 });
             });
-            
+
             // Add "system" namespace suggestion
             suggestions.push({
                 label: 'system',
@@ -248,7 +248,7 @@ export function initializeGlslCompletionProvider(monaco) {
                     documentation: `Texture sampling function`,
                     range: range
                 });
-            });            
+            });
 
             return { suggestions };
         }
@@ -283,32 +283,32 @@ export function initializeGlslCompletionProvider(monaco) {
                 'min': 'Returns the minimum of x and y.\n\ngenType min(genType x, genType y)',
                 'max': 'Returns the maximum of x and y.\n\ngenType max(genType x, genType y)',
                 'step': 'Returns 0.0 if x < edge, else 1.0.\n\ngenType step(genType edge, genType x)',
-                
+
                 // Texture functions
                 'sample': 'Samples a texture at the given coordinates.\n\nvec4 sample(texture, vec2 coord)',
                 'sampleLod': 'Samples a texture at a specific mip level.\n\nvec4 sampleLod(texture, vec2 coord, float lod)',
-                
+
                 // Surface getters
                 'getSurfacePosition': 'Returns the surface position in clip space.\n\nvec4 getSurfacePosition()',
                 'getSurfaceNormal': 'Returns the surface normal in clip space.\n\nvec3 getSurfaceNormal()',
                 'getSurfacePositionWorldSpace': 'Returns the surface position in world space.\n\nvec3 getSurfacePositionWorldSpace()',
                 'getSurfaceNormalWorldSpace': 'Returns the surface normal in world space.\n\nvec3 getSurfaceNormalWorldSpace()',
                 'getSurfaceUVCoord0': 'Returns the primary UV coordinates.\n\nvec2 getSurfaceUVCoord0()',
-                
+
                 // Camera getters
                 'getCameraPosition': 'Returns the camera position in world space.\n\nvec3 getCameraPosition()',
                 'getCameraForward': 'Returns the camera forward direction.\n\nvec3 getCameraForward()',
                 'getViewVector': 'Returns the view direction vector.\n\nvec3 getViewVector()',
-                
+
                 // Matrix getters
                 'getMatrixWorld': 'Returns the world transformation matrix.\n\nmat4 getMatrixWorld()',
                 'getMatrixView': 'Returns the view matrix.\n\nmat4 getMatrixView()',
                 'getMatrixProjection': 'Returns the projection matrix.\n\nmat4 getMatrixProjection()',
-                
+
                 // Time getters
                 'getTimeElapsed': 'Returns the total elapsed time in seconds.\n\nfloat getTimeElapsed()',
                 'getTimeDelta': 'Returns the time since last frame in seconds.\n\nfloat getTimeDelta()',
-                
+
                 // Utility functions
                 'pi': 'Returns the value of PI.\n\nfloat pi()',
                 'linearToSrgb': 'Converts a linear color to sRGB color space.\n\nvec3 linearToSrgb(vec3 color)',
@@ -335,4 +335,3 @@ export function initializeGlslCompletionProvider(monaco) {
         }
     });
 }
-

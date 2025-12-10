@@ -4,7 +4,7 @@ const params = {
     'descriptor': {
         'id': 'Com.Snap.MaterialPreset.UberUnlitMaterial',
         'name': 'Uber Unlit',
-        'description': '',
+        'description': 'Advanced unlit material with multiple texture slots and customizable parameters for complex non-lit shading',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
     graph_path: import.meta.resolve('Resources/uber_unlit.ss_graph'),

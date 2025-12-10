@@ -4,7 +4,7 @@ const params = {
     'descriptor': {
         'id': 'Com.Snap.MaterialPreset.ColorRemapMaterial',
         'name': 'Color Remap',
-        'description': '',
+        'description': 'PostEffectVisual material remapping screen texture with four color mixers',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
     graph_path: import.meta.resolve('Resources/color_remap.ss_graph'),

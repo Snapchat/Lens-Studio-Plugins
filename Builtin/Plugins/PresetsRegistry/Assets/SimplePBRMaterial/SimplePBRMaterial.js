@@ -4,7 +4,7 @@ const params = {
     'descriptor': {
         'id': 'Com.Snap.MaterialPreset.SimplePBRMaterial',
         'name': 'Simple PBR',
-        'description': '',
+        'description': 'Physically Based Rendering material. This version has baseTex, baseColor, metallic, roughness properties',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
     graph_path: import.meta.resolve('Resources/simple_pbr.ss_graph'),

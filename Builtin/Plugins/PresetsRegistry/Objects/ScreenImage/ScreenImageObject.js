@@ -7,7 +7,7 @@ export class ScreenImageObjectPreset extends Preset {
         return {
             id: 'Com.Snap.ScreenImageObjectPreset',
             name: 'Screen Image',
-            description: '',
+            description: 'Creates a screen-space image with ScreenTransform and Image component for 2D texture display. Default hierarchy: Orthographic Camera -> Screen Region -> Screen Image',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/ScreenImage.svg')),
             section: '2D',
             entityType: 'SceneObject'

@@ -23,13 +23,16 @@ export class CanvasComponentPreset extends Preset {
         return {
             id: 'Com.Snap.CanvasComponentPreset',
             name: 'Canvas',
-            description: '',
+            description: 'Canvas component',
             icon: Editor.Icon.fromFile(import.meta.resolve('../../Objects/ComponentOnly/Resources/Canvas.svg')),
             section: '2D',
             entityType: 'Canvas'
         };
     }
-    create(destination) {
+    constructor(pluginSystem) {
+        super(pluginSystem);
+    }
+    async createAsync(destination) {
         return createCanvasComponent(destination);
     }
 }

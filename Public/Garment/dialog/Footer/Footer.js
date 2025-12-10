@@ -66,7 +66,7 @@ export class Footer {
         this.importToProjectButton.enabled = false;
         this.stackedWidget.currentIndex = 0; // Show generate button
     }
-    
+
     create(parent) {
         this.footer = new Ui.Widget(parent);
         this.footer.setContentsMargins(0, 0, 0, 0);
@@ -94,7 +94,7 @@ export class Footer {
         this.regenerateButton.text = 'Regenerate';
         this.regenerateButton.visible = false;
         this.regenerateButton.enabled = false;
-        
+
         this.generateButton = new Ui.PushButton(this.footer);
         this.generateButton.text = 'Generate texture';
         this.generateButton.visible = true;

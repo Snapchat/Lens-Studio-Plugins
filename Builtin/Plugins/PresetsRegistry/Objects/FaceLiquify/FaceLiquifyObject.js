@@ -37,7 +37,7 @@ export class FaceLiquifyObjectPreset extends Preset {
         return {
             id: 'Com.Snap.FaceLiquifyObjectPreset',
             name: 'Face Liquify',
-            description: '',
+            description: 'Creates face distortion effect with LiquifyVisual components attached to left and right eye centers.',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/FaceLiquify.svg')),
             section: 'Face',
             entityType: 'SceneObject'

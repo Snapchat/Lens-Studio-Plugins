@@ -4,7 +4,7 @@ const params = {
     'descriptor': {
         'id': 'Com.Snap.MaterialPreset.GoldMaterial',
         'name': 'Gold',
-        'description': '',
+        'description': 'Metallic gold-colored material with configurable base color, metallic, and roughness properties',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
     graph_path: import.meta.resolve('Resources/uber_spec.ss_graph'),

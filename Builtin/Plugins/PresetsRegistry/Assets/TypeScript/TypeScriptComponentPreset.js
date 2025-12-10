@@ -9,7 +9,7 @@ export class TypeScriptComponentPreset extends Preset {
         return {
             id: 'Com.Snap.TypeScriptComponentPreset',
             name: 'TypeScript File',
-            description: '',
+            description: 'Creates empty TypeScript asset file',
             icon: Editor.Icon.fromFile(import.meta.resolve('../Resources/TypeScript.svg')),
             section: 'Scripting',
             entityType: 'TypeScriptAsset'

@@ -4,7 +4,7 @@ const params = {
     'descriptor': {
         'id': 'Com.Snap.MaterialPreset.SmoothingMaterial',
         'name': 'Smoothing',
-        'description': '',
+        'description': 'PostEffectVisual material smoothing and softening rendered image',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
     graph_path: import.meta.resolve('Resources/smoothing.ss_graph'),

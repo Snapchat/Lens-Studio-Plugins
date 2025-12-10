@@ -63,7 +63,7 @@ export class ScriptInstantiator extends AssetInstantiator {
         let result;
         if (rootAsset != null && rootAsset.setupScript != undefined && rootAsset.setupScript.code.length > 0) {
             console.log("Executing setup script for asset: ", asset.name);
-            // @ts-ignore 
+            // @ts-ignore
             const instantiateScript = createFunctionObject(rootAsset.setupScript.code, "defaultAssetInstantiatorFunc");
             result = instantiateScript(asset, scene, target, this);
         }
@@ -75,7 +75,7 @@ export class ScriptInstantiator extends AssetInstantiator {
     // begin of SetupScriptInterface implementation
     // default instantiation for scripts and custom components
     defaultInstantiate(asset, scene, target) {
-        // If no setup script exists, we can instantiate the script directly 
+        // If no setup script exists, we can instantiate the script directly
         // Default LS logic is to create a new SceneObject with the script component
         if (target == null) {
             target = scene.createSceneObject(asset.name);

@@ -162,41 +162,46 @@ export class ScriptEditor extends EditorPlugin {
         }
     }
 
-    edit(entities) {
+
+    edit(entities, line = null) {
         this.editableEntity = findEditableEntity(entities);
 
-        if (this.editableEntity) {
-            let assetToOpen = this.editableEntity;
-            const sourcePath = assetToOpen.fileMeta.sourcePath.toString();
-
-            const scriptName = sourcePath.split('/').pop().split('\\').pop();
-            this.updateLoadingMessage(scriptName);
-
-            if (isCustomComponentFile(sourcePath)) {
-                if (assetToOpen.primaryAsset && isValidEntityToEdit(assetToOpen.primaryAsset)) {
-                    assetToOpen = assetToOpen.primaryAsset;
-                } else {
-                    console.warn(`[Text Editor] Selected packed Custom Component has no primary asset. Aborting open.`);
-                    return false;
-                }
-            }
-
-            if (!this.initialDependenciesLoaded) {
-                const allAssets = this.assetManager.assets;
-                allAssets.forEach(asset => {
-                    const dependencySourcePath = asset.fileMeta.sourcePath.toString();
-                    if (!assetToOpen.isSame(asset) && isValidScriptToEdit(asset) && !isCustomComponentFile(dependencySourcePath)) {
-                        this.webSocketManager.loadDependency(dependencySourcePath, asset.id.toString());
-                    }
-                });
-                this.initialDependenciesLoaded = true;
-            }
-
-            const relativeAssetPath = assetToOpen.fileMeta.sourcePath.toString();
-            this.webSocketManager.openFile(relativeAssetPath, assetToOpen.id.toString());
-            return true;
+        if (!this.editableEntity) {
+            return false;
         }
-        return false;
+
+        let assetToOpen = this.editableEntity;
+        const sourcePath = assetToOpen.fileMeta.sourcePath.toString();
+        const scriptName = sourcePath.split('/').pop().split('\\').pop();
+        this.updateLoadingMessage(scriptName);
+
+        // Handle custom component files
+        if (isCustomComponentFile(sourcePath)) {
+            if (assetToOpen.primaryAsset && isValidEntityToEdit(assetToOpen.primaryAsset)) {
+                assetToOpen = assetToOpen.primaryAsset;
+            } else {
+                console.warn(`[Text Editor] Selected packed Custom Component has no primary asset. Aborting open.`);
+                return false;
+            }
+        }
+
+        if (!this.initialDependenciesLoaded) {
+            const allAssets = this.assetManager.assets;
+            allAssets.forEach(asset => {
+                const dependencySourcePath = asset.fileMeta.sourcePath.toString();
+                if (!assetToOpen.isSame(asset) && isValidScriptToEdit(asset) && !isCustomComponentFile(dependencySourcePath)) {
+                    this.webSocketManager.loadDependency(dependencySourcePath, asset.id.toString());
+                }
+            });
+            this.initialDependenciesLoaded = true;
+        }
+
+        const relativeAssetPath = assetToOpen.fileMeta.sourcePath.toString();
+        const componentId = assetToOpen.id.toString();
+        const finalLineNumber = (line !== null && line !== undefined && line > 0) ? line : null;
+
+        this.webSocketManager.openFile(relativeAssetPath, componentId, finalLineNumber);
+        return true;
     }
 
     deinit() {

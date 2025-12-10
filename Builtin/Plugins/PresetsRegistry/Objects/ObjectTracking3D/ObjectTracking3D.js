@@ -74,7 +74,7 @@ function createObjectTracking3DPreset(id, name, iconPath, createFn) {
             return {
                 id: `Com.Snap.${id}ObjectTracking3DPreset`,
                 name: name,
-                description: '',
+                description: `Creates 3D ${id} tracking object with ${id}Tracking3DAsset for ${id} pose tracking.`,
                 icon: Editor.Icon.fromFile(import.meta.resolve(iconPath)),
                 section: 'Tracking',
                 entityType: 'SceneObject'

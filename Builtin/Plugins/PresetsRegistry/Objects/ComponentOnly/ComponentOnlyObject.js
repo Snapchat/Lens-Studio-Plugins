@@ -6,7 +6,7 @@ function createComponentOnlyObject(componentName, niceName, iconPath, group) {
             return {
                 id: `Com.Snap.${componentName}ObjectPreset`,
                 name: niceName,
-                description: '',
+                description: `Creates a new scene object and adds a ${componentName} component to it.`,
                 icon: Editor.Icon.fromFile(import.meta.resolve(iconPath)),
                 section: group ? group : 'General',
                 entityType: 'SceneObject'

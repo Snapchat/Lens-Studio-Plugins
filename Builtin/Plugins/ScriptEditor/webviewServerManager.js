@@ -374,13 +374,13 @@ class WebviewServerManager {
         }
     }
 
-    openFile(filePath, componentId) {
+    openFile(filePath, componentId, lineNumber = null) {
         if (this.socket) {
             this.socket.send(JSON.stringify({
-                event: FILE_EVENTS.ACTIVE_CHANGED, payload: {filePath, componentId}
+                event: FILE_EVENTS.ACTIVE_CHANGED, payload: {filePath, componentId, lineNumber}
             }));
         } else {
-            this.filesToOpen.push({path: filePath, id: componentId, visible: true});
+            this.filesToOpen.push({path: filePath, id: componentId, visible: true, lineNumber});
         }
     }
 
@@ -430,8 +430,8 @@ class WebviewServerManager {
     }
 
     openDelayedFiles() {
-        for (let {path, id, visible} of this.filesToOpen) {
-            if (visible) this.openFile(path, id); else this.loadDependency(path, id);
+        for (let {path, id, visible, lineNumber} of this.filesToOpen) {
+            if (visible) this.openFile(path, id, lineNumber); else this.loadDependency(path, id);
         }
         this.filesToOpen = [];
     }

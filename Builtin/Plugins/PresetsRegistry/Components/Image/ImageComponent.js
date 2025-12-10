@@ -17,7 +17,7 @@ export class ImageComponentPreset extends Preset {
         return {
             id: 'Com.Snap.ImageComponentPreset',
             name: 'Image',
-            description: '',
+            description: 'Image component with default Image material',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/Image.svg')),
             section: '2D',
             entityType: 'Image'

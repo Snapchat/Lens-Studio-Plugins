@@ -4,7 +4,7 @@ const params = {
     'descriptor': {
         'id': 'Com.Snap.MaterialPreset.UberDiffuseMaterial',
         'name': 'Uber Diffuse',
-        'description': '',
+        'description': 'Diffuse material with comprehensive set of standard properties. This version has baseTex, normalTex, uv2Offset, uv3Offset properties',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
     graph_path: import.meta.resolve('Resources/uber_diffuse.ss_graph'),

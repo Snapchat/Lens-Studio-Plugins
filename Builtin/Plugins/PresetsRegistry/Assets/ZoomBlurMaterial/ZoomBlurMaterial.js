@@ -5,7 +5,7 @@ const params = {
         id: 'Com.Snap.MaterialPreset.ZoomBlurMaterial',
         name: 'Zoom Blur',
         icon: import.meta.resolve('../Resources/Material.svg'),
-        'description': 'Adds a zoom blur effect.',
+        'description': 'PostEffectVisual material applying radial zoom blur effect',
     },
     graph_path: import.meta.resolve('Resources/zoom_blur.ss_graph'),
     pass_info: {

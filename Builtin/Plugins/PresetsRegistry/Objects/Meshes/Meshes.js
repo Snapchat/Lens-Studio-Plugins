@@ -14,7 +14,7 @@ function createMeshObjectClass(name, iconPath, assetMeshPreset, assetMaterialPre
             return {
                 id: `Com.Snap.MeshObjectPreset.${name}`,
                 name: name,
-                description: '',
+                description: `Creates object with RenderMeshVisual component using ${assetMeshPreset.descriptor().name} mesh and ${assetMaterialPreset.descriptor().name} material.`,
                 icon: Editor.Icon.fromFile(import.meta.resolve(iconPath)),
                 section: '3D',
                 entityType: 'SceneObject'

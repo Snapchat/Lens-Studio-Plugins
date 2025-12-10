@@ -4,7 +4,7 @@ const params = {
     'descriptor': {
         id: 'Com.Snap.MaterialPreset.WorldMeshMaterial',
         name: 'World Mesh',
-        description: 'A material useful for visualizing a World Mesh.',
+        description: 'Material for visualizing World Mesh',
         icon: import.meta.resolve('../Resources/Material.svg')
     },
     graph_path: import.meta.resolve('Resources/world_mesh.ss_graph'),

@@ -190,11 +190,20 @@ export class FileManager {
     }
 
     async getFileObject(filePath, componentId) {
-        let {fileObject} = this.findFile(componentId)
+        let {fileObject, open} = this.findFile(componentId);
         if (fileObject) {
+            if (fileObject.componentId !== componentId) {
+                if (open) {
+                    this.openFiles.delete(fileObject.componentId);
+                    this.openFiles.set(componentId, fileObject);
+                } else {
+                    this.backgroundFiles.delete(fileObject.componentId);
+                    this.backgroundFiles.set(componentId, fileObject);
+                }
+                fileObject.componentId = componentId;
+            }
             return fileObject;
         }
-
         try {
             const {content} = await this.networkManager.request(EDITOR_EVENTS.GET_SCRIPT_CONTENT, {filePath});
             const language = getLanguageFromFilePath(filePath);
@@ -248,7 +257,9 @@ export class FileManager {
         const fileObject = await this.getFileObject(filePath, componentId);
 
         if (fileObject) {
-            await this.switchToFile(componentId, position);
+            await this.switchToFile(componentId, position, fileObject);
+        } else {
+            console.error(`Failed to get file object for ${filePath} (componentId: ${componentId})`);
         }
     }
 
@@ -262,19 +273,31 @@ export class FileManager {
         }
     }
 
-    async switchToFile(componentId, position) {
+    async switchToFile(componentId, position, fileObject = null) {
+        if (!fileObject) {
+            const found = this.findFile(componentId);
+            fileObject = found.fileObject;
+        }
+
+        if (!fileObject || !fileObject.model) {
+            console.error(`Cannot switch to file: fileObject not found for componentId ${componentId}`);
+            return;
+        }
+
         if (this.currentFile && this.currentFile.componentId === componentId) {
-            if (position) this.jumpToPosition(position);
+            if (position) {
+                this.jumpToPosition(position);
+            }
+            if (!this.openFiles.has(componentId)) {
+                this.backgroundFiles.delete(componentId);
+                this.openFiles.set(componentId, fileObject);
+                this.renderTabs();
+            }
             return;
         }
 
         if (this.currentFile) {
             this.currentFile.viewState = this.editor.saveViewState();
-        }
-
-        let {fileObject} = this.findFile(componentId)
-        if (!fileObject || !fileObject.model) {
-            return
         }
 
         const wasInBackground = !this.openFiles.has(componentId);
@@ -293,14 +316,15 @@ export class FileManager {
             readOnlyMessage: fileObject.readOnly ? {value: 'This script is inside a packed package and cannot be edited.'} : undefined
         });
 
-        if (fileObject.viewState) {
+        if (position) {
+            this.jumpToPosition(position);
+        } else if (fileObject.viewState) {
             this.editor.restoreViewState(fileObject.viewState);
         }
-        this.editor.focus();
 
+        this.editor.focus();
         this.renderTabs();
         scrollTabIntoView(fileObject.filePath);
-        if (position) this.jumpToPosition(position);
     }
 
     closeFile(componentId) {

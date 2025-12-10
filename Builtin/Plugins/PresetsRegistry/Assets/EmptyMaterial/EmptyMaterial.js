@@ -4,7 +4,7 @@ const params = {
     'descriptor': {
         'id': 'Com.Snap.MaterialPreset.EmptyMaterial',
         'name': 'Empty Material',
-        'description': '',
+        'description': 'Empty shader graph material.',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
     graph_path: import.meta.resolve('Resources/empty.ss_graph'),

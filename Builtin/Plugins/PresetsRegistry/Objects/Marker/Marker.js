@@ -9,7 +9,7 @@ function createMarkerObjectPreset(name) {
             return {
                 id: `Com.Snap.${name}MarkerObjectPreset`,
                 name: `${name} Marker`,
-                description: '',
+                description: `Creates ${name} marker tracking with MarkerTrackingComponent.`,
                 icon: Editor.Icon.fromFile(import.meta.resolve(`Resources/${name} Marker.svg`)),
                 section: 'Tracking',
                 entityType: 'SceneObject',

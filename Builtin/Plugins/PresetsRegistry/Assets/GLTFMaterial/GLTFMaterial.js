@@ -4,7 +4,7 @@ const params = {
     'descriptor': {
         'id': 'Com.Snap.MaterialPreset.GLTFMaterial',
         'name': 'GLTF',
-        'description': '',
+        'description': 'PBR-based material for glTF models with transmission support',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
     graph_path: import.meta.resolve('Resources/gltf.ss_graph'),

@@ -19,7 +19,7 @@ export class FaceMaskObjectPreset extends Preset {
         return {
             id: 'Com.Snap.FaceMaskObjectPreset',
             name: 'Face Mask',
-            description: '',
+            description: 'Creates a scene object with FaceMaskVisual component with default Face Mask material',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/FaceMask.svg')),
             section: 'Face',
             entityType: 'SceneObject'

@@ -36,7 +36,7 @@
   ],
   "events": [
     {
-      "name": "exampleEvent", 
+      "name": "exampleEvent",
       "description": "This is an example of an event. It was exposed in the script as `script.exampleEvent = new eventModule.EventWrapper();` where you can get eventModule from the Asset Library.",
       "arguments": [
         {

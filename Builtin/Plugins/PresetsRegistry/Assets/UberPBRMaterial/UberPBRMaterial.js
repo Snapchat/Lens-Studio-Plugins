@@ -4,7 +4,7 @@ const params = {
     'descriptor': {
         'id': 'Com.Snap.MaterialPreset.UberPBRMaterial',
         'name': 'Uber PBR',
-        'description': '',
+        'description': 'Physically Based Rendering material with comprehensive set of configurable properties',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
     graph_path: import.meta.resolve('Resources/uber_pbr.ss_graph'),

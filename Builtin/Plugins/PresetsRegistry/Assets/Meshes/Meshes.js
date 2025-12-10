@@ -4,7 +4,7 @@ function createMeshClass(name) {
     return createResourcePresetClass({
         name,
         id: `Com.Snap.MeshPreset.${name}`,
-        description: '',
+        description: `${name} mesh asset.`,
         icon: Editor.Icon.fromFile(new Editor.Path(import.meta.resolve('../Resources/Mesh.svg'))),
         section: 'Meshes',
         entityType: 'RenderMesh',

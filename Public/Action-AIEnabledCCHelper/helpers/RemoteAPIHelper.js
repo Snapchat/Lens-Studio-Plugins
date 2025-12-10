@@ -31,12 +31,12 @@ class RemoteAPIHelper {
                 if (response.statusCode == 1) {
                     try {
                         console.log("Received AiMetadata stub.");
-                        
+
                         const data = JSON.parse(response.body.toString());
-                        
+
                         if (
-                            data 
-                            && data.choices 
+                            data
+                            && data.choices
                             && data.choices.length > 0
                             && data.choices[0].message
                             && data.choices[0].message.content

@@ -7,7 +7,7 @@ function createPhysicsObjectClass(name, iconPath, meshPreset, shapeType) {
             return {
                 id: `Com.Snap.PhysicsObjectPreset.${name}`,
                 name: name,
-                description: '',
+                description: `Creates ${name} physics object with ${meshPreset.descriptor().name} mesh and collider for physics simulation.`,
                 icon: Editor.Icon.fromFile(import.meta.resolve(iconPath)),
                 section: 'Physics',
                 entityType: 'SceneObject'

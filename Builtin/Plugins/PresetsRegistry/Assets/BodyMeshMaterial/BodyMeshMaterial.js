@@ -4,7 +4,7 @@ const params = {
     'descriptor': {
         'id': 'Com.Snap.MaterialPreset.BodyMeshMaterialPreset',
         'name': 'Body Mesh',
-        'description': '',
+        'description': 'Default material for Body Mesh',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
     graph_path: import.meta.resolve('Resources/body_mesh.ss_graph'),

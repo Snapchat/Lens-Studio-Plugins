@@ -34,7 +34,7 @@ function containsMaterial(materials, material) {
 // To counter this, the script will also swap the Cull Mode (e.g. Front to Back)
 // of any Material in its hierarchy.
 function flipMaterials(sceneObject, visitedMaterials) {
-    const components = sceneObject.getAllComponents();
+    const components = sceneObject.getComponents("MaterialMeshVisual");
     for (let i = 0; i < components.length; i++) {
         if (components[i].getMaterialsCount !== undefined) {
             const materialCount = components[i].getMaterialsCount();

@@ -12,7 +12,7 @@ export class TextComponentPreset extends Preset {
         return {
             id: 'Com.Snap.TextComponentPreset',
             name: 'Text',
-            description: '',
+            description: 'Text component',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/Text.svg')),
             section: '2D',
             entityType: 'Text'

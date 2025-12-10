@@ -4,7 +4,7 @@ const params = {
     'descriptor': {
         'id': 'Com.Snap.MaterialPreset.GPUParticlesTrailsMaterialPreset',
         'name': 'GPU Particles Trails',
-        'description': '',
+        'description': 'A material that creates a GPU-based particle system with trails. Has properties : lifeTimeMinMax, alphaStart, alphaEnd, noiseMult, noiseFrequency, velocityMin, velocityMax, velocityDrag, rotationRate, rotationRandom, sizeStart, sizeEnd, gravity, trailLength, trailWidth, trailTaper, trailFadeStartEnd',
         'icon': import.meta.resolve('../Resources/GPUParticles.svg')
     },
     graph_path: import.meta.resolve('../Resources/gpu_particles.ss_graph'),

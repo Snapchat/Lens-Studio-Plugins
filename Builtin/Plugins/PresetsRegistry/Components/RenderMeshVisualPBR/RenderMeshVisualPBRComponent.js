@@ -17,7 +17,7 @@ export class RenderMeshVisualPBRComponentPreset extends Preset {
         return {
             id: 'Com.Snap.RenderMeshVisualPBRPreset',
             name: 'Render Mesh Visual (PBR)',
-            description: '',
+            description: 'RenderMeshVisual component with Uber PBR material',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/RenderMeshVisual.svg')),
             section: '3D',
             entityType: 'Component'

@@ -7,7 +7,7 @@ export class ScreenTextObjectPreset extends Preset {
         return {
             id: 'Com.Snap.ScreenTextObjectPreset',
             name: 'Screen Text',
-            description: '',
+            description: 'Creates screen-space text with ScreenTransform and Text component for 2D text rendering. Default hierarchy: Orthographic Camera -> Screen Region -> Screen Text',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/ScreenText.svg')),
             section: '2D',
             entityType: 'SceneObject'

@@ -4,7 +4,7 @@ const params = {
     'descriptor': {
         'id': 'Com.Snap.MaterialPreset.FaceMeshMaterialPreset',
         'name': 'Face Mesh',
-        'description': '',
+        'description': 'Default material used for Face Mesh',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
     graph_path: import.meta.resolve('Resources/face_mesh.ss_graph'),

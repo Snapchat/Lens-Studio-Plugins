@@ -22,10 +22,10 @@ export class GPUParticlesComponentPreset extends Preset {
         return {
             id: 'Com.Snap.GPUParticlesComponentPreset',
             name: 'GPU Particles',
-            description: '',
+            description: 'RenderMeshVisual component with GPU Particles material',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/GPUParticles.svg')),
             section: 'Visual Effects',
-            entityType: 'Component'
+            entityType: 'RenderMeshVisual'
         };
     }
 

@@ -21,7 +21,7 @@ export class FaceStretchObjectPreset extends Preset {
         return {
             id: 'Com.Snap.FaceStretchObjectPreset',
             name: 'Face Stretch',
-            description: '',
+            description: 'Creates face morphing effect with FaceStretchVisual component for warping facial features.',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/FaceStretch.svg')),
             section: 'Face',
             entityType: 'SceneObject'

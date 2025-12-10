@@ -284,7 +284,7 @@ export class Preview {
         muteButton.setFixedHeight(20);
         muteButton.scaledContents = true;
         muteButton.move(8, 506);
-        
+
         muteButton.onClick.connect(() => {
             this.isMuted = !this.isMuted;
             if (this.isMuted) {

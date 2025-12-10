@@ -4,7 +4,7 @@ const params = {
     'descriptor': {
         'id': 'Com.Snap.MaterialPreset.ColorGradient',
         'name': 'Color Gradient',
-        'description': '',
+        'description': 'PostEffectVisual material mapping screen color ranges to four-color gradient',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
     graph_path: import.meta.resolve('Resources/color_gradient.ss_graph'),

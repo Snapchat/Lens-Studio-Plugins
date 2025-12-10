@@ -4,7 +4,7 @@ const params = {
     'descriptor': {
         'id': 'Com.Snap.MaterialPreset.Text3DMaterialPreset',
         'name': 'Text3D',
-        'description': '',
+        'description': 'Default material for Text3D component with configurable cap colors, edge gradients, and blend mode',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
     graph_path: import.meta.resolve('Resources/text_3d.ss_graph'),

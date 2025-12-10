@@ -4,7 +4,7 @@ const params = {
     'descriptor': {
         'id': 'Com.Snap.MaterialPreset.DistortionMaterial',
         'name': 'Distortion',
-        'description': '',
+        'description': 'PostEffectVisual material distorting screen with configurable flow texture, speed, intensity, and UV scale',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
     graph_path: import.meta.resolve('Resources/distortion.ss_graph'),

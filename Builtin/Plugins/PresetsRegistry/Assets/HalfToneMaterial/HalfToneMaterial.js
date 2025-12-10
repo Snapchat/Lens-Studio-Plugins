@@ -4,7 +4,7 @@ const params = {
     'descriptor': {
         'id': 'Com.Snap.MaterialPreset.HalfToneMaterial',
         'name': 'Half Tone',
-        'description': '',
+        'description': 'PostEffectVisual material creating comic book-style halftone dots with configurable colors',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
     graph_path: import.meta.resolve('Resources/half_tone.ss_graph'),

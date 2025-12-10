@@ -44,7 +44,7 @@ export class CustomLocationObjectPreset extends Preset {
         return {
             id: 'Com.Snap.CustomLocationObjectPreset',
             name: 'Custom Location',
-            description: 'Adds a Custom Location',
+            description: 'Creates GPS-based AR location with LocatedAtComponent, LocationAsset, LocationMesh, and DeviceTracking setup.',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/LocationAsset.svg')),
             section: 'World',
             entityType: 'SceneObject'

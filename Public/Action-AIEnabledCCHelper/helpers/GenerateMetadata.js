@@ -71,19 +71,19 @@ export function generateMarkdown(formData) {
             markdown += `### ${name}\n`;
             markdown += `- Description: ${desc}\n`;
             markdown += `- Type: ${type}\n`;
-            
+
             if (input.assetProvider) {
                 markdown += `- Asset Provider: ${input.assetProvider}\n`;
             }
-            
+
             if (input.assetStyle) {
                 markdown += `- Asset Style: ${input.assetStyle}\n`;
             }
-            
+
             if (input.default && !input.assetProvider) {
                 markdown += `- Default: ${input.default}\n`;
             }
-            
+
             markdown += `\n`;
         });
     }
@@ -119,13 +119,13 @@ export function generateMarkdown(formData) {
 
             markdown += `### ${signature}\n`;
             markdown += `- Description: ${desc}\n`;
-            
+
             if (func.arguments && func.arguments.length > 0) {
                 func.arguments.forEach(arg => {
                     markdown += `- ${arg.name}: ${arg.description}\n`;
                 });
             }
-            
+
             markdown += `\n`;
         });
     }
@@ -161,13 +161,13 @@ export function generateMarkdown(formData) {
 
             markdown += `### ${signature}\n`;
             markdown += `- Description: ${desc}\n`;
-            
+
             if (event.arguments && event.arguments.length > 0) {
                 event.arguments.forEach(arg => {
                     markdown += `- ${arg.name}: ${arg.description}\n`;
                 });
             }
-            
+
             markdown += `\n`;
         });
     }
@@ -176,7 +176,7 @@ export function generateMarkdown(formData) {
     if (formData.examples && formData.examples.length > 0) {
         markdown += `<!-- Examples are optional -->\n`;
         markdown += `## Examples\n\n`;
-        
+
         formData.examples.forEach((example, index) => {
             markdown += `### Example ${index + 1}\n`;
             if (example.description) {
@@ -185,14 +185,14 @@ export function generateMarkdown(formData) {
             if (example.comment) {
                 markdown += `- Comment: ${example.comment}\n`;
             }
-            
+
             if (example.inputs && Object.keys(example.inputs).length > 0) {
                 markdown += `\n#### Inputs\n`;
                 Object.entries(example.inputs).forEach(([key, value]) => {
                     markdown += `- ${key}: ${value}\n`;
                 });
             }
-            
+
             markdown += `\n`;
         });
     }

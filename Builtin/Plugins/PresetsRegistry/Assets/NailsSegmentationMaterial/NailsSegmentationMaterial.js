@@ -4,7 +4,7 @@ const params = {
     'descriptor': {
         'id': 'Com.Snap.MaterialPreset.NailsSegmentation',
         'name': 'Nails Segmentation',
-        'description': '',
+        'description': 'Nail segmentation material using Object Tracking Texture with configurable base color, radius, and softness',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
     graph_path: import.meta.resolve('Resources/object_seg.ss_graph'),

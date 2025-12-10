@@ -66,6 +66,7 @@ export { CanvasComponentPreset } from '../Components/Canvas/CanvasComponent.js';
 export { Text3DComponentPreset } from '../Components/Text3D/Text3DComponent.js';
 export { RenderMeshVisualPBRComponentPreset } from '../Components/RenderMeshVisualPBR/RenderMeshVisualPBRComponent.js';
 export { TypeScriptFileComponentPreset, JavaScriptFileComponentPreset } from '../Components/Script/ScriptComponent.js';
+export { ScreenRegionComponentPreset } from '../Components/ScreenRegion/ScreenRegionComponent.js';
 
 // Objects
 export { BodyMeshObjectPreset } from '../Objects/BodyMesh/BodyMeshObject.js';

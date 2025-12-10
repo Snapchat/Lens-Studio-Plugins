@@ -47,7 +47,7 @@ export class HeadBindingObjectPreset extends Preset {
         return {
             id: 'Com.Snap.HeadBindingPreset',
             name: 'Head Binding',
-            description: '',
+            description: 'Creates head-tracked anchor point with Head component at HeadCenter and Face Occluder for depth occlusion.',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/HeadBinding.svg')),
             section: 'Face',
             entityType: 'SceneObject'

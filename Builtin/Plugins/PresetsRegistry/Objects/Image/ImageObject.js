@@ -6,7 +6,7 @@ export class ImageObjectPreset extends Preset {
         return {
             id: 'Com.Snap.ImageObjectPreset',
             name: 'Image',
-            description: '',
+            description: 'Creates object with Image component using default Image material. Stretch mode set to Fit with default scale (32, 32, 32).',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/Image.svg')),
             section: '2D',
             entityType: 'SceneObject'

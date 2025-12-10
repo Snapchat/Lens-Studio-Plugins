@@ -4,7 +4,7 @@ const params = {
     'descriptor': {
         'id': 'Com.Snap.MaterialPreset.GPUParticlesMaterialPreset',
         'name': 'GPU Particles',
-        'description': '',
+        'description': 'GPU-based particle system with configurable lifetime, alpha, velocity, rotation, size, and gravity properties',
         'icon': import.meta.resolve('../Resources/GPUParticles.svg')
     },
     graph_path: import.meta.resolve('../Resources/gpu_particles.ss_graph'),

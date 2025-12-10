@@ -215,5 +215,3 @@ export function downloadFile(url: string, callback: Function) {
         callback(response);
     })
 }
-
-

@@ -46,6 +46,7 @@ export class BitmojiSuite extends EditorPlugin {
             id: PLUGIN_ID,
             name: "Bitmoji Suite",
             description: "Bitmoji Suite",
+            menuActionHierarchy: ['Window', 'Bitmoji Suite'],
             canEdit: isBitmojiComponent,
             defaultSize: new Ui.Size(800, 500),
             minimumSize: new Ui.Size(650, 500),

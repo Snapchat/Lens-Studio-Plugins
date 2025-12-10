@@ -5,7 +5,7 @@ function createColorCorrection(tex){
         'descriptor': {
             'id': 'Com.Snap.ColorCorrectionMaterial',
             'name': 'Color Correction',
-            'description': 'Applies a LUT (Look Up Table).',
+            'description': 'Applies a LUT (Look Up Table) texture to the screen',
             'icon': import.meta.resolve('../Resources/Material.svg')
         },
         graph_path: import.meta.resolve('Resources/color_correction.ss_graph'),

@@ -42,7 +42,7 @@ export class UpperBodyMeshObjectPreset extends Preset {
         return {
             id: 'Com.Snap.UpperBodyMeshObjectPreset',
             name: 'Upper Body Mesh',
-            description: '',
+            description: 'Creates upper body mesh with RenderMeshVisual, head mesh, and 3D upper body tracking for torso rendering',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/UpperBodyMesh.svg')),
             section: '3D',
             entityType: 'SceneObject'

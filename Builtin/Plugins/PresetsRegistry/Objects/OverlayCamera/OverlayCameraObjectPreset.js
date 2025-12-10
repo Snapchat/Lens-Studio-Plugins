@@ -16,7 +16,7 @@ export class OverlayCameraObjectPreset extends Preset {
         return {
             id: 'Com.Company.OverlayCameraObjectPreset',
             name: 'Overlay Camera',
-            description: 'Overlay Camera Preset',
+            description: 'Creates a scene object with Orthographic Camera component and Overlay Render Target',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/OverlayCamera.svg')),
             section: 'General',
             entityType: 'SceneObject'

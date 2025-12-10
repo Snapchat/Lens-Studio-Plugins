@@ -4,7 +4,7 @@ const params = {
     'descriptor': {
         'id': 'Com.Snap.MaterialPreset.AnalogTV',
         'name': 'Analog TV',
-        'description': 'Adds a visual effect similar to old VCRs with scanline, distortion, and noise.',
+        'description': 'PostEffectVisual material simulating old VCR effects (scanlines, distortion, noise)',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
     graph_path: import.meta.resolve('Resources/analog_tv.ss_graph'),

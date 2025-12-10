@@ -81,7 +81,7 @@ export class OrthographicCameraObjectPreset extends Preset {
         return {
             id: 'Com.Snap.OrthographicCameraObjectPreset',
             name: 'Orthographic Camera',
-            description: '',
+            description: 'Creates a scene object with Orthographic Camera component',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/Camera.svg')),
             section: 'General',
             entityType: 'SceneObject'

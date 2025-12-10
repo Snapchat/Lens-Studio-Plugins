@@ -6,7 +6,7 @@ export class ImageMarkerAssetPreset extends Preset {
         return {
             id: 'Com.Snap.ImageMarkerAssetPreset',
             name: 'Image Marker From Texture',
-            description: '',
+            description: 'Image marker asset created from texture (prompts for file selection)',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/MarkerAsset.svg')),
             section: 'Tracking',
             entityType: 'Texture',

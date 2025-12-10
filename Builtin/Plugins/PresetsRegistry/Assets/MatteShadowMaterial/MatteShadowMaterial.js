@@ -4,7 +4,7 @@ const params = {
     'descriptor': {
         'id': 'Com.Snap.MaterialPreset.MatteShadowMaterial',
         'name': 'Matte Shadow',
-        'description': '',
+        'description': 'Renders only shadows cast on object surface, hiding the object itself',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
     graph_path: import.meta.resolve('Resources/matte_shadow.ss_graph'),

@@ -91,7 +91,7 @@ export class AiEnabledCCHelper extends CoreService {
             try {
 
                 /**
-                 * ADD FILES 
+                 * ADD FILES
                  */
 
                 const model = this.pluginSystem.findInterface(Editor.Model.IModel)

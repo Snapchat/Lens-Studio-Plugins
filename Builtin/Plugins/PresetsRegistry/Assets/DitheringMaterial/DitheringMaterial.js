@@ -4,7 +4,7 @@ const params = {
     'descriptor': {
         'id': 'Com.Snap.MaterialPreset.DitheringMaterial',
         'name': 'Dithering',
-        'description': '',
+        'description': 'PostEffectVisual material applying color or grayscale dithering with tunable size',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
     graph_path: import.meta.resolve('Resources/dithering.ss_graph'),
