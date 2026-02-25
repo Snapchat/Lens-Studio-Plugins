@@ -1,37 +1,20 @@
-import { convertIntensityToAPIStyle, getRandomInt } from '../utils.js';
-
-export function buildAssetData(controls, skipMorphing, parentId) {
+export function buildAssetData(controls) {
     const request = {
-        "settings": {
-            'prompt': '',
-            'intensity': '',
-            'skipMorphing': false,
-            'parentId': null,
-            'pipeline': "headmorph",
-            'speedQuality': false,
-            'seed': getRandomInt(1, Math.pow(2, 31) - 1)
-        },
-        "userNotes": "",
-        "uploadUid": null
+        'prompt': null,
+        'seed': 0,
+        'uploadUid': null
     };
 
-    if (controls['promptPicker'].mode == "Text") {
-        request.settings.prompt = controls["promptPicker"].value;
-    } else if (controls['promptPicker'].mode == "Image") {
-        request.settings.prompt = controls["promptPicker"].value.textReference;
-        request.uploadUid = controls["promptPicker"].value.imagesData[0].uid;
+    const prompt = controls['promptPicker'].value;
+
+    if (prompt.length > 0) {
+        request.prompt = prompt;
     }
 
-    request.settings.intensity = convertIntensityToAPIStyle(controls['intensitySettings'].value);
-    if (skipMorphing != null) {
-        request.settings.skipMorphing = skipMorphing;
+    const images = controls['imageReferencePicker'].value;
+
+    if (images.length > 0) {
+        request.uploadUid = images[0].uid;
     }
-
-    if (parentId != null) {
-        request.settings.parentId = parentId;
-    }
-
-    request.userNotes = controls["userNotes"].value;
-
     return request;
 }

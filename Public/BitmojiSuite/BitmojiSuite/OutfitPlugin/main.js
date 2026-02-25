@@ -526,6 +526,8 @@ export class BitmojiOutfit extends Panel {
     }
 
     edit(bitmojiComponent) {
+        this.preview.reload();
+
         this.checkVersion(bitmojiComponent);
         this.currentBitmojiComponent = bitmojiComponent;
         const so = bitmojiComponent.sceneObject;

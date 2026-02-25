@@ -26,7 +26,7 @@ export class PromptPicker extends Control {
 
         const promptHeaderWidget = this['createPromptHeaderWidget'](this.widget, label, hint);
 
-        this.textEdit = new TextEdit(parent, null, null, null, 'Enter prompt here...', MAX_SYMBOLS);
+        this.textEdit = new TextEdit(parent, null, null, null, 'Describe the asset...', MAX_SYMBOLS);
         this.textEdit.widget.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Fixed);
 
         this.textEdit.addOnValueChanged((value) => {
@@ -66,12 +66,12 @@ export class PromptPicker extends Control {
         const promptHeaderLayout = new Ui.BoxLayout();
         promptHeaderLayout.setDirection(Ui.Direction.LeftToRight);
 
-        const promptLabel = new Ui.Label(promptHeaderWidget);
-        promptLabel.text = label;
-        promptHeaderLayout.addWidget(promptLabel);
+        this.radioButton = new Ui.RadioButton(promptHeaderWidget);
+        this.radioButton.text = label;
+        promptHeaderLayout.addWidget(this.radioButton);
 
         if (hint) {
-            const infoIconImage = new Ui.Pixmap(new Editor.Path(import.meta.resolve('../../Resources/info.svg')));
+            const infoIconImage = new Ui.Pixmap(new Editor.Path(import.meta.resolve('../../Resources/info_icon.svg')));
             const promptToolTip = new Ui.ImageView(promptHeaderWidget);
 
             promptToolTip.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
@@ -113,6 +113,20 @@ export class PromptPicker extends Control {
         promptHeaderWidget.layout = promptHeaderLayout;
 
         return promptHeaderWidget;
+    }
+
+    getRadioButton() {
+        return this.radioButton;
+    }
+
+    show() {
+        this.textEdit.widget.enabled = true;
+        this.surpriseMeLabel.enabled = true;
+    }
+
+    hide() {
+        this.textEdit.widget.enabled = false;
+        this.surpriseMeLabel.enabled = false;
     }
 };
 

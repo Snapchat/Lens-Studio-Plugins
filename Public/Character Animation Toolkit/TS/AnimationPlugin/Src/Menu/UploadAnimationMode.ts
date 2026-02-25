@@ -46,6 +46,7 @@ export class UploadAnimationMode {
 
         const fileUpload = new Ui.ImageView(parent);
         fileUpload.responseHover = true;
+        fileUpload.scaledContents = true;
         fileUpload.pixmap = this.defaultBackground;
         fileUpload.setFixedWidth(288);
         fileUpload.setFixedHeight(288);
@@ -53,6 +54,7 @@ export class UploadAnimationMode {
         const iconView = new Ui.ImageView(fileUpload);
         iconView.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
         iconView.move(125, 120);
+        iconView.scaledContents = true;
         iconView.pixmap = new Ui.Pixmap(import.meta.resolve('./Resources/uploadIcon.svg'));
 
         const iconSize: number = 36;

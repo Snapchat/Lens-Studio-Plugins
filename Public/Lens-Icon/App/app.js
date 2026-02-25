@@ -4,18 +4,39 @@ import * as Ui from "LensStudio:Ui";
 import { IconGenerator } from "../IconGenerator/IconGenerator.js";
 import { HomeScreen } from '../HomeScreen/HomeScreen.js';
 import { IconCropper } from '../IconCropper/IconCropper.js';
+import { CalloutManager } from '../CalloutManager/CalloutManager.js';
 
 import { Generator } from './generator.js';
 import { NetworkingManager } from './networking.js';
 
 import { PluginID, PluginName, PluginIcon, PluginSection } from './common.js';
-import { logEventOpen } from './analytics.js';
+import { logEventOpen, logEventAssetImport } from './analytics.js';
+import { GenAIIconName } from './common.js';
 import { AuthProvider } from './authProvider.js';
 
 const AppState = {
     HomeScreen: 0,
     IconGenerator: 1,
     IconCropper: 2
+}
+
+export function setIcon(iconPath, pluginSystem) {
+    const model = pluginSystem.findInterface(Editor.Model.IModel);
+    const project = model.project;
+
+    const metainfo = project.metaInfo;
+    metainfo.setIcon(iconPath);
+
+    // could be either be string or Editor.Path, so we always convert to Editor.Path first
+    const fileName = (new Editor.Path(iconPath.toString())).fileName
+
+    if (fileName == GenAIIconName) {
+        logEventAssetImport("SUCCESS", "GEN_AI");
+    } else {
+        logEventAssetImport("SUCCESS", "FROM_FILE");
+    }
+
+    project.metaInfo = metainfo;
 }
 
 export class LensIconWidget extends ProjectSettingsPlugin {
@@ -54,6 +75,10 @@ export class LensIconWidget extends ProjectSettingsPlugin {
         if (this.iconCropper) {
             this.iconCropper.deinit();
         }
+
+        if (this.calloutManager) {
+            this.calloutManager.deinit();
+        }
     }
 
     updateIssueStatus() {
@@ -77,30 +102,30 @@ export class LensIconWidget extends ProjectSettingsPlugin {
     }
 
     requestCancelation() {
-        if (this.currenState == AppState.IconGenerator) {
+        if (this.currentState === AppState.IconGenerator) {
             this.init();
-        } else if (this.currenState == AppState.IconCropper) {
+        } else if (this.currentState === AppState.IconCropper) {
             switch(this.previousState) {
                 case AppState.HomeScreen:
                     this.init();
                     break;
                 case AppState.IconGenerator:
-                    this.views.currentIndex = 1;
-                    this.previousState = this.currenState;
-                    this.currenState = AppState.IconGenerator;
+                    this.views.currentIndex = AppState.IconGenerator;
+                    this.previousState = this.currentState;
+                    this.currentState = AppState.IconGenerator;
                     break;
             }
         }
     }
 
     requestGeneration(prompt) {
-        this.previousState = this.currenState;
-        this.currenState = AppState.IconGenerator;
+        this.previousState = this.currentState;
+        this.currentState = AppState.IconGenerator;
 
         this.iconGenerator.init({
             "prompt": prompt
         });
-        this.views.currentIndex = 1;
+        this.views.currentIndex = AppState.IconGenerator;
     }
 
     requestIconCropper(imageBuffer, iconPath) {
@@ -112,10 +137,10 @@ export class LensIconWidget extends ProjectSettingsPlugin {
             "image_buffer": imageBuffer,
             "iconPath": iconPath
         });
-        this.views.currentIndex = 2;
+        this.views.currentIndex = AppState.IconCropper;
 
-        this.previousState = this.currenState;
-        this.currenState = AppState.IconCropper;
+        this.previousState = this.currentState;
+        this.currentState = AppState.IconCropper;
     }
 
     requestIconSet(path) {
@@ -124,15 +149,15 @@ export class LensIconWidget extends ProjectSettingsPlugin {
         });
 
         this.views.currentIndex = 0;
-        this.previousState = this.currenState;
-        this.currenState = AppState.HomeScreen;
+        this.previousState = this.currentState;
+        this.currentState = AppState.HomeScreen;
     }
 
     init() {
         this.homeScreen.init();
         this.views.currentIndex = 0;
-        this.previousState = this.currenState;
-        this.currenState = AppState.HomeScreen;
+        this.previousState = this.currentState;
+        this.currentState = AppState.HomeScreen;
     }
 
     createWidget(parent, authorization = this.pluginSystem.findInterface(Editor.IAuthorization), networkingManager = new NetworkingManager(), authProvider = new AuthProvider(networkingManager, authorization)) {
@@ -141,20 +166,22 @@ export class LensIconWidget extends ProjectSettingsPlugin {
         this.authProvider = authProvider;
 
         this.previousState = AppState.HomeScreen;
-        this.currenState = AppState.HomeScreen;
+        this.currentState = AppState.HomeScreen;
+
+        this.calloutManager = new CalloutManager();
 
         this.iconGenerator = new IconGenerator(this.pluginSystem, new Generator(networkingManager, authProvider), this.requestIconCropper.bind(this), this.requestCancelation.bind(this));
-        this.homeScreen = new HomeScreen(this.pluginSystem, this.authorization, this.requestGeneration.bind(this), this.requestIconCropper.bind(this));
+        this.homeScreen = new HomeScreen(this.pluginSystem, this.authorization, this.calloutManager, this.requestGeneration.bind(this), this.requestIconCropper.bind(this));
         this.iconCropper = new IconCropper(this.pluginSystem, this.requestIconSet.bind(this), this.requestCancelation.bind(this));
 
         this.widget = new Ui.Widget(parent);
-
         this.widget.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Expanding);
         this.widget.setContentsMargins(0, 0, 0, 0);
 
-        this.layout = new Ui.BoxLayout();
-        this.layout.setDirection(Ui.Direction.TopToBottom);
-        this.layout.setContentsMargins(0, 0, 0, 0);
+        // The layout overlays `callout containers` (for error and info logs) on top of `views`
+        const layout = new Ui.StackedLayout();
+        layout.stackingMode = Ui.StackingMode.StackAll;
+        layout.setContentsMargins(0, 0, 0, 0);
 
         this.views = new Ui.StackedWidget(this.widget);
         this.views.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Expanding);
@@ -164,9 +191,12 @@ export class LensIconWidget extends ProjectSettingsPlugin {
         this.views.addWidget(this.iconGenerator.createWidget(this.views));
         this.views.addWidget(this.iconCropper.createWidget(this.views));
 
-        this.layout.addWidget(this.views);
+        const calloutContainerWidget = this.calloutManager.createWidget(this.widget);
 
-        this.widget.layout = this.layout;
+        layout.addWidget(calloutContainerWidget);
+        layout.addWidget(this.views);
+
+        this.widget.layout = layout;
 
         logEventOpen();
         this.init();

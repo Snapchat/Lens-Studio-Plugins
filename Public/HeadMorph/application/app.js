@@ -1,5 +1,6 @@
 import { Logger } from './logger.js';
 import * as Ui from 'LensStudio:Ui';
+
 import { HeadMorphPlugin } from '../HeadMorphPlugin/HeadMorph.js';
 
 class Application {

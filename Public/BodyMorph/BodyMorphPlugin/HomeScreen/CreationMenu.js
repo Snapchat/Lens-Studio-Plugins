@@ -39,7 +39,6 @@ export class CreationMenu {
 
         this.controls['intensitySettings'].value = 'Medium';
         this.controls['headlessSettings'].value = false;
-        this.controls['userNotes'].value = '';
     }
 
     createHeadmorph(controls) {

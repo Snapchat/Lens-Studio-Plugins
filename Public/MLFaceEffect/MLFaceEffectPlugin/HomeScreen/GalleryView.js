@@ -368,8 +368,7 @@ export class GalleryView {
                                             'created_on': item.createdAt,
                                             'effect_get_response': this.effectResponse[item.id],
                                             'post_processing_get_response': this.postProcessingResponse[item.id],
-                                            'models_response': modelData,
-                                            'userNotes': item.userNotes,
+                                            'models_response': modelData
                                         });
                                 });
                             } catch (error) {
@@ -596,8 +595,7 @@ export class GalleryView {
                         'created_on': this.effectResponse[this.effectIds[i]].createdAt,
                         'effect_get_response': this.effectResponse[this.effectIds[i]],
                         'post_processing_get_response': this.postProcessingResponse[this.effectIds[i]],
-                        'models_response': null,
-                        'userNotes': this.effectResponse[this.effectIds[i]].userNotes,
+                        'models_response': null
                     });
                     app.log('', { 'enabled': false });
                 }.bind(this));
@@ -754,8 +752,7 @@ export class GalleryView {
                     'created_on': this.effectResponse[this.effectIds[i]].createdAt,
                     'effect_get_response': this.effectResponse[this.effectIds[i]],
                     'post_processing_get_response': this.postProcessingResponse[this.effectIds[i]],
-                    'models_response': null,
-                    'userNotes': this.effectResponse[this.effectIds[i]].userNotes,
+                    'models_response': null
                 });
                 app.log('', { 'enabled': false });
             })];

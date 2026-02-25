@@ -123,7 +123,7 @@ export class Generator {
             }
             let idx = 0;
             const apiProviderInstances = Array(params.size - this.iconBytes.length).fill().map(() => new ApiProvider(BASE_URL,
-                { "positive_prompt": this.constructPrompt(params.prompt, params.promptDecorator), "frame": false }, { "stop": false }, idx++, this.networkingManager));
+                { "positive_prompt": this.constructPrompt(params.prompt, params.promptDecorator), "frame": params.frame }, { "stop": false }, idx++, this.networkingManager));
 
             const promises = apiProviderInstances.map(async (apiProvider) => {
                 for (let attempt = 0; attempt < maxRetries; attempt++) {

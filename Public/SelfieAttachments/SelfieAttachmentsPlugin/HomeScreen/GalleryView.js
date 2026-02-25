@@ -1,10 +1,14 @@
 import * as Ui from 'LensStudio:Ui';
 
 import { getAsset, listAssets, deleteAsset } from '../api.js';
-import { downloadFileFromBucket } from '../utils.js';
+import {downloadFileFromBucket, guidelinesLink, importToProject} from '../utils.js';
 import { RequestTokenManager } from './RequestTokenManager.js';
+import { Filter } from './Filter.js';
 
 import app from '../../application/app.js';
+
+import {logEventAssetImport, logEventLinkOpen} from '../../application/analytics.js';
+import * as Shell from 'LensStudio:Shell';
 
 const COLUMN_SIZE = 3;
 
@@ -21,21 +25,44 @@ export class GalleryView {
         this.statusIndicators = [];
         this.statusLabels = [];
         this.statusCircles = [];
+        this.importButtons = [];
+        this.animatedIcons = [];
         this.nextPageToken = null;
         this.renderedViews = 0;
         this.tilesConnections = {};
         this.downloaded = [];
         this.failedConnections = {};
         this.queuedConnections = {};
+        this.hoverConnections = {};
         this.deleteButtonConnections = {};
         this.items = [];
         this.requestTokenManager = new RequestTokenManager();
         this.failedImage = new Ui.Pixmap(new Editor.Path(import.meta.resolve('../Resources/failed.svg')));
         this.deleteImageIcon = Editor.Icon.fromFile(new Editor.Path(import.meta.resolve('../Resources/delete.svg')));
         this.cornerSvg = new Ui.Pixmap(new Editor.Path(import.meta.resolve('../Resources/corners.png')));
+        this.importImageIcon = Editor.Icon.fromFile(new Editor.Path(import.meta.resolve('../Resources/import.svg')));
+        this.videoCameraIcon = new Ui.Pixmap(new Editor.Path(import.meta.resolve('../Resources/videoCamera.svg')));
         this.searchQuery = '';
+        this.filterQuery = '';
         this.stopped = false;
         this.getRequestGuard = false;
+
+        this.filterSchema = {
+            'attachment_type': {
+                'values': [
+                    {
+                        'value': 'static',
+                        'ui': 'Static'
+                    },
+                    {
+                        'value': 'animated',
+                        'ui': 'Animated'
+                    }
+                ],
+                'include_to_default_filter': true,
+                'ui': 'Type'
+            },
+        };
 
         this.statusUpdater = setInterval(() => {
             if (this.stopped) {
@@ -83,6 +110,8 @@ export class GalleryView {
                         if (item.state === 'SUCCESS') {
                             this.statusLabels[i].text = '';
                             this.statusIndicators[i].visible = true;
+                            this.importButtons[i].visible = false;
+                            this.animatedIcons[i].visible = item.promptAnimation;
                             this.failedViews[i].visible = false;
                             this.deleteButtons[i].visible = false;
                             this.updateStatus(i);
@@ -91,12 +120,16 @@ export class GalleryView {
                             this.failedViews[i].visible = false;
                             this.deleteButtons[i].visible = false;
                             this.statusIndicators[i].visible = true;
+                            this.importButtons[i].visible = false;
+                            this.animatedIcons[i].visible = item.promptAnimation;
                             this.statusLabels[i].text = 'Queued';
                         } else if (item.state === 'FAILED' || item.state === 'UNSAFE') {
                             this.showFailed(i);
                         } else {
                             this.statusIndicators[i].visible = true;
                             this.failedViews[i].visible = false;
+                            this.importButtons[i].visible = false;
+                            this.animatedIcons[i].visible = item.promptAnimation;
                             this.deleteButtons[i].visible = false;
                             this.statusLabels[i].text = Math.round(item.progressPercent) + '%';
                             this.queuedViews[i].visible = true;
@@ -113,6 +146,8 @@ export class GalleryView {
         this.statusLabels[i].text = '';
         this.statusIndicators[i].visible = false;
         this.queuedViews[i].visible = false;
+        this.importButtons[i].visible = false;
+        this.animatedIcons[i].visible = false;
         this.movieViews[i].visible = false;
         this.failedViews[i].visible = true;
         this.deleteButtons[i].visible = true;
@@ -172,9 +207,17 @@ export class GalleryView {
             image.visible = false;
         })
 
+        this.importButtons.forEach(function(button) {
+            button.visible = false;
+        })
+
+        this.animatedIcons.forEach(function(icon) {
+            icon.visible = false;
+        })
+
         for (let i = 0; i < 12; i++) {
-            this.gridLayout.setColumnMinimumWidth(i % COLUMN_SIZE, 152);
-            this.gridLayout.setRowMinimumHeight(i / COLUMN_SIZE, 152);
+            this.gridLayout.setColumnMinimumWidth(i % COLUMN_SIZE, 130);
+            this.gridLayout.setRowMinimumHeight(i / COLUMN_SIZE, 130);
         }
 
         for (let i = 12; i < this.frames.length; i++) {
@@ -200,9 +243,8 @@ export class GalleryView {
             downloadFileFromBucket(item.previewUrl, item.id + '_preview.webp', (preview_path) => {
                 if (this.requestTokenManager.isValid(requestToken)) {
                     const movie = new Ui.Movie(preview_path);
-                    const previewMovie = new Ui.Movie(preview_path);
 
-                    movie.resize(144, 144);
+                    movie.resize(122, 122);
 
                     this.movieViews[i].movie = movie;
                     this.movieViews[i].visible = true;
@@ -226,28 +268,47 @@ export class GalleryView {
                                     'screen': 'preview',
                                     'asset_id': this.items[i].id,
                                     'status': this.items[i].state,
-                                    'preview_image': previewMovie,
+                                    'staticPreviewUrl': this.items[i].staticPreviewUrl,
+                                    'animatedPreviewUrl': this.items[i].animatedPreviewUrl,
                                     'created_on': this.items[i].createdAt,
-                                    'settings': { prompt: this.items[i].prompt, seed: this.items[i].seed },
+                                    'settings': { prompt: this.items[i].prompt, seed: this.items[i].seed, promptAnimation: this.items[i].promptAnimation, style: this.items[i].style || 'Default' },
                                     'object_url': this.items[i].lspkgLsUrl,
+                                    'animation_url': this.items[i].lspkgAnimationLsUrl,
                                 });
                                 this.getRequestGuard = false;
 
+                                this.animatedIcons[i].visible = this.items[i].promptAnimation;
+
                                 if (this.items[i].state === "SUCCESS") {
                                     this.statusIndicators[i].visible = false;
+                                    this.importButtons[i].visible = true;
                                     this.queuedViews[i].visible = false;
                                 }
+
+                            this.importButtons[i].text = '';
+                            this.importButtons[i].setFixedWidth(Ui.Sizes.ButtonHeight * 1.6);
                         }
                     });
 
-                    this.connections.push(this.cornerImages[i].onHover.connect(function(hovered) {
+                    this.connections.push(this.cornerImages[i].onHover.connect((hovered) => {
                         if (this.widget.visible) {
                             this.movieViews[i].animated = hovered;
+
+                            if (hovered) {
+                                this.importButtons[i].text = 'Import';
+                                this.importButtons[i].setFixedWidth(Ui.Sizes.ButtonHeight * 3.6);
+                            } else {
+                                this.importButtons[i].text = '';
+                                this.importButtons[i].setFixedWidth(Ui.Sizes.ButtonHeight * 1.6);
+                            }
                         }
-                    }.bind(this)));
+                    }));
+
+                    this.animatedIcons[i].visible = this.items[i].promptAnimation;
 
                     if (item.state === 'SUCCESS') {
                         this.statusIndicators[i].visible = false;
+                        this.importButtons[i].visible = true;
                         this.queuedViews[i].visible = false;
                     }
                 }
@@ -263,9 +324,13 @@ export class GalleryView {
         }
 
         if ((this.renderedViews + items.length) === 0) {
-            if (this.searchLine.text.length > 0) {
+            if (this.searchLine.text.length > 0 || !this.filter.isDefault()) {
+                this.demoPreviewContainer.visible = false;
+                this.guidelinesButton.visible = false;
                 this.disclaimer.text = "<center>No matching results found.<br>Try adjust your search query.<center>";
             } else {
+                this.guidelinesButton.visible = true;
+                this.demoPreviewContainer.visible = true;
                 this.disclaimer.text = "<center>You don’t have any Selfie Attachments yet,<br>try to create a new one.<center>";
             }
 
@@ -292,6 +357,8 @@ export class GalleryView {
             let failedView;
             let queuedView;
             let deleteButton;
+            let importButton;
+            let animatedIcon;
 
             if (i < this.frames.length) {
                 // that means we already can re-use frame i if we created one before
@@ -337,6 +404,12 @@ export class GalleryView {
                 statusIndicator.visible = true;
                 statusIndicatorCircle.visible = true;
 
+                importButton = this.importButtons[i];
+                importButton.visible = false;
+
+                animatedIcon = this.animatedIcons[i];
+                animatedIcon.visible = false;
+
                 statusIndicatorCircle.start();
             } else {
                 // if not - create new one and add to buffer
@@ -344,8 +417,8 @@ export class GalleryView {
                 this.frames.push(frame);
 
                 // setup frame
-                frame.setFixedWidth(144);
-                frame.setFixedHeight(144);
+                frame.setFixedWidth(122);
+                frame.setFixedHeight(122);
                 frame.setContentsMargins(0, 0, 0, 0);
 
                 // create new layout
@@ -358,8 +431,8 @@ export class GalleryView {
                 queuedView = new Ui.ImageView(frame);
                 this.queuedViews.push(queuedView);
 
-                queuedView.setFixedWidth(144);
-                queuedView.setFixedHeight(144);
+                queuedView.setFixedWidth(122);
+                queuedView.setFixedHeight(122);
                 queuedView.setContentsMargins(0, 0, 0, 0);
                 queuedView.scaledContents = true;
                 queuedView.visible = false;
@@ -374,8 +447,9 @@ export class GalleryView {
                         'asset_id': this.items[i].id,
                         'status': this.items[i].state,
                         'created_on': this.items[i].createdAt,
-                        'settings': { prompt: this.items[i].prompt, seed: this.items[i].seed },
-                        'object_url': null
+                        'settings': { prompt: this.items[i].prompt, seed: this.items[i].seed, promptAnimation: this.items[i].promptAnimation, style: this.items[i].style || 'Default' },
+                        'object_url': null,
+                        'animation_url': null
                     });
                     app.log('', { 'enabled': false });
                 }.bind(this));
@@ -385,16 +459,16 @@ export class GalleryView {
                 this.movieViews.push(movieView);
 
                 // setup Moview View
-                movieView.setFixedWidth(144);
-                movieView.setFixedHeight(144);
+                movieView.setFixedWidth(122);
+                movieView.setFixedHeight(122);
                 movieView.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
                 movieView.setContentsMargins(0, 0, 0, 0);
                 //movieView.scaledContents = true;
                 movieView.responseHover = true;
 
                 cornerImage = new Ui.ImageView(frame);
-                cornerImage.setFixedWidth(144);
-                cornerImage.setFixedHeight(144);
+                cornerImage.setFixedWidth(122);
+                cornerImage.setFixedHeight(122);
                 cornerImage.setContentsMargins(0, 0, 0, 0);
                 cornerImage.scaledContents = true;
                 cornerImage.responseHover = true;
@@ -406,8 +480,8 @@ export class GalleryView {
                 this.failedViews.push(failedView);
 
                 failedView.pixmap = this.failedImage;
-                failedView.setFixedWidth(144);
-                failedView.setFixedHeight(144);
+                failedView.setFixedWidth(122);
+                failedView.setFixedHeight(122);
                 failedView.setContentsMargins(0, 0, 0, 0);
                 failedView.scaledContents = true;
                 failedView.visible = false;
@@ -423,8 +497,9 @@ export class GalleryView {
                         'asset_id': this.items[i].id,
                         'status': this.items[i].state,
                         'created_on': this.items[i].createdAt,
-                        'settings': { prompt: this.items[i].prompt, seed: this.items[i].seed },
-                        'object_url': null
+                        'settings': { prompt: this.items[i].prompt, seed: this.items[i].seed, promptAnimation: this.items[i].promptAnimation, style: this.items[i].style || 'Default' },
+                        'object_url': null,
+                        'animation_url': null
                     });
                 }.bind(this));
 
@@ -434,7 +509,7 @@ export class GalleryView {
                 deleteButton.text = '';
 
                 deleteButton.setIconWithMode(this.deleteImageIcon, Ui.IconMode.MonoChrome);
-                deleteButton.move(144 - Ui.Sizes.Padding - Ui.Sizes.ButtonHeight * 1.6, Ui.Sizes.Padding);
+                deleteButton.move(122 - Ui.Sizes.Padding - Ui.Sizes.ButtonHeight * 1.6, Ui.Sizes.Padding);
                 deleteButton.visible = false;
                 this.deleteButtons.push(deleteButton);
 
@@ -474,12 +549,36 @@ export class GalleryView {
                 frameLayout.addStretch(0);
                 frameLayout.addWidget(statusIndicator);
 
+                animatedIcon = new Ui.ImageView(frame);
+                animatedIcon.pixmap = this.videoCameraIcon;
+                animatedIcon.scaledContents = true;
+                animatedIcon.setFixedWidth(20);
+                animatedIcon.setFixedHeight(20);
+                animatedIcon.move(6, 4);
+                animatedIcon.visible = false;
+                this.animatedIcons.push(animatedIcon);
+
+                importButton = new Ui.PushButton(cornerImage);
+                importButton.setFixedWidth(Ui.Sizes.ButtonHeight * 1.6);
+                importButton.setFixedHeight(Ui.Sizes.ButtonHeight);
+                importButton.text = '';
+
+                importButton.setIconWithMode(this.importImageIcon, Ui.IconMode.MonoChrome);
+                importButton.move(Ui.Sizes.Padding, 122 - Ui.Sizes.Padding - Ui.Sizes.ButtonHeight + 2);
+                importButton.primary = true;
+                importButton.visible = false;
+                this.importButtons.push(importButton);
+
+                importButton.onClick.connect(() => {
+                    this.onImportToProject(this.items[i].id);
+                });
+
                 frame.layout = frameLayout;
             }
 
             this.gridLayout.addWidgetWithSpan(frame, i / COLUMN_SIZE, i % COLUMN_SIZE, 1, 1, Ui.Alignment.AlignTop);
-            this.gridLayout.setColumnMinimumWidth(i % COLUMN_SIZE, 152);
-            this.gridLayout.setRowMinimumHeight(i / COLUMN_SIZE, 152);
+            this.gridLayout.setColumnMinimumWidth(i % COLUMN_SIZE, 130);
+            this.gridLayout.setRowMinimumHeight(i / COLUMN_SIZE, 130);
 
             if (item.state == 'SUCCESS') {
                 statusLabel.text = '';
@@ -497,7 +596,6 @@ export class GalleryView {
                 const requestToken = this.requestTokenManager.generateToken();
                 this.downloadAssetPreview(i, requestToken);
             }
-
         }
 
         this.renderedViews = startSize + items.length;
@@ -505,12 +603,47 @@ export class GalleryView {
         // this needed if row isn't full, then items showed properly aligned to the left side
         if (this.renderedViews % COLUMN_SIZE != 0) {
             for (let i = this.renderedViews; i < this.renderedViews + (COLUMN_SIZE - this.renderedViews % COLUMN_SIZE); i++) {
-                this.gridLayout.setColumnMinimumWidth(i % COLUMN_SIZE, 152);
-                this.gridLayout.setRowMinimumHeight(i / COLUMN_SIZE, 152);
+                this.gridLayout.setColumnMinimumWidth(i % COLUMN_SIZE, 130);
+                this.gridLayout.setRowMinimumHeight(i / COLUMN_SIZE, 130);
             }
         }
 
         this.updateAllStatuses();
+    }
+
+    onImportToProject(asset_id) {
+        if (asset_id) {
+            app.log('Importing Selfie Attachments asset to the project...', { 'progressBar': true });
+
+            getAsset(asset_id, (data) => {
+                if (data) {
+                    let lspkgUrl = null;
+
+                    if (data.lspkgAnimationLsUrl) {
+                        lspkgUrl = data.lspkgAnimationLsUrl;
+                    } else {
+                        lspkgUrl = data.lspkgLsUrl;
+                    }
+
+                    if (lspkgUrl) {
+                        importToProject(lspkgUrl, (success) => {
+                            logEventAssetImport(success ? "SUCCESS" : "FAILED");
+                            app.log(success ? 'Selfie Attachments asset is succesfully imported to the project' : 'Import failed, please try again');
+                            // this.updatePreview(this.state);
+                        });
+                    } else {
+                        logEventAssetImport("PREPARING");
+                        app.log('Files for import are still preparing. Please, try again in few seconds.');
+                    }
+                } else {
+                    logEventAssetImport("FAILED");
+                    app.log('Something went wrong during importing Selfie Attachments asset to the project, please try again.');
+                }
+            });
+        } else {
+            logEventAssetImport("FAILED");
+            app.log('Something went wrong during importing Selfie Attachments asset to the project, please try again.');
+        }
     }
 
     createDeletionDialog() {
@@ -633,39 +766,18 @@ export class GalleryView {
         this.verticalScrollArea.blockSignals(false);
     }
 
+    resetFilter() {
+        this.filter.blockSignals = true;
+        this.filter.reset();
+        this.filterQuery = this.filter.toString();
+        this.filter.blockSignals = false;
+    }
+
     resetGallery(exclude_ids) {
         this.clearView();
         this.resetScrollView();
         this.resetSearchBar();
-
-        const requestToken = this.requestTokenManager.generateToken();
-
-        listAssets(15, (response) => {
-            if (this.requestTokenManager.isValid(requestToken)) {
-                if (response.statusCode == 200) {
-                    // guarantee that our response is still relevant
-                    // if other request was sent after this one, there
-                    // is no need to render current response
-                    let body;
-                    try {
-                        body = JSON.parse(response.body.toString());
-                    } catch (error) {
-                        body = {};
-                        app.log('Something went wrong during downloading Selfie Attachments assets. Please, try again.');
-                    }
-
-                    try {
-                        this.updateView(body.items, exclude_ids);
-                    } catch (error) {
-                        app.log('Something went wrong during downloading Selfie Attachments assets. Please, try again.');
-                    }
-
-                    this.nextPageToken = body.nextPageToken;
-                } else {
-                    app.log('Something went wrong during downloading Selfie Attachments assets. Please, try again.');
-                }
-            }
-        });
+        this.resetFilter();
     }
 
     expandGallery() {
@@ -753,45 +865,77 @@ export class GalleryView {
         this.restoreMovies();
     }
 
-    constructQuery() {
-        return this.searchQuery;
-    }
-
     createEmptyPlaceholder(parent) {
         this.emptyPlaceholder = new Ui.Widget(parent);
-        this.emptyPlaceholder.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
-        this.emptyPlaceholder.setFixedWidth(480);
-        this.emptyPlaceholder.setFixedHeight(480);
+        this.emptyPlaceholder.setFixedWidth(420);
+        this.emptyPlaceholder.setFixedHeight(600);
 
         const layout = new Ui.BoxLayout();
         layout.setDirection(Ui.Direction.TopToBottom);
+        layout.setContentsMargins(0, 0, 0, 0);
 
         this.logo = new Ui.ImageView(this.emptyPlaceholder);
-        this.logo.pixmap = new Ui.Pixmap(new Editor.Path(import.meta.resolve('../Resources/gen_ai_wizzard.svg')));
+        this.logo.pixmap = new Ui.Pixmap(new Editor.Path(import.meta.resolve('../Resources/fte_logo.svg')));
         this.logo.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
-        this.logo.setFixedWidth(180);
-        this.logo.setFixedHeight(180);
+        this.logo.setFixedWidth(35);
+        this.logo.setFixedHeight(35);
         this.logo.scaledContents = true;
 
         this.title = new Ui.Label(this.emptyPlaceholder);
         this.title.fontRole = Ui.FontRole.LargeTitleBold;
-        this.title.text = '<center>Welcome to<br>Lens Studio Gen AI<center>';
+        this.title.text = '<center>Welcome to<br>Selfie Attachments<center>';
         this.title.wordWrap = true;
         this.title.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Preferred);
         this.title.setFixedWidth(180);
+
+        this.demoPreviewContainer = new Ui.Widget(this.emptyPlaceholder);
+
+        const demoPreviewLayout = new Ui.BoxLayout();
+        demoPreviewLayout.setDirection(Ui.Direction.LeftToRight);
+        demoPreviewLayout.setContentsMargins(0, 0, 0, Ui.Sizes.Padding);
+        demoPreviewLayout.spacing = Ui.Sizes.Padding;
+
+        this.movies = [];
+        for (let i = 0; i < 3; i++) {
+            const movie = new Ui.Movie(import.meta.resolve('../Resources/fte_demo_' + (i + 1) + '.webp'));
+            this.movies.push(movie);
+            movie.resize(120, 213);
+
+            const demoPreview = new Ui.MovieView(this.demoPreviewContainer);
+            demoPreview.setFixedWidth(120);
+            demoPreview.setFixedHeight(213);
+            demoPreview.movie = movie;
+            demoPreview.animated = true;
+
+            demoPreviewLayout.addWidget(demoPreview);
+        }
+
+        this.demoPreviewContainer.layout = demoPreviewLayout;
+
+        this.guidelinesButton = new Ui.PushButton(this.emptyPlaceholder);
+        this.guidelinesButton.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
+        this.guidelinesButton.text = 'Guidelines';
+        this.guidelinesButton.setIcon(Editor.Icon.fromFile(new Editor.Path(import.meta.resolve('../Resources/guides.svg'))));
+
+        this.guidelinesButton.onClick.connect(() => {
+            Shell.openUrl(guidelinesLink, {});
+            logEventLinkOpen(guidelinesLink);
+        });
 
         this.disclaimer = new Ui.Label(this.emptyPlaceholder);
         this.disclaimer.wordWrap = true;
         this.disclaimer.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Preferred);
         this.disclaimer.setFixedWidth(300);
 
-        this.disclaimer.text = "<center>You don’t have any Selfie Attachments Assets yet,<br>try to create a new one.<center>";
+        this.disclaimer.text = "<center>You don’t have any Selfie Attachments Assets yet.<br>Try to creating a new one!<center>";
 
         layout.addStretch(1);
         layout.addWidgetWithStretch(this.logo, 0, Ui.Alignment.AlignCenter);
         layout.addWidgetWithStretch(this.title, 0, Ui.Alignment.AlignCenter);
+        layout.addWidgetWithStretch(this.demoPreviewContainer, 0, Ui.Alignment.AlignCenter);
         layout.addWidgetWithStretch(this.disclaimer, 0, Ui.Alignment.AlignCenter);
-        layout.addStretch(1);
+        layout.addWidgetWithStretch(this.guidelinesButton, 0, Ui.Alignment.AlignCenter);
+        layout.addStretch(2);
 
         layout.spacing = Ui.Sizes.Padding;
 
@@ -800,6 +944,7 @@ export class GalleryView {
 
     createGalleryGrid(parent) {
         this.galleryGridWidget = new Ui.Widget(parent);
+        this.galleryGridWidget.setContentsMargins(Ui.Sizes.Padding, Ui.Sizes.Padding, Ui.Sizes.Padding, 0);
 
         this.gridLayout = new Ui.GridLayout();
 
@@ -831,6 +976,19 @@ export class GalleryView {
         return this.galleryGridWidget;
     }
 
+    createColor(r, g, b, a) {
+        const color = new Ui.Color();
+        color.red = r;
+        color.green = g;
+        color.blue = b;
+        color.alpha = a;
+        return color;
+    }
+
+    constructQuery() {
+        return this.searchQuery + this.filterQuery;
+    }
+
     createHeader(parent) {
         const widget = new Ui.Widget(parent);
         const layout = new Ui.BoxLayout();
@@ -857,17 +1015,49 @@ export class GalleryView {
             this.searchRequest();
         }.bind(this)));
 
-        layout.setContentsMargins(Ui.Sizes.HalfPadding, 0, Ui.Sizes.DoublePadding, 0);
+        this.filter = new Filter(widget, this.filterSchema, (selectedFilter) => {
+            this.filterQuery = selectedFilter;
+            this.searchRequest();
+        });
+
+        this.filterQuery = this.filter.toString();
+
+        layout.setContentsMargins(Ui.Sizes.HalfPadding, Ui.Sizes.HalfPadding, Ui.Sizes.DoublePadding, 0);
         layout.addWidget(this.reloadButton);
         layout.addWidget(this.searchLine);
+        layout.addWidget(this.filter.widget);
 
         widget.layout = layout;
         return widget;
     }
 
+    getGenerateButton() {
+        return this.generateButton;
+    }
+
+    createFooter(parent) {
+        this.footer = new Ui.Widget(parent);
+        this.footer.setFixedHeight(56);
+
+        const footerLayout = new Ui.BoxLayout();
+        footerLayout.setDirection(Ui.Direction.LeftToRight);
+        footerLayout.setContentsMargins(8, 0, 16, 0);
+        footerLayout.spacing = 0;
+
+        this.generateButton = new Ui.PushButton(this.footer);
+        this.generateButton.text = 'Generate previews';
+        this.generateButton.enabled = false;
+        this.generateButton.primary = false;
+
+        footerLayout.addWidgetWithStretch(this.generateButton, 0, Ui.Alignment.AlignRight | Ui.Alignment.AlignCenter);
+
+        this.footer.layout = footerLayout;
+        return this.footer;
+    }
+
     create(parent) {
         this.widget = new Ui.Widget(parent);
-        this.widget.setFixedWidth(480);
+        this.widget.setFixedWidth(422);
         this.widget.setFixedHeight(620);
         this.widget.setContentsMargins(0, 0, 0, 0);
 
@@ -877,7 +1067,14 @@ export class GalleryView {
         this.layout.addWidget(this.createHeader(this.widget));
         this.layout.addWidget(this.createGalleryGrid(this.widget));
 
-        this.layout.setContentsMargins(Ui.Sizes.Padding, Ui.Sizes.Padding, Ui.Sizes.Padding, 0);
+        const separator2 = new Ui.Separator(Ui.Orientation.Horizontal, Ui.Shadow.Plain, this.widget);
+        separator2.setFixedHeight(Ui.Sizes.SeparatorLineWidth);
+        this.layout.addWidget(separator2);
+
+        this.layout.addWidget(this.createFooter(this.widget));
+
+        this.layout.spacing = 0;
+        this.layout.setContentsMargins(0, 0, 0, 0);
         this.widget.layout = this.layout;
 
         this.dialog = this.createDeletionDialog();

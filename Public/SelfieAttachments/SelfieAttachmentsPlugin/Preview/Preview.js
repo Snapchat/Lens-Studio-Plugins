@@ -1,7 +1,7 @@
 import * as Ui from 'LensStudio:Ui';
 
 import { PreviewMenu } from './PreviewMenu.js';
-import { ChangeGeometryMenu } from './ChangeGeometryMenu.js';
+import { ChangeAttachmentMenu } from './ChangeAttachmentMenu.js';
 import { AssetPreview } from './AssetPreview.js';
 import { DraftMeshPreview } from '../HomeScreen/DraftMeshPreview.js';
 
@@ -9,10 +9,13 @@ import app from '../../application/app.js';
 
 export class Preview {
     constructor(onStateChanged) {
-        this.previewMenu = new PreviewMenu(onStateChanged, this.reset.bind(this));
-        this.changeGeometryMenu = new ChangeGeometryMenu(onStateChanged, this.reset.bind(this));
+        this.changeAttachmentMenu = new ChangeAttachmentMenu(onStateChanged, this.reset.bind(this));
         this.assetPreview = new AssetPreview(onStateChanged);
+        this.previewMenu = new PreviewMenu(onStateChanged, this.reset.bind(this), this.assetPreview.showImportButton.bind(this.assetPreview), this.assetPreview.hideImportButton.bind(this.assetPreview));
         this.draftMeshPreview = new DraftMeshPreview(onStateChanged, this.reset.bind(this));
+
+        this.draftMeshPreview.addOnAllPreviewsGeneratedCallback(this.changeAttachmentMenu.onAllPreviewsGenerated.bind(this.changeAttachmentMenu));
+        this.draftMeshPreview.addOnNewGenerationStartedCallback(this.changeAttachmentMenu.onNewGenerationStarted.bind(this.changeAttachmentMenu));
 
         this.currentPreviewMenuState = PreviewMenuState.PreviewMenu;
         this.onStateChanged = onStateChanged;
@@ -37,9 +40,9 @@ export class Preview {
         this.state = state;
 
         if (state.sub_screen && state.sub_screen == 'draft_mesh') {
-            this.currentPreviewMenuState = PreviewMenuState.ChangeGeometryMenu;
+            this.currentPreviewMenuState = PreviewMenuState.ChangeAttachmentMenu;
 
-            this.changeGeometryMenu.updatePreview(state);
+            this.changeAttachmentMenu.updatePreview(state);
             this.draftMeshPreview.reset(state);
         } else {
             this.previewMenu.updatePreview(state);
@@ -60,11 +63,11 @@ export class Preview {
         this.menuWidget = new Ui.StackedWidget(this.widget);
 
         this.menuWidget.addWidget(this.previewMenu.create(this.menuWidget));
-        this.menuWidget.addWidget(this.changeGeometryMenu.create(this.menuWidget));
+        this.menuWidget.addWidget(this.changeAttachmentMenu.create(this.menuWidget));
 
         this.menuWidget.currentIndex = this.currentPreviewMenuState;
 
-        this.menuWidget.setFixedWidth(320);
+        this.menuWidget.setFixedWidth(378);
         this.menuWidget.setFixedHeight(620);
 
         this.menuWidget.setContentsMargins(0, 0, 0, 0);
@@ -73,13 +76,18 @@ export class Preview {
         const separator = new Ui.Separator(Ui.Orientation.Vertical, Ui.Shadow.Plain, this.widget);
         separator.setFixedWidth(Ui.Sizes.SeparatorLineWidth);
 
-        layout.addWidget(separator);
+        separator.setFixedHeight(564);
+
+        layout.addWidgetWithStretch(separator, 0, Ui.Alignment.AlignTop);
 
         this.rightSideWidget = new Ui.StackedWidget(this.widget);
         this.rightSideWidget.setContentsMargins(0, 0, 0, 0);
 
+        this.assetPreview.setDeleteButton(this.previewMenu.getDeleteButton());
         this.rightSideWidget.addWidget(this.assetPreview.create(this.rightSideWidget));
         this.rightSideWidget.addWidget(this.draftMeshPreview.create(this.rightSideWidget));
+
+        this.previewMenu.setPreviewAnimationsButton(this.assetPreview.getPreviewAnimationsButton());
 
         layout.addWidget(this.rightSideWidget);
 
@@ -88,12 +96,13 @@ export class Preview {
 
         this.widget.layout = layout;
 
-        this.connections.push(this.changeGeometryMenu.backButton.onClick.connect(function() {
+        this.connections.push(this.changeAttachmentMenu.backButton.onClick.connect(function() {
             this.currentPreviewMenuState = PreviewMenuState.PreviewMenu;
             app.log('', { 'enabled': false });
 
             this.draftMeshPreview.reset();
             this.assetPreview.showFooter();
+            this.previewMenu.onReturn();
             this.menuWidget.currentIndex = this.currentPreviewMenuState;
             this.rightSideWidget.currentIndex = this.currentPreviewMenuState;
         }.bind(this)));
@@ -104,6 +113,6 @@ export class Preview {
 
 const PreviewMenuState = {
     PreviewMenu: 0,
-    ChangeGeometryMenu: 1,
-    RetextureMenu: 2
+    ChangeAttachmentMenu: 1,
+    RetextureMenu: 3
 };

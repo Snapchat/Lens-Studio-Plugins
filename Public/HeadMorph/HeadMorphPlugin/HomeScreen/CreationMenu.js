@@ -1,12 +1,12 @@
 import * as Ui from 'LensStudio:Ui';
 
 import { createGuidelinesWidget, createTermsWidget } from '../utils.js';
-import { createMorph } from '../api.js';
 import { buildAssetData } from '../Effects/EffectFactory.js';
+import { PromptPicker, createPromptPicker } from '../Effects/Controls/PromptPicker.js';
+import { ImageReferencePicker, createImageReferencePicker } from '../Effects/Controls/ImageReferencePicker.js';
+import { SpinBox, createSpinBox } from '../Effects/Controls/SpinBox.js';
 import { SettingsDescriptor } from '../Effects/SettingsDescriptor.js';
-import { PromptPicker, createPromptPicker } from '../Effects/Controls/PromptPickerWithMedia.js';
-import { ComboBox, createComboBox } from '../Effects/Controls/ComboBox.js';
-import { UserNotesPicker, createUserNotesPicker } from '../Effects/Controls/UserNotesPicker.js';
+import { createAsset } from '../api.js';
 
 import { logEventAssetCreation } from '../../application/analytics.js';
 
@@ -18,75 +18,108 @@ export class CreationMenu {
         this.resetParent = resetParent;
         this.onStateChanged = onStateChanged;
         this.controls = {};
+        this.presetList = ['Emotions', 'Default', 'Beauty', 'Cartoon', 'Fun', 'Creepy'];
+        this.draftMeshState = false;
+        this.sideState = 'default';
+        this.stopped = false;
+        this.isGenerationInProgress = false;
     }
 
     init() {
         this.stopped = false;
-        this.reset();
+        this.reset({
+            'screen': 'default'
+        });
     }
 
     stop() {
         this.stopped = true;
-        this.reset();
+        this.reset({
+            'screen': 'default'
+        });
     }
 
-    reset() {
-        this.controls['promptPicker'].mode = 'Image';
-        this.controls['promptPicker'].value = { "imagesData": [], "textReference": "" };
+    reset(state) {
+        if (state.sub_screen == 'draft_mesh') {
+            this.regenerateButton.enabled = false;
+            this.generateButton.visible = false;
+            this.regenerateButton.visible = true;
 
-        this.controls['promptPicker'].mode = 'Text';
-        this.controls['promptPicker'].value = '';
-        this.controls['intensitySettings'].value = 'Medium';
+            this.promptPickerRadioButton.enabled = false;
+            this.imagePickerRadioButton.enabled = false;
+            this.controls['promptPicker'].hide();
+            this.controls['imageReferencePicker'].hide();
 
-        this.controls['userNotes'].value = '';
+            this.sideState = 'draft_mesh';
+        } else {
+            this.controls['promptPicker'].value = '';
+            this.controls['imageReferencePicker'].value = [];
+            this.generateButton.enabled = false;
+            this.promptPickerRadioButton.checked = true;
+            this.imagePickerRadioButton.checked = false;
+            this.promptPickerRadioButton.enabled = true;
+            this.imagePickerRadioButton.enabled = true;
+            this.controls['promptPicker'].show();
+            this.controls['imageReferencePicker'].hide();
+
+            this.regenerateButton.visible = false;
+            this.isGenerationInProgress = false;
+            this.generateButton.visible = true;
+            this.sideState = 'default';
+        }
     }
 
-    createHeadmorph(controls) {
+    generateEffect(controls) {
+        this.onNewGenerationStarted();
         this.generateButton.enabled = false;
-        app.log(`Creating new ${app.name}...`, { 'progressBar': true });
+        app.log('Generating new previews...', { 'progressBar': true });
 
-        const data = buildAssetData(controls, false, null);
+        let data = {};
+        let inputFormat = "";
 
-        createMorph(data, function(response) {
-            let status;
-            let settings;
-            let inputFormat;
+        if (this.promptPickerRadioButton.checked) {
+            data = {
+                'prompt': controls['promptPicker'].value,
+                'seed': 0,
+                'uploadUid': null
+            }
 
-            if (response.statusCode == 201) {
-                status = "SUCCESS";
-                this.resetParent({
-                    'needsUpdate': true
+            inputFormat = "PROMPT_TEXT";
+        } else {
+            data = {
+                'prompt': null,
+                'seed': 0,
+                'uploadUid': controls['imageReferencePicker'].value[0].uid
+            }
+
+            inputFormat = "PROMPT_IMAGE";
+        }
+
+        createAsset(data, (response) => {
+            if (response.statusCode == 200) {
+                logEventAssetCreation("SUCCESS", "NEW", inputFormat, "GENERATE_PREVIEW");
+                const responseBody = JSON.parse(response.body.toString());
+                this.draftMeshState = true;
+                this.onStateChanged({
+                    'assetData': responseBody,
+                    'screen': 'default',
+                    'sub_screen': 'draft_mesh'
                 });
-                app.log(`${app.name} is queued. ${app.name} creation is estimated to take 15-20 min, please check back later.`, { 'progressBar': true });
+                app.log('', { 'enabled': false });
             } else if (response.statusCode == 400) {
-                status = "GUIDELINES_VIOLATION";
-                this.resetParent({
-                    'needsUpdate': false
-                });
+                logEventAssetCreation("GUIDELINES_VIOLATION", "NEW", inputFormat, "GENERATE_PREVIEW");
                 app.log('The result violates our community guidelines');
+                this.generateButton.enabled = true;
+            } else if (response.statusCode == 429) {
+                logEventAssetCreation("RATE_LIMITED", "NEW", inputFormat, "GENERATE_PREVIEW");
+                app.log('You have reached the limit for Head Generator creation, please try again later.');
+                this.generateButton.enabled = true;
             } else {
-                status = "FAILED";
-                this.resetParent({
-                    'needsUpdate': false
-                });
-                app.log('Something went wrong, please try again.');
+                logEventAssetCreation("FAILED", "NEW", inputFormat, "GENERATE_PREVIEW");
+                app.log('Something went wrong during Head Generator creation, please try again.');
+                this.generateButton.enabled = true;
             }
-
-            switch(data.settings.intensity) {
-                case "low":
-                    settings = "INTENSITY_LOW"
-                    break;
-                case "med":
-                    settings = "INTENSITY_MEDIUM"
-                    break;
-                case "high":
-                    settings = "INTENSITY_HIGH";
-                    break;
-            }
-
-            logEventAssetCreation(status, settings, "NEW", data.uploadUid == null ? "PROMPT_TEXT" : "PROMPT_IMAGE");
-            this.generateButton.enabled = true;
-        }.bind(this));
+        });
     }
 
     createHeader(parent) {
@@ -97,10 +130,33 @@ export class CreationMenu {
         headerLayout.setDirection(Ui.Direction.LeftToRight);
         headerLayout.setContentsMargins(8, 8, 8, 8);
 
-        this.headerTitle = new Ui.Label(this.header);
-        this.headerTitle.text = `${app.name}`;
-        this.headerTitle.fontRole = Ui.FontRole.TitleBold;
+        const arrowImage = new Ui.Pixmap(new Editor.Path(import.meta.resolve('../Resources/arrow.svg')));
 
+        this.backButton = new Ui.ImageView(this.header);
+        this.backButton.pixmap = arrowImage;
+        this.backButton.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
+        this.backButton.setFixedHeight(Ui.Sizes.IconSide);
+        this.backButton.setFixedWidth(Ui.Sizes.IconSide);
+        this.backButton.scaledContents = true;
+        this.backButton.visible = false;
+
+        this.connections.push(this.backButton.onClick.connect(() => {
+            if (this.draftMeshState) {
+                this.draftMeshState = false;
+                this.onStateChanged({
+                    'screen': 'default'
+                });
+            } else {
+                this.onClose();
+            }
+        }));
+
+        this.headerTitle = new Ui.Label(this.header);
+        this.headerTitle.text = 'New Asset';
+        this.headerTitle.fontRole = Ui.FontRole.TitleBold;
+        this.headerTitle.foregroundRole = Ui.ColorRole.BrightText;
+
+        headerLayout.addWidget(this.backButton);
         headerLayout.addStretch(0);
         headerLayout.addWidget(this.headerTitle);
         headerLayout.addStretch(0);
@@ -111,56 +167,90 @@ export class CreationMenu {
 
     createFooter(parent) {
         this.footer = new Ui.Widget(parent);
-        this.footer.setFixedHeight(65);
+        this.footer.setFixedHeight(56);
 
         const footerLayout = new Ui.BoxLayout();
         footerLayout.setDirection(Ui.Direction.LeftToRight);
-        footerLayout.setContentsMargins(8, 12, 8, 8);
+        footerLayout.setContentsMargins(16, 0, 8, 0);
         footerLayout.spacing = 0;
 
-        this.generateButton = new Ui.PushButton(this.footer);
-        this.generateButton.text = 'Generate';
-        this.generateButton.enabled = false;
-        this.generateButton.primary = true;
-        const editImagePath = new Editor.Path(import.meta.resolve('../Resources/lens_studio_ai.svg'));
-        this.generateButton.setIconWithMode(Editor.Icon.fromFile(editImagePath), Ui.IconMode.MonoChrome);
-        this.connections.push(this.generateButton.onClick.connect(function() {
-            this.generateButton.enabled = false;
-            this.createHeadmorph(this.controls);
+        this.regenerateButton = new Ui.PushButton(this.footer);
+        this.regenerateButton.text = 'Regenerate';
+        this.regenerateButton.enabled = true;
+        this.regenerateButton.primary = false;
+        const editImagePath = new Editor.Path(import.meta.resolve('../Resources/refresh.svg'));
+        this.regenerateButton.setIconWithMode(Editor.Icon.fromFile(editImagePath), Ui.IconMode.MonoChrome);
+        this.connections.push(this.regenerateButton.onClick.connect(function() {
+            this.generateEffect(this.controls);
         }.bind(this)));
 
-        footerLayout.addStretch(0);
-        footerLayout.addWidgetWithStretch(this.generateButton, 0, Ui.Alignment.AlignTop);
-        footerLayout.addStretch(0);
+        footerLayout.addWidgetWithStretch(this.regenerateButton, 0, Ui.Alignment.AlignLeft | Ui.Alignment.AlignCenter);
 
         this.footer.layout = footerLayout;
         return this.footer;
     }
 
+    checkInputs() {
+        const isEnabled = ((this.promptPickerRadioButton.checked && this.controls["promptPicker"].value.length > 0) || (this.imagePickerRadioButton.checked && this.controls["imageReferencePicker"].value.length > 0)) && !this.stopped && !this.isGenerationInProgress;
+        this.generateButton.enabled = isEnabled;
+        this.regenerateButton.enabled = isEnabled;
+    }
+
+    onAllPreviewsGenerated() {
+        this.isGenerationInProgress = false;
+        this.regenerateButton.enabled = ((this.controls['promptPicker'].value.length > 0) || (this.controls['imageReferencePicker'].value.length > 0));
+        if (this.controls['imageReferencePicker'].value.length > 0) {
+            this.promptPickerRadioButton.checked = false;
+            this.imagePickerRadioButton.checked = true;
+            this.controls['promptPicker'].hide();
+            this.controls['imageReferencePicker'].show();
+        }
+        else {
+            this.promptPickerRadioButton.checked = true;
+            this.imagePickerRadioButton.checked = false;
+            this.controls['promptPicker'].show();
+            this.controls['imageReferencePicker'].hide();
+        }
+
+        this.promptPickerRadioButton.enabled = true;
+        this.imagePickerRadioButton.enabled = true;
+    }
+
+    onNewGenerationStarted() {
+        this.controls['promptPicker'].hide();
+        this.controls['imageReferencePicker'].hide();
+        this.regenerateButton.enabled = false;
+        this.isGenerationInProgress = true;
+        this.promptPickerRadioButton.enabled = false;
+        this.imagePickerRadioButton.enabled = false;
+    }
+
     createMenu(parent) {
         this.menu = new Ui.Widget(parent);
-        this.menu.setSizePolicy(Ui.SizePolicy.Policy.Minimum, Ui.SizePolicy.Policy.Minimum);
-        this.menuLayout = new Ui.BoxLayout();
 
         this.settingsScheme = new SettingsDescriptor().getSettingsDescriptor(this.menu);
+
+        this.menuLayout = new Ui.BoxLayout();
 
         this.menuLayout.setDirection(Ui.Direction.TopToBottom);
 
         this.menuLayout.addWidget(createGuidelinesWidget(this.menu));
         this.menuLayout.addWidget(createTermsWidget(this.menu));
 
+        // Preset
         const createControl = (scheme) => {
             switch (scheme.class) {
                 case PromptPicker:
                     this.controls[scheme.name] = createPromptPicker(scheme);
                     break;
-                case ComboBox:
-                    this.controls[scheme.name] = createComboBox(scheme);
+                case ImageReferencePicker:
+                    this.controls[scheme.name] = createImageReferencePicker(scheme);
                     break;
-                case UserNotesPicker:
-                    this.controls[scheme.name] = createUserNotesPicker(scheme);
+                case SpinBox:
+                    this.controls[scheme.name] = createSpinBox(scheme);
                     break;
             }
+
             return this.controls[scheme.name];
         };
 
@@ -177,7 +267,7 @@ export class CreationMenu {
             collapsePanel.overrideBackgroundRole = false;
             collapsePanel.setContentsMargins(0, 0, 0, 0);
             collapsePanel.autoFillBackground = true;
-            collapsePanel.backgroundRole = Ui.ColorRole.Midlight;
+            collapsePanel.backgroundRole = Ui.ColorRole.Base;
             collapsePanel.expand(scheme.expanded);
 
             scheme.items.forEach((item) => {
@@ -215,49 +305,85 @@ export class CreationMenu {
         });
 
         this.controls['promptPicker'].addOnValueChanged((value) => {
-            if (this.controls['promptPicker'].mode == "Text") {
-                this.generateButton.enabled = (value.length > 0) && !this.stopped;
-            } else if (this.controls['promptPicker'].mode == "Image") {
-                this.generateButton.enabled = (value.imagesData.length > 0) && !this.stopped;
-            }
-
+            this.checkInputs();
             app.log('', { 'enabled': false });
         });
+
+        this.controls['imageReferencePicker'].addOnValueChanged((value) => {
+            this.checkInputs();
+            app.log('', { 'enabled': false });
+        });
+
+        this.promptPickerRadioButton = this.controls['promptPicker'].getRadioButton();
+        this.imagePickerRadioButton = this.controls['imageReferencePicker'].getRadioButton();
+
+        this.promptPickerRadioButton.onClick.connect(() => {
+            this.promptPickerRadioButton.checked = true;
+            this.imagePickerRadioButton.checked = false;
+            this.controls['promptPicker'].show();
+            this.controls['imageReferencePicker'].hide();
+            this.checkInputs();
+        })
+
+        this.imagePickerRadioButton.onClick.connect(() => {
+            this.imagePickerRadioButton.checked = true;
+            this.promptPickerRadioButton.checked = false;
+            this.controls['imageReferencePicker'].show();
+            this.controls['promptPicker'].hide();
+            this.checkInputs();
+        })
 
         this.menuLayout.addStretch(0);
 
         this.menuLayout.setContentsMargins(16, 8, 16, 8);
-        this.menuLayout.spacing = Ui.Sizes.Spacing;
+        this.menuLayout.spacing = Ui.Sizes.Padding;
+        this.menu.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Fixed);
         this.menu.layout = this.menuLayout;
 
-        this.reset();
+        const scrollWidget = new Ui.Widget(this.menu);
+        scrollWidget.layout = this.menuLayout;
+        const verticalScrollArea = new Ui.VerticalScrollArea(this.menu);
+        verticalScrollArea.setWidget(scrollWidget);
+        verticalScrollArea.setFixedHeight(520);
+        verticalScrollArea.setFixedWidth(378);
+        const scrollLayout = new Ui.BoxLayout();
+        scrollLayout.setDirection(Ui.Direction.TopToBottom);
+        scrollLayout.setContentsMargins(0, 0, 0, 0);
+        const scrollPositionLabel = new Ui.Label(this.menu);
+
+        scrollLayout.addWidget(verticalScrollArea);
+        scrollLayout.addWidget(scrollPositionLabel);
+
+        this.menu.layout = scrollLayout;
 
         return this.menu;
+    }
+
+    setGenerateButton(button) {
+        this.generateButton = button;
+        this.connections.push(this.generateButton.onClick.connect(function() {
+            this.generateEffect(this.controls);
+        }.bind(this)));
     }
 
     create(parent) {
         this.widget = new Ui.Widget(parent);
 
-        this.widget.setFixedWidth(320);
+        this.widget.setFixedWidth(378);
         this.widget.setFixedHeight(620);
 
         this.widget.setContentsMargins(0, 0, 0, 0);
-
-        const header = this.createHeader(this.widget);
-        const footer = this.createFooter(this.widget);
-        const menu = this.createMenu(this.widget);
 
         this.layout = new Ui.BoxLayout();
         this.layout.setDirection(Ui.Direction.TopToBottom);
         this.layout.setContentsMargins(0, 0, 0, 0);
 
-        this.layout.addWidget(header);
-        const separator1 = new Ui.Separator(Ui.Orientation.Horizontal, Ui.Shadow.Plain, this.widget);
-        separator1.setFixedHeight(Ui.Sizes.SeparatorLineWidth);
+        const header = this.createHeader(this.widget);
+        const footer = this.createFooter(this.widget);
+        const menu = this.createMenu(this.widget);
 
-        this.layout.addWidget(separator1);
+        this.layout.addWidget(header);
         this.layout.addWidget(menu);
-        this.layout.addStretch(0);
 
         const separator2 = new Ui.Separator(Ui.Orientation.Horizontal, Ui.Shadow.Plain, this.widget);
         separator2.setFixedHeight(Ui.Sizes.SeparatorLineWidth);
@@ -265,7 +391,7 @@ export class CreationMenu {
 
         this.layout.addWidget(footer);
 
-        this.widget.backgroundRole = Ui.ColorRole.Midlight;
+        this.widget.backgroundRole = Ui.ColorRole.Base;
         this.widget.autoFillBackground = true;
         this.layout.spacing = 0;
         this.widget.layout = this.layout;

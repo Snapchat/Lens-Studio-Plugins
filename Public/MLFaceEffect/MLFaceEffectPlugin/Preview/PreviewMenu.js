@@ -54,7 +54,6 @@ export class PreviewMenu {
 
         if (this.settingsWidget.currentIndex === 0) {
             effectData = {
-                "userNotes": "",
                 "effectTypeId": "face-enhanced",
                 "settings": {
                     "image_prompts": controls['enhancedPromptPicker'].imageValue,
@@ -251,7 +250,6 @@ export class PreviewMenu {
 
     reset() {
         this.presetControl.value = 'Default';
-        this.controls['userNotes'].value = "";
         this.fillSettings(this.effectSettings, this.postProcessingSettings);
         this.presetCustomizedFlag = false;
         this.wasPresetTapped = false;
@@ -262,11 +260,6 @@ export class PreviewMenu {
         this.editEffectButton.visible = true;
         this.setPreviewState();
         this.createdOnValue.text = convertDate(state.created_on);
-        if (state.userNotes) {
-            this.controls['userNotes'].value = state.userNotes;
-        } else {
-            this.controls['userNotes'].value = "";
-        }
 
         this.fillSettings(state.effect_get_response, state.post_processing_get_response);
         this.presetCustomizedFlag = false;

@@ -138,3 +138,51 @@ export function createAttachment(data, contentType, filename, callback) {
         callback(response);
     });
 }
+
+export function getDraftAnimation(id, callback) {
+    const request = new Network.HttpRequest();
+    request.url = base_url + '/' + id + '/driving_animations:stream';
+    request.method = Network.HttpRequest.Method.Get;
+
+    Network.performAuthorizedHttpRequest(request, function(response) {
+        if (response.statusCode == 200) {
+            callback(JSON.parse(response.body.toString()));
+        } else {
+            callback(null);
+        }
+    });
+}
+
+export function continueAnimationGeneration(asset_id, draft_animation_id, callback) {
+    const request = new Network.HttpRequest();
+    request.url = base_url + '/' + asset_id + '/driving_animations/' + draft_animation_id + ':continue';
+    request.method = Network.HttpRequest.Method.Put;
+
+    Network.performAuthorizedHttpRequest(request, function(response) {
+        callback(response);
+    });
+}
+
+export function addAnimationToAsset(asset_id, data, callback) {
+    const request = new Network.HttpRequest();
+    request.url = base_url + '/' + asset_id;
+    request.method = Network.HttpRequest.Method.Put;
+    request.body = JSON.stringify(data);
+    request.contentType = 'application/json';
+
+    Network.performAuthorizedHttpRequest(request, function(response) {
+        callback(response);
+    });
+}
+
+export function copyAnimation(asset_id, data, callback) {
+    const request = new Network.HttpRequest();
+    request.url = base_url + '/' + asset_id + '/copy_animation';
+    request.method = Network.HttpRequest.Method.Post;
+    request.body = JSON.stringify(data);
+    request.contentType = 'application/json';
+
+    Network.performAuthorizedHttpRequest(request, function(response) {
+        callback(response);
+    });
+}

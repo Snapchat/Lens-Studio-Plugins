@@ -6,12 +6,16 @@ import { deleteAsset, getAsset } from '../api.js';
 import app from '../../application/app.js';
 
 import { logEventAssetImport } from '../../application/analytics.js';
+import { LazyMovieView } from './LazyMovieView.js';
+
+import { downloadFileFromBucket } from '../utils.js';
 
 export class AssetPreview {
     constructor(onStateChanged) {
         this.connections = [];
         this.asset_id = null;
         this.onStateChanged = onStateChanged;
+        this.importCheckboxWasVisible = false;
     }
 
     onImportToProject() {
@@ -20,13 +24,18 @@ export class AssetPreview {
 
             getAsset(this.asset_id, (data) => {
                 if (data) {
-                    let lspkgUrl = data.lspkgLsUrl;
+                    let lspkgUrl = null;
+
+                    if (this.importWithAnimationCheckbox.checked && data.lspkgAnimationLsUrl) {
+                        lspkgUrl = data.lspkgAnimationLsUrl;
+                    } else {
+                        lspkgUrl = data.lspkgLsUrl;
+                    }
 
                     if (lspkgUrl) {
                         importToProject(lspkgUrl, (success) => {
                             logEventAssetImport(success ? "SUCCESS" : "FAILED");
                             app.log(success ? 'Selfie Attachments asset is succesfully imported to the project' : 'Import failed, please try again');
-                            this.updatePreview(this.state);
                         });
                     } else {
                         logEventAssetImport("PREPARING");
@@ -72,45 +81,131 @@ export class AssetPreview {
     }
 
     createPreview(parent) {
+        const frame = new Ui.CalloutFrame(parent);
+        frame.setFixedWidth(388);
+        frame.setFixedHeight(388);
+        frame.setContentsMargins(0, 0, 0, 0);
+
+        const frameLayout = new Ui.BoxLayout();
+        frameLayout.setDirection(Ui.Direction.TopToBottom);
+        frameLayout.spacing = 0;
+        frameLayout.setContentsMargins(0, 0, 0, 0);
+
+        frame.layout = frameLayout;
+
         this.preview = new Ui.Widget(parent);
         const layout = new Ui.BoxLayout();
         layout.setDirection(Ui.Direction.LeftToRight);
         layout.setContentsMargins(0, 0, 0, 0);
 
-        this.previewImage = new Ui.MovieView(this.preview);
+        this.staticPreviewImage = new LazyMovieView(this.preview);
 
-        this.previewImage.setFixedHeight(480);
-        this.previewImage.setFixedWidth(480);
+        this.staticPreviewImage.setFixedHeight(386);
+        this.staticPreviewImage.setFixedWidth(386);
 
-        layout.addStretch(0);
-        layout.addWidget(this.previewImage);
+        this.animatedPreviewImage = new LazyMovieView(this.preview);
+
+        this.animatedPreviewImage.setFixedHeight(386);
+        this.animatedPreviewImage.setFixedWidth(386);
+
+        layout.addWidgetWithStretch(this.staticPreviewImage, 0, Ui.Alignment.AlignCenter);
+        layout.addWidgetWithStretch(this.animatedPreviewImage, 0, Ui.Alignment.AlignCenter);
+
+        frameLayout.addWidget(this.preview)
 
         this.preview.layout = layout;
 
-        return this.preview;
+        return frame;
+    }
+
+    createColor(r, g, b, a) {
+        const color = new Ui.Color();
+        color.red = r;
+        color.green = g;
+        color.blue = b;
+        color.alpha = a;
+        return color;
     }
 
     updatePreview(state) {
         this.state = state;
         this.delayedMessage = null;
 
+        this.animatedPreviewImage.movie = null;
+        this.staticPreviewImage.movie = null;
+
+        this.animatedTabBar.visible = false;
+
         if (state.object_url) {
             this.objectUrl = state.object_url;
+        } else {
+            this.objectUrl = null;
+        }
+
+        if (state.animation_url) {
+            this.animationUrl = state.animation_url;
+        } else {
+            this.animationUrl = null;
         }
 
         if (state.status) {
             this.status = state.status;
-            this.importToProjectButton.enabled = (this.status === 'SUCCESS');
+
+            this.importToProjectButton.enabled = this.objectUrl ? true : false;
+
+            if (state.settings.promptAnimation) {
+                this.importWithAnimationCheckbox.checked = true;
+                this.importWithAnimationCheckbox.visible = true;
+                this.animatedTabBar.visible = true;
+                this.importCheckboxWasVisible = true;
+
+                if (this.status === 'SUCCESS') {
+                    this.importWithAnimationCheckbox.enabled = true;
+                } else {
+                    this.importWithAnimationCheckbox.checked = false;
+                    this.importWithAnimationCheckbox.enabled = false;
+                }
+            } else {
+                this.importWithAnimationCheckbox.checked = false;
+                this.importWithAnimationCheckbox.visible = false;
+                this.animatedTabBar.visible = false;
+                this.importCheckboxWasVisible = false;
+            }
+
             if (this.status === 'FAILED' || this.status === 'UNSAFE') {
                 this.stackedWidget.currentIndex = 1;
                 if (this.status === 'UNSAFE') {
                     app.log('This asset violates our community guidelines and should be deleted.', { 'enabled': true });
                 }
             } else {
-                if (state.preview_image) {
-                    state.preview_image.resize(480, 480);
-                    this.previewImage.movie = state.preview_image;
-                    this.previewImage.animated = true;
+                if (state.staticPreviewUrl) {
+                    this.staticPreviewImage.visible = true;
+                    this.animatedPreviewImage.visible = false;
+
+
+                    downloadFileFromBucket(state.staticPreviewUrl, state.asset_id + '_static_preview.webp', (preview_path) => {
+                        this.staticPreviewMovie = new Ui.Movie(preview_path);
+                        this.staticPreviewMovie.resize(386, 386);
+                        this.staticPreviewImage.movie = this.staticPreviewMovie;
+                        this.staticPreviewImage.animated = true;
+                    });
+
+                    if (state.animatedPreviewUrl) {
+                        downloadFileFromBucket(state.animatedPreviewUrl, state.asset_id + '_animated_preview.webp', (preview_path) => {
+                            this.animatedPreviewMovie = new Ui.Movie(preview_path);
+                            this.animatedPreviewMovie.resize(386, 386);
+                            this.animatedPreviewImage.movie = this.animatedPreviewMovie;
+                            this.animatedPreviewImage.animated = true;
+                        });
+
+                        this.animatedTabBar.visible = true;
+                        this.animatedTabBar.currentIndex = 1;
+                        this.onAnimatedTabBarCurrentChange(1);
+                    } else {
+                        this.animatedTabBar.currentIndex = 0;
+                        this.onAnimatedTabBarCurrentChange(0);
+                        this.animatedTabBar.visible = false;
+                    }
 
                     this.stackedWidget.currentIndex = 0;
                 } else {
@@ -135,6 +230,7 @@ export class AssetPreview {
 
         this.asset_id = null;
         this.importToProjectButton.enabled = false;
+        this.importWithAnimationCheckbox.checked = true;
     }
 
     createDeletionDialog() {
@@ -231,29 +327,41 @@ export class AssetPreview {
         this.importToProjectButton.visible = true;
     }
 
+    hideImportButton() {
+        if (!this.importToProjectButton || !this.importWithAnimationCheckbox || !this.previewAnimationsButton) {
+            return;
+        }
+        this.importToProjectButton.visible = false;
+        this.importWithAnimationCheckbox.visible = false;
+        this.previewAnimationsButton.visible = true;
+    }
+
+    showImportButton() {
+        if (!this.importToProjectButton || !this.importWithAnimationCheckbox || !this.previewAnimationsButton) {
+            return;
+        }
+        this.importToProjectButton.visible = true;
+        this.importWithAnimationCheckbox.visible = this.importCheckboxWasVisible;
+        this.previewAnimationsButton.visible = false;
+    }
+
     createFooter(parent) {
         this.footer = new Ui.Widget(parent);
-        this.footer.setFixedHeight(65);
+        this.footer.setFixedHeight(56);
 
         const footerLayout = new Ui.BoxLayout();
         footerLayout.setDirection(Ui.Direction.LeftToRight);
-        footerLayout.setContentsMargins(8, 12, 8, 8);
-
-        this.deleteButton = new Ui.PushButton(this.footer);
-        this.deleteButton.text = '';
-        const deleteImagePath = new Editor.Path(import.meta.resolve('../Resources/delete.svg'));
-        this.deleteButton.setIconWithMode(Editor.Icon.fromFile(deleteImagePath), Ui.IconMode.MonoChrome);
+        footerLayout.setContentsMargins(8, 0, 16, 0);
 
         this.dialog = this.createDeletionDialog();
 
-        this.connections.push(this.deleteButton.onClick.connect(function() {
-            this.dialog.show();
-            app.log('', { 'enabled': false });
-        }.bind(this)));
+        this.importWithAnimationCheckbox = new Ui.CheckBox(this.footer);
+        this.importWithAnimationCheckbox.text = 'Include animation';
+        this.importWithAnimationCheckbox.checked = false;
 
         // Import To Project button
         this.importToProjectButton = new Ui.PushButton(this.footer);
-        this.importToProjectButton.text = 'Import to Project';
+        this.importToProjectButton.text = 'Import to project';
         const importImagePath = new Editor.Path(import.meta.resolve('../Resources/import.svg'));
         this.importToProjectButton.setIconWithMode(Editor.Icon.fromFile(importImagePath), Ui.IconMode.MonoChrome);
         this.importToProjectButton.primary = true;
@@ -262,17 +370,47 @@ export class AssetPreview {
             this.onImportToProject();
         }.bind(this)));
 
-        footerLayout.addWidgetWithStretch(this.deleteButton, 0, Ui.Alignment.AlignTop);
+        // Preview Animations button
+        this.previewAnimationsButton = new Ui.PushButton(this.footer);
+        this.previewAnimationsButton.text = 'Preview animations';
+        this.previewAnimationsButton.primary = false;
+        this.previewAnimationsButton.visible = false;
+
         footerLayout.addStretch(0);
-        footerLayout.addWidgetWithStretch(this.importToProjectButton, 0, Ui.Alignment.AlignTop);
+        footerLayout.addWidgetWithStretch(this.importWithAnimationCheckbox, 0, Ui.Alignment.AlignRight);
+        footerLayout.addWidgetWithStretch(this.importToProjectButton, 0, Ui.Alignment.AlignRight);
+        footerLayout.addWidgetWithStretch(this.previewAnimationsButton, 0, Ui.Alignment.AlignRight);
 
         this.footer.layout = footerLayout;
         return this.footer;
     }
 
+    getPreviewAnimationsButton() {
+        return this.previewAnimationsButton;
+    }
+
+    setDeleteButton(button) {
+        this.deleteButton = button;
+
+        this.connections.push(this.deleteButton.onClick.connect(function() {
+            this.dialog.show();
+            app.log('', { 'enabled': false });
+        }.bind(this)));
+    }
+
+    onAnimatedTabBarCurrentChange(index) {
+        if (index == 0) {
+            this.staticPreviewImage.visible = true;
+            this.animatedPreviewImage.visible = false;
+        } else if (index == 1) {
+            this.staticPreviewImage.visible = false;
+            this.animatedPreviewImage.visible = true;
+        }
+    }
+
     create(parent) {
         this.widget = new Ui.Widget(parent);
-        this.widget.setFixedWidth(480);
+        this.widget.setFixedWidth(422);
         this.widget.setFixedHeight(620);
         this.layout = new Ui.BoxLayout();
         this.layout.setDirection(Ui.Direction.TopToBottom);
@@ -288,7 +426,24 @@ export class AssetPreview {
         this.stackedWidget.currentIndex = 0;
 
         this.layout.addStretch(0);
-        this.layout.addWidget(this.stackedWidget);
+
+        this.animatedTabBar = new Ui.TabBar(this.widget);
+        this.animatedTabBar.addTab('    Static    ');
+        this.animatedTabBar.addTab('   Animated   ');
+
+        this.connections.push(this.animatedTabBar.onCurrentChange.connect((index) => {
+            this.onAnimatedTabBarCurrentChange(index);
+        }));
+
+        this.layout.addWidgetWithStretch(this.animatedTabBar, 0, Ui.Alignment.AlignCenter);
+
+        const spacer = new Ui.Widget(this.widget);
+        spacer.setFixedHeight(8);
+        this.layout.addWidgetWithStretch(spacer, 0, Ui.Alignment.AlignCenter);
+
+        this.layout.addWidgetWithStretch(this.stackedWidget, 0, Ui.Alignment.AlignCenter);
+
+        this.layout.addStretch(0);
 
         const separator = new Ui.Separator(Ui.Orientation.Horizontal, Ui.Shadow.Plain, this.widget);
         separator.setFixedHeight(Ui.Sizes.SeparatorLineWidth);

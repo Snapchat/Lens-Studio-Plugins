@@ -1,7 +1,7 @@
-import { ComboBox } from './Controls/ComboBox.js';
-import { PromptPicker } from './Controls/PromptPickerWithMedia.js';
-import { UserNotesPicker } from './Controls/UserNotesPicker.js';
+import { PromptPicker } from './Controls/PromptPicker.js';
 import { HintID } from '../Hints/HintFactory.js';
+import { SpinBox } from './Controls/SpinBox.js';
+import { ImageReferencePicker } from './Controls/ImageReferencePicker.js';
 
 export class SettingsDescriptor {
     constructor() {
@@ -19,38 +19,24 @@ export class SettingsDescriptor {
                     'importer': null,
                     'exporter': null,
                     'preset_based': false,
-                    'prompt_hint': {
-                        'id': HintID.prompt
-                    },
-                    'image_hint': {
-                        'id': HintID.image
-                    }
-                },
-                {
-                    'type': 'control',
-                    'class': ComboBox,
-                    'parent': parent,
-                    'name': 'intensitySettings',
-                    'label': 'Intensity',
-                    'importer': null,
-                    'exporter': null,
                     'preset_based': false,
-                    'options': ['Low', 'Medium', 'High'],
                     'hint': {
-                        'id': HintID.intensity
+                        'id': HintID.prompt
                     }
                 },
                 {
                     'type': 'control',
-                    'class': UserNotesPicker,
+                    'class': ImageReferencePicker,
                     'parent': parent,
-                    'name': 'userNotes',
-                    'label': 'User notes',
+                    'name': 'imageReferencePicker',
+                    'label': 'Image Reference',
                     'importer': null,
                     'exporter': null,
                     'preset_based': false,
-                    'placeholder': "Enter user notes here..."
-                },
+                    'hint': {
+                        'id': HintID.image_reference
+                    }
+                }
             ]
         };
     }

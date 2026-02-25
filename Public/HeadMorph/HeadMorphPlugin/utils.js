@@ -1,12 +1,11 @@
-import * as Ui from 'LensStudio:Ui';
-
 import * as Network from 'LensStudio:Network';
 import * as fs from 'LensStudio:FileSystem';
-import { importHeadmorph } from './import_headmorph.js';
+import {importHeadmorph} from './import_effect.js';
 import { getHintFactory } from './Hints/HintFactory.js';
+import * as Ui from 'LensStudio:Ui';
 
 import { logEventLinkOpen } from '../application/analytics.js';
-import app from '../application/app.js';
+import app from "../application/app";
 
 const termsLink = 'https://www.snap.com/terms/lens-studio-license-agreement';
 const guidelinesLink = 'https://developers.snap.com/lens-studio/features/genai-suite/head-morph-generation';
@@ -45,7 +44,23 @@ export function convertDate(inputDate) {
     return outputDate;
 }
 
-const infoImage = new Ui.Pixmap(new Editor.Path(import.meta.resolve('Resources/info.svg')));
+export function tieWidgets(keyWidget, valueWidget, parent) {
+    const layout = new Ui.BoxLayout();
+
+    layout.setDirection(Ui.Direction.LeftToRight);
+    if (keyWidget) {
+        layout.addWidgetWithStretch(keyWidget, 45, Ui.Alignment.Default);
+    }
+    if (valueWidget) {
+        layout.addWidgetWithStretch(valueWidget, 55, Ui.Alignment.Default);
+    }
+
+    layout.setContentsMargins(0, 0, 0, 0);
+    parent.layout = layout;
+}
+
+const infoImage = new Ui.Pixmap(new Editor.Path(import.meta.resolve('Resources/info_icon.svg')));
+const calloutInfoImage = new Ui.Pixmap(new Editor.Path(import.meta.resolve('Resources/info.svg')));
 
 export function addHint(widget, parent, hint_id) {
     const info = new Ui.ImageView(parent);
@@ -84,28 +99,50 @@ export function addHint(widget, parent, hint_id) {
     return connection;
 }
 
-export function tieWidgets(keyWidget, valueWidget, parent) {
-    const layout = new Ui.BoxLayout();
+function createCalloutWidget(parent, text, link) {
+    const frame = new Ui.CalloutFrame(parent);
+    frame.setBackgroundColor(createColor(68, 74, 85, 255));
 
-    layout.setDirection(Ui.Direction.LeftToRight);
-    if (keyWidget) {
-        layout.addWidgetWithStretch(keyWidget, 45, Ui.Alignment.Default);
-    }
-    if (valueWidget) {
-        layout.addWidgetWithStretch(valueWidget, 55, Ui.Alignment.Default);
-    }
+    const frameLayout = new Ui.BoxLayout();
+    frameLayout.setDirection(Ui.Direction.LeftToRight);
+    frameLayout.setContentsMargins(Ui.Sizes.Padding, Ui.Sizes.Padding, Ui.Sizes.Padding, Ui.Sizes.Padding);
+    frameLayout.spacing = Ui.Sizes.Spacing;
 
-    layout.setContentsMargins(0, 0, 0, 0);
-    parent.layout = layout;
+    const info = createInfoIcon(frame);
+
+    frameLayout.addWidget(info);
+
+    const guidelinesLabel = new Ui.ClickableLabel(frame);
+    guidelinesLabel.text = text;
+    guidelinesLabel.wordWrap = true;
+    guidelinesLabel.openExternalLinks = true;
+
+    guidelinesLabel.onClick.connect(() => logEventLinkOpen(link));
+
+    frameLayout.addWidgetWithStretch(guidelinesLabel, 1, Ui.Alignment.Default);
+
+    frame.layout = frameLayout;
+    return frame;
 }
 
-export function concatArrays(lhs, rhs) {
-    const mergedArray = new Uint8Array(lhs.length + rhs.length);
+export function createTermsWidget(parent) {
+    const urlString = Ui.getUrlString('Generative Lens Tools Terms', termsLink);
 
-    mergedArray.set(lhs, 0);
-    mergedArray.set(rhs, lhs.length);
+    return createCalloutWidget(parent, 'By using the feature, you agree to our ' + urlString, termsLink)
+}
 
-    return mergedArray;
+export function createGuidelinesWidget(parent) {
+    const urlString = Ui.getUrlString('guidelines', guidelinesLink);
+
+    return createCalloutWidget(parent, 'Check our ' + urlString + ' for examples, prompting best practices.', guidelinesLink);
+}
+
+export function createErrorIcon(parent) {
+    return createIcon(parent, new Ui.Pixmap(new Editor.Path(import.meta.resolve('Resources/error_icon.svg'))));
+}
+
+export function createInfoIcon(parent) {
+    return createIcon(parent, calloutInfoImage);
 }
 
 function createIcon(parent, iconImage) {
@@ -121,18 +158,6 @@ function createIcon(parent, iconImage) {
     imageView.pixmap = iconImage;
 
     return imageView;
-}
-
-export function createInfoIcon(parent) {
-    return createIcon(parent, new Ui.Pixmap(new Editor.Path(import.meta.resolve('Resources/info.svg'))));
-}
-
-export function createBackButton(parent) {
-    return createIcon(parent, new Ui.Pixmap(new Editor.Path(import.meta.resolve('Resources/arrow.svg'))));
-}
-
-export function createErrorIcon(parent) {
-    return createIcon(parent, new Ui.Pixmap(new Editor.Path(import.meta.resolve('Resources/error_icon.svg'))));
 }
 
 export function createGenerationErrorWidget(parent) {
@@ -166,7 +191,7 @@ export function createGenerationErrorWidget(parent) {
     frameLayout.addWidgetWithStretch(header, 0, Ui.Alignment.AlignCenter);
 
     const disclaimerLabel = new Ui.Label(frame);
-    disclaimerLabel.text = `<center>There was a problem generating the ${app.name}.</center><center>Please try to generate another one.</center>`;
+    disclaimerLabel.text = '<center>There was a problem generating the Head Generator.</center><center>Please try to generate another one.</center>';
 
     frameLayout.addWidgetWithStretch(disclaimerLabel, 0, Ui.Alignment.AlignCenter);
     frameLayout.addStretch(0);
@@ -207,50 +232,13 @@ export function createGennerationInProgressWidget(parent) {
     frameLayout.addWidgetWithStretch(header, 0, Ui.Alignment.AlignCenter);
 
     const disclaimerLabel = new Ui.Label(frame);
-    disclaimerLabel.text = `<center>Generation is running.</center><center>Please, return back later.</center>`;
+    disclaimerLabel.text = '<center>Generation is running.</center><center>Please, return back later.</center>';
 
     frameLayout.addWidgetWithStretch(disclaimerLabel, 0, Ui.Alignment.AlignCenter);
     frameLayout.addStretch(0);
 
     frame.layout = frameLayout;
     return frame;
-}
-
-
-function createCalloutWidget(parent, text, link) {
-    const frame = new Ui.CalloutFrame(parent);
-
-    const frameLayout = new Ui.BoxLayout();
-    frameLayout.setDirection(Ui.Direction.LeftToRight);
-    frameLayout.setContentsMargins(Ui.Sizes.HalfPadding, Ui.Sizes.HalfPadding, Ui.Sizes.HalfPadding, Ui.Sizes.HalfPadding);
-    frameLayout.spacing = Ui.Sizes.Spacing;
-
-    const info = createInfoIcon(frame);
-
-    frameLayout.addWidget(info);
-
-    const guidelinesLabel = new Ui.ClickableLabel(frame);
-    guidelinesLabel.text = text;
-    guidelinesLabel.wordWrap = true;
-    guidelinesLabel.openExternalLinks = true;
-    guidelinesLabel.onClick.connect(() => logEventLinkOpen(link));
-
-    frameLayout.addWidgetWithStretch(guidelinesLabel, 1, Ui.Alignment.Default);
-
-    frame.layout = frameLayout;
-    return frame;
-}
-
-export function createTermsWidget(parent) {
-    const urlString = Ui.getUrlString('Generative Lens Tools Terms', termsLink);
-
-    return createCalloutWidget(parent, 'By using the feature, you agree to our ' + urlString, termsLink)
-}
-
-export function createGuidelinesWidget(parent) {
-    const urlString = Ui.getUrlString('guidelines', guidelinesLink);
-
-    return createCalloutWidget(parent, 'Check our ' + urlString + ' for examples, prompting best practices and usage guidelines.', guidelinesLink);
 }
 
 export function downloadFileFromBucket(url, file_name, callback) {
@@ -272,32 +260,34 @@ export function downloadFileFromBucket(url, file_name, callback) {
             } else {
                 throw new Error(`Resolved file path is not inside the resolved directory. resolvedFilePath: ${resolvedFilePath} | resolvedDirectoryPath: ${resolvedDirectoryPath}`);
             }
-        } else {
-            callback(null, null);
         }
     });
 }
 
 export function getRandomPrompt() {
     const prompts = [
-        'donkey head, highly elongated face forward, smile with big teeth',
-        'Grim Reaper, abyss black, supernatural',
-        'bald Eagle, majestic brown and white, bird, mask',
-        'medieval bearded monk in a red hood, big hood',
-        'snowy owl, animal, mask, cosplay, halloween, 3d printed',
-        'Davy Jones, tentacles, octopus, mask, cosplay, halloween, 3d printed',
-        'snowman\'s head in a Christmas hat, long carrot nose, pinoccio',
-        'cat, cosplay, mask',
-        'alien, eerie green, extraterrestrial, mask',
-        'yakuza, samurai',
-        'zombie head, detailed zombie head with big eyes and nose, lots of details, masterpiece',
-        'viking, rustic bronze and leather, no beard, warrior',
-        'vampire, pale white with red eyes, creature, mask',
-        'phoenix, bright orange and yellow, mythical bird, mask, cosplay, 3d printed',
-        'witch, deep green, mythical'
+        'A labrador retriever dog in a rough silver metal spacesuit helmet with bronze details',
+        'A red cat is wearing a blue bandana on a top of a head. Blue bandana has white fish pattern. Soft front light',
+        'A realistic 3D angry shark head is showing sharp teeth and wearing a leather pirate hat with skull emblem',
+        'A realistic monkey head with yellow sunglasses. Realistic fur. Soft front lighting',
+        'A green ghost jelly 3D Blob with big eyes and red and white lollipops like a hair. Glossy translucent material. Front lighting',
+        'A realistic green parrot head has a realistic human 2 braids with bangs in front on it\'s head',
+        'A 3D high-poly animestyle red skin devil character with dark hair and sharp geometry face and white eyes',
+        'A realistic white fur polar bear is wearing a small warm red winter hat. Front soft light',
+        'A rough scratches textures dark silver metal humanoid robot made of metal plates. Robot has golden glossy piercing details over a head. Frontal head view and front lighting',
+        'A realistic capybara with realistic fur. Front soft lighting'
     ];
 
     return prompts[Math.floor(Math.random() * prompts.length)];
+}
+
+function createColor(r, g, b, a) {
+    const color = new Ui.Color();
+    color.red = r;
+    color.green = g;
+    color.blue = b;
+    color.alpha = a;
+    return color;
 }
 
 export function importToProject(objectUrl, callback) {
@@ -305,10 +295,10 @@ export function importToProject(objectUrl, callback) {
         importHeadmorph(filePath, tempDir).then(() => {
             callback(true);
         })
-        .catch((error) => {
-            console.log(`Import failed: ${error.message}`);
-            callback(false);
-        });
+            .catch((error) => {
+                console.log(`Import failed: ${error.message}`);
+                callback(false);
+            });
 
     });
 }
@@ -317,6 +307,15 @@ export function getRandomInt(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+export function concatArrays(lhs, rhs) {
+    const mergedArray = new Uint8Array(lhs.length + rhs.length);
+
+    mergedArray.set(lhs, 0);
+    mergedArray.set(rhs, lhs.length);
+
+    return mergedArray;
 }
 
 export function getContentType(file_path) {

@@ -152,7 +152,7 @@ export class TransitionMenu {
     getSelectedAnimationsData() {
         const data: any[] = [];
         this.tiles.forEach((tile) => {
-            if (tile.widget.visible && tile.pageName !== null && tile.id !== null && tile.id !== undefined && tile.pageName !== undefined) {
+            if (!tile.isEmpty) {
                 data.push({"pageName": tile.pageName, "id": tile.id});
             }
         })
@@ -193,5 +193,16 @@ export class TransitionMenu {
 
     getVisibleTilesCount() {
         return this.visibleTilesCount;
+    }
+
+    getNonEmptyTilesCount() {
+        let cnt = 0;
+        this.tiles.forEach((tile) => {
+            if (!tile.isEmpty) {
+                cnt++;
+            }
+        })
+
+        return cnt;
     }
 }

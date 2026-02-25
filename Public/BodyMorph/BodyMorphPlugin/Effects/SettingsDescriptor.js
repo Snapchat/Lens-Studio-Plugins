@@ -1,7 +1,6 @@
 import { ComboBox } from './Controls/ComboBox.js';
 import { PromptPicker } from './Controls/PromptPickerWithMedia.js';
 import { CheckBox } from './Controls/CheckBox.js'
-import { UserNotesPicker } from './Controls/UserNotesPicker.js';
 import { HintID } from '../Hints/HintFactory.js';
 
 export class SettingsDescriptor {
@@ -52,18 +51,7 @@ export class SettingsDescriptor {
                     'hint': {
                         'id': HintID.headless
                     }
-                },
-                {
-                    'type': 'control',
-                    'class': UserNotesPicker,
-                    'parent': parent,
-                    'name': 'userNotes',
-                    'label': 'User notes',
-                    'importer': null,
-                    'exporter': null,
-                    'preset_based': false,
-                    'placeholder': "Enter user notes here..."
-                },
+                }
             ]
         };
     }

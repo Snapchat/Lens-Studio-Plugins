@@ -373,6 +373,8 @@ export class AnimationLibrary {
             return;
         }
 
+        tile.clickableIfSelected = true;
+
         tile.addOnClickCallback((id: number) => {
             this.selectTile(pageName, id, tile);
             this.preview?.selectTile(pageName, id, tile.getPreviewPath())
@@ -458,6 +460,8 @@ export class AnimationLibrary {
                         this.preview?.onAnimationSelected(response.path, "MY_GALLERY", tileData[tile.getId()].id);
                     }
                 }
+            } else {
+                console.warn('Some data was unavailable and has been skipped.');
             }
         })
     }

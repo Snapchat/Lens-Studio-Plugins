@@ -49,10 +49,12 @@ export class CaptureFromVideoMode {
         // Video Upload
         const videoUpload = new Ui.ImageView(parent);
         videoUpload.responseHover = true;
+        videoUpload.scaledContents = true;
         videoUpload.pixmap = this.defaultBackground;
         videoUpload.setFixedWidth(288);
         videoUpload.setFixedHeight(288);
         const iconView = new Ui.ImageView(videoUpload);
+        iconView.scaledContents = true;
         iconView.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
         iconView.move(125, 120);
         iconView.pixmap = new Ui.Pixmap(import.meta.resolve('./Resources/uploadIcon.svg'));
@@ -77,6 +79,7 @@ export class CaptureFromVideoMode {
         contentLayout.addStretch(0);
         // Reload
         const reloadWidget = new Ui.ImageView(parent);
+        reloadWidget.scaledContents = true;
         reloadWidget.responseHover = true;
         reloadWidget.pixmap = this.defaultBackground;
         reloadWidget.setFixedWidth(288);
@@ -84,6 +87,7 @@ export class CaptureFromVideoMode {
         const warningIconView = new Ui.ImageView(reloadWidget);
         warningIconView.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
         warningIconView.move(125, 88);
+        warningIconView.scaledContents = true;
         warningIconView.pixmap = new Ui.Pixmap(import.meta.resolve('./Resources/warning_triangle.svg'));
         warningIconView.setFixedHeight(iconSize);
         warningIconView.setFixedWidth(iconSize);

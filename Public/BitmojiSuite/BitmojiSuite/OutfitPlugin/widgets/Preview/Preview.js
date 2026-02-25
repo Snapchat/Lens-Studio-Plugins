@@ -28,7 +28,6 @@ const ignoredTypes = [
     "ConstraintComponent",
 ];
 
-
 const input = new LensBasedEditorView.ImageInput();
 input.file = import.meta.resolve("./Resources/background.png")
 input.fps = 30;
@@ -55,7 +54,7 @@ export class Preview extends EventDispatcher {
 
         this.isAlive = true;
 
-        this.data = null;
+        this.data = "{items: []}";
         this.bitmojiType = null;
         this.friendIndex = null;
 
@@ -86,8 +85,13 @@ export class Preview extends EventDispatcher {
     }
 
     reload() {
-        this.updateView(this.data, this.bitmojiType, this.friendIndex);
-        this.changeCamera(this.spotName);
+        this.widget.reload();
+
+        waitForLBE(this.widget).then(() => {
+            if (this.spotName) {
+                this.changeCamera(this.spotName, true);
+            }
+        });
     }
 
     updateView(data, bitmojiType, friendIndex) {
@@ -106,13 +110,14 @@ export class Preview extends EventDispatcher {
         }
     }
 
-    changeCamera(spotName) {
+    changeCamera(spotName, immediate = false) {
         if (this.isAlive) {
             this.spotName = spotName;
             waitForLBE(this.widget).then(() => {
                 this.widget.postMessage({
                     "event_type": "change_camera",
-                    "spotName": spotName
+                    "spotName": spotName,
+                    "immediate": immediate
                 });
             });
         }

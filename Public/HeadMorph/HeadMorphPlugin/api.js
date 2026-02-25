@@ -1,12 +1,6 @@
 import * as Network from 'LensStudio:Network';
 
-export const MorphState = {
-    'QUEUED': 0,
-    'MORPHING': 1,
-    'TEXTURING': 2,
-    'SUCCESS': 3,
-    'FAILED': 4
-};
+const base_url = 'https://ml.snap.com/api/headmorphs';
 
 export function versions(callback) {
     const request = new Network.HttpRequest();
@@ -44,13 +38,11 @@ export function acceptTerms(terms, callback) {
     });
 }
 
-export function createMorph(data, callback) {
+export function createAsset(data, callback) {
     const request = new Network.HttpRequest();
-    request.url = 'https://ml.snap.com/api/morphs';
+    request.url = base_url;
     request.method = Network.HttpRequest.Method.Post;
-
     request.body = JSON.stringify(data);
-
     request.contentType = 'application/json';
 
     Network.performAuthorizedHttpRequest(request, function(response) {
@@ -58,16 +50,16 @@ export function createMorph(data, callback) {
     });
 }
 
-export function listMorphs(maxPageSize, callback, searchString, pageToken) {
+export function listAssets(maxPageSize, callback, searchQuery, pageToken) {
     const request = new Network.HttpRequest();
-    let url = 'https://ml.snap.com/api/morphs?maxPageSize=' + maxPageSize;
+    let url = base_url + '?maxPageSize=' + maxPageSize;
 
     if (pageToken) {
         url += '&pageToken=' + pageToken;
     }
 
-    if (searchString) {
-        url += '&filter[]=search%3D' + searchString;
+    if (searchQuery) {
+        url += searchQuery;
     }
 
     request.url = url;
@@ -78,20 +70,49 @@ export function listMorphs(maxPageSize, callback, searchString, pageToken) {
     });
 }
 
-export function getMorph(id, callback) {
+export function getAsset(id, callback) {
     const request = new Network.HttpRequest();
-    request.url = 'https://ml.snap.com/api/morphs/' + id;
+    request.url = base_url + '/' + id;
     request.method = Network.HttpRequest.Method.Get;
+
+    Network.performAuthorizedHttpRequest(request, function(response) {
+        if (response.statusCode == 200) {
+            callback(JSON.parse(response.body.toString()));
+        } else {
+            callback(null);
+        }
+    });
+}
+
+export function getDraftAsset(id, callback) {
+    const request = new Network.HttpRequest();
+    request.url = base_url + '/' + id + '/driving_images:stream';
+    request.method = Network.HttpRequest.Method.Get;
+
+    Network.performAuthorizedHttpRequest(request, function(response) {
+        if (response.statusCode == 200) {
+            callback(JSON.parse(response.body.toString()));
+        } else {
+            callback(null);
+        }
+    });
+}
+
+export function continueGeneration(asset_id, draft_mesh_id, callback) {
+    const request = new Network.HttpRequest();
+    request.url = base_url + '/' + asset_id + '/driving_images/' + draft_mesh_id + ':continue';
+    request.method = Network.HttpRequest.Method.Put;
 
     Network.performAuthorizedHttpRequest(request, function(response) {
         callback(response);
     });
 }
 
-export function deleteMorph(id, callback) {
+export function deleteAsset(id, callback) {
     const request = new Network.HttpRequest();
-    request.url = 'https://ml.snap.com/api/morphs/' + id;
+    request.url = base_url + '/' + id;
     request.method = Network.HttpRequest.Method.Delete;
+
     Network.performAuthorizedHttpRequest(request, function(response) {
         callback(response);
     });
@@ -100,7 +121,6 @@ export function deleteMorph(id, callback) {
 export function createAttachment(data, contentType, filename, callback) {
     const request = new Network.HttpRequest();
     request.url = 'https://ml.snap.com/api/uploads';
-
     request.method = Network.HttpRequest.Method.Post;
 
     const headers = {

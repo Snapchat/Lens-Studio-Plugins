@@ -54,8 +54,6 @@ export class CreationMenu {
         this.controls['promptPicker'].mode = 'Image';
         this.controls['promptPicker'].value = [];
 
-        this.controls['userNotes'].value = '';
-
         this.controls['enhancedPromptPicker'].textValue = '';
         this.controls['enhancedPromptPicker'].imageValue = [];
         this.controls['referenceStrength'].value = 5.5;

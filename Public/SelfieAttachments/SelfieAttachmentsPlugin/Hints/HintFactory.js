@@ -3,7 +3,8 @@ import * as Ui from 'LensStudio:Ui';
 export const HintID = {
     'seed': 0,
     'prompt': 1,
-    'image_reference': 2
+    'image_reference': 2,
+    'style': 3
 };
 
 const hintScheme = {
@@ -18,6 +19,10 @@ const hintScheme = {
     [HintID.image_reference]: {
         'title': 'Image Reference',
         'text': 'Optional image reference to guide the output.'
+    },
+    [HintID.style]: {
+        'title': 'Style',
+        'text': 'Choose the visual style for your attachment. Default provides balanced results, Cartoon creates stylized looks, and Realistic generates more lifelike outputs.'
     }
 };
 

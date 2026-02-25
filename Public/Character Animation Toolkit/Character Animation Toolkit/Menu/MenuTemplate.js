@@ -23,6 +23,7 @@ export class MenuTemplate {
         layout.setContentsMargins(0, 0, 0, 0);
         const imageView = new Ui.ImageView(widget);
         imageView.responseHover = true;
+        // imageView.scaledContents = true;
         const defaultImage = new Ui.Pixmap(import.meta.resolve('./Resources/arrow.svg'));
         const hoveredImage = new Ui.Pixmap(import.meta.resolve('./Resources/arrow_h.svg'));
         imageView.pixmap = defaultImage;

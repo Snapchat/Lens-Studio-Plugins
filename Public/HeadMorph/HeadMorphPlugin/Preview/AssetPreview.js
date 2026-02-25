@@ -1,53 +1,89 @@
 import * as Ui from 'LensStudio:Ui';
 
-import { importToProject } from '../utils.js';
+import { importToProject, createGenerationErrorWidget, createGennerationInProgressWidget } from '../utils.js';
+import { deleteAsset, getAsset } from '../api.js';
+
 import app from '../../application/app.js';
-import { deleteMorph } from '../api.js';
-import { createGenerationErrorWidget, createGennerationInProgressWidget } from '../utils.js';
+
 import { logEventAssetImport } from '../../application/analytics.js';
 
 export class AssetPreview {
     constructor(onStateChanged) {
         this.connections = [];
-        this.headmorph_id = null;
+        this.asset_id = null;
         this.onStateChanged = onStateChanged;
     }
 
-    deleteHeadmorph(id) {
-        app.log(`Deleting the ${app.name}...`, { 'progressBar': true });
+    onImportToProject() {
+        if (this.asset_id) {
+            app.log('Importing Head Generator asset to the project...', { 'progressBar': true });
 
-        deleteMorph(id, function(response) {
+            getAsset(this.asset_id, (data) => {
+                if (data) {
+                    let lspkgUrl = data.lspkgLsUrl;
+
+                    if (lspkgUrl) {
+                        importToProject(lspkgUrl, (success) => {
+                            logEventAssetImport(success ? "SUCCESS" : "FAILED");
+                            app.log(success ? 'Head Generator asset is succesfully imported to the project' : 'Import failed, please try again');
+                            this.updatePreview(this.state);
+                        });
+                    } else {
+                        logEventAssetImport("PREPARING");
+                        app.log('Files for import are still preparing. Please, try again in few seconds.');
+                    }
+                } else {
+                    logEventAssetImport("FAILED");
+                    app.log('Something went wrong during importing Head Generator asset to the project, please try again.');
+                }
+            });
+        } else {
+            logEventAssetImport("FAILED");
+            app.log('Something went wrong during importing Head Generator asset to the project, please try again.');
+        }
+    }
+
+    deleteAsset(id) {
+        app.log('Deleting Head Generator asset...', { 'progressBar': true });
+
+        deleteAsset(id, (response) => {
             this.deletionDialog.close();
 
             if (response.statusCode == 204) {
                 this.onStateChanged({
                     'screen': 'default',
                     'needsUpdate': true,
-                    'exclude_id': id,
+                    'exclude_id': id
                 });
-                app.log(`${app.name} has been deleted.`);
+
+                app.log('Head Generator asset has been deleted.');
             } else {
                 this.onStateChanged({
                     'screen': 'default',
                     'needsUpdate': true,
                 });
-                app.log(`${app.name} could not be deleted. Please, try again.`);
+
+                app.log('Head Generator asset could not be deleted. Please, try again.');
             }
-        }.bind(this));
+        });
+    }
+
+    init() {
     }
 
     createPreview(parent) {
         this.preview = new Ui.Widget(parent);
+        this.preview.setFixedHeight(554);
         const layout = new Ui.BoxLayout();
-        layout.setDirection(Ui.Direction.LeftToRight);
+        layout.setDirection(Ui.Direction.TopToBottom);
+        layout.setContentsMargins(16, 0, 16, 0);
 
         this.previewImage = new Ui.MovieView(this.preview);
-        this.previewImage.setFixedHeight(480);
-        this.previewImage.setFixedWidth(480);
 
-        layout.addStretch(0);
-        layout.addWidget(this.previewImage);
-        layout.addStretch(0);
+        this.previewImage.setFixedHeight(388);
+        this.previewImage.setFixedWidth(388);
+
+        layout.addWidgetWithStretch(this.previewImage, 0, Ui.Alignment.AlignCenter);
 
         this.preview.layout = layout;
 
@@ -55,28 +91,50 @@ export class AssetPreview {
     }
 
     updatePreview(state) {
-        if (state.status == 'FAILED') {
-            this.stackedWidget.currentIndex = 1;
-        } else if (state.status == 'SUCCESS' || state.preview_image) {
-            state.preview_image.resize(480, 480);
-            this.previewImage.movie = state.preview_image;
-            this.previewImage.animated = true;
-            this.previewImage.movie.speed = 80;
-            this.stackedWidget.currentIndex = 0;
-        } else {
-            this.stackedWidget.currentIndex = 2;
+        this.state = state;
+        this.delayedMessage = null;
+
+        if (state.object_url) {
+            this.objectUrl = state.object_url;
         }
 
-        this.objectUrl = state.object_url;
+        if (state.status) {
+            this.status = state.status;
+            this.importToProjectButton.enabled = (this.status === 'SUCCESS');
+            if (this.status === 'FAILED' || this.status === 'UNSAFE') {
+                this.stackedWidget.currentIndex = 1;
+                if (this.status === 'UNSAFE') {
+                    app.log('This asset violates our community guidelines and should be deleted.', { 'enabled': true });
+                }
+            } else {
+                if (state.preview_image) {
+                    state.preview_image.resize(422, 422);
+                    this.previewImage.movie = state.preview_image;
+                    this.previewImage.animated = true;
 
-        if (this.objectUrl) {
-            this.importToProjectButton.enabled = true;
+                    this.stackedWidget.currentIndex = 0;
+                } else {
+                    this.stackedWidget.currentIndex = 2;
+                }
+            }
         } else {
             this.importToProjectButton.enabled = false;
         }
 
-        this.headmorph_id = state.headmorph_id;
+        if (state.asset_id) {
+            this.asset_id = state.asset_id;
+        } else {
+            this.asset_id = null;
+        }
+
         this.showFooter();
+    }
+
+    reset() {
+        this.delayedMessage = null;
+
+        this.asset_id = null;
+        this.importToProjectButton.enabled = false;
     }
 
     createDeletionDialog() {
@@ -84,7 +142,7 @@ export class AssetPreview {
         const gui = app.gui;
 
         this.deletionDialog = gui.createDialog();
-        this.deletionDialog.windowTitle = `Delete ${app.name}`;
+        this.deletionDialog.windowTitle = 'Delete Head Generator asset';
 
         this.deletionDialog.resize(460, 140);
 
@@ -97,7 +155,7 @@ export class AssetPreview {
 
         const alertWidget = new Ui.ImageView(captionWidget);
 
-        const alertImagePath = new Editor.Path(import.meta.resolve('../Resources/alert_icon.png'));
+        const alertImagePath = new Editor.Path(import.meta.resolve('../Resources/alert.png'));
         const alertImage = new Ui.Pixmap(alertImagePath);
 
         alertWidget.setFixedWidth(56);
@@ -112,9 +170,9 @@ export class AssetPreview {
         const headerLabel = new Ui.Label(textWidget);
         const paragraphLabel = new Ui.Label(textWidget);
 
-        headerLabel.text = `Delete the ${app.name}?`;
+        headerLabel.text = 'Delete the Head Generator asset?';
         headerLabel.fontRole = Ui.FontRole.TitleBold;
-        paragraphLabel.text = `This will delete this ${app.name} permanently. You cannot undo this action.`;
+        paragraphLabel.text = 'This will delete this Head Generator asset permanently. You cannot undo this action.';
 
         textLayout.setContentsMargins(0, 0, 0, 0);
         textLayout.addWidget(headerLabel);
@@ -145,7 +203,7 @@ export class AssetPreview {
         }.bind(this)));
 
         this.connections.push(deleteButton.onClick.connect(function() {
-            this.deleteHeadmorph(this.headmorph_id);
+            this.deleteAsset(this.asset_id);
         }.bind(this)));
 
         buttonsLayout.addStretch(0);
@@ -173,38 +231,31 @@ export class AssetPreview {
         this.importToProjectButton.visible = true;
     }
 
-    onImportClicked() {
-        app.log(`Importing ${app.name} to the project...`, { 'enabled': true, 'progressBar': true });
-        try {
-            importToProject(this.objectUrl, function(success) {
-                logEventAssetImport(success ? "SUCCESS" : "FAILED");
-                app.log(success ? `${app.name} is successfully imported to the project` : 'Import failed, please try again');
-            }.bind(this));
-        } catch (error) {
-            logEventAssetImport("FAILED");
-            app.log(`${app.name} import is failed. Please, try again`);
+    hideImportButton() {
+        if (!this.importToProjectButton || !this.generatePreviewsButton) {
+            return;
         }
+        this.importToProjectButton.visible = false;
+        this.generatePreviewsButton.visible = true;
+    }
+
+    showImportButton() {
+        if (!this.importToProjectButton || !this.generatePreviewsButton) {
+            return;
+        }
+        this.importToProjectButton.visible = true;
+        this.generatePreviewsButton.visible = false;
     }
 
     createFooter(parent) {
         this.footer = new Ui.Widget(parent);
-        this.footer.setFixedHeight(65);
+        this.footer.setFixedHeight(56);
 
         const footerLayout = new Ui.BoxLayout();
         footerLayout.setDirection(Ui.Direction.LeftToRight);
-        footerLayout.setContentsMargins(8, 12, 8, 8);
-
-        this.deleteButton = new Ui.PushButton(this.footer);
-        this.deleteButton.text = '';
-        const deleteImagePath = new Editor.Path(import.meta.resolve('../Resources/delete.svg'));
-        this.deleteButton.setIconWithMode(Editor.Icon.fromFile(deleteImagePath), Ui.IconMode.MonoChrome);
+        footerLayout.setContentsMargins(8, 0, 16, 0);
 
         this.dialog = this.createDeletionDialog();
-
-        this.connections.push(this.deleteButton.onClick.connect(function() {
-            this.dialog.show();
-            app.log('', { 'enabled' : false });
-        }.bind(this)));
 
         // Import To Project button
         this.importToProjectButton = new Ui.PushButton(this.footer);
@@ -213,19 +264,39 @@ export class AssetPreview {
         this.importToProjectButton.setIconWithMode(Editor.Icon.fromFile(importImagePath), Ui.IconMode.MonoChrome);
         this.importToProjectButton.primary = true;
 
-        this.connections.push(this.importToProjectButton.onClick.connect(() => this.onImportClicked()));
+        this.connections.push(this.importToProjectButton.onClick.connect(function() {
+            this.onImportToProject();
+        }.bind(this)));
 
-        footerLayout.addWidgetWithStretch(this.deleteButton, 0, Ui.Alignment.AlignTop);
+        this.generatePreviewsButton = new Ui.PushButton(this.footer);
+        this.generatePreviewsButton.text = 'Generate previews';
+        this.generatePreviewsButton.primary = false;
+        this.generatePreviewsButton.visible = false;
+
         footerLayout.addStretch(0);
-        footerLayout.addWidgetWithStretch(this.importToProjectButton, 0, Ui.Alignment.AlignTop);
+        footerLayout.addWidgetWithStretch(this.importToProjectButton, 0, Ui.Alignment.AlignRight);
+        footerLayout.addWidgetWithStretch(this.generatePreviewsButton, 0, Ui.Alignment.AlignRight);
 
         this.footer.layout = footerLayout;
         return this.footer;
     }
 
+    getGeneratePreviewsButton() {
+        return this.generatePreviewsButton;
+    }
+
+    setDeleteButton(button) {
+        this.deleteButton = button;
+
+        this.connections.push(this.deleteButton.onClick.connect(function() {
+            this.dialog.show();
+            app.log('', { 'enabled': false });
+        }.bind(this)));
+    }
+
     create(parent) {
         this.widget = new Ui.Widget(parent);
-        this.widget.setFixedWidth(480);
+        this.widget.setFixedWidth(422);
         this.widget.setFixedHeight(620);
         this.layout = new Ui.BoxLayout();
         this.layout.setDirection(Ui.Direction.TopToBottom);
@@ -242,7 +313,6 @@ export class AssetPreview {
 
         this.layout.addStretch(0);
         this.layout.addWidget(this.stackedWidget);
-        this.layout.addStretch(0);
 
         const separator = new Ui.Separator(Ui.Orientation.Horizontal, Ui.Shadow.Plain, this.widget);
         separator.setFixedHeight(Ui.Sizes.SeparatorLineWidth);
@@ -254,5 +324,9 @@ export class AssetPreview {
         this.widget.layout = this.layout;
 
         return this.widget;
+    }
+
+    findInterface(interfaceID) {
+        return this.pluginSystem.findInterface(interfaceID);
     }
 }

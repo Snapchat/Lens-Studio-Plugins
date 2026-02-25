@@ -34,7 +34,7 @@ export function buildAssetData(controls, skipMorphing, parentId) {
         request.settings.parentId = parentId;
     }
 
-    request.userNotes = controls["userNotes"].value;
+    request.userNotes = '';
 
     return request;
 }

@@ -258,6 +258,8 @@ export class IconCropper {
     }
 
     deinit() {
-        this.iconCropperLBE.unload();
+        if (this.iconCropperLBE) {
+            this.iconCropperLBE.unload();
+        }
     }
 }

@@ -187,6 +187,18 @@ export class AnimationImporter {
             clip.end = clip.animation.duration;
             animationPlayer.animationClips = [clip];
 
+            so.getChildAt(0).getChildAt(0).children.forEach((child) => {
+                if (child.name === "sceneObject_68") {
+                    const renderMesh = child.getComponent("RenderMeshVisual");
+                    if (renderMesh) {
+                        renderMesh.blendShapesEnabled = false;
+                        // renderMesh.mainMaterial.mainPass.ENABLE_GLTF_LIGHTING = false;
+                    }
+                } else if (child.name === "sceneObject_69") {
+                    child.name = "sceneObject_68";
+                }
+            })
+
             assetManager.saveAsPrefab(so, bitmojiPackage.path);
             so.destroy();
         }

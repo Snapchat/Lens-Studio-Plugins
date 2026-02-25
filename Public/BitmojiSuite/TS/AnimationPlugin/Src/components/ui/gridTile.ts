@@ -243,6 +243,7 @@ export class GridTile extends Widget {
         this.removeButton.layout = layout;
 
         const trashCanImageView = new Ui.ImageView(this.removeButton);
+        trashCanImageView.scaledContents = true;
         trashCanImageView.pixmap = new Ui.Pixmap(new Editor.Path(import.meta.resolve('./Resources/trashCan.svg')));
         trashCanImageView.setFixedHeight(16);
         trashCanImageView.setFixedWidth(16);

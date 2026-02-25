@@ -262,6 +262,7 @@ export class AnimationLibrary {
         if (!this.tileData[pageName]) {
             return;
         }
+        tile.clickableIfSelected = true;
         tile.addOnClickCallback((id) => {
             var _a;
             this.selectTile(pageName, id, tile);
@@ -324,6 +325,9 @@ export class AnimationLibrary {
                         (_h = this.preview) === null || _h === void 0 ? void 0 : _h.onAnimationSelected(response.path, "MY_GALLERY", tileData[tile.getId()].id);
                     }
                 }
+            }
+            else {
+                console.warn('Some data was unavailable and has been skipped.');
             }
         });
     }

@@ -1,31 +1,23 @@
 import * as Ui from 'LensStudio:Ui';
 
 export const HintID = {
-    'intensity': 0,
+    'seed': 0,
     'prompt': 1,
-    'image': 2,
-    'text_reference': 3
+    'image_reference': 2
 };
 
 const hintScheme = {
-    [HintID.intensity] : {
-        'image_width': 256,
-        'image_height': 86,
-        'image_path': new Editor.Path(import.meta.resolve('./Resources/intensity_hint.png')),
-        'title': 'Intensity',
-        'text': 'Higher value - more deformation on the shape.'
-    },
     [HintID.prompt]: {
-        'title': 'Text Prompt',
-        'text': 'Describe the effect you want to create in details. For example: big head, big cheeks, big lips, happy'
+        'title': 'Prompt',
+        'text': 'Describe the effect you want to generate.'
     },
-    [HintID.image]: {
+    [HintID.seed]: {
+        'title': 'Seed',
+        'text': 'Controls randomness. Use the same number to recreate the same look, or try different ones for new variations!'
+    },
+    [HintID.image_reference]: {
         'title': 'Image Reference',
-        'text': 'Provide an image reference emphasizing the head generator you want to create.'
-    },
-    [HintID.text_reference]: {
-        'title': 'Text Reference',
-        'text': 'Provide additional context on how you want to change the image.'
+        'text': 'Add an image reference to guide the output.'
     }
 };
 
@@ -41,6 +33,7 @@ class HintFactory {
         layout.setDirection(Ui.Direction.TopToBottom);
 
         const content = new Ui.Widget(parent);
+        content.setMinimumWidth(275);
 
         if (image_path) {
             const imageView = new Ui.ImageView(content);
@@ -53,7 +46,6 @@ class HintFactory {
             imageView.setFixedWidth(image_width);
             imageView.setFixedHeight(image_height);
             imageView.scaledContents = true;
-
             layout.addWidget(imageView);
         }
 

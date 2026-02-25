@@ -1,5 +1,4 @@
 import * as Network from 'LensStudio:Network';
-import * as Subprocess from 'LensStudio:Subprocess';
 
 export function versions(callback) {
     const request = new Network.HttpRequest();

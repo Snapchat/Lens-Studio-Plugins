@@ -6,8 +6,8 @@ import * as Ui from 'LensStudio:Ui';
 
 import { logEventLinkOpen } from '../application/analytics.js';
 
-const termsLink = 'https://www.snap.com/terms/lens-studio-license-agreement';
-const guidelinesLink = 'https://developers.snap.com/lens-studio/features/genai-suite/selfie-attachments';
+export const termsLink = 'https://www.snap.com/terms/lens-studio-license-agreement';
+export const guidelinesLink = 'https://developers.snap.com/lens-studio/features/genai-suite/selfie-attachments';
 
 export function convertIntensityToAPIStyle(intensityString) {
     switch (intensityString) {
@@ -58,7 +58,8 @@ export function tieWidgets(keyWidget, valueWidget, parent) {
     parent.layout = layout;
 }
 
-const infoImage = new Ui.Pixmap(new Editor.Path(import.meta.resolve('Resources/info.svg')));
+const infoImage = new Ui.Pixmap(new Editor.Path(import.meta.resolve('Resources/info_icon.svg')));
+const calloutInfoImage = new Ui.Pixmap(new Editor.Path(import.meta.resolve('Resources/info.svg')));
 
 export function addHint(widget, parent, hint_id) {
     const info = new Ui.ImageView(parent);
@@ -88,8 +89,8 @@ export function addHint(widget, parent, hint_id) {
     const layout = new Ui.BoxLayout();
     layout.setDirection(Ui.Direction.LeftToRight);
     layout.addWidget(widget);
-    layout.addStretch(0);
     layout.addWidget(info);
+    layout.addStretch(0);
     layout.setContentsMargins(0, 0, 0, 0);
 
     parent.layout = layout;
@@ -99,10 +100,11 @@ export function addHint(widget, parent, hint_id) {
 
 function createCalloutWidget(parent, text, link) {
     const frame = new Ui.CalloutFrame(parent);
+    frame.setBackgroundColor(createColor(68, 74, 85, 255));
 
     const frameLayout = new Ui.BoxLayout();
     frameLayout.setDirection(Ui.Direction.LeftToRight);
-    frameLayout.setContentsMargins(Ui.Sizes.HalfPadding, Ui.Sizes.HalfPadding, Ui.Sizes.HalfPadding, Ui.Sizes.HalfPadding);
+    frameLayout.setContentsMargins(Ui.Sizes.Padding, Ui.Sizes.Padding, Ui.Sizes.Padding, Ui.Sizes.Padding);
     frameLayout.spacing = Ui.Sizes.Spacing;
 
     const info = createInfoIcon(frame);
@@ -139,7 +141,7 @@ export function createErrorIcon(parent) {
 }
 
 export function createInfoIcon(parent) {
-    return createIcon(parent, infoImage);
+    return createIcon(parent, calloutInfoImage);
 }
 
 function createIcon(parent, iconImage) {
@@ -261,18 +263,17 @@ export function downloadFileFromBucket(url, file_name, callback) {
     });
 }
 
-export function getRandomPrompt() {
-    const prompts = [
-        'Make me wear a vibrant unicorn wig with a horn and large ears',
-        'A person wearing a purple wig, a floral unicorn headband, unicorn ears, and a glowing unicorn horn',
-        'Put a large colorful butterfly on my nose',
-        'Create a beautiful floral headband made of sunflowers',
-        'I want to wear an ancient Roman helmet',
-        'Make me wear a large clown nose',
-        'A person with an octopus sitting on their head'
-    ];
-
+export function getRandomPrompt(prompts) {
     return prompts[Math.floor(Math.random() * prompts.length)];
+}
+
+function createColor(r, g, b, a) {
+    const color = new Ui.Color();
+    color.red = r;
+    color.green = g;
+    color.blue = b;
+    color.alpha = a;
+    return color;
 }
 
 export function importToProject(objectUrl, callback, file_format) {

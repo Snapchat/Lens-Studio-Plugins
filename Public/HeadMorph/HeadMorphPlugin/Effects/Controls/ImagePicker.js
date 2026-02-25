@@ -3,13 +3,9 @@ import * as Ui from 'LensStudio:Ui';
 import { tieWidgets, concatArrays, downloadFileFromBucket, getContentType } from '../../utils.js';
 import { Control } from './Control.js';
 import { createAttachment } from '../../api.js';
-import { TextEdit } from './TextEdit.js';
 import * as fs from 'LensStudio:FileSystem';
 
 import app from '../../../application/app.js';
-import { HintID, getHintFactory } from '../../Hints/HintFactory.js';
-
-const MAX_SYMBOLS = 200;
 
 export class ImagePicker extends Control {
     constructor(parent, label, valueImporter, valueExporter) {
@@ -20,12 +16,6 @@ export class ImagePicker extends Control {
         this.pickedImages = [];
         this.pickedCrosses = [];
         this.uploadImages = [];
-
-        this.layout = new Ui.BoxLayout();
-        this.layout.setDirection(Ui.Direction.TopToBottom);
-
-        this.grid = new Ui.Widget(this.widget);
-        this.grid.setContentsMargins(0, 0, 0, 0);
 
         this.imageGridLayout = new Ui.GridLayout();
 
@@ -49,73 +39,7 @@ export class ImagePicker extends Control {
         this.importButton = null;
 
         this.addImportButton();
-
-        this.grid.layout = this.imageGridLayout;
-
-        this.layout.addWidget(this.grid);
-
-        this.layout.spacing = Ui.Sizes.Padding;
-        this.layout.setContentsMargins(0, 0, 0, 0);
-
-        const promptHeaderWidget = this['createPromptHeaderWidget'](this.widget, "Text Reference", { id: HintID.text_reference });
-
-        this.textEdit = new TextEdit(parent, null, null, null, 'Enter text reference here...', MAX_SYMBOLS);
-        this.textEdit.widget.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Fixed);
-
-        this.layout.addWidget(promptHeaderWidget);
-        this.layout.addWidget(this.textEdit.widget);
-
-        this.widget.layout = this.layout;
-    }
-
-    ['createPromptHeaderWidget'](parent, label, hint) {
-        const promptHeaderWidget = new Ui.Widget(parent);
-        const promptHeaderLayout = new Ui.BoxLayout();
-        promptHeaderLayout.setDirection(Ui.Direction.LeftToRight);
-
-        const promptLabel = new Ui.Label(promptHeaderWidget);
-        promptLabel.text = label;
-        promptHeaderLayout.addWidget(promptLabel);
-
-        if (hint) {
-            const infoIconImage = new Ui.Pixmap(new Editor.Path(import.meta.resolve('../../Resources/info.svg')));
-            const promptToolTip = new Ui.ImageView(promptHeaderWidget);
-
-            promptToolTip.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
-            promptToolTip.setFixedHeight(Ui.Sizes.IconSide);
-            promptToolTip.setFixedWidth(Ui.Sizes.IconSide);
-            promptToolTip.scaledContents = true;
-            promptToolTip.responseHover = true;
-            promptToolTip.pixmap = infoIconImage;
-
-            const popupWidget = new Ui.PopupWithArrow(promptToolTip, Ui.ArrowPosition.Top);
-
-            popupWidget.setContentsMargins(Ui.Sizes.Padding, Ui.Sizes.Padding, Ui.Sizes.Padding, Ui.Sizes.Padding);
-
-            popupWidget.setMainWidget(getHintFactory().createHint(popupWidget, hint.id));
-
-            this.connections.push(promptToolTip.onHover.connect((hovered) => {
-                if (hovered) {
-                    popupWidget.popup(promptToolTip);
-                } else {
-                    popupWidget.close();
-                    parent.activateWindow();
-                }
-            }));
-
-            promptHeaderLayout.addWidget(promptToolTip);
-        }
-        this.optionalLabel = new Ui.Label(promptHeaderWidget);
-        this.optionalLabel.text = 'Optional';
-        this.optionalLabel.fontRole = Ui.FontRole.DefaultItalic;
-
-        promptHeaderLayout.addStretch(0);
-        promptHeaderLayout.addWidget(this.optionalLabel);
-
-        promptHeaderLayout.setContentsMargins(0, 0, 0, 0);
-        promptHeaderWidget.layout = promptHeaderLayout;
-
-        return promptHeaderWidget;
+        this.widget.layout = this.imageGridLayout;
     }
 
     resizeImage(image) {
@@ -259,7 +183,7 @@ export class ImagePicker extends Control {
     }
 
     updateImageAt(index) {
-        const filePath = this.gui.dialogs.selectFileToOpen({ 'caption': 'Select file to open', 'filter': '*.webp *.jpeg *.jpg *.gif *.avif *.avifs *.png' }, '');
+        const filePath = this.gui.dialogs.selectFileToOpen({ 'caption': 'Select file to open', 'filter': '*.webp *.jpeg *.jpg *.png' }, '');
 
         if (filePath.isEmpty) {
             return;
@@ -282,7 +206,7 @@ export class ImagePicker extends Control {
     }
 
     importNewImage() {
-        const filePath = this.gui.dialogs.selectFileToOpen({ 'caption': 'Select file to open', 'filter': '*.webp *.jpeg *.jpg *.gif *.avif *.avifs *.png' }, '');
+        const filePath = this.gui.dialogs.selectFileToOpen({ 'caption': 'Select file to open', 'filter': '*.webp *.jpeg *.jpg *.png' }, '');
 
         if (filePath.isEmpty) {
             return;
@@ -396,15 +320,11 @@ export class ImagePicker extends Control {
 
     set value(value) {
         this.reset();
-        this.imagesData = JSON.parse(JSON.stringify(value.imagesData));
-        this.textEdit.value = value.textReference;
+        this.imagesData = JSON.parse(JSON.stringify(value));
         this.updateUi();
     }
 
     get value() {
-        return {
-            "imagesData": this.imagesData,
-            "textReference": this.textEdit.value
-        };
+        return this.imagesData;
     }
 }

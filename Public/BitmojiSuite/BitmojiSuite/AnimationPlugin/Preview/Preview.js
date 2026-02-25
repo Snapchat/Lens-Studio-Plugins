@@ -10,11 +10,15 @@ import { TransitionMenu } from "../Menu/TransitionMenu.js";
 import { blendAnimations, blendAnimationsPromise, getAnimationById } from "../api.js";
 import AssetLibImporter from "../Menu/assetLibImporter.js";
 export class Preview {
-    constructor() {
+    constructor(onProcessingStart, onProcessingEnd) {
         this.category = "";
         this.connections = [];
         this.assetId = "";
         this.isActive = true;
+        this.onProcessingStart = () => { };
+        this.onProcessingEnd = () => { };
+        this.onProcessingStart = onProcessingStart;
+        this.onProcessingEnd = onProcessingEnd;
         this.lbePreview = new LBEPreview();
         this.animationImporter = new AnimationImporter();
         this.transitionMenu = new TransitionMenu();
@@ -32,9 +36,11 @@ export class Preview {
         layout.setContentsMargins(0, 0, 0, 0);
         layout.spacing = 0;
         this.transitionMenuWidget = this.transitionMenu.create(widget);
-        layout.addWidgetWithStretch(this.createFooter(widget), 0, Ui.Alignment.AlignBottom);
+        this.footer = this.createFooter(widget);
+        layout.addWidgetWithStretch(this.footer, 0, Ui.Alignment.AlignBottom);
         layout.addWidgetWithStretch(this.transitionMenuWidget, 0, Ui.Alignment.AlignBottom);
         layout.addWidget(this.lbePreview.create(widget));
+        this.footer.toNativeWidget().visible = false;
         this.transitionMenuWidget.toNativeWidget().visible = false;
         const pluginSystem = dependencyContainer.get(DependencyKeys.PluginSystem);
         this.assetLibImporter = new AssetLibImporter(pluginSystem);
@@ -100,7 +106,7 @@ export class Preview {
     }
     async onImportTapped() {
         if (this.fbxPath) {
-            dependencyContainer.get(DependencyKeys.TransparentScreen).visible = true;
+            this.onProcessingStart();
             if (this.importButton) {
                 this.importButton.enabled = false;
             }
@@ -122,7 +128,7 @@ export class Preview {
             dependencyContainer.get(DependencyKeys.Main).editWithBitmojiComponent();
             dependencyContainer.get(DependencyKeys.AnimationLibrary).clearSelection();
             this.transitionMenuWidget.toNativeWidget().visible = false;
-            dependencyContainer.get(DependencyKeys.TransparentScreen).visible = false;
+            this.onProcessingEnd();
         }
     }
     async getStitchedAnimation(id) {
@@ -165,7 +171,13 @@ export class Preview {
         this.category = category;
         this.fbxPath = path;
         this.assetId = assetId;
-        if (this.importButton) {
+        if (this.transitionMenu.getNonEmptyTilesCount() > 1) {
+            this.importButton.visible = false;
+            this.blendButton.visible = true;
+        }
+        else {
+            this.importButton.visible = true;
+            this.blendButton.visible = false;
             this.importButton.enabled = true;
         }
     }
@@ -176,12 +188,14 @@ export class Preview {
         }
     }
     onLibraryShown() {
-        if (this.transitionMenuWidget) {
+        if (this.footer && this.transitionMenuWidget) {
+            this.footer.toNativeWidget().visible = true;
             this.transitionMenuWidget.toNativeWidget().visible = true;
         }
     }
     onLibraryHidden() {
-        if (this.transitionMenuWidget) {
+        if (this.footer && this.transitionMenuWidget) {
+            this.footer.toNativeWidget().visible = false;
             this.transitionMenuWidget.toNativeWidget().visible = false;
         }
     }
@@ -200,8 +214,10 @@ export class Preview {
     }
     onNewTileClicked() {
         var _a;
-        this.importButton.visible = false;
-        this.blendButton.visible = true;
+        if (this.transitionMenu.getNonEmptyTilesCount() > 1) {
+            this.importButton.visible = false;
+            this.blendButton.visible = true;
+        }
         (_a = this.lbePreview) === null || _a === void 0 ? void 0 : _a.sendMessage({
             "event_type": "reset_animation"
         });
@@ -209,15 +225,22 @@ export class Preview {
     onTransitionTileRemoved() {
         var _a;
         const visibleTilesCnt = this.transitionMenu.getVisibleTilesCount();
+        const nonEmptyTilesCount = this.transitionMenu.getNonEmptyTilesCount();
+        if (nonEmptyTilesCount == 1) {
+            this.blendButton.visible = false;
+            this.importButton.visible = true;
+            this.importButton.enabled = true;
+        }
+        else if (nonEmptyTilesCount == 0) {
+            this.blendButton.visible = false;
+            this.importButton.visible = true;
+            this.importButton.enabled = false;
+        }
         if (visibleTilesCnt == 0) {
             this.importButton.visible = false;
             (_a = this.lbePreview) === null || _a === void 0 ? void 0 : _a.sendMessage({
                 "event_type": "reset_animation"
             });
-        }
-        else if (visibleTilesCnt === 1) {
-            this.blendButton.visible = false;
-            this.importButton.visible = true;
         }
     }
     deinit() {

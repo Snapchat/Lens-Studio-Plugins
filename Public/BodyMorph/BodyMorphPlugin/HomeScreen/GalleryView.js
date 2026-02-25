@@ -242,8 +242,7 @@ export class GalleryView {
                                                 'uploadUid': this.items[i].uploadUid,
                                                 'uploadUrl': this.items[i].uploadUrl,
                                                 'costume_only': this.items[i].settings.costume_only,
-                                                'object_url': this.items[i].objectLsUrl,
-                                                'userNotes': this.items[i].userNotes,
+                                                'object_url': this.items[i].objectLsUrl
                                             });
                                         }
 
@@ -267,8 +266,7 @@ export class GalleryView {
                                         'uploadUid': this.items[i].uploadUid,
                                         'uploadUrl': this.items[i].uploadUrl,
                                         'costume_only': this.items[i].settings.costume_only,
-                                        'object_url': this.items[i].objectLsUrl,
-                                        'userNotes': this.items[i].userNotes,
+                                        'object_url': this.items[i].objectLsUrl
                                     });
 
                                     if (this.items[i].state === "SUCCESS") {
@@ -289,8 +287,7 @@ export class GalleryView {
                                     'uploadUid': this.items[i].uploadUid,
                                     'uploadUrl': this.items[i].uploadUrl,
                                     'costume_only': this.items[i].settings.costume_only,
-                                    'object_url': this.items[i].objectLsUrl,
-                                    'userNotes': this.items[i].userNotes,
+                                    'object_url': this.items[i].objectLsUrl
                                 });
                                 app.log('', { 'enabled': false });
                                 this.movieViews[i].animated = true;
@@ -452,8 +449,7 @@ export class GalleryView {
                         'uploadUid': this.items[i].uploadUid,
                         'uploadUrl': this.items[i].uploadUrl,
                         'costume_only': this.items[i].settings.costume_only,
-                        'object_url': null,
-                        'userNotes': this.items[i].userNotes,
+                        'object_url': null
                     });
                     app.log('', { 'enabled': false });
                 }.bind(this));
@@ -483,8 +479,7 @@ export class GalleryView {
                         'uploadUid': this.items[i].uploadUid,
                         'uploadUrl': this.items[i].uploadUrl,
                         'costume_only': this.items[i].settings.costume_only,
-                        'object_url': null,
-                        'userNotes': this.items[i].userNotes,
+                        'object_url': null
                     });
                     app.log('', { 'enabled': false });
                 }.bind(this));

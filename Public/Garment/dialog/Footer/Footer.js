@@ -92,11 +92,14 @@ export class Footer {
 
         this.regenerateButton = new Ui.PushButton(this.footer);
         this.regenerateButton.text = 'Regenerate';
+        const regenerateImagePath = import.meta.resolve('../Resources/regenerate.svg');
+        this.regenerateButton.setIconWithMode(Editor.Icon.fromFile(regenerateImagePath), Ui.IconMode.MonoChrome);
         this.regenerateButton.visible = false;
         this.regenerateButton.enabled = false;
 
         this.generateButton = new Ui.PushButton(this.footer);
         this.generateButton.text = 'Generate texture';
+        this.generateButton.setFixedHeight(20);
         this.generateButton.visible = true;
         this.generateButton.enabled = false;
 
@@ -110,7 +113,7 @@ export class Footer {
         this.stackedWidget.addWidget(this.generateButton);
         this.stackedWidget.addWidget(this.importToProjectButton);
         this.stackedWidget.currentIndex = 0;
-        this.stackedWidget.setFixedHeight(18);
+        this.stackedWidget.setFixedHeight(20);
 
         footerLeft.addWidgetWithStretch(this.regenerateButton, 0, Ui.Alignment.AlignLeft);
         footerRight.addWidgetWithStretch(this.stackedWidget, 0, Ui.Alignment.AlignRight);

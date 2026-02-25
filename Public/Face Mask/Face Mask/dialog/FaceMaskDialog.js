@@ -11,6 +11,7 @@ export class FaceMaskDialog {
     constructor(dialog) {
         this.connections = [];
         this.isActive = false;
+        this.lastPrompt = "";
         this.connections = [];
         this.width = UIConfig.DIALOG.WIDTH;
         this.height = UIConfig.DIALOG.HEIGHT;
@@ -61,6 +62,7 @@ export class FaceMaskDialog {
             else {
                 origin = EVENT_CREATE_ASSET.ORIGIN.REGENERATE;
             }
+            this.lastPrompt = this.creationMenu.controls["prompt"].value;
             await app.generator.generate({
                 prompt: this.creationMenu.controls["prompt"].value,
                 negativePrompt: this.creationMenu.controls["negativePrompt"].value,
@@ -72,7 +74,7 @@ export class FaceMaskDialog {
         if (app.generator && app.generator.textureBytes) {
             this.footer.importToProjectButton.enabled = false;
             this.footer.importToProjectButton.text = "Importing...";
-            app.importer.import(app.generator.textureBytes).then(() => {
+            app.importer.importTextureAndCreateFaceMask(app.generator.textureBytes, this.lastPrompt).then(() => {
                 var _a;
                 logEventAssetImport(EVENT_STATUS.SUCCESS);
                 app.notificationManager.showNotification(NotificationKey.InfoImportSuccess);

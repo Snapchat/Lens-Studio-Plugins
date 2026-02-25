@@ -80,7 +80,8 @@ export class IconGenerator {
         this.generator.generate({
             "prompt": prompt,
             "promptDecorator": promptDecorator,
-            "size": size
+            "size": size,
+            "frame": false
         });
     }
 

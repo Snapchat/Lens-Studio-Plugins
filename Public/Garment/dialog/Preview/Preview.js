@@ -69,7 +69,7 @@ export class Preview {
         this.state = PreviewState.HomeScreen;
 
         this.logo.visible = true;
-        this.disclaimer.text = '<center>You don\'t have any generated effects yet.<br>Try creating a new one!</center>';
+        this.disclaimer.text = '<center>Try creating a new effect!</center>';
         this.welcomeText.visible = true;
         this.disclaimer.visible = true;
         this.ctaButton.visible = false;
@@ -93,7 +93,7 @@ export class Preview {
 
         this.logo.visible = false;
         this.welcomeText.visible = false;
-        this.disclaimer.text = '<center>Generating preview...<br> This may take up to 10 seconds.</center>';
+        this.disclaimer.text = '<center>Generating preview...<br> This may take up to 7 seconds.</center>';
         this.disclaimer.visible = true;
         this.ctaButton.visible = false;
         this.loading.visible = true;

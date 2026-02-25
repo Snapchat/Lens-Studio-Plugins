@@ -28,7 +28,7 @@ export class SpinBox extends Control {
         layout.addWidget(this.mLabel);
 
         if (hint) {
-            const infoIconImage = new Ui.Pixmap(new Editor.Path(import.meta.resolve('../../Resources/info.svg')));
+            const infoIconImage = new Ui.Pixmap(new Editor.Path(import.meta.resolve('../../Resources/info_icon.svg')));
             const toolTip = new Ui.ImageView(this.mWidget);
 
             toolTip.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
@@ -88,6 +88,16 @@ export class SpinBox extends Control {
 
     get value() {
         return this.mControl.value;
+    }
+
+    show() {
+        this.mControl.enabled = true;
+        this.mRandomizer.enabled = true;
+    }
+
+    hide() {
+        this.mControl.enabled = false;
+        this.mRandomizer.enabled = false;
     }
 }
 

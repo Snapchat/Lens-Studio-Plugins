@@ -396,18 +396,38 @@ export class EffectSettings {
     }
     importToProject() {
         if (this.settings[this.curId].packId) {
-            this.importer.importToProject(this.settings[this.curId].packId);
+            this.importWithPreview(this.settings[this.curId]);
         }
+    }
+    importWithPreview(settings) {
+        const previewCnt = Math.min(settings.previews.length, 5);
+        const downloadPromises = [];
+        for (let i = 0; i < previewCnt; i++) {
+            const url = settings.previews[i].targetImageUrl;
+            const promise = new Promise((resolve) => {
+                this.downloadPreview(url, "hint_preview_" + i, (response) => {
+                    resolve(response);
+                });
+            });
+            downloadPromises.push(promise);
+        }
+        Promise.all(downloadPromises)
+            .then((responses) => {
+            this.importer.importToProject(settings.packId, responses);
+        })
+            .catch((error) => {
+            console.error("Error downloading previews:", error);
+        });
     }
     importById(id) {
         if (this.settings[id] && this.settings[id].packId) {
-            this.importer.importToProject(this.settings[id].packId);
+            this.importWithPreview(this.settings[id]);
         }
         else {
             getDreamByID(id, (response) => {
                 if (response.statusCode == 200) {
                     this.settings[id] = JSON.parse(response.body);
-                    this.importer.importToProject(this.settings[id].packId);
+                    this.importWithPreview(this.settings[id]);
                 }
             });
         }

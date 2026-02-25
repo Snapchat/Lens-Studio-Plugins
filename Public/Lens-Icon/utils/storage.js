@@ -9,6 +9,10 @@ export class Storage {
         }
     }
 
+    get path() {
+        return this.directory.path;
+    }
+
     createFile(name, content) {
         const filePath = this.directory.path.appended(name);
 

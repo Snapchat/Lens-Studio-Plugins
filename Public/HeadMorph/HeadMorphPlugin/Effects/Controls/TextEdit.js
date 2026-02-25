@@ -63,6 +63,10 @@ export class TextEdit extends Control {
     }
 
     set value(value) {
+        if (!value) {
+            value = "";
+        }
+
         this.mControl.plainText = value;
     }
 

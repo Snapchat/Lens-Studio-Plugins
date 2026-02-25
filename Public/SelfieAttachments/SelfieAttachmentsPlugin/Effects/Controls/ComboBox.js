@@ -37,6 +37,14 @@ export class ComboBox extends Control {
     get value() {
         return this.mControl.currentText;
     }
+
+    show() {
+        this.mWidget.enabled = true;
+    }
+
+    hide() {
+        this.mWidget.enabled = false;
+    }
 }
 
 export function createComboBox(scheme) {

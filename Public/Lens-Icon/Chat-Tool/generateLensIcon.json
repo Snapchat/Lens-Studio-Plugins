@@ -1,0 +1,32 @@
+{
+    "displayName": "Generate Lens Icon",
+    "canBeReferencedInPrompt": true,
+    "description": "",
+    "icon": "$(files)",
+    "name": "GenerateLensIcon",
+    "tags": [
+        "generate",
+        "icon",
+        "lens icon",
+        "create icon",
+        "create lens icon",
+        "lens studio icon"
+    ],
+    "modelDescription": "Generates image for lens icon based on text prompt and sets it to project metainfo.",
+    "inputSchema": {
+        "type": "object",
+        "required": [
+            "prompt"
+        ],
+        "properties": {
+            "prompt": {
+                "type": "string",
+                "modelDescription": "Descriptive text prompt for the lens icon generation. (e.g. hot-dog, dog, dragon, art, anime, etc.)"
+            }
+        }
+    },
+    "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false
+    }
+}

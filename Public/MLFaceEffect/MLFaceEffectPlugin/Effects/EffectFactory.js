@@ -79,14 +79,12 @@ export function buildEffectDataFromPreset(preset, controls) {
         request.settings[key] = presets[preset][key];
     }
 
-    request.userNotes = controls["userNotes"].value;
-
     return request;
 }
 
 export function buildEffectDataFromResponse(response, controls) {
     const request = {
-        'userNotes': response.userNotes,
+        'userNotes': '',
         'settings': {
             'eye_pupil_location_preserve': response.settings.eye_pupil_location_preserve
         }
@@ -105,8 +103,6 @@ export function buildEffectDataFromResponse(response, controls) {
     for (const key in presets['Default']) {
         request.settings[key] = response.settings[key];
     }
-
-    request.userNotes = controls["userNotes"].value;
 
     return request;
 }

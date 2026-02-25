@@ -379,21 +379,6 @@ export class SettingsDescriptor {
                             }
                         }
                     ]
-                },
-                {
-                    'type': 'separator',
-                    'parent': parent,
-                },
-                {
-                    'type': 'control',
-                    'class': UserNotesPicker,
-                    'parent': parent,
-                    'name': 'userNotes',
-                    'label': 'User notes',
-                    'importer': null,
-                    'exporter': null,
-                    'preset_based': false,
-                    'placeholder': "Enter user notes here..."
                 }
             ]
         };

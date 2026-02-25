@@ -4,20 +4,25 @@ import { tieWidgets, convertDate, createGuidelinesWidget } from '../utils.js';
 import { PromptPicker, createPromptPicker } from '../Effects/Controls/PromptPicker.js';
 import { ImageReferencePicker, createImageReferencePicker } from '../Effects/Controls/ImageReferencePicker.js';
 import { SpinBox, createSpinBox } from '../Effects/Controls/SpinBox.js';
+import { ComboBox, createComboBox } from '../Effects/Controls/ComboBox.js';
 import { SettingsDescriptor } from '../Effects/SettingsDescriptor.js';
-import { createAsset, getAsset } from '../api.js';
-import { buildAssetData } from '../Effects/EffectFactory.js';
+import { createAsset, getAsset, addAnimationToAsset, copyAnimation } from '../api.js';
+import { buildAssetData, buildAnimationUpdateData } from '../Effects/EffectFactory.js';
 
 import app from '../../application/app.js';
 
 import { logEventAssetCreation } from '../../application/analytics.js';
 
 export class PreviewMenu {
-    constructor(onStateChanged, resetParent) {
+    constructor(onStateChanged, resetParent, showImportButton, hideImportButton) {
         this.connections = [];
         this.onStateChanged = onStateChanged;
         this.controls = {};
         this.resetParent = resetParent;
+        this.showImportButton = showImportButton;
+        this.hideImportButton = hideImportButton;
+        this.wasEditEffectClicked = false;
+        this.wasUpdateAnimationClicked = false;
     }
 
     modifyAsset(controls) {
@@ -26,9 +31,10 @@ export class PreviewMenu {
 
         let inputFormat = controls["imageReferencePicker"].value.length > 0 ? "PROMPT_IMAGE" : "PROMPT_TEXT";
 
-        const settings = buildAssetData(controls, true);
+        const settings = buildAssetData(controls);
 
         createAsset(settings, (response) => {
+            this.editEffectButton.enabled = true;
             if (response.statusCode == 200) {
                 logEventAssetCreation("SUCCESS", "UPDATE_EXISTING", inputFormat, "GENERATE_PREVIEW");
                 const responseBody = JSON.parse(response.body.toString());
@@ -37,9 +43,10 @@ export class PreviewMenu {
                 this.onStateChanged({
                     'assetData': responseBody,
                     'settings': settings,
-                    'created_on': this.createdOnValue.text,
+                    // 'created_on': this.createdOnValue.text,
                     'screen': 'preview',
-                    'sub_screen': 'draft_mesh'
+                    'sub_screen': 'draft_mesh',
+                    'updateOnlyAnimation': false
                 });
 
                 app.log('', { 'enabled': false });
@@ -59,18 +66,142 @@ export class PreviewMenu {
         });
     }
 
+    modifyAnimation(controls) {
+        this.updateAnimationButton.enabled = false;
+
+        const settings = buildAnimationUpdateData(controls);
+
+        addAnimationToAsset(this.asset_id, settings, (response) => {
+            if (response.statusCode == 200) {
+                //logEventAssetCreation("SUCCESS", "UPDATE_EXISTING", inputFormat, "GENERATE_PREVIEW");
+                getAsset(this.asset_id, (responseBody) => {
+                    this.updateAnimationButton.enabled = true;
+
+                    this.draftMeshState = true;
+
+                    this.onStateChanged({
+                        'assetData': responseBody,
+                        'settings': buildAssetData(controls),
+                        // 'created_on': this.createdOnValue.text,
+                        'screen': 'preview',
+                        'sub_screen': 'draft_mesh',
+                        'updateOnlyAnimation': true,
+                    });
+
+                    app.log('', { 'enabled': false });
+                });
+            } else if (response.statusCode == 400) {
+                this.updateAnimationButton.enabled = true;
+                // logEventAssetCreation("GUIDELINES_VIOLATION", "UPDATE_EXISTING", inputFormat, "GENERATE_PREVIEW");
+                app.log('The result violates our community guidelines');
+                this.updateEditButtonVisibility();
+            } else if (response.statusCode == 429) {
+                this.updateAnimationButton.enabled = true;
+                // logEventAssetCreation("RATE_LIMITED", "UPDATE_EXISTING", inputFormat, "GENERATE_PREVIEW");
+                app.log('You have reached the limit for attachment creation, please try again later.');
+                this.updateEditButtonVisibility();
+            } else {
+                this.updateAnimationButton.enabled = true;
+                //logEventAssetCreation("FAILED", "UPDATE_EXISTING", inputFormat, "GENERATE_PREVIEW");
+                app.log('Something went wrong, please try again.');
+                this.updateEditButtonVisibility();
+            }
+        });
+    }
+
+    copyAnimationFromAsset(controls) {
+        this.editEffectButton.enabled = false;
+        app.log('Creating new asset...', { 'progressBar': true });
+
+        let inputFormat = controls["imageReferencePicker"].value.length > 0 ? "PROMPT_IMAGE_ANIMATION" : "PROMPT_TEXT_ANIMATION";
+
+        const settings = buildAnimationUpdateData(controls);
+
+        copyAnimation(this.asset_id, settings, (response) => {
+            this.updateAnimationButton.enabled = true;
+
+            if (response.statusCode == 200) {
+                logEventAssetCreation("SUCCESS", "UPDATE_EXISTING", inputFormat, "GENERATE_PREVIEW");
+                const responseBody = JSON.parse(response.body.toString());
+
+                this.draftMeshState = true;
+                this.onStateChanged({
+                    'assetData': responseBody,
+                    'settings': buildAssetData(controls),
+                    'screen': 'preview',
+                    'sub_screen': 'draft_mesh',
+                    'updateOnlyAnimation': true,
+                });
+
+                app.log('', { 'enabled': false });
+            } else if (response.statusCode == 400) {
+                logEventAssetCreation("GUIDELINES_VIOLATION", "UPDATE_EXISTING", inputFormat, "GENERATE_PREVIEW");
+                app.log('The result violates our community guidelines');
+                this.updateEditButtonVisibility();
+            } else if (response.statusCode == 429) {
+                logEventAssetCreation("RATE_LIMITED", "UPDATE_EXISTING", inputFormat, "GENERATE_PREVIEW");
+                app.log('You have reached the limit for attachment creation, please try again later.');
+                this.updateEditButtonVisibility();
+            } else {
+                logEventAssetCreation("FAILED", "UPDATE_EXISTING", inputFormat, "GENERATE_PREVIEW");
+                app.log('Something went wrong, please try again.');
+                this.updateEditButtonVisibility();
+            }
+        });
+    }
+
+    onChangeAnimationClicked(controls) {
+        app.log('Changing animation...', { 'progressBar': true });
+        getAsset(this.asset_id, (asset) => {
+            if (asset.selectedDrivingAnimationId != null) {
+                this.copyAnimationFromAsset(controls);
+            } else {
+                this.modifyAnimation(controls);
+            }
+        });
+    }
+
+    onReturn() {
+        this.controls['promptPicker'].show();
+        this.controls['imageReferencePicker'].show();
+        this.controls['stylePicker'].show();
+        this.controls['animationPromptPicker'].show();
+        this.controls['seedPicker'].show();
+        this.controls['stylePicker'].show();
+        this.editEffectButton.visible = true;
+        this.updateAnimationButton.visible = true;
+        this.showImportButton();
+    }
+
     fillSettings(settings) {
         // choose model type
 
         this.controls['promptPicker'].value = settings.prompt;
         this.controls['seedPicker'].value = settings.seed;
+        this.controls['animationPromptPicker'].value = settings.promptAnimation;
+        if (settings.style) {
+            this.controls['stylePicker'].value = settings.style;
+        }
+        if (settings.promptAnimation != null) {
+            this.updateAnimationButton.text = "Change animation";
+        }
+        else {
+            this.updateAnimationButton.text = "Add animation";
+        }
+
+        this.controls['stylePicker'].value = settings.style;
+
+        this.editEffectButton.visible = true;
+        this.updateAnimationButton.visible = true;
+        this.wasEditEffectClicked = false;
+        this.wasUpdateAnimationClicked = false;
+        this.showImportButton();
     }
 
     reset() {
     }
 
     updatePreview(state) {
-        this.createdOnValue.text = convertDate(state.created_on);
         this.asset_id = state.asset_id;
         this.status = state.status;
 
@@ -88,11 +219,23 @@ export class PreviewMenu {
         });
 
         this.updateEditButtonVisibility();
+
+        this.controls['promptPicker'].hide();
+        this.controls['imageReferencePicker'].hide();
+        this.controls['stylePicker'].hide();
+        this.controls['animationPromptPicker'].hide();
+        this.controls['seedPicker'].hide();
+        this.controls['stylePicker'].hide();
+
+        this.updateAnimationButton.enabled = state.object_url != null;
     }
 
     createHeader(parent) {
         this.header = new Ui.Widget(parent);
         this.header.setFixedHeight(33);
+
+        this.header.autoFillBackground = true;
+        this.header.backgroundRole = Ui.ColorRole.Base;
 
         const headerLayout = new Ui.BoxLayout();
         headerLayout.setDirection(Ui.Direction.LeftToRight);
@@ -117,41 +260,97 @@ export class PreviewMenu {
         }.bind(this)));
 
         this.headerTitle = new Ui.Label(this.header);
-        this.headerTitle.text = 'Selfie Attachments';
+        this.headerTitle.text = 'Attachment Settings';
         this.headerTitle.fontRole = Ui.FontRole.TitleBold;
+        this.headerTitle.foregroundRole = Ui.ColorRole.BrightText;
 
         headerLayout.addWidget(this.backButton);
-        headerLayout.addStretch(0);
         headerLayout.addWidget(this.headerTitle);
         headerLayout.addStretch(0);
+
+        this.deleteButton = new Ui.PushButton(this.header);
+        this.deleteButton.setFixedHeight(20);
+        this.deleteButton.text = '';
+        const deleteImagePath = new Editor.Path(import.meta.resolve('../Resources/delete.svg'));
+        this.deleteButton.setIconWithMode(Editor.Icon.fromFile(deleteImagePath), Ui.IconMode.MonoChrome);
+
+        headerLayout.addWidgetWithStretch(this.deleteButton, 0, Ui.Alignment.AlignRight | Ui.Alignment.AlignCenter);
 
         this.header.layout = headerLayout;
         return this.header;
     }
 
+    getDeleteButton() {
+        return this.deleteButton;
+    }
+
     createFooter(parent) {
         this.footer = new Ui.Widget(parent);
-        this.footer.setFixedHeight(65);
+        this.footer.setFixedHeight(56);
+
+        this.footer.autoFillBackground = true;
+        this.footer.backgroundRole = Ui.ColorRole.Base;
 
         const footerLayout = new Ui.BoxLayout();
         footerLayout.setDirection(Ui.Direction.LeftToRight);
-        footerLayout.setContentsMargins(8, 12, 8, 8);
+        footerLayout.setContentsMargins(16, 0, 8, 0);
 
         this.editEffectButton = new Ui.PushButton(this.footer);
-        this.editEffectButton.text = 'Update Attachment';
-        const editImagePath = new Editor.Path(import.meta.resolve('../Resources/edit.svg'));
-        this.editEffectButton.setIconWithMode(Editor.Icon.fromFile(editImagePath), Ui.IconMode.MonoChrome);
+        this.editEffectButton.text = 'Change attachment';
+
+        this.updateAnimationButton = new Ui.PushButton(this.footer);
+        this.updateAnimationButton.text = 'Change animation';
 
         this.connections.push(this.editEffectButton.onClick.connect(() => {
-            this.modifyAsset(this.controls);
+            this.wasEditEffectClicked = true;
+            this.controls['promptPicker'].show();
+            this.controls['imageReferencePicker'].show();
+            this.controls['stylePicker'].show();
+            this.controls['animationPromptPicker'].show();
+            this.controls['seedPicker'].show();
+            this.controls['stylePicker'].show();
+
+            this.editEffectButton.visible = false;
+            this.updateAnimationButton.visible = false;
+            this.previewAnimationsButton.text = "Generate previews"
+            this.hideImportButton();
         }));
 
-        footerLayout.addStretch(0);
-        footerLayout.addWidgetWithStretch(this.editEffectButton, 0, Ui.Alignment.AlignTop);
+        this.connections.push(this.updateAnimationButton.onClick.connect(() => {
+            this.wasUpdateAnimationClicked = true;
+            this.controls['animationPromptPicker'].show();
+            this.editEffectButton.visible = false;
+            this.updateAnimationButton.visible = false;
+            this.previewAnimationsButton.text = "Preview animations"
+            this.hideImportButton();
+        }));
+
+        // footerLayout.addStretch(0);
+        footerLayout.addWidgetWithStretch(this.editEffectButton, 0, Ui.Alignment.AlignLeft | Ui.Alignment.AlignCenter);
+        footerLayout.addWidgetWithStretch(this.updateAnimationButton, 0, Ui.Alignment.AlignLeft | Ui.Alignment.AlignCenter);
         footerLayout.addStretch(0);
 
         this.footer.layout = footerLayout;
         return this.footer;
+    }
+
+    setPreviewAnimationsButton(button) {
+        this.previewAnimationsButton = button;
+        this.connections.push(this.previewAnimationsButton.onClick.connect(() => {
+            this.controls['promptPicker'].hide();
+            this.controls['imageReferencePicker'].hide();
+            this.controls['stylePicker'].hide();
+            this.controls['animationPromptPicker'].hide();
+            this.controls['seedPicker'].hide();
+            this.controls['stylePicker'].hide();
+
+            if (this.wasEditEffectClicked) {
+                this.modifyAsset(this.controls);
+            }
+            else if (this.wasUpdateAnimationClicked) {
+                this.onChangeAnimationClicked(this.controls);
+            }
+        }))
     }
 
     updateEditButtonVisibility() {
@@ -161,28 +360,17 @@ export class PreviewMenu {
     createMenu(parent) {
         this.menu = new Ui.Widget(parent);
 
+        this.menu.autoFillBackground = true;
+        this.menu.backgroundRole = Ui.ColorRole.Base;
+
         this.menuLayout = new Ui.BoxLayout();
 
         this.menuLayout.setDirection(Ui.Direction.TopToBottom);
-
-        // Created on settings
-        const createdOnSettings = new Ui.Widget(this.menu);
-
-        const createdOnLabel = new Ui.Label(createdOnSettings);
-        createdOnLabel.text = 'Created on';
-
-        this.createdOnValue = new Ui.Label(createdOnSettings);
-        this.createdOnValue.autoFillBackground = true;
-        this.createdOnValue.backgroundRole = Ui.ColorRole.Light;
-        this.createdOnValue.setContentsMargins(8, 4, 8, 4);
-
-        tieWidgets(createdOnLabel, this.createdOnValue, createdOnSettings);
 
         // Settings
         const guidelines = createGuidelinesWidget(this.menu);
 
         this.menuLayout.addWidget(guidelines);
-        this.menuLayout.addWidget(createdOnSettings);
 
         const createControl = (scheme) => {
             switch (scheme.class) {
@@ -194,6 +382,9 @@ export class PreviewMenu {
                     break;
                 case SpinBox:
                     this.controls[scheme.name] = createSpinBox(scheme);
+                    break;
+                case ComboBox:
+                    this.controls[scheme.name] = createComboBox(scheme);
                     break;
             }
 
@@ -258,6 +449,15 @@ export class PreviewMenu {
 
         this.controls['imageReferencePicker'].addOnValueChanged((value) => {
             this.updateEditButtonVisibility();
+
+            // When an image is uploaded, disable the style picker and set to Default
+            // When the image is cleared, enable the style picker
+            if (value.length > 0) {
+                this.controls['stylePicker'].value = 'Default';
+                this.controls['stylePicker'].enabled = false;
+            } else {
+                this.controls['stylePicker'].enabled = true;
+            }
         });
 
         this.menuLayout.addStretch(0);
@@ -272,7 +472,7 @@ export class PreviewMenu {
         const verticalScrollArea = new Ui.VerticalScrollArea(this.menu);
         verticalScrollArea.setWidget(scrollWidget);
         verticalScrollArea.setFixedHeight(520);
-        verticalScrollArea.setFixedWidth(320);
+        verticalScrollArea.setFixedWidth(378);
         const scrollLayout = new Ui.BoxLayout();
         scrollLayout.setDirection(Ui.Direction.TopToBottom);
         scrollLayout.setContentsMargins(0, 0, 0, 0);
@@ -288,7 +488,7 @@ export class PreviewMenu {
 
     create(parent) {
         this.widget = new Ui.Widget(parent);
-        this.widget.setFixedWidth(320);
+        this.widget.setFixedWidth(378);
         this.widget.setFixedHeight(620);
 
         this.widget.setContentsMargins(0, 0, 0, 0);
@@ -302,10 +502,6 @@ export class PreviewMenu {
         this.layout.setContentsMargins(0, 0, 0, 0);
 
         this.layout.addWidget(header);
-        const separator1 = new Ui.Separator(Ui.Orientation.Horizontal, Ui.Shadow.Plain, this.widget);
-        separator1.setFixedHeight(Ui.Sizes.SeparatorLineWidth);
-
-        this.layout.addWidget(separator1);
         this.layout.addWidget(menu);
         this.layout.addStretch(0);
 

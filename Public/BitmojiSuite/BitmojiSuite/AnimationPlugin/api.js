@@ -16,11 +16,18 @@ export function getMyAnimations(callback, pageToken, filter) {
         request.url += '&pageToken=' + pageToken;
     }
     Network.performAuthorizedHttpRequest(request, (response) => {
+        let data;
+        try {
+            data = JSON.parse(response.body);
+        }
+        catch (e) {
+            return;
+        }
         //@ts-ignore
-        if (JSON.parse(response.body).nextPageToken) {
+        if (data === null || data === void 0 ? void 0 : data.nextPageToken) {
             callback(response, true);
             //@ts-ignore
-            getMyAnimations(callback, JSON.parse(response.body).nextPageToken.toString(), filter);
+            getMyAnimations(callback, data.nextPageToken.toString(), filter);
         }
         else {
             callback(response, false);

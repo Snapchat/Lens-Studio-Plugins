@@ -39,6 +39,7 @@ export class TextPromptMode {
         const clearButton = new Ui.ImageView(widget);
         clearButton.pixmap = this.inactiveTrashCanIcon;
         clearButton.responseHover = true;
+        clearButton.scaledContents = true;
         clearButton.setFixedWidth(20);
         clearButton.setFixedHeight(20);
         textEditButtonsLayout.addWidget(surpriseMeButton);

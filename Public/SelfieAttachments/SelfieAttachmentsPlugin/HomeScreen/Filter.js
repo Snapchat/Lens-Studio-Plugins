@@ -49,7 +49,7 @@ export class Filter {
 
     loadUi(schema) {
         this.actions[ALL_FILTER_ID] = {};
-        this.actions[ALL_FILTER_ID][ALL_FILTER_ID] = this.createAction(this.filterMenu, 'All Effects', (toggled) => {
+        this.actions[ALL_FILTER_ID][ALL_FILTER_ID] = this.createAction(this.filterMenu, 'All Attachments', (toggled) => {
             this.updateCheck(true, ALL_FILTER_ID, ALL_FILTER_ID);
         });
 

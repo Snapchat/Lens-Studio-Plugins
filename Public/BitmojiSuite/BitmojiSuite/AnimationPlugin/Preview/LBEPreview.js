@@ -52,11 +52,6 @@ export class LBEPreview {
         imageInput.file = new Editor.Path(import.meta.resolve('./Resources/lbeBackground.png'));
         imageInput.fps = 30;
         imageInput.paused = false;
-        const loadOptions = new LensBasedEditorView.LoadOptions();
-        loadOptions.lens = new Editor.Path(import.meta.resolve("AnimationPreview.zip"));
-        loadOptions.input = imageInput;
-        loadOptions.ignoredTypes = this.ignoredTypes;
-        loadOptions.useOverlayOutput = false;
         layout.addNativeWidget(this.view);
         widget.layout = layout;
         this.view.onStateChanged.connect((state) => {
@@ -67,7 +62,12 @@ export class LBEPreview {
             }
         });
         widget.toNativeWidget().onShow.connect(() => {
-            this.view.load(loadOptions);
+            this.view.load({
+                lens: import.meta.resolve("AnimationPreview.zip"),
+                input: imageInput,
+                ignoredTypes: this.ignoredTypes,
+                useOverlayOutput: false
+            });
         });
         return widget;
     }

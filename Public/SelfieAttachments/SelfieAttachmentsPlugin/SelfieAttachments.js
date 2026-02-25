@@ -133,6 +133,9 @@ export class SelfieAttachmentsPlugin {
     configureDialog() {
         this.views = new Ui.StackedWidget(this.dialog);
 
+        this.views.autoFillBackground = true;
+        this.views.backgroundRole = Ui.ColorRole.Base;
+
         this.views.addWidget(this.homeScreen.create(this.views));
         this.views.addWidget(this.preview.create(this.views));
 
@@ -141,8 +144,10 @@ export class SelfieAttachmentsPlugin {
         this.errorScreen = new Ui.StatusIndicator('Error happend', this.dialog);
 
         this.errorScreen.setFixedWidth(800);
+        this.errorScreen.setFixedHeight(18);
+
         const positionX = 800 / 2 - this.errorScreen.width / 2;
-        const positionY = 600;
+        const positionY = 602;
         this.errorScreen.move(positionX, positionY);
 
         this.hideError();

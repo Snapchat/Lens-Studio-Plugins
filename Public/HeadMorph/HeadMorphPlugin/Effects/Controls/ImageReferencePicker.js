@@ -1,11 +1,7 @@
 import * as Ui from 'LensStudio:Ui';
-
-import { tieWidgets, getRandomPrompt } from '../../utils.js';
 import { Control } from './Control.js';
-
-import { TabSelection } from './TabSelection.js';
-import { TextEdit } from './TextEdit.js';
 import { ImagePicker } from './ImagePicker.js';
+import { getHintFactory } from '../../Hints/HintFactory.js';
 
 export const PromptPickerMode = {
     Text: 0,
@@ -13,7 +9,7 @@ export const PromptPickerMode = {
 };
 
 export class ImageReferencePicker extends Control {
-    constructor(parent, label, valueImporter, valueExporter) {
+    constructor(parent, label, valueImporter, valueExporter, hint) {
         super(parent, null, valueImporter, valueExporter);
         this.connections = [];
 
@@ -22,10 +18,10 @@ export class ImageReferencePicker extends Control {
         layout.spacing = Ui.Sizes.Padding;
         layout.setContentsMargins(0, 0, 0, 0);
 
-        const promptHeaderWidget = this['createPromptHeaderWidget'](this.widget, label);
+        const promptHeaderWidget = this['createPromptHeaderWidget'](this.widget, label, hint);
 
         this.imagePicker = new ImagePicker(this.widget, null, null, null);
-        this.imagePicker.widget.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Expanding);
+        this.imagePicker.widget.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
         this.imagePicker.addOnValueChanged((value) => {
             this.mOnValueChanged.forEach((callback) => callback(value));
         });
@@ -58,29 +54,66 @@ export class ImageReferencePicker extends Control {
         return this.imagePicker.value;
     }
 
-    ['createPromptHeaderWidget'](parent, label) {
+    ['createPromptHeaderWidget'](parent, label, hint) {
         const promptHeaderWidget = new Ui.Widget(parent);
         const promptHeaderLayout = new Ui.BoxLayout();
         promptHeaderLayout.setDirection(Ui.Direction.LeftToRight);
 
-        const promptLabel = new Ui.Label(promptHeaderWidget);
-        promptLabel.text = label;
+        this.radioButton = new Ui.RadioButton(promptHeaderWidget);
+        this.radioButton.text = label;
+        promptHeaderLayout.addWidget(this.radioButton);
 
-        this.optionalLabel = new Ui.Label(promptHeaderWidget);
-        this.optionalLabel.text = 'Optional';
-        this.optionalLabel.fontRole = Ui.FontRole.DefaultItalic;
+        if (hint) {
+            const infoIconImage = new Ui.Pixmap(new Editor.Path(import.meta.resolve('../../Resources/info_icon.svg')));
+            const promptToolTip = new Ui.ImageView(promptHeaderWidget);
 
-        promptHeaderLayout.addWidget(promptLabel);
+            promptToolTip.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
+            promptToolTip.setFixedHeight(Ui.Sizes.IconSide);
+            promptToolTip.setFixedWidth(Ui.Sizes.IconSide);
+            promptToolTip.scaledContents = true;
+            promptToolTip.responseHover = true;
+            promptToolTip.pixmap = infoIconImage;
+
+            const popupWidget = new Ui.PopupWithArrow(promptToolTip, Ui.ArrowPosition.Top);
+
+            popupWidget.setContentsMargins(Ui.Sizes.Padding, Ui.Sizes.Padding, Ui.Sizes.Padding, Ui.Sizes.Padding);
+
+            popupWidget.setMainWidget(getHintFactory().createHint(popupWidget, hint.id));
+
+            this.connections.push(promptToolTip.onHover.connect((hovered) => {
+                if (hovered) {
+                    popupWidget.popup(promptToolTip);
+                } else {
+                    popupWidget.close();
+                    parent.activateWindow();
+                }
+            }));
+
+            promptHeaderLayout.addWidget(promptToolTip);
+        }
+
         promptHeaderLayout.addStretch(0);
-        promptHeaderLayout.addWidget(this.optionalLabel);
 
         promptHeaderLayout.setContentsMargins(0, 0, 0, 0);
+
         promptHeaderWidget.layout = promptHeaderLayout;
 
         return promptHeaderWidget;
     }
+
+    getRadioButton() {
+        return this.radioButton;
+    }
+
+    show() {
+        this.imagePicker.widget.enabled = true;
+    }
+
+    hide() {
+        this.imagePicker.widget.enabled = false;
+    }
 };
 
 export function createImageReferencePicker(scheme) {
-    return new ImageReferencePicker(scheme.parent, scheme.label, scheme.importer, scheme.exporter);
+    return new ImageReferencePicker(scheme.parent, scheme.label, scheme.importer, scheme.exporter, scheme.hint);
 }

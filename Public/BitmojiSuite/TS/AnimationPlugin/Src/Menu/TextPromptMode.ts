@@ -44,6 +44,7 @@ export class TextPromptMode {
         surpriseMeButton.setFixedHeight(20);
 
         const clearButton = new Ui.ImageView(widget);
+        clearButton.scaledContents = true;
         clearButton.pixmap = this.inactiveTrashCanIcon;
         clearButton.responseHover = true;
         clearButton.setFixedWidth(20);

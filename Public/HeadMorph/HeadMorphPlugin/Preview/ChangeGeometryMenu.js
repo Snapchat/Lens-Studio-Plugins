@@ -17,14 +17,35 @@ export class ChangeGeometryMenu {
         this.onStateChanged = onStateChanged;
         this.controls = {};
         this.resetParent = resetParent;
+        this.isGenerationInProgress = false;
     }
 
     modifyAsset(controls) {
         this.editEffectButton.enabled = false;
         app.log('Creating new asset...', { 'progressBar': true });
-        let inputFormat = controls["imageReferencePicker"].value.length > 0 ? "PROMPT_IMAGE" : "PROMPT_TEXT";
 
-        createAsset(buildAssetData(controls), (response) => {
+        let settings = {};
+        let inputFormat = "";
+
+        if (this.promptPickerRadioButton.checked) {
+            settings = {
+                'prompt': controls['promptPicker'].value,
+                'seed': 0,
+                'uploadUid': null
+            }
+
+            inputFormat = "PROMPT_TEXT";
+        } else {
+            settings = {
+                'prompt': null,
+                'seed': 0,
+                'uploadUid': controls['imageReferencePicker'].value[0].uid
+            }
+
+            inputFormat = "PROMPT_IMAGE";
+        }
+
+        createAsset(settings, (response) => {
             if (response.statusCode == 200) {
                 logEventAssetCreation("SUCCESS", "UPDATE_EXISTING", inputFormat, "GENERATE_PREVIEW");
                 const responseBody = JSON.parse(response.body.toString());
@@ -32,7 +53,6 @@ export class ChangeGeometryMenu {
                 this.onStateChanged({
                     'controls': this.controls,
                     'assetData': responseBody,
-                    'created_on': this.createdOnValue.text,
                     'screen': 'preview',
                     'sub_screen': 'draft_mesh',
                     'needsUpdate': false
@@ -57,7 +77,6 @@ export class ChangeGeometryMenu {
         // choose model type
 
         this.controls['promptPicker'].value = settings.prompt;
-        this.controls['seedPicker'].value = settings.seed;
     }
 
     fillControls(controls) {
@@ -70,26 +89,37 @@ export class ChangeGeometryMenu {
     }
 
     updatePreview(state) {
-        this.createdOnValue.text = convertDate(state.created_on);
         this.asset_id = state.asset_id;
         this.status = state.status;
 
         if (state.assetData.uploadUid) {
+            this.promptPickerRadioButton.checked = false;
+            this.imagePickerRadioButton.checked = true;
+            this.controls['promptPicker'].hide();
+            this.controls['imageReferencePicker'].show();
+
+            this.controls['promptPicker'].value = '';
             this.controls['imageReferencePicker'].value = [{uid: state.assetData.uploadUid, url: state.assetData.uploadUrl }];
         } else {
+            this.promptPickerRadioButton.checked = true;
+            this.imagePickerRadioButton.checked = false;
+            this.controls['promptPicker'].show();
+            this.controls['imageReferencePicker'].hide();
+
+            this.controls['promptPicker'].value = state.assetData.prompt;
             this.controls['imageReferencePicker'].value = [];
         }
 
-        if (state.settings) {
-            this.fillSettings(state.settings);
-        }
-
+        this.onNewGenerationStarted();
         this.updateEditButtonVisibility();
     }
 
     createHeader(parent) {
         this.header = new Ui.Widget(parent);
         this.header.setFixedHeight(33);
+
+        this.header.autoFillBackground = true;
+        this.header.backgroundRole = Ui.ColorRole.Base;
 
         const headerLayout = new Ui.BoxLayout();
         headerLayout.setDirection(Ui.Direction.LeftToRight);
@@ -105,11 +135,11 @@ export class ChangeGeometryMenu {
         this.backButton.scaledContents = true;
 
         this.headerTitle = new Ui.Label(this.header);
-        this.headerTitle.text = 'Selfie Attachments';
+        this.headerTitle.text = 'Asset Settings';
         this.headerTitle.fontRole = Ui.FontRole.TitleBold;
+        this.headerTitle.foregroundRole = Ui.ColorRole.BrightText;
 
         headerLayout.addWidget(this.backButton);
-        headerLayout.addStretch(0);
         headerLayout.addWidget(this.headerTitle);
         headerLayout.addStretch(0);
 
@@ -119,59 +149,77 @@ export class ChangeGeometryMenu {
 
     createFooter(parent) {
         this.footer = new Ui.Widget(parent);
-        this.footer.setFixedHeight(65);
+        this.footer.setFixedHeight(56);
+
+        this.footer.autoFillBackground = true;
+        this.footer.backgroundRole = Ui.ColorRole.Base;
 
         const footerLayout = new Ui.BoxLayout();
         footerLayout.setDirection(Ui.Direction.LeftToRight);
-        footerLayout.setContentsMargins(8, 12, 8, 8);
+        footerLayout.setContentsMargins(16, 0, 8, 0);
 
         this.editEffectButton = new Ui.PushButton(this.footer);
         this.editEffectButton.text = 'Regenerate';
-        const editImagePath = new Editor.Path(import.meta.resolve('../Resources/edit.svg'));
+        const editImagePath = new Editor.Path(import.meta.resolve('../Resources/refresh.svg'));
         this.editEffectButton.setIconWithMode(Editor.Icon.fromFile(editImagePath), Ui.IconMode.MonoChrome);
 
         this.connections.push(this.editEffectButton.onClick.connect(() => {
+            this.onNewGenerationStarted();
             this.modifyAsset(this.controls);
         }));
 
-        footerLayout.addStretch(0);
-        footerLayout.addWidgetWithStretch(this.editEffectButton, 0, Ui.Alignment.AlignTop);
-        footerLayout.addStretch(0);
+        footerLayout.addWidgetWithStretch(this.editEffectButton, 0, Ui.Alignment.AlignLeft);
 
         this.footer.layout = footerLayout;
         return this.footer;
     }
 
-    updateEditButtonVisibility() {
+    onAllPreviewsGenerated() {
+        this.isGenerationInProgress = false;
         this.editEffectButton.enabled = ((this.controls['promptPicker'].value.length > 0) || (this.controls['imageReferencePicker'].value.length > 0));
+        if (this.controls['imageReferencePicker'].value.length > 0) {
+            this.promptPickerRadioButton.checked = false;
+            this.imagePickerRadioButton.checked = true;
+            this.controls['promptPicker'].hide();
+            this.controls['imageReferencePicker'].show();
+        }
+        else {
+            this.promptPickerRadioButton.checked = true;
+            this.imagePickerRadioButton.checked = false;
+            this.controls['promptPicker'].show();
+            this.controls['imageReferencePicker'].hide();
+        }
+
+        this.promptPickerRadioButton.enabled = true;
+        this.imagePickerRadioButton.enabled = true;
+    }
+
+    onNewGenerationStarted() {
+        this.controls['promptPicker'].hide();
+        this.controls['imageReferencePicker'].hide();
+        this.editEffectButton.enabled = false;
+        this.isGenerationInProgress = true;
+        this.promptPickerRadioButton.enabled = false;
+        this.imagePickerRadioButton.enabled = false;
+    }
+
+    updateEditButtonVisibility() {
+        this.editEffectButton.enabled = ((this.promptPickerRadioButton.checked && this.controls['promptPicker'].value.length > 0) || (this.imagePickerRadioButton.checked && this.controls['imageReferencePicker'].value.length > 0))  && !this.isGenerationInProgress;
     }
 
     createMenu(parent) {
         this.menu = new Ui.Widget(parent);
+        this.menu.autoFillBackground = true;
+        this.menu.backgroundRole = Ui.ColorRole.Base;
 
         this.menuLayout = new Ui.BoxLayout();
 
         this.menuLayout.setDirection(Ui.Direction.TopToBottom);
 
-        // Created on settings
-        const createdOnSettings = new Ui.Widget(this.menu);
-
-        const createdOnLabel = new Ui.Label(createdOnSettings);
-        createdOnLabel.text = 'Created on';
-
-        this.createdOnValue = new Ui.Label(createdOnSettings);
-        this.createdOnValue.text = '29/03/2023';
-        this.createdOnValue.autoFillBackground = true;
-        this.createdOnValue.backgroundRole = Ui.ColorRole.Light;
-        this.createdOnValue.setContentsMargins(8, 4, 8, 4);
-
-        tieWidgets(createdOnLabel, this.createdOnValue, createdOnSettings);
-
         // Settings
         const guidelines = createGuidelinesWidget(this.menu);
 
         this.menuLayout.addWidget(guidelines);
-        this.menuLayout.addWidget(createdOnSettings);
 
         const createControl = (scheme) => {
             switch (scheme.class) {
@@ -249,6 +297,25 @@ export class ChangeGeometryMenu {
             this.updateEditButtonVisibility();
         });
 
+        this.promptPickerRadioButton = this.controls['promptPicker'].getRadioButton();
+        this.imagePickerRadioButton = this.controls['imageReferencePicker'].getRadioButton();
+
+        this.promptPickerRadioButton.onClick.connect(() => {
+            this.promptPickerRadioButton.checked = true;
+            this.imagePickerRadioButton.checked = false;
+            this.controls['promptPicker'].show();
+            this.controls['imageReferencePicker'].hide();
+            this.updateEditButtonVisibility();
+        })
+
+        this.imagePickerRadioButton.onClick.connect(() => {
+            this.imagePickerRadioButton.checked = true;
+            this.promptPickerRadioButton.checked = false;
+            this.controls['imageReferencePicker'].show();
+            this.controls['promptPicker'].hide();
+            this.updateEditButtonVisibility();
+        })
+
         this.menuLayout.addStretch(0);
 
         this.menuLayout.setContentsMargins(16, 8, 16, 8);
@@ -261,7 +328,7 @@ export class ChangeGeometryMenu {
         const verticalScrollArea = new Ui.VerticalScrollArea(this.menu);
         verticalScrollArea.setWidget(scrollWidget);
         verticalScrollArea.setFixedHeight(520);
-        verticalScrollArea.setFixedWidth(320);
+        verticalScrollArea.setFixedWidth(378);
         const scrollLayout = new Ui.BoxLayout();
         scrollLayout.setDirection(Ui.Direction.TopToBottom);
         scrollLayout.setContentsMargins(0, 0, 0, 0);
@@ -277,7 +344,7 @@ export class ChangeGeometryMenu {
 
     create(parent) {
         this.widget = new Ui.Widget(parent);
-        this.widget.setFixedWidth(320);
+        this.widget.setFixedWidth(378);
         this.widget.setFixedHeight(620);
 
         this.widget.setContentsMargins(0, 0, 0, 0);
@@ -291,10 +358,6 @@ export class ChangeGeometryMenu {
         this.layout.setContentsMargins(0, 0, 0, 0);
 
         this.layout.addWidget(header);
-        const separator1 = new Ui.Separator(Ui.Orientation.Horizontal, Ui.Shadow.Plain, this.widget);
-        separator1.setFixedHeight(Ui.Sizes.SeparatorLineWidth);
-
-        this.layout.addWidget(separator1);
         this.layout.addWidget(menu);
         this.layout.addStretch(0);
 

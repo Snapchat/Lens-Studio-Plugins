@@ -21,7 +21,7 @@ export class TextureGenAPI {
             const authorization = pluginSystem.findInterface(Editor.IAuthorization) as Editor.IAuthorization;
 
             if (!authorization || !authorization.isAuthorized) {
-                throw new Error('Authorization required for texture generation. Please sign into Lens Studio.');
+                throw new Error('Please log into your Snapchat account in Lens Studio to use this tool. You can log in from the Menu Bar: Go to My Lenses > Login');
             }
 
             const request = new Network.HttpRequest();

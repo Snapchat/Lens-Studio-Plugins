@@ -15,9 +15,11 @@ export const PromptPickerMode = {
 const MAX_SYMBOLS = 200;
 
 export class PromptPicker extends Control {
-    constructor(parent, label, valueImporter, valueExporter, hint) {
+    constructor(parent, label, valueImporter, valueExporter, hint, placeholder, surpriseMeList) {
         super(parent, null, valueImporter, valueExporter);
         this.connections = [];
+
+        this.surpriseMeList = surpriseMeList;
 
         const layout = new Ui.BoxLayout();
         layout.setDirection(Ui.Direction.TopToBottom);
@@ -26,7 +28,7 @@ export class PromptPicker extends Control {
 
         const promptHeaderWidget = this['createPromptHeaderWidget'](this.widget, label, hint);
 
-        this.textEdit = new TextEdit(parent, null, null, null, 'Describe the Attachment...', MAX_SYMBOLS);
+        this.textEdit = new TextEdit(parent, null, null, null, placeholder, MAX_SYMBOLS);
         this.textEdit.widget.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Fixed);
 
         this.textEdit.addOnValueChanged((value) => {
@@ -72,7 +74,7 @@ export class PromptPicker extends Control {
         promptHeaderLayout.addWidget(promptLabel);
 
         if (hint) {
-            const infoIconImage = new Ui.Pixmap(new Editor.Path(import.meta.resolve('../../Resources/info.svg')));
+            const infoIconImage = new Ui.Pixmap(new Editor.Path(import.meta.resolve('../../Resources/info_icon.svg')));
             const promptToolTip = new Ui.ImageView(promptHeaderWidget);
 
             promptToolTip.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
@@ -100,23 +102,35 @@ export class PromptPicker extends Control {
             promptHeaderLayout.addWidget(promptToolTip);
         }
 
-        this.surpriseMeLabel = new Ui.ClickableLabel(promptHeaderWidget);
-        this.surpriseMeLabel.text = Ui.getUrlString('Surprise me', '');
+        if (this.surpriseMeList) {
+            this.surpriseMeLabel = new Ui.ClickableLabel(promptHeaderWidget);
+            this.surpriseMeLabel.text = Ui.getUrlString('Surprise me', '');
 
-        this.connections.push(this.surpriseMeLabel.onClick.connect(function() {
-            this.textEdit.value = getRandomPrompt();
-        }.bind(this)));
+            this.connections.push(this.surpriseMeLabel.onClick.connect(function() {
+                this.textEdit.value = getRandomPrompt(this.surpriseMeList);
+            }.bind(this)));
 
-        promptHeaderLayout.addStretch(0);
-        promptHeaderLayout.addWidget(this.surpriseMeLabel);
+            promptHeaderLayout.addStretch(0);
+            promptHeaderLayout.addWidget(this.surpriseMeLabel);
+        }
 
         promptHeaderLayout.setContentsMargins(0, 0, 0, 0);
         promptHeaderWidget.layout = promptHeaderLayout;
 
         return promptHeaderWidget;
     }
+
+    show() {
+        this.textEdit.widget.enabled = true;
+        this.surpriseMeLabel.enabled = true;
+    }
+
+    hide() {
+        this.textEdit.widget.enabled = false;
+        this.surpriseMeLabel.enabled = false;
+    }
 };
 
 export function createPromptPicker(scheme) {
-    return new PromptPicker(scheme.parent, scheme.label, scheme.importer, scheme.exporter, scheme.hint);
+    return new PromptPicker(scheme.parent, scheme.label, scheme.importer, scheme.exporter, scheme.hint, scheme.placeholder, scheme.surpriseMeList);
 }

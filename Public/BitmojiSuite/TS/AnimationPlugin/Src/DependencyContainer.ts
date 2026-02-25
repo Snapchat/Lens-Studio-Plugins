@@ -6,8 +6,7 @@ export enum DependencyKeys {
     Preview = 'Preview',
     LBEPreview = 'LBEPreview',
     IsActive = "IsActive",
-    BitmojiComponent = 'BitmojiComponent',
-    TransparentScreen = "TransparentScreen"
+    BitmojiComponent = 'BitmojiComponent'
 }
 
 class DependencyContainer {

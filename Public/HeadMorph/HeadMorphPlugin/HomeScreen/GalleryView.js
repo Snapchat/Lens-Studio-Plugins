@@ -1,10 +1,12 @@
 import * as Ui from 'LensStudio:Ui';
+import * as Shell from 'LensStudio:Shell';
 
-import { listMorphs, getMorph, deleteMorph } from '../api.js';
-import { downloadFileFromBucket } from '../utils.js';
+import { getAsset, listAssets, deleteAsset } from '../api.js';
+import {downloadFileFromBucket, importToProject} from '../utils.js';
 import { RequestTokenManager } from './RequestTokenManager.js';
 
 import app from '../../application/app.js';
+import {logEventAssetImport} from "../../application/analytics";
 
 const COLUMN_SIZE = 3;
 
@@ -15,31 +17,35 @@ export class GalleryView {
         this.movieViews = [];
         this.failedViews = [];
         this.queuedViews = [];
+        this.cornerImages = [];
+        this.deleteButtons = [];
         this.frames = [];
         this.statusIndicators = [];
         this.statusLabels = [];
         this.statusCircles = [];
-        this.deleteButtons = [];
-
+        this.importButtons = [];
+        this.loadingOverlays = [];
         this.nextPageToken = null;
         this.renderedViews = 0;
         this.tilesConnections = {};
         this.downloaded = [];
-        this.headMorphStatus = [];
         this.failedConnections = {};
         this.queuedConnections = {};
         this.deleteButtonConnections = {};
         this.items = [];
-        this.getRequestGuard = false;
         this.requestTokenManager = new RequestTokenManager();
         this.failedImage = new Ui.Pixmap(new Editor.Path(import.meta.resolve('../Resources/failed.svg')));
-        this.deleteImagePath = new Editor.Path(import.meta.resolve('../Resources/delete.svg'));
-        this.deleteImageIcon = Editor.Icon.fromFile(this.deleteImagePath);
+        this.deleteImageIcon = Editor.Icon.fromFile(new Editor.Path(import.meta.resolve('../Resources/delete.svg')));
+        this.cornerSvg = new Ui.Pixmap(new Editor.Path(import.meta.resolve('../Resources/corners.png')));
+        this.importImageIcon = Editor.Icon.fromFile(new Editor.Path(import.meta.resolve('../Resources/import.svg')));
+        this.searchQuery = '';
+        this.stopped = false;
+        this.getRequestGuard = false;
+
         this.statusUpdater = setInterval(() => {
             if (this.stopped) {
                 return;
             }
-
             this.updateAllStatuses();
         }, 15000);
     }
@@ -60,47 +66,53 @@ export class GalleryView {
                 this.downloaded[i] = true;
                 this.statusLabels[i].text = '';
                 const requestToken = this.requestTokenManager.generateToken();
+
                 this.statusLabels[i].text = '';
                 this.failedViews[i].visible = false;
                 this.deleteButtons[i].visible = false;
                 this.queuedViews[i].visible = false;
-                this.downloadMorph(i, requestToken);
+                this.downloadAssetPreview(i, requestToken);
             }
         } else {
             const requestToken = this.requestTokenManager.generateToken();
-            // ping for status
-            getMorph(this.items[i].id, (response) => {
+            getAsset(this.items[i].id, (item) => {
                 if (this.requestTokenManager.isValid(requestToken)) {
-                    if (response.statusCode === 200) {
-                        const item = JSON.parse(response.body.toString());
-
+                    if (item) {
                         this.items[i] = item;
-                        if (item.state !== 'FAILED') {
+
+                        if (this.items[i].previewUrl && item.state !== 'FAILED' && item.state !== 'UNSAFE') {
                             const requestToken = this.requestTokenManager.generateToken();
-                            this.downloadMorph(i, requestToken);
+                            this.downloadAssetPreview(i, requestToken);
                         }
+
                         if (item.state === 'SUCCESS') {
                             this.statusLabels[i].text = '';
                             this.statusIndicators[i].visible = true;
+                            this.importButtons[i].visible = false;
                             this.failedViews[i].visible = false;
                             this.deleteButtons[i].visible = false;
-                            this.queuedViews[i].visible = false;
                             this.updateStatus(i);
                         } else if (item.state === 'QUEUED') {
                             this.queuedViews[i].visible = true;
                             this.failedViews[i].visible = false;
                             this.deleteButtons[i].visible = false;
-                            this.statusIndicators[i].visible = true;
+                            this.statusIndicators[i].visible = false;
+                            this.loadingOverlays[i].visible = true;
+                            this.importButtons[i].visible = false;
                             this.statusLabels[i].text = 'Queued';
-                        } else if (item.state === 'FAILED') {
+                        } else if (item.state === 'FAILED' || item.state === 'UNSAFE') {
                             this.showFailed(i);
                         } else {
-                            this.statusIndicators[i].visible = true;
+                            this.statusIndicators[i].visible = false;
+                            this.loadingOverlays[i].visible = true;
+                            this.importButtons[i].visible = false;
                             this.failedViews[i].visible = false;
                             this.deleteButtons[i].visible = false;
                             this.statusLabels[i].text = Math.round(item.progressPercent) + '%';
                             this.queuedViews[i].visible = true;
                         }
+                    } else {
+                        console.log('Attempt to download asset failed.');
                     }
                 }
             });
@@ -110,7 +122,10 @@ export class GalleryView {
     showFailed(i) {
         this.statusLabels[i].text = '';
         this.statusIndicators[i].visible = false;
+        this.loadingOverlays[i].visible = false;
+        this.importButtons[i].visible = false;
         this.queuedViews[i].visible = false;
+        this.movieViews[i].visible = false;
         this.failedViews[i].visible = true;
         this.deleteButtons[i].visible = true;
     }
@@ -165,9 +180,21 @@ export class GalleryView {
             button.visible = false;
         })
 
+        this.cornerImages.forEach(function(image) {
+            image.visible = false;
+        })
+
+        this.importButtons.forEach(function(button) {
+            button.visible = false;
+        })
+
+        this.loadingOverlays.forEach((loadingOverlay) => {
+            loadingOverlay.visible = false;
+        })
+
         for (let i = 0; i < 12; i++) {
-            this.gridLayout.setColumnMinimumWidth(i % COLUMN_SIZE, 152);
-            this.gridLayout.setRowMinimumHeight(i / COLUMN_SIZE, 152);
+            this.gridLayout.setColumnMinimumWidth(i % COLUMN_SIZE, 130);
+            this.gridLayout.setRowMinimumHeight(i / COLUMN_SIZE, 130);
         }
 
         for (let i = 12; i < this.frames.length; i++) {
@@ -178,12 +205,11 @@ export class GalleryView {
         this.requestTokenManager.invalidateTokenAll();
         this.items.length = 0;
         this.renderedViews = 0;
-        this.headMorphStatus.length = 0;
         this.downloaded.length = 0;
         this.verticalScrollArea.enabled = false;
     }
 
-    downloadMorph(i, requestToken) {
+    downloadAssetPreview(i, requestToken) {
         if (!this.requestTokenManager.isValid(requestToken)) {
             return;
         }
@@ -192,18 +218,18 @@ export class GalleryView {
 
         try {
             downloadFileFromBucket(item.previewUrl, item.id + '_preview.webp', (preview_path) => {
-                if (preview_path === null) {
-                    return;
-                }
-
                 if (this.requestTokenManager.isValid(requestToken)) {
                     const movie = new Ui.Movie(preview_path);
                     const previewMovie = new Ui.Movie(preview_path);
-                    movie.resize(130, 130);
+
+                    movie.resize(122, 122);
 
                     this.movieViews[i].movie = movie;
-                    this.failedViews[i].visible = false;
                     this.movieViews[i].visible = true;
+
+                    this.cornerImages[i].visible = true;
+
+                    this.failedViews[i].visible = false;
                     this.queuedViews[i].visible = false;
                     this.deleteButtons[i].visible = false;
 
@@ -211,96 +237,34 @@ export class GalleryView {
                         this.tilesConnections[i].disconnect();
                     }
 
-                    this.tilesConnections[i] = this.movieViews[i].onClick.connect(function() {
+                    this.tilesConnections[i] = this.cornerImages[i].onClick.connect(() => {
                         if (this.getRequestGuard == false) {
                             this.getRequestGuard = true;
 
-                            const isWebP = (url) => {
-                                return url.split('?')[0].toLowerCase().endsWith(".webp");
-                            }
-
-                            if (this.items[i].texturedUrl && isWebP(this.items[i].texturedUrl)) {
-                                this.statusIndicators[i].visible = true;
-
-                                try {
-                                    const token = this.requestTokenManager.generateToken();
-
-                                    downloadFileFromBucket(this.items[i].texturedUrl, item.id + '_textured.webp', (textured_path) => {
-                                        this.getRequestGuard = false;
-                                        if (this.requestTokenManager.isValid(token)) {
-                                            const texturedMovie = new Ui.Movie(textured_path);
-                                            app.log('', { 'enabled': false });
-
-                                            this.onStateChanged({
-                                                'screen': 'preview',
-                                                'headmorph_id': this.items[i].id,
-                                                'status': this.items[i].state,
-                                                'preview_image': texturedMovie,
-                                                'created_on': this.items[i].createdAt,
-                                                'prompt': this.items[i].settings.prompt,
-                                                'intensity': this.items[i].settings.intensity,
-                                                'uploadUid': this.items[i].uploadUid,
-                                                'uploadUrl': this.items[i].uploadUrl,
-                                                'object_url': this.items[i].objectLsUrl,
-                                                'userNotes': this.items[i].userNotes,
-                                            });
-                                        }
-
-                                        if (this.items[i].state == "SUCCESS") {
-                                            this.statusIndicators[i].visible = false;
-                                            this.queuedViews[i].visible = false;
-                                        }
-                                    });
-
-                                } catch (error) {
-                                    this.getRequestGuard = false;
-                                    app.log('', { 'enabled': false });
-                                    this.onStateChanged({
-                                        'screen': 'preview',
-                                        'headmorph_id': this.items[i].id,
-                                        'status': this.items[i].state,
-                                        'preview_image': previewMovie,
-                                        'created_on': this.items[i].createdAt,
-                                        'prompt': this.items[i].settings.prompt,
-                                        'intensity': this.items[i].settings.intensity,
-                                        'uploadUid': this.items[i].uploadUid,
-                                        'uploadUrl': this.items[i].uploadUrl,
-                                        'object_url': this.items[i].objectLsUrl,
-                                        'userNotes': this.items[i].userNotes,
-                                    });
-
-                                    if (this.items[i].state == "SUCCESS") {
-                                        this.statusIndicators[i].visible = false;
-                                        this.queuedViews[i].visible = false;
-                                    }
-                                }
-                            } else {
-                                this.getRequestGuard = false;
+                                app.log('', { 'enabled': false });
                                 this.onStateChanged({
                                     'screen': 'preview',
-                                    'headmorph_id': this.items[i].id,
+                                    'asset_id': this.items[i].id,
                                     'status': this.items[i].state,
                                     'preview_image': previewMovie,
                                     'created_on': this.items[i].createdAt,
-                                    'prompt': this.items[i].settings.prompt,
-                                    'intensity': this.items[i].settings.intensity,
                                     'uploadUid': this.items[i].uploadUid,
                                     'uploadUrl': this.items[i].uploadUrl,
-                                    'object_url': this.items[i].objectLsUrl,
-                                    'userNotes': this.items[i].userNotes
+                                    'settings': { prompt: this.items[i].prompt, seed: this.items[i].seed },
+                                    'object_url': this.items[i].lspkgLsUrl,
                                 });
-                                app.log('', { 'enabled': false });
-                                this.movieViews[i].animated = true;
+                                this.getRequestGuard = false;
 
-                                if (this.items[i].state == "SUCCESS") {
+                                if (this.items[i].state === "SUCCESS") {
                                     this.statusIndicators[i].visible = false;
+                                    this.loadingOverlays[i].visible = false;
+                                    this.importButtons[i].visible = true;
                                     this.queuedViews[i].visible = false;
                                 }
-                            }
                         }
-                    }.bind(this));
+                    });
 
-                    this.connections.push(this.movieViews[i].onHover.connect(function(hovered) {
+                    this.connections.push(this.cornerImages[i].onHover.connect(function(hovered) {
                         if (this.widget.visible) {
                             this.movieViews[i].animated = hovered;
                         }
@@ -308,12 +272,14 @@ export class GalleryView {
 
                     if (item.state === 'SUCCESS') {
                         this.statusIndicators[i].visible = false;
+                        this.loadingOverlays[i].visible = false;
+                        this.importButtons[i].visible = true;
                         this.queuedViews[i].visible = false;
                     }
                 }
             });
         } catch (error) {
-            app.log('Something went wrong during downloading head morhps. Please, try again.');
+            app.log('Something went wrong during downloading morhps. Please, try again.');
         }
     }
 
@@ -325,13 +291,17 @@ export class GalleryView {
         if ((this.renderedViews + items.length) === 0) {
             if (this.searchLine.text.length > 0) {
                 this.disclaimer.text = "<center>No matching results found.<br>Try adjust your search query.<center>";
+                this.emptyPlaceholder.visible = true;
             } else {
-                this.disclaimer.text = `<center>You don't have any ${app.name} created yet,<br>try to create a new one.<center>`;
+                this.emptyGalleryPage.visible = true;
+                this.searchLine.visible = false;
+                this.reloadButton.visible = false;
             }
-
-            this.emptyPlaceholder.visible = true;
         } else {
             this.emptyPlaceholder.visible = false;
+            this.emptyGalleryPage.visible = false;
+            this.searchLine.visible = true;
+            this.reloadButton.visible = true;
         }
 
         const startSize = this.renderedViews;
@@ -344,6 +314,7 @@ export class GalleryView {
             let frame;
             let frameLayout;
             let movieView;
+            let cornerImage;
             let statusIndicator;
             let statusIndicatorCircle;
             let statusLabel;
@@ -351,6 +322,8 @@ export class GalleryView {
             let failedView;
             let queuedView;
             let deleteButton;
+            let importButton;
+            let loadingOverlay;
 
             if (i < this.frames.length) {
                 // that means we already can re-use frame i if we created one before
@@ -365,6 +338,9 @@ export class GalleryView {
 
                 // hide it, since it holds invalid movie
                 movieView.visible = false;
+
+                cornerImage = this.cornerImages[i];
+                this.cornerImages.visible = false;
 
                 // setup failed
                 failedView = this.failedViews[i];
@@ -393,6 +369,9 @@ export class GalleryView {
                 statusIndicator.visible = true;
                 statusIndicatorCircle.visible = true;
 
+                importButton = this.importButtons[i];
+                importButton.visible = false;
+
                 statusIndicatorCircle.start();
             } else {
                 // if not - create new one and add to buffer
@@ -400,8 +379,8 @@ export class GalleryView {
                 this.frames.push(frame);
 
                 // setup frame
-                frame.setFixedWidth(144);
-                frame.setFixedHeight(144);
+                frame.setFixedWidth(122);
+                frame.setFixedHeight(122);
                 frame.setContentsMargins(0, 0, 0, 0);
 
                 // create new layout
@@ -414,8 +393,8 @@ export class GalleryView {
                 queuedView = new Ui.ImageView(frame);
                 this.queuedViews.push(queuedView);
 
-                queuedView.setFixedWidth(144);
-                queuedView.setFixedHeight(144);
+                queuedView.setFixedWidth(122);
+                queuedView.setFixedHeight(122);
                 queuedView.setContentsMargins(0, 0, 0, 0);
                 queuedView.scaledContents = true;
                 queuedView.visible = false;
@@ -427,15 +406,13 @@ export class GalleryView {
                 this.queuedConnections[i] = this.queuedViews[i].onClick.connect(function() {
                     this.onStateChanged({
                         'screen': 'preview',
-                        'headmorph_id': this.items[i].id,
+                        'asset_id': this.items[i].id,
                         'status': this.items[i].state,
                         'created_on': this.items[i].createdAt,
-                        'prompt': this.items[i].settings.prompt,
-                        'intensity': this.items[i].settings.intensity,
                         'uploadUid': this.items[i].uploadUid,
                         'uploadUrl': this.items[i].uploadUrl,
-                        'object_url': null,
-                        'userNotes': this.items[i].userNotes,
+                        'settings': { prompt: this.items[i].prompt, seed: this.items[i].seed },
+                        'object_url': null
                     });
                     app.log('', { 'enabled': false });
                 }.bind(this));
@@ -445,21 +422,51 @@ export class GalleryView {
                 this.movieViews.push(movieView);
 
                 // setup Moview View
-                movieView.setFixedWidth(130);
-                movieView.setFixedHeight(130);
+                movieView.setFixedWidth(122);
+                movieView.setFixedHeight(122);
                 movieView.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
                 movieView.setContentsMargins(0, 0, 0, 0);
+                //movieView.scaledContents = true;
                 movieView.responseHover = true;
-                movieView.move(7, 7);
+
+                loadingOverlay = new Ui.ImageView(frame);
+                loadingOverlay.setFixedWidth(122);
+                loadingOverlay.setFixedHeight(122);
+                loadingOverlay.scaledContents = true;
+                loadingOverlay.pixmap = new Ui.Pixmap(import.meta.resolve('../Resources/grey_rectangle.svg'));
+
+                const spinner = new Ui.ProgressIndicator(loadingOverlay);
+                spinner.setFixedWidth(32);
+                spinner.setFixedHeight(32);
+                spinner.start();
+                spinner.visible = true;
+                spinner.move(47, 38);
+
+                const trainingLabel = new Ui.Label(loadingOverlay);
+                trainingLabel.text = '<center>' + 'Training<br>in progress' + '</center>';
+                trainingLabel.foregroundRole = Ui.ColorRole.BrightText;
+                trainingLabel.setFixedWidth(100);
+                trainingLabel.move(11, 72);
+
+                loadingOverlay.visible = false;
+                this.loadingOverlays.push(loadingOverlay);
+
+                cornerImage = new Ui.ImageView(frame);
+                cornerImage.setFixedWidth(122);
+                cornerImage.setFixedHeight(122);
+                cornerImage.setContentsMargins(0, 0, 0, 0);
+                cornerImage.scaledContents = true;
+                cornerImage.responseHover = true;
+                cornerImage.pixmap = this.cornerSvg;
+                this.cornerImages.push(cornerImage);
 
                 // setup failed view
-
                 failedView = new Ui.ImageView(frame);
                 this.failedViews.push(failedView);
 
                 failedView.pixmap = this.failedImage;
-                failedView.setFixedWidth(144);
-                failedView.setFixedHeight(144);
+                failedView.setFixedWidth(122);
+                failedView.setFixedHeight(122);
                 failedView.setContentsMargins(0, 0, 0, 0);
                 failedView.scaledContents = true;
                 failedView.visible = false;
@@ -469,19 +476,17 @@ export class GalleryView {
                 }
 
                 this.failedConnections[i] = this.failedViews[i].onClick.connect(function() {
+                    app.log('', { 'enabled': false });
                     this.onStateChanged({
                         'screen': 'preview',
-                        'headmorph_id': this.items[i].id,
+                        'asset_id': this.items[i].id,
                         'status': this.items[i].state,
                         'created_on': this.items[i].createdAt,
-                        'prompt': this.items[i].settings.prompt,
-                        'intensity': this.items[i].settings.intensity,
                         'uploadUid': this.items[i].uploadUid,
                         'uploadUrl': this.items[i].uploadUrl,
-                        'object_url': null,
-                        'userNotes': this.items[i].userNotes,
+                        'settings': { prompt: this.items[i].prompt, seed: this.items[i].seed },
+                        'object_url': null
                     });
-                    app.log('', { 'enabled': false });
                 }.bind(this));
 
                 deleteButton = new Ui.PushButton(frame);
@@ -490,7 +495,7 @@ export class GalleryView {
                 deleteButton.text = '';
 
                 deleteButton.setIconWithMode(this.deleteImageIcon, Ui.IconMode.MonoChrome);
-                deleteButton.move(144 - Ui.Sizes.Padding - Ui.Sizes.ButtonHeight * 1.6, Ui.Sizes.Padding);
+                deleteButton.move(122 - Ui.Sizes.Padding - Ui.Sizes.ButtonHeight * 1.6, Ui.Sizes.Padding);
                 deleteButton.visible = false;
                 this.deleteButtons.push(deleteButton);
 
@@ -513,6 +518,7 @@ export class GalleryView {
                 statusLabel = new Ui.Label(statusIndicator);
                 this.statusLabels.push(statusLabel);
                 statusLabel.fontRole = Ui.FontRole.DefaultBold;
+                statusLabel.visible = false;
 
                 statusLayout = new Ui.BoxLayout();
 
@@ -528,31 +534,49 @@ export class GalleryView {
                 statusIndicator.layout = statusLayout;
 
                 frameLayout.addStretch(0);
-                frameLayout.addWidget(statusIndicator);
+                frameLayout.addWidgetWithStretch(statusIndicator, 0, Ui.Alignment.AlignLeft);
+
+                importButton = new Ui.PushButton(frame);
+                importButton.setFixedWidth(Ui.Sizes.ButtonHeight * 1.6);
+                importButton.setFixedHeight(Ui.Sizes.ButtonHeight);
+                importButton.text = '';
+
+                importButton.setIconWithMode(this.importImageIcon, Ui.IconMode.MonoChrome);
+                importButton.move(Ui.Sizes.Padding, 122 - Ui.Sizes.Padding - Ui.Sizes.ButtonHeight);
+                importButton.primary = true;
+                importButton.visible = false;
+                this.importButtons.push(importButton);
+
+                importButton.onClick.connect(() => {
+                    this.onImportToProject(this.items[i].id);
+                });
 
                 frame.layout = frameLayout;
             }
 
             this.gridLayout.addWidgetWithSpan(frame, i / COLUMN_SIZE, i % COLUMN_SIZE, 1, 1, Ui.Alignment.AlignTop);
-            this.gridLayout.setColumnMinimumWidth(i % COLUMN_SIZE, 152);
-            this.gridLayout.setRowMinimumHeight(i / COLUMN_SIZE, 152);
+            this.gridLayout.setColumnMinimumWidth(i % COLUMN_SIZE, 130);
+            this.gridLayout.setRowMinimumHeight(i / COLUMN_SIZE, 130);
 
             if (item.state == 'SUCCESS') {
                 statusLabel.text = '';
-            } else if (item.state == 'QUEUED') {
+            } else if (item.state == 'QUEUED' || item.state == 'INITIALIZING') {
                 statusLabel.text = 'Queued';
+                this.loadingOverlays[i].visible = true;
                 this.queuedViews[i].visible = true;
-            } else if (item.state != 'FAILED') {
+            } else if (item.state !== 'FAILED' && item.state !== 'UNSAFE') {
+                this.loadingOverlays[i].visible = true;
                 statusLabel.text = Math.round(item.progressPercent) + '%';
                 this.queuedViews[i].visible = true;
             }
 
-            if (item.state == 'FAILED') {
+            if (item.state == 'FAILED' || item.state == 'UNSAFE') {
                 this.showFailed(i);
-            } else {
+            } else if (this.items[i].previewUrl) {
                 const requestToken = this.requestTokenManager.generateToken();
-                this.downloadMorph(i, requestToken);
+                this.downloadAssetPreview(i, requestToken);
             }
+
         }
 
         this.renderedViews = startSize + items.length;
@@ -560,244 +584,40 @@ export class GalleryView {
         // this needed if row isn't full, then items showed properly aligned to the left side
         if (this.renderedViews % COLUMN_SIZE != 0) {
             for (let i = this.renderedViews; i < this.renderedViews + (COLUMN_SIZE - this.renderedViews % COLUMN_SIZE); i++) {
-                this.gridLayout.setColumnMinimumWidth(i % COLUMN_SIZE, 152);
-                this.gridLayout.setRowMinimumHeight(i / COLUMN_SIZE, 152);
+                this.gridLayout.setColumnMinimumWidth(i % COLUMN_SIZE, 130);
+                this.gridLayout.setRowMinimumHeight(i / COLUMN_SIZE, 130);
             }
         }
+
+        this.updateAllStatuses();
     }
 
-    resetSearchBar() {
-        this.searchLine.blockSignals(true);
-        this.searchLine.text = '';
-        this.searchLine.blockSignals(false);
-    }
+    onImportToProject(asset_id) {
+        if (asset_id) {
+            app.log('Importing Head Generator asset to the project...', { 'progressBar': true });
 
-    resetScrollView() {
-        this.verticalScrollArea.blockSignals(true);
-        this.verticalScrollArea.value = 0;
-        this.verticalScrollArea.blockSignals(false);
-    }
+            getAsset(asset_id, (data) => {
+                if (data) {
+                    let lspkgUrl = data.lspkgLsUrl;
 
-    resetGallery(exclude_ids) {
-        this.clearView();
-        this.resetScrollView();
-        this.resetSearchBar();
-
-        const requestToken = this.requestTokenManager.generateToken();
-
-        listMorphs(15, (response) => {
-            if (this.requestTokenManager.isValid(requestToken)) {
-                if (response.statusCode == 200) {
-                    // guarantee that our response is still relevant
-                    // if other request was sent after this one, there
-                    // is no need to render current response
-                    let body;
-                    try {
-                        body = JSON.parse(response.body.toString());
-                    } catch (error) {
-                        body = {};
-                        app.log(`Something went wrong during downloading ${app.name}. Please, try again.`);
-                    }
-
-                    try {
-                        this.updateView(body.items, exclude_ids);
-                    } catch (error) {
-                        app.log(`Something went wrong during downloading ${app.name}. Please, try again.`);
-                    }
-
-                    this.nextPageToken = body.nextPageToken;
-                } else {
-                    app.log(`Something went wrong during downloading ${app.name}. Please, try again.`);
-                }
-            }
-        });
-    }
-
-    expandGallery() {
-        app.log('', { 'enabled': false });
-
-        if (this.nextPageToken) {
-            const requestToken = this.requestTokenManager.generateToken();
-
-            listMorphs(15, (response) => {
-                if (this.requestTokenManager.isValid(requestToken)) {
-                    // guarantee that our response is still relevant
-                    // if other request was sent after this one, there
-                    // is no need to render current response
-
-                    if (response.statusCode == 200) {
-                        // guarantee that our response is still relevant
-                        // if other request was sent after this one, there
-                        // is no need to render current response
-                        let body;
-                        try {
-                            body = JSON.parse(response.body.toString());
-                        } catch (error) {
-                            body = {};
-                            app.log(`Something went wrong during downloading ${app.name}. Please, try again.`);
-                        }
-
-                        try {
-                            this.updateView(body.items, []);
-                        } catch (error) {
-                            app.log(`Something went wrong during downloading ${app.name}. Please, try again.`);
-                        }
-
-                        this.nextPageToken = body.nextPageToken;
+                    if (lspkgUrl) {
+                        importToProject(lspkgUrl, (success) => {
+                            logEventAssetImport(success ? "SUCCESS" : "FAILED");
+                            app.log(success ? 'Head Generator asset is succesfully imported to the project' : 'Import failed, please try again');
+                        });
                     } else {
-                        app.log(`Something went wrong during downloading ${app.name}. Please, try again.`);
+                        logEventAssetImport("PREPARING");
+                        app.log('Files for import are still preparing. Please, try again in few seconds.');
                     }
-                }
-            }, this.searchLine.text, this.nextPageToken);
-        }
-    }
-
-    searchRequest(searchText) {
-        app.log('', { 'enabled': false });
-
-        this.clearView();
-        this.resetScrollView();
-
-        const requestToken = this.requestTokenManager.generateToken();
-
-        listMorphs(15, (response) => {
-            if (this.requestTokenManager.isValid(requestToken)) {
-                // guarantee that our response is still relevant
-                // if other request was sent after this one, there
-                // is no need to render current response
-                if (response.statusCode == 200) {
-                    // guarantee that our response is still relevant
-                    // if other request was sent after this one, there
-                    // is no need to render current response
-                    let body;
-                    try {
-                        body = JSON.parse(response.body.toString());
-                    } catch (error) {
-                        body = {};
-                        app.log(`Something went wrong during downloading ${app.name}. Please, try again.`);
-                    }
-
-                    try {
-                        this.updateView(body.items, []);
-                    } catch (error) {
-                        app.log(`Something went wrong during downloading ${app.name}. Please, try again.`);
-                    }
-
-                    this.nextPageToken = body.nextPageToken;
                 } else {
-                    app.log(`Something went wrong during downloading ${app.name}. Please, try again.`);
+                    logEventAssetImport("FAILED");
+                    app.log('Something went wrong during importing Head Generator asset to the project, please try again.');
                 }
-            }
-        }, searchText);
-    }
-
-    reset(state) {
-        if (state.needsUpdate) {
-            this.resetGallery([state.exclude_id]);
+            });
+        } else {
+            logEventAssetImport("FAILED");
+            app.log('Something went wrong during importing Head Generator asset to the project, please try again.');
         }
-        this.restoreMovies();
-    }
-
-    createEmptyPlaceholder(parent) {
-        this.emptyPlaceholder = new Ui.Widget(parent);
-        this.emptyPlaceholder.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
-        this.emptyPlaceholder.setFixedWidth(480);
-        this.emptyPlaceholder.setFixedHeight(480);
-
-        const layout = new Ui.BoxLayout();
-        layout.setDirection(Ui.Direction.TopToBottom);
-
-        this.logo = new Ui.ImageView(this.emptyPlaceholder);
-        this.logo.pixmap = new Ui.Pixmap(new Editor.Path(import.meta.resolve('../Resources/gen_ai_wizzard.svg')));
-        this.logo.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
-        this.logo.setFixedWidth(180);
-        this.logo.setFixedHeight(180);
-        this.logo.scaledContents = true;
-
-        this.title = new Ui.Label(this.emptyPlaceholder);
-        this.title.fontRole = Ui.FontRole.LargeTitleBold;
-        this.title.text = '<center>Welcome to<br>Lens Studio Gen AI<center>';
-        this.title.wordWrap = true;
-        this.title.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Preferred);
-        this.title.setFixedWidth(180);
-
-        this.disclaimer = new Ui.Label(this.emptyPlaceholder);
-        this.disclaimer.wordWrap = true;
-        this.disclaimer.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Preferred);
-        this.disclaimer.setFixedWidth(300);
-
-        this.disclaimer.text = `<center>You don't have any ${app.name} created yet,<br>try to create a new one.<center>`;
-
-        layout.addStretch(1);
-        layout.addWidgetWithStretch(this.logo, 0, Ui.Alignment.AlignCenter);
-        layout.addWidgetWithStretch(this.title, 0, Ui.Alignment.AlignCenter);
-        layout.addWidgetWithStretch(this.disclaimer, 0, Ui.Alignment.AlignCenter);
-        layout.addStretch(1);
-
-        layout.spacing = Ui.Sizes.Padding;
-
-        this.emptyPlaceholder.layout = layout;
-    }
-
-    createGalleryGrid(parent) {
-        this.galleryGridWidget = new Ui.Widget(parent);
-
-        this.gridLayout = new Ui.GridLayout();
-
-        this.gridLayout.spacing = 0;
-        this.gridLayout.setContentsMargins(0, 0, Ui.Sizes.Padding, 0);
-
-        this.scrollWidget = new Ui.Widget(this.galleryGridWidget);
-        this.scrollWidget.layout = this.gridLayout;
-        this.verticalScrollArea = new Ui.VerticalScrollArea(this.galleryGridWidget);
-        this.verticalScrollArea.setWidget(this.scrollWidget);
-
-        this.connections.push(this.verticalScrollArea.onValueChange.connect(function(value) {
-            if (this.verticalScrollArea.maximum == value) {
-                this.expandGallery();
-            }
-        }.bind(this)));
-
-        const scrollLayout = new Ui.BoxLayout();
-        scrollLayout.setDirection(Ui.Direction.TopToBottom);
-        scrollLayout.addWidget(this.verticalScrollArea);
-        scrollLayout.spacing = 0;
-        scrollLayout.setContentsMargins(0, 0, 0, 0);
-
-        this.galleryGridWidget.layout = scrollLayout;
-
-        this.emptyPlaceHolder = this.createEmptyPlaceholder(this.galleryGridWidget);
-        this.emptyPlaceholder.visible = false;
-
-        return this.galleryGridWidget;
-    }
-
-    createHeader(parent) {
-        const widget = new Ui.Widget(parent);
-        const layout = new Ui.BoxLayout();
-        layout.setDirection(Ui.Direction.LeftToRight);
-
-        this.reloadButton = new Ui.ToolButton(widget);
-
-        const reloadIconPath = new Editor.Path(import.meta.resolve('../Resources/reload.svg'));
-        this.reloadButton.setIcon(Editor.Icon.fromFile(reloadIconPath));
-        this.connections.push(this.reloadButton.onClick.connect(function() {
-            this.resetGallery();
-            app.log('', { 'enabled': false });
-        }.bind(this)));
-
-        this.searchLine = new Ui.SearchLineEdit(widget);
-
-        this.connections.push(this.searchLine.onTextChange.connect(function(text) {
-            this.searchRequest(text);
-        }.bind(this)));
-
-        layout.setContentsMargins(Ui.Sizes.HalfPadding, 0, Ui.Sizes.DoublePadding, 0);
-        layout.addWidget(this.reloadButton);
-        layout.addWidget(this.searchLine);
-
-        widget.layout = layout;
-        return widget;
     }
 
     createDeletionDialog() {
@@ -805,7 +625,7 @@ export class GalleryView {
         const gui = app.gui;
 
         this.deletionDialog = gui.createDialog();
-        this.deletionDialog.windowTitle = `Delete ${app.name}`;
+        this.deletionDialog.windowTitle = 'Delete Head Generator asset?';
 
         this.deletionDialog.resize(460, 140);
 
@@ -818,7 +638,7 @@ export class GalleryView {
 
         const alertWidget = new Ui.ImageView(captionWidget);
 
-        const alertImagePath = new Editor.Path(import.meta.resolve('../Resources/alert_icon.png'));
+        const alertImagePath = new Editor.Path(import.meta.resolve('../Resources/alert.png'));
         const alertImage = new Ui.Pixmap(alertImagePath);
 
         alertWidget.setFixedWidth(56);
@@ -833,9 +653,9 @@ export class GalleryView {
         const headerLabel = new Ui.Label(textWidget);
         const paragraphLabel = new Ui.Label(textWidget);
 
-        headerLabel.text = `Delete the ${app.name}?`;
+        headerLabel.text = 'Delete the Head Generator asset?';
         headerLabel.fontRole = Ui.FontRole.TitleBold;
-        paragraphLabel.text = `This will delete this ${app.name} permanently. You cannot undo this action.`;
+        paragraphLabel.text = 'This will delete this Head Generator asset permanently. You cannot undo this action.';
 
         textLayout.setContentsMargins(0, 0, 0, 0);
         textLayout.addWidget(headerLabel);
@@ -866,7 +686,7 @@ export class GalleryView {
         }.bind(this)));
 
         this.connections.push(deleteButton.onClick.connect(function() {
-            this.deleteHeadmorph(this.id_to_delete);
+            this.onDelete(this.id_to_delete);
         }.bind(this)));
 
         buttonsLayout.addStretch(0);
@@ -884,10 +704,10 @@ export class GalleryView {
         return this.deletionDialog;
     }
 
-    deleteHeadmorph(id) {
-        app.log(`Deleting the ${app.name}...`, { 'progressBar': true });
+    onDelete(id) {
+        app.log('Deleting the Head Generator asset...', { 'progressBar': true });
 
-        deleteMorph(id, function(response) {
+        deleteAsset(id, function(response) {
             this.deletionDialog.close();
 
             if (response.statusCode == 204) {
@@ -896,19 +716,385 @@ export class GalleryView {
                     'needsUpdate': true,
                     'exclude_id': id,
                 });
-                app.log(`${app.name} has been deleted.`);
+                app.log('Head Generator asset has been deleted.');
             } else {
                 this.onStateChanged({
                     'screen': 'default',
                     'needsUpdate': true,
                 });
-                app.log(`${app.name} could not be deleted. Please, try again.`);
+                app.log('Head Generator asset could not be deleted. Please, try again.');
             }
         }.bind(this));
     }
 
+    resetSearchBar() {
+        this.searchLine.blockSignals(true);
+        this.searchLine.text = '';
+        this.searchQuery = '';
+        this.searchLine.blockSignals(false);
+    }
+
+    resetScrollView() {
+        this.verticalScrollArea.blockSignals(true);
+        this.verticalScrollArea.value = 0;
+        this.verticalScrollArea.blockSignals(false);
+    }
+
+    resetGallery(exclude_ids) {
+        this.clearView();
+        this.resetScrollView();
+        this.resetSearchBar();
+
+        const requestToken = this.requestTokenManager.generateToken();
+
+        listAssets(15, (response) => {
+            if (this.requestTokenManager.isValid(requestToken)) {
+                if (response.statusCode == 200) {
+                    // guarantee that our response is still relevant
+                    // if other request was sent after this one, there
+                    // is no need to render current response
+                    let body;
+                    try {
+                        body = JSON.parse(response.body.toString());
+                    } catch (error) {
+                        body = {};
+                        app.log('Something went wrong during downloading Head Generator assets. Please, try again.');
+                    }
+
+                    try {
+                        this.updateView(body.items, exclude_ids);
+                    } catch (error) {
+                        app.log('Something went wrong during downloading Head Generator assets. Please, try again.');
+                    }
+
+                    this.nextPageToken = body.nextPageToken;
+                } else {
+                    app.log('Something went wrong during downloading Head Generator assets. Please, try again.');
+                }
+            }
+        });
+    }
+
+    expandGallery() {
+        app.log('', { 'enabled': false });
+
+        if (this.nextPageToken) {
+            const requestToken = this.requestTokenManager.generateToken();
+
+            listAssets(15, (response) => {
+                if (this.requestTokenManager.isValid(requestToken)) {
+                    // guarantee that our response is still relevant
+                    // if other request was sent after this one, there
+                    // is no need to render current response
+
+                    if (response.statusCode == 200) {
+                        // guarantee that our response is still relevant
+                        // if other request was sent after this one, there
+                        // is no need to render current response
+                        let body;
+                        try {
+                            body = JSON.parse(response.body.toString());
+                        } catch (error) {
+                            body = {};
+                            app.log('Something went wrong during downloading Head Generator assets. Please, try again.');
+                        }
+
+                        try {
+                            this.updateView(body.items, []);
+                        } catch (error) {
+                            app.log('Something went wrong during downloading Head Generator assets. Please, try again.');
+                        }
+
+                        this.nextPageToken = body.nextPageToken;
+                    } else {
+                        app.log('Something went wrong during downloading Head Generator assets. Please, try again.');
+                    }
+                }
+            }, this.constructQuery(), this.nextPageToken);
+        }
+    }
+
+    searchRequest() {
+        app.log('', { 'enabled': false });
+
+        this.clearView();
+        this.resetScrollView();
+
+        const requestToken = this.requestTokenManager.generateToken();
+
+        listAssets(15, (response) => {
+            if (this.requestTokenManager.isValid(requestToken)) {
+                // guarantee that our response is still relevant
+                // if other request was sent after this one, there
+                // is no need to render current response
+                if (response.statusCode == 200) {
+                    // guarantee that our response is still relevant
+                    // if other request was sent after this one, there
+                    // is no need to render current response
+                    let body;
+                    try {
+                        body = JSON.parse(response.body.toString());
+                    } catch (error) {
+                        body = {};
+                        app.log('Something went wrong during downloading Head Generator assets. Please, try again.');
+                    }
+
+                    try {
+                        this.updateView(body.items, []);
+                    } catch (error) {
+                        app.log('Something went wrong during downloading Head Generator assets. Please, try again.');
+                    }
+
+                    this.nextPageToken = body.nextPageToken;
+                } else {
+                    app.log('Something went wrong during downloading Head Generator assets. Please, try again.');
+                }
+            }
+        }, this.constructQuery());
+    }
+
+    reset(state) {
+        if (state.needsUpdate) {
+            this.resetGallery([state.exclude_id]);
+        }
+        this.restoreMovies();
+    }
+
+    constructQuery() {
+        return this.searchQuery;
+    }
+
+    createEmptyPlaceholder(parent) {
+        this.emptyPlaceholder = new Ui.Widget(parent);
+        this.emptyPlaceholder.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
+        this.emptyPlaceholder.setFixedWidth(422);
+        this.emptyPlaceholder.setFixedHeight(480);
+
+        const layout = new Ui.BoxLayout();
+        layout.setDirection(Ui.Direction.TopToBottom);
+
+        this.logo = new Ui.ImageView(this.emptyPlaceholder);
+        this.logo.pixmap = new Ui.Pixmap(new Editor.Path(import.meta.resolve('../Resources/gen_ai_wizzard.svg')));
+        this.logo.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
+        this.logo.setFixedWidth(180);
+        this.logo.setFixedHeight(180);
+        this.logo.scaledContents = true;
+
+        this.title = new Ui.Label(this.emptyPlaceholder);
+        this.title.fontRole = Ui.FontRole.LargeTitleBold;
+        this.title.text = '<center>Welcome to<br>Lens Studio Gen AI<center>';
+        this.title.wordWrap = true;
+        this.title.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Preferred);
+        this.title.setFixedWidth(180);
+
+        this.disclaimer = new Ui.Label(this.emptyPlaceholder);
+        this.disclaimer.wordWrap = true;
+        this.disclaimer.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Preferred);
+        this.disclaimer.setFixedWidth(300);
+
+        this.disclaimer.text = "<center>You don’t have any Head Generator Assets yet,<br>try to create a new one.<center>";
+
+        layout.addStretch(1);
+        layout.addWidgetWithStretch(this.logo, 0, Ui.Alignment.AlignCenter);
+        layout.addWidgetWithStretch(this.title, 0, Ui.Alignment.AlignCenter);
+        layout.addWidgetWithStretch(this.disclaimer, 0, Ui.Alignment.AlignCenter);
+        layout.addStretch(1);
+
+        layout.spacing = Ui.Sizes.Padding;
+
+        this.emptyPlaceholder.layout = layout;
+    }
+
+    createEmptyGalleryPage(parent) {
+        this.emptyGalleryPage = new Ui.Widget(parent);
+        this.emptyGalleryPage.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
+        this.emptyGalleryPage.setFixedWidth(422);
+        this.emptyGalleryPage.setFixedHeight(500);
+
+        this.logo = new Ui.ImageView(this.emptyGalleryPage);
+        this.logo.pixmap = new Ui.Pixmap(new Editor.Path(import.meta.resolve('../Resources/icon.svg')));
+        this.logo.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
+        this.logo.setFixedWidth(32);
+        this.logo.setFixedHeight(32);
+        this.logo.scaledContents = true;
+
+        this.logo.move(192, 69);
+
+        const title = new Ui.Label(this.emptyGalleryPage);
+        title.fontRole = Ui.FontRole.TitleBold;
+        title.foregroundRole = Ui.ColorRole.BrightText;
+        title.text = '<center>Welcome to<br><span style="font-size: 16px; font-weight: bold; color: #FFF0B9;">Head Generator</span><center>';
+        title.wordWrap = true;
+        title.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Preferred);
+        title.setFixedWidth(180);
+
+        title.move(121, 112);
+
+        this.movieView = new Ui.MovieView(this.emptyGalleryPage);
+        this.movieView.setFixedWidth(122);
+        this.movieView.setFixedHeight(216);
+        this.movieView.radius = 8;
+        this.movieView.scaledContents = true;
+        this.movieView.animated = true;
+
+        const movie = new Ui.Movie(new Editor.Path(import.meta.resolve('../Resources/hm_capybara.webp')));
+        movie.resize(122, 216);
+        this.movieView.movie = movie;
+
+        this.movieView.move(20, 170);
+
+        this.movieView1 = new Ui.MovieView(this.emptyGalleryPage);
+        this.movieView1.setFixedWidth(122);
+        this.movieView1.setFixedHeight(216);
+        this.movieView1.radius = 8;
+        this.movieView1.scaledContents = true;
+        this.movieView1.animated = true;
+
+        const movie1 = new Ui.Movie(new Editor.Path(import.meta.resolve('../Resources/hm_octopus.webp')));
+        movie1.resize(122, 216);
+        this.movieView1.movie = movie1;
+
+        this.movieView1.move(149, 170);
+
+        this.movieView2 = new Ui.MovieView(this.emptyGalleryPage);
+        this.movieView2.setFixedWidth(122);
+        this.movieView2.setFixedHeight(216);
+        this.movieView2.radius = 8;
+        this.movieView2.scaledContents = true;
+        this.movieView2.animated = true;
+
+        const movie2 = new Ui.Movie(new Editor.Path(import.meta.resolve('../Resources/hm_shark.webp')));
+        movie2.resize(122, 216);
+        this.movieView2.movie = movie2;
+
+        this.movieView2.move(278, 170);
+
+        const disclaimer = new Ui.Label(this.emptyGalleryPage);
+        disclaimer.wordWrap = true;
+        disclaimer.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Preferred);
+        disclaimer.setFixedWidth(300);
+
+        disclaimer.text = `<center>You don’t have any generated effects yet.<br>Try creating a new one!<center>`;
+
+        disclaimer.move(61, 424)
+
+        const guidelinesButton = new Ui.PushButton(this.emptyGalleryPage);
+        guidelinesButton.text = 'Guidelines';
+        const importImagePath = new Editor.Path(import.meta.resolve('../Resources/Guides.svg'));
+        guidelinesButton.setIconWithMode(Editor.Icon.fromFile(importImagePath), Ui.IconMode.MonoChrome);
+        guidelinesButton.primary = false;
+        guidelinesButton.enabled = true;
+        guidelinesButton.visible = true;
+
+        guidelinesButton.move(164, 468);
+
+        guidelinesButton.onClick.connect(() => {
+            Shell.openUrl('https://developers.snap.com/lens-studio/features/genai-suite/head-morph-generation', {});
+        })
+
+        this.emptyGalleryPage.visible = false;
+    }
+
+    createGalleryGrid(parent) {
+        this.galleryGridWidget = new Ui.Widget(parent);
+        this.galleryGridWidget.setContentsMargins(Ui.Sizes.Padding, Ui.Sizes.Padding, Ui.Sizes.Padding, 0);
+
+        this.gridLayout = new Ui.GridLayout();
+
+        this.gridLayout.spacing = 0;
+        this.gridLayout.setContentsMargins(0, 0, Ui.Sizes.Padding, 0);
+
+        this.scrollWidget = new Ui.Widget(this.galleryGridWidget);
+        this.scrollWidget.layout = this.gridLayout;
+        this.verticalScrollArea = new Ui.VerticalScrollArea(this.galleryGridWidget);
+        this.verticalScrollArea.setWidget(this.scrollWidget);
+
+        this.connections.push(this.verticalScrollArea.onValueChange.connect(function(value) {
+            if (this.verticalScrollArea.maximum == value) {
+                this.expandGallery();
+            }
+        }.bind(this)));
+
+        const scrollLayout = new Ui.BoxLayout();
+        scrollLayout.setDirection(Ui.Direction.TopToBottom);
+        scrollLayout.addWidget(this.verticalScrollArea);
+        scrollLayout.spacing = 0;
+        scrollLayout.setContentsMargins(0, 0, 0, 0);
+
+        this.galleryGridWidget.layout = scrollLayout;
+
+        this.emptyPlaceHolder = this.createEmptyPlaceholder(this.galleryGridWidget);
+        this.emptyPlaceholder.visible = false;
+
+        this.createEmptyGalleryPage(this.galleryGridWidget);
+
+        return this.galleryGridWidget;
+    }
+
+
+    createHeader(parent) {
+        const widget = new Ui.Widget(parent);
+        const layout = new Ui.BoxLayout();
+        layout.setDirection(Ui.Direction.LeftToRight);
+
+        this.reloadButton = new Ui.ToolButton(widget);
+
+        const reloadIconPath = new Editor.Path(import.meta.resolve('../Resources/reload.svg'));
+        this.reloadButton.setIcon(Editor.Icon.fromFile(reloadIconPath));
+        this.connections.push(this.reloadButton.onClick.connect(function() {
+            this.resetGallery();
+            app.log('', { 'enabled': false });
+        }.bind(this)));
+
+        this.searchLine = new Ui.SearchLineEdit(widget);
+
+        this.connections.push(this.searchLine.onTextChange.connect(function(text) {
+            if (text.length > 0) {
+                this.searchQuery = '&filter[]=search%3D' + text;
+            } else {
+                this.searchQuery = '';
+            }
+
+            this.searchRequest();
+        }.bind(this)));
+
+        layout.setContentsMargins(Ui.Sizes.HalfPadding, Ui.Sizes.HalfPadding, Ui.Sizes.DoublePadding, 0);
+        layout.addWidget(this.reloadButton);
+        layout.addWidget(this.searchLine);
+
+        widget.layout = layout;
+        return widget;
+    }
+
+    getGenerateButton() {
+        return this.generateButton;
+    }
+
+    createFooter(parent) {
+        this.footer = new Ui.Widget(parent);
+        this.footer.setFixedHeight(56);
+
+        const footerLayout = new Ui.BoxLayout();
+        footerLayout.setDirection(Ui.Direction.LeftToRight);
+        footerLayout.setContentsMargins(8, 0, 16, 0);
+        footerLayout.spacing = 0;
+
+        this.generateButton = new Ui.PushButton(this.footer);
+        this.generateButton.text = 'Generate previews';
+        this.generateButton.enabled = false;
+        this.generateButton.primary = false;
+
+        footerLayout.addWidgetWithStretch(this.generateButton, 0, Ui.Alignment.AlignRight | Ui.Alignment.AlignCenter);
+
+        this.footer.layout = footerLayout;
+        return this.footer;
+    }
+
     create(parent) {
         this.widget = new Ui.Widget(parent);
+        this.widget.setFixedWidth(422);
+        this.widget.setFixedHeight(620);
+        this.widget.setContentsMargins(0, 0, 0, 0);
 
         this.layout = new Ui.BoxLayout();
         this.layout.setDirection(Ui.Direction.TopToBottom);
@@ -916,7 +1102,14 @@ export class GalleryView {
         this.layout.addWidget(this.createHeader(this.widget));
         this.layout.addWidget(this.createGalleryGrid(this.widget));
 
-        this.layout.setContentsMargins(Ui.Sizes.Padding, Ui.Sizes.Padding, Ui.Sizes.Padding, 0);
+        const separator2 = new Ui.Separator(Ui.Orientation.Horizontal, Ui.Shadow.Plain, this.widget);
+        separator2.setFixedHeight(Ui.Sizes.SeparatorLineWidth);
+        this.layout.addWidget(separator2);
+
+        this.layout.addWidget(this.createFooter(this.widget));
+
+        this.layout.spacing = 0;
+        this.layout.setContentsMargins(0, 0, 0, 0);
         this.widget.layout = this.layout;
 
         this.dialog = this.createDeletionDialog();

@@ -121,6 +121,10 @@ export class TransitionTile {
         this.onRemoveCallback = callback;
     }
 
+    get isEmpty(): boolean {
+        return !this.widget.visible || this.pageName === null || this.id === null || this.id === undefined || this.pageName === undefined
+    }
+
     get previewPath() {
         return this.curPreviewPath;
     }

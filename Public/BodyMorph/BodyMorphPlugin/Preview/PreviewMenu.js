@@ -36,7 +36,7 @@ export class PreviewMenu {
                 'promptPicker': { 'mode': controls['promptPicker'].mode, 'value': controls['promptPicker'].value },
                 'intensitySettings': { 'value': this.original_intensity },
                 'headlessSettings': { 'value': controls['headlessSettings'].value },
-                'userNotes': { 'value': controls["userNotes"].value }
+                'userNotes': { 'value': '' }
             }, true, this.bodymorph_id);
             origin = "CHANGE_TEXTURE";
         } else {
@@ -116,12 +116,6 @@ export class PreviewMenu {
         this.controls['headlessSettings'].value = state.costume_only;
 
         this.original_headless = state.headless;
-
-        if (state.userNotes) {
-            this.controls['userNotes'].value = state.userNotes;
-        } else {
-            this.controls['userNotes'].value = "";
-        }
 
         this.updateEditButtonVisibility();
     }

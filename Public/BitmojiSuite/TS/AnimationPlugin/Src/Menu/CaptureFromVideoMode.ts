@@ -3,10 +3,6 @@ import * as Ui from "LensStudio:Ui";
 import {Alignment} from "LensStudio:Ui";
 import {MenuTemplate} from "./MenuTemplate.js";
 import {AnimationLibrary} from "./AnimationLibrary.js";
-//@ts-ignore
-import * as MultimediaWidgets from 'LensStudio:MultimediaWidgets';
-//@ts-ignore
-import {MediaState} from 'LensStudio:MultimediaWidgets';
 import {dependencyContainer, DependencyKeys} from "../DependencyContainer.js";
 import {getAnimationById, uploadAnimation} from "../api.js";
 import {SelectCharacterPage} from "./SelectCharacterPage.js";
@@ -39,7 +35,7 @@ export class CaptureFromVideoMode {
         this.stackedWidget.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Expanding);
 
         const widget = this.menuTemplate.createWidget(this.stackedWidget);
-        widget.setMinimumHeight(552);
+        // widget.setMinimumHeight(552);
         const layout: Ui.BoxLayout = this.menuTemplate.createLayout();
 
         //@ts-ignore
@@ -60,7 +56,7 @@ export class CaptureFromVideoMode {
         contentLayout.addWidget(this.menuTemplate.createLabel(widget, "Upload Video"));
         contentLayout.addStretch(0);
 
-        const label = new Ui.Label(parent);
+        const label = new Ui.Label(widget);
         label.wordWrap = true;
         label.text = "• Format: <b>.mp4 only</b><br>" +
             "• Max File Size: <b>20 MB</b><br><br>" +
@@ -71,7 +67,8 @@ export class CaptureFromVideoMode {
 
         // Video Upload
 
-        const videoUpload = new Ui.ImageView(parent);
+        const videoUpload = new Ui.ImageView(widget);
+        videoUpload.scaledContents = true;
         videoUpload.responseHover = true;
         videoUpload.pixmap = this.defaultBackground;
         videoUpload.setFixedWidth(288);
@@ -80,6 +77,7 @@ export class CaptureFromVideoMode {
         const iconView = new Ui.ImageView(videoUpload);
         iconView.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
         iconView.move(125, 120);
+        iconView.scaledContents = true;
         iconView.pixmap = new Ui.Pixmap(new Editor.Path(import.meta.resolve('./Resources/uploadIcon.svg')));
 
         const iconSize: number = 36;
@@ -93,22 +91,21 @@ export class CaptureFromVideoMode {
         buttonLabel.text = '<center>' + 'Upload Video <br> <br> .mp4' + '</center>';
         buttonLabel.move(109, 159);
 
-        //@ts-ignore
-        const videoWidget = new MultimediaWidgets.VideoWidget(videoUpload);
-        videoWidget.setFixedWidth(288);
-        videoWidget.setFixedHeight(288);
-        videoWidget.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
-        videoWidget.visible = false;
-
-        //@ts-ignore
-        const mediaPlayer = new MultimediaWidgets.MediaPlayer();
+        const videoView = new Ui.VideoView(videoUpload);
+        videoView.radius = 8;
+        videoView.setFixedWidth(288);
+        videoView.setFixedHeight(288);
+        videoView.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
+        videoView.muted = true;
+        videoView.visible = false;
 
         contentLayout.addWidgetWithStretch(videoUpload, 0, (Ui.Alignment.AlignCenter));
         contentLayout.addStretch(0);
 
         // Reload
 
-        const reloadWidget = new Ui.ImageView(parent);
+        const reloadWidget = new Ui.ImageView(widget);
+        reloadWidget.scaledContents = true;
         reloadWidget.responseHover = true;
         reloadWidget.pixmap = this.defaultBackground;
         reloadWidget.setFixedWidth(288);
@@ -117,6 +114,7 @@ export class CaptureFromVideoMode {
         const warningIconView = new Ui.ImageView(reloadWidget);
         warningIconView.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
         warningIconView.move(125, 88);
+        warningIconView.scaledContents = true;
         warningIconView.pixmap = new Ui.Pixmap(new Editor.Path(import.meta.resolve('./Resources/warning_triangle.svg')));
         warningIconView.setFixedHeight(iconSize);
         warningIconView.setFixedWidth(iconSize);
@@ -186,7 +184,7 @@ export class CaptureFromVideoMode {
 
         let isProcessing = false;
 
-        const buttonItems = [videoUpload, iconView, buttonLabel];
+        const buttonItems = [videoUpload, iconView, buttonLabel, videoView];
         buttonItems.forEach((item: any) => {
             this.connections.push(item.onClick.connect(() => {
                 if (isProcessing) {
@@ -197,10 +195,11 @@ export class CaptureFromVideoMode {
                 const filePath = pluginSystem.findInterface(Ui.IGui).dialogs.selectFileToOpen({ 'caption': 'Select file to open', 'filter': '*.mp4' }, '');
                 if (!filePath.isEmpty) {
                     this.currentVideoFilePath = filePath;
-                    videoWidget.visible = true;
-                    mediaPlayer.setMedia(filePath);
-                    mediaPlayer.setVideoOutput(videoWidget);
-                    mediaPlayer.play();
+                    videoView.visible = true;
+                    videoView.stop();
+                    videoView.setSource(filePath);
+                    videoView.loopCount = -1;
+                    videoView.play();
                     processVideoButton.enabled = true;
                     processVideoButton.primary = true;
                     processVideoButton.text = 'Process Video';
@@ -208,28 +207,22 @@ export class CaptureFromVideoMode {
             }))
         })
 
-        this.connections.push(mediaPlayer.onStateChanged.connect((newState: any) => {
-            //@ts-ignore
-            if (newState === MediaState.StoppedState) {
-                mediaPlayer.play();
-            }
-        }))
-
         const toDefaultState = () => {
             videoUpload.visible = true;
-            videoWidget.visible = true;
+            videoView.visible = true;
             processVideoButton.text = 'Process Video';
             processVideoButton.primary = true;
             processVideoButton.enabled = true;
             processVideoButton.visible = true;
-            mediaPlayer.play();
+            // mediaPlayer.play();
+            videoView.play();
             loading.visible = false;
             isProcessing = false;
             processVideoButton.setIconWithMode(settingsIcon, Ui.IconMode.MonoChrome);
         }
 
         const showReloadWidget = () => {
-            videoWidget.visible = false;
+            videoView.visible = false;
             videoUpload.visible = false;
             reloadWidget.visible = true;
             processVideoButton.visible = false;
@@ -245,7 +238,7 @@ export class CaptureFromVideoMode {
                 processVideoButton.enabled = false;
                 processVideoButton.primary = false;
                 processVideoButton.text = 'Processing...';
-                mediaPlayer.pause();
+                videoView.pause();
                 loading.visible = true;
                 isProcessing = true;
                 processVideoButton.setIconWithMode(transparentIcon, Ui.IconMode.MonoChrome);
@@ -283,7 +276,7 @@ export class CaptureFromVideoMode {
                                             processVideoButton.enabled = false;
                                             processVideoButton.primary = true;
                                             processVideoButton.text = 'Process Video';
-                                            videoWidget.visible = false;
+                                            videoView.visible = false;
                                             loading.visible = false;
                                             isProcessing = false;
                                             processVideoButton.setIconWithMode(settingsIcon, Ui.IconMode.MonoChrome);

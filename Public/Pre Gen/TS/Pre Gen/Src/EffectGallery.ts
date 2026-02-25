@@ -125,7 +125,7 @@ export class EffectGallery {
         const title = new Ui.Label(emptyGalleryPage);
         title.fontRole = Ui.FontRole.TitleBold;
         title.foregroundRole = Ui.ColorRole.BrightText;
-        title.text = '<center>Welcome to<br><span style="font-size: 16px; font-weight: bold; color: #FFF0B9;">AI Portraits Beta</span><center>';
+        title.text = '<center>Welcome to<br><span style="font-size: 16px; font-weight: bold; color: #FFF0B9;">AI Portraits</span><center>';
         title.wordWrap = true;
         title.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Preferred);
         title.setFixedWidth(180);

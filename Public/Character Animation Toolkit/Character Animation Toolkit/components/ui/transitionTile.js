@@ -92,6 +92,9 @@ export class TransitionTile {
     addOnRemoveCallback(callback) {
         this.onRemoveCallback = callback;
     }
+    get isEmpty() {
+        return !this.widget.visible || this.pageName === null || this.id === null || this.id === undefined || this.pageName === undefined;
+    }
     get previewPath() {
         return this.curPreviewPath;
     }

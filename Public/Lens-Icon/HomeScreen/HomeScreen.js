@@ -1,11 +1,12 @@
 import * as Ui from 'LensStudio:Ui';
 import { Storage } from '../utils/storage.js';
-import { logEventAssetImport } from '../App/analytics.js';
-import { GenAIIconName } from '../App/common.js';
+import { EditorPreviewController } from './EditorPreviewController.js';
+import { setIcon } from '../App/app.js';
 
 export class HomeScreen {
-    constructor(pluginSystem, authorization, requestGenerationCb, requestIconCropperCb) {
+    constructor(pluginSystem, authorization, calloutManager, requestGenerationCb, requestIconCropperCb) {
         this.pluginSystem = pluginSystem;
+        this.calloutManager = calloutManager;
         this.requestGenerationCb = requestGenerationCb;
         this.requestIconCropperCb = requestIconCropperCb;
 
@@ -179,7 +180,7 @@ export class HomeScreen {
         return widget;
     }
 
-    setIcon(iconPath, updateMetainfo = true) {
+    setIcon(iconPath, updateMetaInfo = true) {
         const pixmap = new Ui.Pixmap(iconPath);
         pixmap.aspectRatioMode = Ui.AspectRatioMode.KeepAspectRatio;
         pixmap.transformationMode = Ui.TransformationMode.SmoothTransformation;
@@ -195,35 +196,88 @@ export class HomeScreen {
 
         this.iconPlaceholder.pixmap = pixmap;
         this.isIconPresented = true;
+        this.stackedImportAndIconPreviewWidget.currentIndex = 1;
 
-        this.logoCarousel.visible = false;
         this.iconPlaceholder.visible = true;
 
-        if (updateMetainfo) {
-            const model = this.pluginSystem.findInterface(Editor.Model.IModel);
-            const project = model.project;
-
-            const metainfo = project.metaInfo;
-            metainfo.setIcon(iconPath);
-
-            // could be either be string or Editor.Path, so we always convert to Editor.Path first
-            const fileName = (new Editor.Path(iconPath.toString())).fileName
-
-            if (fileName == GenAIIconName) {
-                logEventAssetImport("SUCCESS", "GEN_AI");
-            } else {
-                logEventAssetImport("SUCCESS", "FROM_FILE");
-            }
-
-            project.metaInfo = metainfo;
+        if (updateMetaInfo) {
+            setIcon(iconPath, this.pluginSystem);
         }
     }
 
     resetIcon() {
         this.isIconPresented = false;
+        this.stackedImportAndIconPreviewWidget.currentIndex = 0;
+    }
 
-        this.logoCarousel.visible = true;
-        this.iconPlaceholder.visible = false;
+    createImportWidget(parent) {
+        const importWidget = new Ui.Widget(parent);
+        importWidget.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
+        importWidget.setFixedWidth(268);
+        importWidget.setFixedHeight(146);
+
+        const importLayout = new Ui.StackedLayout();
+        importLayout.stackingMode = Ui.StackingMode.StackAll;
+        const importLayoutSize = new vec2(268, 146);
+
+        const buttonSize = new vec2(70, 70);
+        this.importButton = new Ui.ImageView(importWidget);
+        this.importButton.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
+        this.importButton.setFixedWidth(buttonSize.x);
+        this.importButton.setFixedHeight(buttonSize.y);
+
+        const importButtonWrapperWidget = new Ui.StackedWidget(importWidget);
+        importButtonWrapperWidget.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
+        importButtonWrapperWidget.setFixedWidth(importLayoutSize.x);
+        importButtonWrapperWidget.setFixedHeight(importLayoutSize.y);
+        const importButtonWrapperMarginX = (importLayoutSize.x - buttonSize.x) / 2;
+        const importButtonWrapperMarginY = (importLayoutSize.y - buttonSize.y) / 2;
+        importButtonWrapperWidget.setContentsMargins(
+            importButtonWrapperMarginX, importButtonWrapperMarginY - 3, importButtonWrapperMarginX, importButtonWrapperMarginY + 3); // -3 to adjust the gap to center the button
+        importButtonWrapperWidget.addWidget(this.importButton);
+
+        this.importButtonPixmap = new Ui.Pixmap(import.meta.resolve('./Resources/import_button.svg'));
+        this.importButtonPixmapHover = new Ui.Pixmap(import.meta.resolve('./Resources/import_button_hover.svg'));
+        this.importButton.pixmap = this.importButtonPixmap;
+        this.importButton.responseHover = true;
+        this.importButton.onHover.connect((hovered) => {
+            if (hovered) {
+                this.importButton.pixmap = this.importButtonPixmapHover;
+            } else {
+                this.importButton.pixmap = this.importButtonPixmap;
+            }
+        });
+        this.importButton.onClick.connect(() => {
+            this.requestImport();
+        });
+
+        const importButtonBgPatternImg = new Ui.ImageView(importWidget);
+        importButtonBgPatternImg.setFixedWidth(importLayoutSize.x);
+        importButtonBgPatternImg.setFixedHeight(importLayoutSize.y);
+        importButtonBgPatternImg.pixmap = new Ui.Pixmap(import.meta.resolve('./Resources/import_button_bg_pattern.svg'));
+
+        // Add "Import image" label inside the stacked layout
+        const importLabel = new Ui.Label(importWidget);
+        importLabel.text = "<center>Import Image</center>";
+        importLabel.fontRole = Ui.FontRole.Default;
+        importLabel.foregroundRole = Ui.ColorRole.BrightText;
+        importLabel.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
+        importLabel.setFixedWidth(importLayoutSize.x);
+        importLabel.setContentsMargins(0, 0, 0, 0);
+
+        const importLabelWrapper = new Ui.StackedWidget(importWidget);
+        importLabelWrapper.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
+        importLabelWrapper.setFixedWidth(importLayoutSize.x);
+        importLabelWrapper.setFixedHeight(importLayoutSize.y);
+        importLabelWrapper.setContentsMargins(0, 115, 0, 0);
+        importLabelWrapper.addWidget(importLabel);
+
+        importLayout.addWidget(importButtonWrapperWidget);
+        importLayout.addWidget(importLabelWrapper);
+        importLayout.addWidget(importButtonBgPatternImg);
+
+        importWidget.layout = importLayout;
+        return importWidget;
     }
 
     createIconPreview(parent) {
@@ -235,27 +289,78 @@ export class HomeScreen {
         const layout = new Ui.BoxLayout();
         layout.setDirection(Ui.Direction.TopToBottom);
 
-        this.logoCarousel = new Ui.ImageView(widget);
-        this.logoCarousel.setFixedWidth(472);
-        this.logoCarousel.setFixedHeight(120);
-
-        this.logoCarousel.scaledContents = true;
-        this.logoCarousel.pixmap = new Ui.Pixmap(import.meta.resolve("./Resources/icon_carousel.png"));
-        this.logoCarousel.visible = false;
-
-        this.iconPlaceholder = new Ui.ImageView(widget);
+        this.iconPlaceholder = new Ui.ImageView(parent);
         this.iconPlaceholder.setFixedWidth(156);
         this.iconPlaceholder.setFixedHeight(156);
         this.iconPlaceholder.scaledContents = true;
-        this.iconPlaceholder.radius = 78 * widget.devicePixelRatio;
+        this.iconPlaceholder.radius = 78 * parent.devicePixelRatio;
 
-        this.iconPlaceholder.visible = false;
+        const importButton = new Ui.PushButton(parent);
+        importButton.text = "Change Image";
+        const importButtonIconPath = import.meta.resolve('./Resources/import_icon.svg');
+        importButton.setIconWithMode(Editor.Icon.fromFile(importButtonIconPath), Ui.IconMode.MonoChrome);
+        importButton.onClick.connect(() => {
+            this.requestImport();
+        });
 
-        layout.addWidget(this.logoCarousel);
-        layout.addWidget(this.iconPlaceholder);
+        layout.addWidgetWithStretch(this.iconPlaceholder, 1, Ui.Alignment.AlignCenter);
+        layout.addWidgetWithStretch(importButton, 1, Ui.Alignment.AlignCenter);
+
         widget.layout = layout;
 
         return widget;
+    }
+
+    processImageAndSendToCrop(pixmap) {
+        try {
+            pixmap.transformationMode = Ui.TransformationMode.SmoothTransformation;
+            pixmap.aspectRatioMode = Ui.AspectRatioMode.KeepAspectRatio;
+
+            if (pixmap.width > pixmap.height) {
+                if (pixmap.width > 1024) {
+                    // downscale
+                    pixmap.width = 1024;
+                } else if (pixmap.width < 320) {
+                    // upscale
+                    pixmap.width = 320;
+                }
+            } else {
+                if (pixmap.height > 1024) {
+                    // downscale
+                    pixmap.height = 1024;
+                } else if (pixmap.height < 320) {
+                    // upscale
+                    pixmap.height = 320;
+                }
+            }
+
+            pixmap.save(this.storage.directory.path.appended("icon.png"));
+            this.requestIconCropperCb(Base64.encode(this.storage.readBytes(this.storage.directory.path.appended("icon.png"))));
+
+        } catch(error) {
+            console.error("Can't open the file: " + filePath);
+        }
+    }
+
+    capturePreviewScreenshot() {
+        if (!this.editorPreviewController) {
+            this.editorPreviewController = new EditorPreviewController(this.pluginSystem);
+        }
+
+        const previewPanels = this.editorPreviewController.getAllPreviewPanels();
+
+        if (previewPanels.length === 0) {
+            this.calloutManager.showErrorNoPreview();
+            return;
+        }
+
+        if (previewPanels.length > 1) {
+            this.calloutManager.showInfoMultiPreview();
+        }
+
+        previewPanels[previewPanels.length - 1].screenshot().then((screenshot) => {
+            this.processImageAndSendToCrop(screenshot);
+        });
     }
 
     requestImport(filePath = null) {
@@ -264,37 +369,8 @@ export class HomeScreen {
         }
 
         if (!filePath.isEmpty) {
-            try {
-                let pixmap = new Ui.Pixmap(filePath);
-
-                pixmap.transformationMode = Ui.TransformationMode.SmoothTransformation;
-                pixmap.aspectRatioMode = Ui.AspectRatioMode.KeepAspectRatio;
-
-                if (pixmap.width > pixmap.height) {
-                    if (pixmap.width > 1024) {
-                        // downscale
-                        pixmap.width = 1024;
-                    } else if (pixmap.width < 320) {
-                        // upscale
-                        pixmap.width = 320;
-                    }
-                } else {
-                    if (pixmap.height > 1024) {
-                        // downscale
-                        pixmap.height = 1024;
-                    } else if (pixmap.height < 320) {
-                        // upscale
-                        pixmap.height = 320;
-                    }
-                }
-
-
-                pixmap.save(this.storage.directory.path.appended("icon.png"));
-
-                this.requestIconCropperCb(Base64.encode(this.storage.readBytes(this.storage.directory.path.appended("icon.png"))));
-            } catch(error) {
-                console.error("Can't open the file: " + filePath);
-            }
+            let pixmap = new Ui.Pixmap(filePath);
+            this.processImageAndSendToCrop(pixmap);
         }
     }
 
@@ -322,6 +398,16 @@ export class HomeScreen {
         title3.text = '<span style="color: rgba(195, 210, 223, 0.6);"><center>The Lens icon helps your Lens get distributed on Snapchat and</center><center>is one of the first things Snapchatters see.</center></span>';
         title3.fontRole = Ui.FontRole.Default;
 
+        this.captureButton = new Ui.PushButton(this.widget);
+        this.captureButton.text = "Capture from Preview";
+        this.captureButton.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
+        const captureIconPath = import.meta.resolve('./Resources/capture_icon.svg');
+        this.captureButton.setIconWithMode(Editor.Icon.fromFile(captureIconPath), Ui.IconMode.MonoChrome);
+
+        this.captureButton.onClick.connect(() => {
+            this.capturePreviewScreenshot();
+        });
+
         layout.addWidget(title);
         layout.setWidgetAlignment(title, Ui.Alignment.AlignCenter);
 
@@ -331,33 +417,27 @@ export class HomeScreen {
         layout.addWidget(title3);
         layout.setWidgetAlignment(title3, Ui.Alignment.AlignCenter);
 
-        this.importButton = new Ui.PushButton(this.widget);
-        this.importButton.text = "Import";
-        this.importButton.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
-        const importImagePath = import.meta.resolve('./Resources/import.svg');
-        this.importButton.setIconWithMode(Editor.Icon.fromFile(importImagePath), Ui.IconMode.MonoChrome);
+        layout.addWidget(this.captureButton);
+        layout.setWidgetAlignment(this.captureButton, Ui.Alignment.AlignCenter);
 
-        this.importButton.onClick.connect(() => {
-            this.requestImport();
-        });
 
-        layout.addWidget(this.importButton);
-        layout.setWidgetAlignment(this.importButton, Ui.Alignment.AlignCenter);
-
+        this.stackedImportAndIconPreviewWidget = new Ui.StackedWidget(this.widget);
+        const importWidget = this.createImportWidget(this.widget);
         const iconPreviewWidget = this.createIconPreview(this.widget);
+        this.stackedImportAndIconPreviewWidget.addWidget(importWidget);
+        this.stackedImportAndIconPreviewWidget.addWidget(iconPreviewWidget);
+        this.stackedImportAndIconPreviewWidget.currentIndex = 0;
 
-        layout.addStretch(0);
-
-        layout.addWidget(iconPreviewWidget);
-        layout.setWidgetAlignment(iconPreviewWidget, Ui.Alignment.AlignCenter);
-
-        layout.addStretch(0);
+        layout.addStretch(1);
+        layout.addWidgetWithStretch(this.stackedImportAndIconPreviewWidget, 1, Ui.Alignment.AlignCenter);
+        layout.addStretch(1);
 
         const genAiWidget = this.createGenAiWidget(this.widget)
         layout.addWidget(genAiWidget);
         layout.setWidgetAlignment(genAiWidget, Ui.Alignment.AlignCenter);
 
         this.widget.layout = layout;
-        return this.widget;
+
+        return this.widget
     }
 }

@@ -4,8 +4,7 @@ export enum DependencyKeys {
     AnimationLibrary = 'AnimationLibrary',
     Preview = 'Preview',
     LBEPreview = 'LBEPreview',
-    IsActive = "IsActive",
-    TransparentScreen = "TransparentScreen"
+    IsActive = "IsActive"
 }
 
 class DependencyContainer {

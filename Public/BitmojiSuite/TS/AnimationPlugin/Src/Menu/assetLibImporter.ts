@@ -68,6 +68,14 @@ export class AssetLibImporter {
 
         const tempDir = this.tempDir;
         Network.performHttpRequest(request, function(response) {
+            if (response.statusCode !== 200 && response.statusCode !== 201) {
+                callback({
+                    success: false,
+                    path: ""
+                });
+
+                return;
+            }
                 const path = tempDir.path.appended(new Editor.Path(filename));
                 FileSystem.writeFile(path, response.body.toBytes());
                 callback({

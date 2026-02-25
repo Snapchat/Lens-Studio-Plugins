@@ -7,8 +7,8 @@ export class PreGen extends EntityGenerator {
     static descriptor() {
         const descriptor = new Descriptor();
         descriptor.id = "Com.Snap.PreGen";
-        descriptor.name = "AI Portraits Beta";
-        descriptor.description = "AI Portraits Beta";
+        descriptor.name = "AI Portraits";
+        descriptor.description = "AI Portraits";
         descriptor.dependencies = [];
         descriptor.displayOrder = 11;
         descriptor.icon = Editor.Icon.fromFile(import.meta.resolve('./Resources/mainIcon.svg'));
@@ -17,7 +17,7 @@ export class PreGen extends EntityGenerator {
     }
     constructor(pluginSystem, descriptor) {
         super(pluginSystem, descriptor);
-        this.name = "AI Portraits Beta";
+        this.name = "AI Portraits";
         this.guard = [];
         app.initialize(pluginSystem);
         this.mGui = this.pluginSystem.findInterface(Ui.IGui);

@@ -162,12 +162,15 @@ export class GarmentDialog {
     }
 
     onImportClicked() {
+        this.footer.importToProjectButton.enabled = false;
+        this.footer.importToProjectButton.text = 'Importing...';
         app.importer.import(app.generator.textureBytes, app.generator.maskBytes).then(() => {
             logEventAssetImport("SUCCESS");
             this.hideError();
             this.showCallout();
             app.generator.changeState(GeneratorState.Idle);
-
+            this.footer.importToProjectButton.enabled = true;
+            this.footer.importToProjectButton.text = 'Import to project';
             let timeout = setTimeout(() => {
                 this.hideCallout();
                 clearTimeout(timeout);
@@ -175,7 +178,6 @@ export class GarmentDialog {
 
         }).catch((error) => {
             logEventAssetImport("FAILED");
-            app.log('Failed to import Garment, please try again.');
         });
     }
 
@@ -290,6 +292,8 @@ export class GarmentDialog {
     configureDialog() {
         this.widget = new Ui.Widget(this.dialog);
         this.widget.setContentsMargins(0, 0, 0, 0);
+        this.widget.autoFillBackground = true;
+        this.widget.backgroundRole = Ui.ColorRole.Base;
 
         const layout = new Ui.BoxLayout();
         layout.setDirection(Ui.Direction.TopToBottom);

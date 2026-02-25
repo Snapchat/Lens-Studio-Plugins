@@ -18,6 +18,9 @@ export class HomeScreen {
         this.creationMenu = new CreationMenu(onStateChanged, this.reset.bind(this));
         this.draftMeshPreview = new DraftMeshPreview(onStateChanged, this.reset.bind(this));
 
+        this.draftMeshPreview.addOnAllPreviewsGeneratedCallback(this.creationMenu.onAllPreviewsGenerated.bind(this.creationMenu));
+        this.draftMeshPreview.addOnNewGenerationStartedCallback(this.creationMenu.onNewGenerationStarted.bind(this.creationMenu));
+
         this.accessMenu = new AccessMenu(onStateChanged);
 
         this.onStateChanged = onStateChanged;
@@ -135,14 +138,9 @@ export class HomeScreen {
         const layout = new Ui.BoxLayout();
         layout.setDirection(Ui.Direction.LeftToRight);
 
-        this.menuWidget = this.creationMenu.create(this.widget);
-
-        layout.addWidget(this.menuWidget);
-
         const separator = new Ui.Separator(Ui.Orientation.Vertical, Ui.Shadow.Plain, this.widget);
         separator.setFixedWidth(Ui.Sizes.SeparatorLineWidth);
-
-        layout.addWidget(separator);
+        separator.setFixedHeight(564);
 
         this.stackedWidget = new Ui.StackedWidget(this.widget);
         this.stackedWidget.setContentsMargins(0, 0, 0, 0);
@@ -150,6 +148,13 @@ export class HomeScreen {
         this.galleryViewWidget = this.galleryView.create(this.stackedWidget);
         this.draftMeshPreviewWidget = this.draftMeshPreview.create(this.stackedWidget);
         this.accessMenuWidget = this.accessMenu.create(this.stackedWidget);
+
+        this.creationMenu.setGenerateButton(this.galleryView.getGenerateButton());
+
+        this.menuWidget = this.creationMenu.create(this.widget);
+
+        layout.addWidget(this.menuWidget);
+        layout.addWidgetWithStretch(separator, 0, Ui.Alignment.AlignTop);
 
         this.stackedWidget.addWidget(this.galleryViewWidget);
         this.stackedWidget.addWidget(this.draftMeshPreviewWidget);

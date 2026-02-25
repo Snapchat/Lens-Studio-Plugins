@@ -65,7 +65,7 @@ export class ImageReferencePicker extends Control {
         promptHeaderLayout.addWidget(promptLabel);
 
         if (hint) {
-            const infoIconImage = new Ui.Pixmap(new Editor.Path(import.meta.resolve('../../Resources/info.svg')));
+            const infoIconImage = new Ui.Pixmap(new Editor.Path(import.meta.resolve('../../Resources/info_icon.svg')));
             const promptToolTip = new Ui.ImageView(promptHeaderWidget);
 
             promptToolTip.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
@@ -100,6 +100,14 @@ export class ImageReferencePicker extends Control {
         promptHeaderWidget.layout = promptHeaderLayout;
 
         return promptHeaderWidget;
+    }
+
+    show() {
+        this.imagePicker.widget.enabled = true;
+    }
+
+    hide() {
+        this.imagePicker.widget.enabled = false;
     }
 };
 

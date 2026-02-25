@@ -25,26 +25,26 @@ export function logEventOpen() {
 }
 
 /**
- * @param {"SUCCESS" | "FAILED" | "GUIDELINES_VIOLATION"} status
- * @param {"INTENSITY_LOW" | "INTENSITY_MEDIUM" | "INTENSITY_HIGH"} settings
- * @param {"NEW" | "CHANGE_GEOMETRY" | "CHANGE_TEXTURE"} origin
- * @param {"PROMPT_TEXT" | "PROMPT_IMAGE"} inputFormat
+ * @param {"SUCCESS" | "FAILED" | "GUIDELINES_VIOLATION" | "RATE_LIMITED"} status
+ * @param {"NEW" | "UPDATE_EXISTING"} origin
+ * @param {"PROMPT_TEXT"} inputFormat
+ * @param {"GENERATE_PREVIEW" | "SUBMISSION"} settings
  */
-export function logEventAssetCreation(status, settings, origin, inputFormat) {
+export function logEventAssetCreation(status, origin, inputFormat, settings) {
     const eventData = {
         "event_name": "LENSSTUDIO_PLUGIN_EVENT_CREATE_ASSET",
         "status": status,
-        "preset": "",
-        "settings": settings,
         "origin": origin,
-        "input_format": inputFormat
+        "input_format": inputFormat,
+        "preset": "",
+        "settings": settings
     };
 
     logEvent(eventData);
 }
 
 /**
- * @param {"SUCCESS" | "FAILED"} status
+ * @param {"SUCCESS" | "FAILED" | "PREPARING"} status
  */
 export function logEventAssetImport(status) {
     const eventData = {

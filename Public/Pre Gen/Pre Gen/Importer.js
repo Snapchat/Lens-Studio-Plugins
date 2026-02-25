@@ -1,7 +1,9 @@
 // @ts-nocheck
 import app from "./app.js";
+import * as FileSystem from 'LensStudio:FileSystem';
 export class Importer {
     constructor() {
+        this.tempDir = FileSystem.TempDir.create();
     }
     getOrthoCameraObject(model) {
         const scene = model.project.scene;
@@ -34,7 +36,8 @@ export class Importer {
         const scriptComponent = sceneObject.addComponent('ScriptComponent');
         scriptComponent.scriptAsset = scriptAsset;
         const assetManager = model.project.assetManager;
-        scriptComponent.dreamPackId = packId;
+        const aiOutputRenderTarget = assetManager.createNativeAsset('RenderTarget', 'AI Output', new Editor.Path(`AI Portraits Resources`));
+        scriptComponent.outputTexture = aiOutputRenderTarget;
         selection.clear();
         selection.add(sceneObject);
         return scriptComponent;
@@ -65,12 +68,12 @@ export class Importer {
             this.createMLFaceEffect(model, sceneObject, scriptAsset, selection, packId);
         }
     }
-    async importEffect(filePath, packId) {
+    importEffect(filePath, packId, previewsPath) {
         const model = this.findInterface(app.pluginSystem, Editor.Model.IModel);
         const assetManager = model.project.assetManager;
         const scene = model.project.scene;
         const selection = model.project.selection;
-        let scriptAsset = await assetManager.importExternalFileAsync(filePath, new Editor.Path('/'), Editor.Model.ResultType.Auto);
+        let scriptAsset = this.importCustomComponent(assetManager, filePath, packId, previewsPath);
         scriptAsset = scriptAsset.primary;
         // Check for other ortho cams in the scene
         let cameraObject = this.getOrthoCameraObject(model);
@@ -87,10 +90,51 @@ export class Importer {
             resolve(so);
         });
     }
+    importCustomComponent(assetManager, filePath, packId, previewsPath) {
+        let mlAsset = assetManager.importExternalFile(filePath, new Editor.Path('/'), Editor.Model.ResultType.Unpacked);
+        mlAsset.primary.dreamPackId = packId;
+        let previews = [];
+        previewsPath.forEach((path) => {
+            let preview = assetManager.importExternalFile(path, new Editor.Path('/'), Editor.Model.ResultType.Auto);
+            previews.push(preview.primary);
+            assetManager.move(preview.primary.fileMeta, mlAsset.path);
+        });
+        mlAsset.primary.previewTextures = previews;
+        let preGenFlow;
+        let files1 = FileSystem.readDir(assetManager.assetsDirectory + "/" + mlAsset.path, { recursive: true });
+        files1.forEach((path) => {
+            let fileMeta = assetManager.getFileMeta(mlAsset.path + "/" + path);
+            if (!fileMeta || !fileMeta.primaryAsset) {
+                return;
+            }
+            if (fileMeta.primaryAsset.name === "PreGenFlow" && fileMeta.primaryAsset.type === "TypeScriptAsset") {
+                preGenFlow = fileMeta.primaryAsset;
+            }
+        });
+        let scriptAssets = [];
+        let files2 = FileSystem.readDir(assetManager.assetsDirectory + "/" + mlAsset.path, { recursive: true });
+        files2.forEach((path) => {
+            let fileMeta = assetManager.getFileMeta(mlAsset.path + "/" + path);
+            if (!fileMeta || !fileMeta.primaryAsset) {
+                return;
+            }
+            if (fileMeta.primaryAsset.type === "TypeScriptAsset") {
+                scriptAssets.push(fileMeta.primaryAsset);
+            }
+        });
+        preGenFlow.scriptAssets = scriptAssets;
+        const actionManager = app.pluginSystem.findInterface(Editor.IPackageActions);
+        const exportOptions = new Editor.Model.ExportOptions();
+        exportOptions.packagePolicy = Editor.Assets.PackagePolicy.CannotBeUnpacked;
+        actionManager.exportScript(mlAsset.primary, this.tempDir.path + "/" + "AI Portraits.lsc", exportOptions);
+        assetManager.remove(mlAsset.path);
+        let finalCC = assetManager.importExternalFile(this.tempDir.path + "/" + "AI Portraits.lsc", new Editor.Path('/'), Editor.Model.ResultType.Packed);
+        return finalCC;
+    }
     findInterface(pluginSystem, interfaceID) {
         return pluginSystem.findInterface(interfaceID);
     }
-    async importToProject(packId) {
-        this.importEffect(import.meta.resolve('./Resources/AI Portraits.lsc'), packId);
+    importToProject(packId, previewsPath) {
+        this.importEffect(import.meta.resolve('./Resources/AI Portraits.lsc'), packId, previewsPath);
     }
 }
