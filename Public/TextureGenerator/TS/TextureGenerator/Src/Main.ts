@@ -11,7 +11,7 @@ export class TextureGenerator extends EntityGenerator {
         descriptor.name = app.name;
         descriptor.description = app.name;
         descriptor.dependencies = [];
-        descriptor.displayOrder = 0;
+        descriptor.displayOrder = 2;
         descriptor.icon = app.icon;
         descriptor.entityType = 'Texture';
         return descriptor;

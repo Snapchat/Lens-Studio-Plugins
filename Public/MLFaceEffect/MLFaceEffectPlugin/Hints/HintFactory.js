@@ -132,7 +132,7 @@ const hintScheme = {
         'image_width': 256,
         'image_height': 86,
         'image_path': new Editor.Path(import.meta.resolve('./Resources/standard_mode.png')),
-        'title': 'Standard Model',
+        'title': 'Original Model',
         'text': 'A familiar mode featuring classic face transformations.'
     },
     [HintID.enhanced_mode] : {

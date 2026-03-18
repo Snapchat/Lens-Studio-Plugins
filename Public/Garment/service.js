@@ -11,7 +11,7 @@ export class GarmentService extends EntityGenerator {
         descriptor.name = app.name;
         descriptor.description = app.name;
         descriptor.dependencies = [];
-        descriptor.displayOrder = 2;
+        descriptor.displayOrder = 3;
         descriptor.icon = app.icon;
         descriptor.entityType = 'Texture';
 

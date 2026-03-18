@@ -56,6 +56,10 @@ export class GalleryView {
         this.TILE_HEIGHT = 184;
         this.TILE_MARGIN = 8;
 
+        this.modelCheckQueue = [];
+        this.modelCheckInFlight = 0;
+        this.MODEL_CHECK_CONCURRENCY = 2;
+
         this.requestTokenManager = new RequestTokenManager();
 
         this.borderImage = new Ui.Pixmap(new Editor.Path(import.meta.resolve('../Resources/full_frame_hover.svg')));
@@ -241,6 +245,7 @@ export class GalleryView {
     }
 
     clearView() {
+        this.modelCheckQueue = [];
         // remove all frames from view port
         this.frames.forEach(function(frame) {
             frame.visible = false;
@@ -314,16 +319,30 @@ export class GalleryView {
         connections = {};
     }
 
-    checkModelStatus(id, callback) {
+    processModelCheckQueue() {
+        if (this.modelCheckInFlight >= this.MODEL_CHECK_CONCURRENCY || this.modelCheckQueue.length === 0) {
+            return;
+        }
+        const { id, callback } = this.modelCheckQueue.shift();
+        this.modelCheckInFlight += 1;
         getModels(id, (modelsResponse) => {
             if (modelsResponse.length > 0) {
                 this.modelData[id] = modelsResponse[0];
-            }
-            else {
+            } else {
                 this.modelData[id] = null;
             }
-            callback();
-        })
+            this.modelCheckInFlight -= 1;
+            try {
+                callback();
+            } finally {
+                this.processModelCheckQueue();
+            }
+        });
+    }
+
+    checkModelStatus(id, callback) {
+        this.modelCheckQueue.push({ id, callback });
+        this.processModelCheckQueue();
     }
 
     onTrainingStarted(id) {

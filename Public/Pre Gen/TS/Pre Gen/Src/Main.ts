@@ -18,7 +18,7 @@ export class PreGen extends EntityGenerator {
         descriptor.name = "AI Portraits";
         descriptor.description = "AI Portraits";
         descriptor.dependencies = [];
-        descriptor.displayOrder = 11;
+        descriptor.displayOrder = 8;
         descriptor.icon = Editor.Icon.fromFile(import.meta.resolve('./Resources/mainIcon.svg'));
         descriptor.entityType = 'RenderMesh';
 

@@ -1,0 +1,30 @@
+{
+  "name": "chattools-update-deprecated-api",
+  "version": "1.0.0",
+  "description": "Lens Studio Chat Tool for identifying and updating deprecated APIs",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "npm run clean && tsc && cp src/replacements_grouped.json dist/",
+    "update": "python3 scripts/update_deprecated.py $1",
+    "export": "mkdir -p storage/resources/$npm_package_version && zip -r storage/resources/$npm_package_version/package.zip dist module.json",
+    "watch": "tsc --watch"
+  },
+  "keywords": [
+    "lens-studio",
+    "deprecated",
+    "api",
+    "migration",
+    "chat-tool",
+    "ai"
+  ],
+  "author": "Lens Studio Developer",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "name": "Agents Docs",
+  "main": "dist/AgentsDocsService.js",
+  "permissions": ["filesystem"]
+}

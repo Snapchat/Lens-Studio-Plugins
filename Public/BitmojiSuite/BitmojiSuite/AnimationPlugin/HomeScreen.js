@@ -71,7 +71,9 @@ export class HomeScreen {
         this.loadingScreen.visible = true;
     }
     onProcessingEnd() {
-        clearInterval(this.interval);
+        if (this.interval) {
+            clearInterval(this.interval);
+        }
         this.loadingScreen.visible = false;
     }
     nextProgress(p) {
@@ -82,7 +84,9 @@ export class HomeScreen {
         return Math.min(cap, p + step);
     }
     deinit() {
-        clearInterval(this.interval);
+        if (this.interval) {
+            clearInterval(this.interval);
+        }
         this.menu.deinit();
     }
 }

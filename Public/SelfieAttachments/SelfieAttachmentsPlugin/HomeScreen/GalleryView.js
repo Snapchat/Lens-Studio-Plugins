@@ -1,7 +1,7 @@
 import * as Ui from 'LensStudio:Ui';
 
 import { getAsset, listAssets, deleteAsset } from '../api.js';
-import {downloadFileFromBucket, guidelinesLink, importToProject} from '../utils.js';
+import {downloadFileFromBucket, guidelinesLink, importToProject, convertAPIStyleToUI} from '../utils.js';
 import { RequestTokenManager } from './RequestTokenManager.js';
 import { Filter } from './Filter.js';
 
@@ -271,7 +271,7 @@ export class GalleryView {
                                     'staticPreviewUrl': this.items[i].staticPreviewUrl,
                                     'animatedPreviewUrl': this.items[i].animatedPreviewUrl,
                                     'created_on': this.items[i].createdAt,
-                                    'settings': { prompt: this.items[i].prompt, seed: this.items[i].seed, promptAnimation: this.items[i].promptAnimation, style: this.items[i].style || 'Default' },
+                                    'settings': { prompt: this.items[i].prompt, seed: this.items[i].seed, promptAnimation: this.items[i].promptAnimation, style: convertAPIStyleToUI(this.items[i].style) },
                                     'object_url': this.items[i].lspkgLsUrl,
                                     'animation_url': this.items[i].lspkgAnimationLsUrl,
                                 });
@@ -447,7 +447,7 @@ export class GalleryView {
                         'asset_id': this.items[i].id,
                         'status': this.items[i].state,
                         'created_on': this.items[i].createdAt,
-                        'settings': { prompt: this.items[i].prompt, seed: this.items[i].seed, promptAnimation: this.items[i].promptAnimation, style: this.items[i].style || 'Default' },
+                        'settings': { prompt: this.items[i].prompt, seed: this.items[i].seed, promptAnimation: this.items[i].promptAnimation, style: convertAPIStyleToUI(this.items[i].style) },
                         'object_url': null,
                         'animation_url': null
                     });
@@ -497,7 +497,7 @@ export class GalleryView {
                         'asset_id': this.items[i].id,
                         'status': this.items[i].state,
                         'created_on': this.items[i].createdAt,
-                        'settings': { prompt: this.items[i].prompt, seed: this.items[i].seed, promptAnimation: this.items[i].promptAnimation, style: this.items[i].style || 'Default' },
+                        'settings': { prompt: this.items[i].prompt, seed: this.items[i].seed, promptAnimation: this.items[i].promptAnimation, style: convertAPIStyleToUI(this.items[i].style) },
                         'object_url': null,
                         'animation_url': null
                     });

@@ -250,7 +250,7 @@ export default class GraphicsHandler extends NodeHandler {
             const filePath = tempDir.path.appended(imageFileName)
             GraphicsHandler.validatePathInsideDirectory(filePath.toString(), tempDir.path.toString())
             FileSystem.writeFile(filePath, imageBytes as any)
-            return assetManager.importExternalFileAsync(filePath, new Editor.Path(`${assetDirName}/Texture`), Editor.Model.ResultType.Auto)
+            return assetManager.importExternalFileAsync(filePath, new Editor.Model.SourcePath(new Editor.Path(`${assetDirName}/Texture`), Editor.Model.SourceRootDirectory.Assets), Editor.Model.ResultType.Auto)
         } catch (e) {
             logger.error('Error importing image', e)
             return null

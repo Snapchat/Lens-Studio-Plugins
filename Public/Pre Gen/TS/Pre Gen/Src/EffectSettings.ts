@@ -211,7 +211,7 @@ export class EffectSettings {
         }))
 
         const statusWidget = new Ui.Widget(widget);
-        statusWidget.setFixedWidth(564);
+        statusWidget.setFixedWidth(350);
         statusWidget.setFixedHeight(24);
         const statusLayout = new Ui.BoxLayout();
         statusLayout.setDirection(Ui.Direction.LeftToRight);
@@ -222,7 +222,7 @@ export class EffectSettings {
 
         const statusLabel = new Ui.Label(statusWidget);
         statusLabel.foregroundRole = Ui.ColorRole.PlaceholderText;
-        statusLabel.text = '<div style="text-align: right;">' + 'Model training in progress. At this time, generations can take a day or two due to the<br>technical limitations and high demand. We are working to improve this time.' + '</div>';
+        statusLabel.text = '<div style="text-align: right;">' + 'Model training in progress. This may take up to 3 hours.<br>You can close this window and return later.' + '</div>';
         statusLabel.setFixedHeight(24);
 
         const loading = new Ui.ProgressIndicator(statusWidget);

@@ -292,6 +292,7 @@ export class AssetPreview {
                 this.modelState = ModelState.Processing;
 
                 this.ctaButton.text = 'Import to Project';
+                this.ctaButton.setIconSize(16, 16);
                 this.ctaButton.enabled = false;
 
                 this.loggerTimeout = setTimeout(() => {
@@ -316,6 +317,7 @@ export class AssetPreview {
         switch (this.modelState) {
             case ModelState.NotReady:
                 this.ctaButton.text = 'Train model';
+                this.ctaButton.setIconSize(0, 0);
                 // this.ctaButton.setIcon(null);
                 this.ctaButton.enabled = true;
                 break;
@@ -342,6 +344,7 @@ export class AssetPreview {
                     }
                 });
                 this.ctaButton.text = 'Import to Project';
+                this.ctaButton.setIconSize(16, 16);
                 this.ctaButton.enabled = false;
                 break;
             case ModelState.Ready:
@@ -351,6 +354,7 @@ export class AssetPreview {
 
                 // app.log('Model is ready');
                 this.ctaButton.text = 'Import to Project';
+                this.ctaButton.setIconSize(16, 16);
                 this.ctaButton.enabled = true;
                 break;
             case ModelState.EffectFailed:
@@ -360,6 +364,7 @@ export class AssetPreview {
                 }
 
                 this.ctaButton.text = 'Train model';
+                this.ctaButton.setIconSize(0, 0);
                 this.ctaButton.enabled = false;
         }
     }
@@ -662,6 +667,7 @@ export class AssetPreview {
         // Import To Project button
         this.ctaButton = new Ui.PushButton(this.footer);
         this.ctaButton.text = 'Import to Project';
+        this.ctaButton.setIconSize(16, 16);
         const importImagePath = new Editor.Path(import.meta.resolve('../Resources/import.svg'));
         this.ctaButton.setIconWithMode(Editor.Icon.fromFile(importImagePath), Ui.IconMode.MonoChrome);
         this.ctaButton.primary = true;

@@ -20,6 +20,14 @@ export function convertIntensityToAPIStyle(intensityString) {
     }
 }
 
+export function convertAPIStyleToUI(apiStyle) {
+    if (!apiStyle) {
+        return 'Default';
+    }
+    // Convert from API format (e.g., "DEFAULT", "CARTOON") to UI format (e.g., "Default", "Cartoon")
+    return apiStyle.charAt(0).toUpperCase() + apiStyle.slice(1).toLowerCase();
+}
+
 export function convertIntensityToString(input) {
     switch (input) {
         case 'low':

@@ -163,19 +163,44 @@ export function createAttachment(data, contentType, filename, callback) {
     });
 }
 
-export function getModels(id, callback) {
-    const request = new Network.HttpRequest();
-    request.url = 'https://ml.snap.com/api/effects/' + id + '/models';
-    request.method = Network.HttpRequest.Method.Get;
+const GET_MODELS_MAX_RETRIES = 3;
+const GET_MODELS_INITIAL_BACKOFF_MS = 1000;
+const getModelsRetryTimeouts = [];
 
-    Network.performAuthorizedHttpRequest(request, function(response) {
-        try {
-            callback(JSON.parse(response.body.toString()));
-        } catch(error) {
-            console.log(`${app.name}`, "Failed to aquire models.");
-            return [];
-        }
-    });
+export function getModels(id, callback) {
+    let attempt = 0;
+
+    function doRequest() {
+        const request = new Network.HttpRequest();
+        request.url = 'https://ml.snap.com/api/effects/' + id + '/models';
+        request.method = Network.HttpRequest.Method.Get;
+
+        Network.performAuthorizedHttpRequest(request, function(response) {
+            if (response.statusCode === 429 && attempt < GET_MODELS_MAX_RETRIES) {
+                attempt += 1;
+                const backoffMs = GET_MODELS_INITIAL_BACKOFF_MS << (attempt - 1);
+                const timeoutId = setTimeout(function() {
+                    const i = getModelsRetryTimeouts.indexOf(timeoutId);
+                    if (i !== -1) getModelsRetryTimeouts.splice(i, 1);
+                    doRequest();
+                }, backoffMs);
+                getModelsRetryTimeouts.push(timeoutId);
+                return;
+            }
+            if (response.statusCode === 200) {
+                try {
+                    callback(JSON.parse(response.body.toString()));
+                } catch (error) {
+                    console.log(`${app.name}`, "Failed to parse models response.");
+                    callback([]);
+                }
+                return;
+            }
+            callback([]);
+        });
+    }
+
+    doRequest();
 }
 
 export function createModel(id, postProcessingSettings, callback) {

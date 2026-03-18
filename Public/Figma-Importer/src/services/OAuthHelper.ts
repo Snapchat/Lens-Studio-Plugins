@@ -16,8 +16,8 @@ const addr = {
 }
 
 //those are static values that should not be changed
-const CLIENT_SECRET = Object.freeze('FIHf7QJ7deE8GxKQuIXrzPWhntAJUK') // in the OAuth PKCE flow, the client secret is considered known to the public.
-const CLIENT_ID = Object.freeze('sqElujdLVPvHXOuU7xJqPF')
+const CLIENT_SECRET = Object.freeze('tbd1PRo06A2p8OvTIjifiHTfaXuznr') // in the OAuth PKCE flow, the client secret is considered known to the public.
+const CLIENT_ID = Object.freeze('hW3C2p2pphsvfOg0JHyGwO')
 
 function tradeInCodeForAccessToken(client_id: string, client_secret: string, code: string/* , codeVerifier: string */): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -30,7 +30,6 @@ function tradeInCodeForAccessToken(client_id: string, client_secret: string, cod
             code/* ,
             codeVerifier */)
         try {
-            //@ts-expect-error - the api is still in effect
             Network.performHttpRequest(tradeInRequest, (response: Network.HttpResponse) => {
                 // Check for a successful response
                 if (response.statusCode !== 200) {
@@ -167,7 +166,7 @@ export function startOAuth() {
             redirect_uri: `${addr.serverAddr}:${addr.serverPort}`,
             client_id: CLIENT_ID,
             response_type: 'code',
-            scope: 'files:read',
+            scope: 'file_content:read',
             state: state,
             // TODO: PKCE process disabled due to technical issues.
             // We are currently under a time crunch and will reimplement this when releasing the new version of the plugin before the DDL.

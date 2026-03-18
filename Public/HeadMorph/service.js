@@ -11,7 +11,7 @@ export class HeadMorphService extends EntityGenerator {
         descriptor.name = app.name;
         descriptor.description = app.name;
         descriptor.dependencies = [];
-        descriptor.displayOrder = 6;
+        descriptor.displayOrder = 7;
         descriptor.icon = app.icon;
         descriptor.entityType = 'RenderMesh';
 

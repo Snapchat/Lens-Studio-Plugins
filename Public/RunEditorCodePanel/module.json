@@ -1,0 +1,6 @@
+{
+    "name": "Run Editor Code",
+    "main": "dist/main.js",
+    "permissions": ["network"],
+    "tags": ["Gui"]
+}

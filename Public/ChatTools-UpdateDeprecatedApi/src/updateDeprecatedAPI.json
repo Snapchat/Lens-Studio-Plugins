@@ -1,0 +1,40 @@
+{
+  "displayName": "Update Deprecated API",
+  "canBeReferencedInPrompt": true,
+  "icon": "$(wrench)",
+  "name": "UpdateDeprecatedAPI",
+  "tags": ["deprecated", "api", "migration", "lens-studio", "modernize"],
+  "modelDescription": "Looks up deprecated Lens Studio APIs and provides modern replacements with migration examples. Use when encountering deprecated code or modernizing projects. Covers 351 deprecated APIs across 5 categories (classes, methods, properties, events, enums).",
+  "inputSchema": {
+    "type": "object",
+    "required": ["apiName"],
+    "properties": {
+      "apiName": {
+        "type": "string",
+        "modelDescription": "The deprecated API name to look up. Accepts class names (e.g., 'Animation'), function names (e.g., 'getFacesCount'), properties (e.g., 'speedRatio'), or qualified names (e.g., 'AnimationMixer.speedRatio'). Partial matching supported."
+      },
+      "category": {
+        "type": "string",
+        "modelDescription": "Optional: Filter by API type category to narrow results.",
+        "enum": [
+          "classes",
+          "methods",
+          "properties",
+          "events",
+          "enums"
+        ]
+      },
+      "includeExamples": {
+        "type": "boolean",
+        "modelDescription": "Include code examples showing before/after migration. Default: true",
+        "default": true
+      },
+      "searchMode": {
+        "type": "string",
+        "modelDescription": "Search strategy: 'exact' (exact name), 'partial' (substring), 'category' (all in category). Default: 'partial'",
+        "enum": ["exact", "partial", "category"],
+        "default": "partial"
+      }
+    }
+  }
+}

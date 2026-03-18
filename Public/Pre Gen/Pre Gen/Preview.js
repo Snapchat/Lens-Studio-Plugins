@@ -48,7 +48,7 @@ export class Preview {
         this.spinner.start();
         imageViewLayout.addWidgetWithStretch(this.spinner, 0, Ui.Alignment.AlignCenter);
         this.generatingPreviewLabel = new Ui.Label(widget);
-        this.generatingPreviewLabel.text = '<center>' + 'Generating previews...<br>At this time, generations can take an hour or two due to<br>the technical limitations and high demand.<br>We are working to improve this time.<br><br>You can close this window and return later' + '</center>';
+        this.generatingPreviewLabel.text = '<center>' + 'Generating previews...<br>This may take up to 1 minute.<br><br>You can close this window and return later' + '</center>';
         this.generatingPreviewLabel.setFixedWidth(350);
         this.generatingPreviewLabel.setFixedHeight(90);
         this.generatingPreviewLabel.move(35, 298);

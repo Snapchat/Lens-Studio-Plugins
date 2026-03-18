@@ -1,13 +1,15 @@
-import { DialogPlugin } from 'LensStudio:DialogPlugin';
+import { PanelPlugin } from 'LensStudio:PanelPlugin';
 import {ProjectOptimizer} from "./ProjectOptimizer.js";
 import {OptimizationOption, OptimizationOptionType} from "./OptimizationOptions.js";
 import * as Ui from 'LensStudio:Ui';
-export class OptimizeProjectDialog extends DialogPlugin {
+import * as fs from 'LensStudio:FileSystem';
+export class OptimizeProjectDialog extends PanelPlugin {
     static descriptor() {
         return {
             id: 'Com.Snap.OptimizeProjectDialog',
             name: 'Optimize Project',
-            description: 'Dialog to define optimization options for the further project optimization',
+            description: 'Panel to define optimization options for the further project optimization',
+            minimumSize: new Ui.Size(360, 436),
         };
     }
 
@@ -25,6 +27,19 @@ export class OptimizeProjectDialog extends DialogPlugin {
         this.removeUnusedRenderLayersCheckBox = null;
         this.removeUnusedLightSourcesCheckBox = null;
         this.removeDisabledObjectsCheckBox = null;
+        this.scopeFolderLineEdit = null;
+        this.scopeFolderPathValue = null;
+        this._scopeTextSetByUs = null;
+        this._scopeLineEditAcceptedValue = '';
+    }
+
+    clearScopeField() {
+        this.scopeFolderPathValue = null;
+        this._scopeLineEditAcceptedValue = '';
+        if (this.scopeFolderLineEdit) {
+            this.scopeFolderLineEdit.text = '';
+            this.scopeFolderLineEdit.readonly = false;
+        }
     }
 
     onAssetSelectionChanged(assetTypeName, checked){
@@ -36,13 +51,13 @@ export class OptimizeProjectDialog extends DialogPlugin {
         this.allAssetsCheckBox.checked = this.selectedAssets.size === this.allAssets.length
     }
 
-    show(mainWindow){
+    createWidget(parent){
         try {
-            return this.createDialog(mainWindow);
+            return this.buildPanelContent(parent);
         } catch (e) {
             console.error(e.message);
             console.error(e.stack);
-            return new Ui.Dialog(mainWindow);
+            return new Ui.Widget(parent);
         }
     }
 
@@ -164,13 +179,13 @@ export class OptimizeProjectDialog extends DialogPlugin {
 
     }
 
-    createDialog(mainWindow){
-        const dialog = new Ui.Dialog(mainWindow);
+    buildPanelContent(parent){
+        const panelRoot = new Ui.Widget(parent);
 
         const vLayout = new Ui.BoxLayout();
         vLayout.setDirection(Ui.Direction.TopToBottom);
 
-        const label = new Ui.Label(dialog);
+        const label = new Ui.Label(panelRoot);
         label.text = "Optimize your project by removing \nunused source files in Assets folder,\n" +
             "empty folders, render layers and light sources\n";
         vLayout.addWidget(label);
@@ -179,13 +194,13 @@ export class OptimizeProjectDialog extends DialogPlugin {
             const gridLayout = new Ui.GridLayout();
             gridLayout.setContentsMargins(0, 0, 0, 0);
 
-            this.removeEmptyFoldersCheckBox = new Ui.CheckBox(dialog);
+            this.removeEmptyFoldersCheckBox = new Ui.CheckBox(panelRoot);
             this.removeEmptyFoldersCheckBox.checked = true;
-            this.removeUnusedRenderLayersCheckBox = new Ui.CheckBox(dialog);
+            this.removeUnusedRenderLayersCheckBox = new Ui.CheckBox(panelRoot);
             this.removeUnusedRenderLayersCheckBox.checked = true;
-            this.removeUnusedLightSourcesCheckBox = new Ui.CheckBox(dialog);
+            this.removeUnusedLightSourcesCheckBox = new Ui.CheckBox(panelRoot);
             this.removeUnusedLightSourcesCheckBox.checked = true;
-            this.removeDisabledObjectsCheckBox = new Ui.CheckBox(dialog);
+            this.removeDisabledObjectsCheckBox = new Ui.CheckBox(panelRoot);
             this.removeDisabledObjectsCheckBox.checked = false;
 
             const checkBoxLabels = [
@@ -210,21 +225,21 @@ export class OptimizeProjectDialog extends DialogPlugin {
             for (let i = 0; i < checkBoxLabels.length; i++) {
                 const labelText = checkBoxLabels[i].label;
                 const checkBox = checkBoxLabels[i].checkBox;
-                const labelWidget = new Ui.Label(dialog);
+                const labelWidget = new Ui.Label(panelRoot);
                 labelWidget.text = labelText;
                 gridLayout.addWidgetAt(labelWidget, i, 0, Ui.Alignment.Default);
                 gridLayout.addWidgetAt(checkBox, i, 1, Ui.Alignment.AlignHCenter);
             }
 
-            const gridWidget = new Ui.Widget(dialog);
+            const gridWidget = new Ui.Widget(panelRoot);
             gridWidget.layout = gridLayout;
 
             vLayout.addWidget(gridWidget);
 
             const labelText = "Remove unused assets";
-            const labelWidget = new Ui.Label(dialog);
+            const labelWidget = new Ui.Label(panelRoot);
             labelWidget.text = labelText;
-            const checkBox = new Ui.CheckBox(dialog);
+            const checkBox = new Ui.CheckBox(panelRoot);
             this.removeUnusedAssetsCheckBox = checkBox;
             this.removeUnusedAssetsCheckBox.checked = true;
             gridLayout.addWidgetAt(labelWidget, checkBoxLabels.length, 0, Ui.Alignment.Default);
@@ -240,7 +255,7 @@ export class OptimizeProjectDialog extends DialogPlugin {
             })
             projectAssets = projectAssets.sort();
 
-            let assetsWidget = this.createAssetsWidget(dialog, projectAssets);
+            let assetsWidget = this.createAssetsWidget(panelRoot, projectAssets);
             assetsWidget.setMaximumHeight(300);
 
             gridLayout.addWidgetWithSpan(assetsWidget, checkBoxLabels.length + 1, 0, 1, 2, Ui.Alignment.Default);
@@ -250,41 +265,83 @@ export class OptimizeProjectDialog extends DialogPlugin {
             checkBox.onToggle.connect((checked) => {
                 assetsWidget.visible = checked;
                 gridWidget.adjustSize();
-                dialog.adjustSize();
+                panelRoot.adjustSize();
             });
 
         }
 
         {
+            const scopeLayout = new Ui.GridLayout();
+            scopeLayout.setContentsMargins(0, 10, 0, 0);
+            const scopeLabel = new Ui.Label(panelRoot);
+            scopeLabel.text = "Scope to folder (optional)";
+            this.scopeFolderLineEdit = new Ui.LineEdit(panelRoot);
+            this.scopeFolderLineEdit.placeholderText = "Drag and drop a folder here to scope optimization";
+            this.scopeFolderLineEdit.readonly = false;
+            this.scopeFolderLineEdit.onTextChange.connect((text) => {
+                if (!text || !text.trim()) {
+                    this._scopeLineEditAcceptedValue = '';
+                    this._scopeTextSetByUs = '';
+                    this.scopeFolderLineEdit.text = '';
+                    return;
+                }
+                const looksLikeDrop = text.indexOf('Paths:') >= 0 || text.indexOf('\n') >= 0;
+                if (!looksLikeDrop) {
+                    this._scopeTextSetByUs = this._scopeLineEditAcceptedValue || '';
+                    this.scopeFolderLineEdit.text = this._scopeLineEditAcceptedValue || '';
+                    return;
+                }
+                const scopeFolderPath = this.projectOptimizer.normalizeScopePath(text.trim());
+                if (!scopeFolderPath) {
+                    this._scopeTextSetByUs = this._scopeLineEditAcceptedValue || '';
+                    this.scopeFolderLineEdit.text = this._scopeLineEditAcceptedValue || '';
+                    return;
+                }
+                const fullPath = this.project.assetsDirectory.appended(scopeFolderPath);
+                if (!fs.isDirectory(fullPath)) {
+                    this._scopeTextSetByUs = this._scopeLineEditAcceptedValue || '';
+                    this.scopeFolderLineEdit.text = this._scopeLineEditAcceptedValue || '';
+                    return;
+                }
+                this._scopeLineEditAcceptedValue = scopeFolderPath;
+                if (this.scopeFolderLineEdit.text.trim() !== scopeFolderPath) {
+                    this._scopeTextSetByUs = scopeFolderPath;
+                    this.scopeFolderLineEdit.text = scopeFolderPath;
+                }
+            });
+            const clearButton = new Ui.PushButton(panelRoot);
+            clearButton.text = "Clear";
+            clearButton.onClick.connect(() => this.clearScopeField());
+            scopeLayout.addWidgetAt(scopeLabel, 0, 0, Ui.Alignment.Default);
+            scopeLayout.addWidgetAt(this.scopeFolderLineEdit, 0, 1, Ui.Alignment.Default);
+            scopeLayout.addWidgetAt(clearButton, 0, 2, Ui.Alignment.Default);
+            const scopeWidget = new Ui.Widget(panelRoot);
+            scopeWidget.layout = scopeLayout;
+            vLayout.addWidget(scopeWidget);
+        }
+
+        {
 
             const gridLayout = new Ui.GridLayout();
-            gridLayout.setContentsMargins(0, 0, 0, 0);
+            gridLayout.setContentsMargins(0, 12, 0, 0);
 
-            const gridWidget = new Ui.Widget(dialog);
+            const gridWidget = new Ui.Widget(panelRoot);
             gridWidget.layout = gridLayout;
 
             vLayout.addWidget(gridWidget);
 
-            const buttonCancel = new Ui.PushButton(dialog);
-            buttonCancel.text = 'Cancel';
-            buttonCancel.onClick.connect(() => {
-                dialog.close();
-            });
-            buttonCancel.setIconMode(Ui.IconMode.MonoChrome)
-            gridLayout.addWidgetAt(buttonCancel, 0, 0, Ui.Alignment.AlignHCenter);
-
-            const buttonOptimizeProject = new Ui.PushButton(dialog);
+            const buttonOptimizeProject = new Ui.PushButton(panelRoot);
             buttonOptimizeProject.setIconMode(Ui.IconMode.Regular);
             buttonOptimizeProject.text = 'Optimize Project';
             buttonOptimizeProject.onClick.connect(() => {
                 this.onOptimizeProjectButtonClicked();
             });
-            gridLayout.addWidgetAt(buttonOptimizeProject, 0, 1, Ui.Alignment.AlignHCenter);
+            gridLayout.addWidgetAt(buttonOptimizeProject, 0, 0, Ui.Alignment.AlignHCenter);
         }
 
-        dialog.layout = vLayout;
+        panelRoot.layout = vLayout;
 
-        return dialog;
+        return panelRoot;
     }
 
     onOptimizeProjectButtonClicked(){
@@ -308,7 +365,19 @@ export class OptimizeProjectDialog extends DialogPlugin {
                 this.removeDisabledObjectsCheckBox.checked, (sceneObject) => {
                     return !sceneObject.enabled;
                 })
-            this.projectOptimizer.optimizeProject(optimizationOptions);
+            const rawScope = this.scopeFolderPathValue || (this.scopeFolderLineEdit && this.scopeFolderLineEdit.text ? this.scopeFolderLineEdit.text.trim() : null);
+            let scopeFolderPath = this.projectOptimizer.normalizeScopePath(rawScope);
+            if (scopeFolderPath) {
+                const fullPath = this.project.assetsDirectory.appended(scopeFolderPath);
+                if (!fs.isDirectory(fullPath)) {
+                    if (this.scopeFolderLineEdit) {
+                        this.scopeFolderLineEdit.text = '';
+                        this.scopeFolderLineEdit.readonly = false;
+                    }
+                    return;
+                }
+            }
+            this.projectOptimizer.optimizeProject(optimizationOptions, scopeFolderPath || null);
         } catch (e){
             console.error(e.message);
             console.error(e.stack);

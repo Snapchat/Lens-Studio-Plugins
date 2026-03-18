@@ -8,17 +8,58 @@ export class ProjectOptimizer {
         this.project = project
     }
 
-    optimizeProject(optimizationOptions){
+    normalizeScopePath(scopeFolderPath) {
+        if (!scopeFolderPath || typeof scopeFolderPath !== 'string') {
+            return null;
+        }
+        let s = scopeFolderPath.trim();
+        if (!s) {
+            return null;
+        }
+        const pathPrefix = ' - ';
+        if (s.indexOf('Paths:') >= 0) {
+            const dash = s.indexOf(pathPrefix);
+            if (dash >= 0) {
+                s = s.substring(dash + pathPrefix.length).split('\n')[0].trim();
+            }
+        }
+        s = s.replace(/\\/g, '/').replace(/\/+$/, '').trim();
+        s = s.replace(/^["']|["']$/g, '');
+        const assetsMarker = '/Assets/';
+        const i = s.indexOf(assetsMarker);
+        if (i >= 0) {
+            return (s.substring(i + assetsMarker.length) || '').replace(/^["']|["']$/g, '').trim() || null;
+        }
+        const assetsPrefix = 'Assets/';
+        if (s.startsWith(assetsPrefix)) {
+            return (s.substring(assetsPrefix.length) || '').replace(/^["']|["']$/g, '').trim() || null;
+        }
+        return s || null;
+    }
+
+    optimizeProject(optimizationOptions, scopeFolderPath = null){
+        scopeFolderPath = this.normalizeScopePath(scopeFolderPath);
         let time = new Date();
         if (!this.project){
             return;
         }
-        this.tryRemoveSceneObjects(optimizationOptions);
-        this.tryRemoveLightSources(optimizationOptions);
-        this.tryRemoveRenderLayers(optimizationOptions);
-        this.tryRemoveAssets(optimizationOptions);
-        this.tryRemoveEmptyFolders(optimizationOptions);
-        console.log(`Project optimized in ${new Date().getTime() - time.getTime()} ms.`)
+        if (scopeFolderPath) {
+            this.tryRemoveAssets(optimizationOptions, scopeFolderPath);
+            this.tryRemoveEmptyFolders(optimizationOptions, scopeFolderPath);
+        } else {
+            this.tryRemoveSceneObjects(optimizationOptions);
+            this.tryRemoveLightSources(optimizationOptions);
+            this.tryRemoveRenderLayers(optimizationOptions);
+            this.tryRemoveAssets(optimizationOptions);
+            this.tryRemoveEmptyFolders(optimizationOptions);
+        }
+        console.log("Project optimized in " + (new Date().getTime() - time.getTime()) + " ms.");
+    }
+
+    isPathUnderScope(pathString, scopePathString){
+        const normalizedPath = pathString.replace(/\\/g, '/').replace(/\/+$/, '');
+        const normalizedScope = scopePathString.replace(/\\/g, '/').replace(/\/+$/, '');
+        return normalizedPath === normalizedScope || normalizedPath.startsWith(normalizedScope + '/');
     }
 
     tryRemoveLightSources(optimizationOptions){
@@ -136,13 +177,15 @@ export class ProjectOptimizer {
         console.log("Removed unused layers: " + removedLayers);
     }
 
-    tryRemoveAssets(optimizationOptions){
+    tryRemoveAssets(optimizationOptions, scopeFolderPath = null){
         let option = optimizationOptions[OptimizationOptionType.Asset];
-        if (!option || !option.enabled){
-            return;
-        }
+        if (!option || !option.enabled) return;
         let usedUuids = this.collectUsedUuids();
         let allAssets = this.getAllAssets();
+        if (scopeFolderPath) {
+            allAssets = allAssets.filter((asset) =>
+                this.isPathUnderScope(asset.fileMeta.sourcePath.toString(), scopeFolderPath));
+        }
         /**
          *
          * @type {Set<string>}
@@ -166,16 +209,19 @@ export class ProjectOptimizer {
         for (let usedAsset of usedAssets){
             unusedSources.delete(usedAsset.fileMeta.sourcePath.toString());
         }
-
         this.removeSources(unusedSources);
     }
 
-    tryRemoveEmptyFolders(optimizationOptions){
+    tryRemoveEmptyFolders(optimizationOptions, scopeFolderPath = null){
         let option = optimizationOptions[OptimizationOptionType.Directory];
         if (!option || !option.enabled){
             return;
         }
-        this.removeEmptyFolders();
+        if (scopeFolderPath) {
+            this.removeEmptyFoldersScoped(scopeFolderPath);
+        } else {
+            this.removeEmptyFolders();
+        }
     }
 
     collectUsedUuids(){
@@ -238,11 +284,9 @@ export class ProjectOptimizer {
      */
     removeSources(sourcePathSet){
         let removed = 0;
-        let sceneSourceString = this.project.scene.fileMeta.sourcePath.toString();
+        const sceneSourceString = this.project.scene.fileMeta.sourcePath.toString();
         sourcePathSet.forEach((sourcePath) => {
-            if (sourcePath === sceneSourceString){
-                return;
-            }
+            if (sourcePath === sceneSourceString) return;
             try {
                 this.project.assetManager.remove(new Editor.Path(sourcePath));
                 removed++;
@@ -257,6 +301,14 @@ export class ProjectOptimizer {
         let assetsDirectory = this.project.assetsDirectory;
         let result = this.traverseChildren(assetsDirectory, fs.readDir(assetsDirectory, {})
             .map((item) => assetsDirectory.appended(item)));
+        console.log("Removed empty directories: " + result.totalRemoved);
+    }
+
+    removeEmptyFoldersScoped(scopeFolderPath){
+        const assetsDirectory = this.project.assetsDirectory;
+        const scopePath = scopeFolderPath ? assetsDirectory.appended(scopeFolderPath) : assetsDirectory;
+        if (!fs.isDirectory(scopePath)) return;
+        const result = this.traverseChildren(assetsDirectory, fs.readDir(scopePath, {}).map((item) => scopePath.appended(item)));
         console.log("Removed empty directories: " + result.totalRemoved);
     }
 

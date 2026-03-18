@@ -18,7 +18,7 @@ export class CharacterAnimationToolkit extends EntityGenerator {
         descriptor.name = "Character Animation";
         descriptor.description = "Character Animation";
         descriptor.dependencies = [];
-        descriptor.displayOrder = 7;
+        descriptor.displayOrder = 4;
         descriptor.icon = Editor.Icon.fromFile(import.meta.resolve('./Resources/mainIcon.svg'));
         descriptor.entityType = 'RenderMesh';
 

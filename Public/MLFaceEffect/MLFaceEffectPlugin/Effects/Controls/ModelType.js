@@ -26,7 +26,7 @@ export class ModelType extends Control{
         const enhancedButton = new Ui.RadioButton(modelTypeButtonGroup);
         enhancedButton.text = "Enhanced";
         const standardButton = new Ui.RadioButton(modelTypeButtonGroup);
-        standardButton.text = "Standard";
+        standardButton.text = "Original";
 
         this.enhancedButton = enhancedButton;
         this.standardButton = standardButton;

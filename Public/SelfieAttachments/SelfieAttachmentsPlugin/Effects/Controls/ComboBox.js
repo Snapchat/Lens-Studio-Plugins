@@ -39,11 +39,11 @@ export class ComboBox extends Control {
     }
 
     show() {
-        this.mWidget.enabled = true;
+        this.mControl.enabled = true;
     }
 
     hide() {
-        this.mWidget.enabled = false;
+        this.mControl.enabled = false;
     }
 }
 

@@ -10,12 +10,12 @@ export default class AssetResourceProvider {
 
     async findOrCreateAsset(assetPath: string, relativeDestDir: string) {
         const absoluteAssetPath = this.context.workingDirectory.appended(new Editor.Path(assetPath))
-        return utils.findOrCreate(this.context.assetManager, absoluteAssetPath, new Editor.Path(relativeDestDir))
+        return utils.findOrCreate(this.context.assetManager, absoluteAssetPath, new Editor.Model.SourcePath(new Editor.Path(relativeDestDir), Editor.Model.SourceRootDirectory.Assets))
     }
 
     async createMaterialFromGraph(shaderGraphPath: string, materialFileName: string, outputFolder: string) {
         const shaderGraphAsset = await this.findOrCreateAsset(shaderGraphPath, `${this.shaderGraphDirName}/Shaders`)
-        const material = this.context.assetManager.createNativeAsset('Material', materialFileName, new Editor.Path(outputFolder)) as Editor.Assets.Material
+        const material = this.context.assetManager.createNativeAsset('Material', materialFileName, new Editor.Model.SourcePath(new Editor.Path(outputFolder), Editor.Model.SourceRootDirectory.Assets)) as Editor.Assets.Material
         const passInfo = material.addPass(shaderGraphAsset)
 
         //disable depthTest and depthWrite

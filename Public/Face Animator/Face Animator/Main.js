@@ -10,7 +10,7 @@ export class FaceAnimator extends EntityGenerator {
         descriptor.name = "Face Animator";
         descriptor.description = "Face Animator";
         descriptor.dependencies = [];
-        descriptor.displayOrder = 8;
+        descriptor.displayOrder = 5;
         descriptor.icon = Editor.Icon.fromFile(import.meta.resolve('./Resources/mainIcon.svg'));
         descriptor.entityType = 'RenderMesh';
         return descriptor;

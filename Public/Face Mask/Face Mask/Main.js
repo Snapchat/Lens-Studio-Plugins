@@ -8,7 +8,7 @@ export class FaceMask extends EntityGenerator {
         descriptor.name = app.name;
         descriptor.description = app.name;
         descriptor.dependencies = [];
-        descriptor.displayOrder = 1;
+        descriptor.displayOrder = 9;
         descriptor.icon = app.icon;
         descriptor.entityType = 'Texture';
         return descriptor;

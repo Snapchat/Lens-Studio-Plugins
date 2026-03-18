@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "target": "es2019",
+        "module": "es2020",
+        "isolatedModules": true,
+        "allowJs": true,
+        "checkJs": true,
+        "strict": true,
+        "noImplicitOverride": true,
+        "noImplicitReturns": true,
+        "lib": ["es2019"],
+        "types": [],
+        "rootDir": "./src",
+        "outDir": "./dist",
+        "declaration": true,
+        "declarationDir": "./distTypes"
+    },
+    "include": [
+        "src/**/*",
+        "../../shared-types/editor.d.ts"
+    ]
+}

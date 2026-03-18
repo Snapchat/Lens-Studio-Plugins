@@ -98,7 +98,9 @@ export class HomeScreen {
     }
 
     onProcessingEnd() {
-        clearInterval(this.interval);
+        if (this.interval) {
+            clearInterval(this.interval);
+        }
         this.loadingScreen.visible = false;
     }
 
@@ -111,7 +113,9 @@ export class HomeScreen {
     }
 
     deinit(): void {
-        clearInterval(this.interval);
+        if (this.interval) {
+            clearInterval(this.interval);
+        }
         this.menu.deinit();
     }
 }

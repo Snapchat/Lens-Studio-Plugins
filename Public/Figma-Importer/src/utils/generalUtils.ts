@@ -20,7 +20,7 @@ export function remap(value: number, from1: number, to1: number, from2: number, 
     return result
 }
 
-export async function findOrCreate(assetManager: Editor.Model.AssetManager, absolutePath: Editor.Path, relativerDestDir: Editor.Path) {
+export async function findOrCreate(assetManager: Editor.Model.AssetManager, absolutePath: Editor.Path, relativerDestDir: Editor.Model.SourcePath) {
 
     const meta = assetManager.findImportedCopy(absolutePath)
 
@@ -173,7 +173,7 @@ export function createOrthographicCameraObject(model: Editor.Model.IModel, scene
     camera.near = -1.0 //we use minus near plant to make sure any screen transform with 0 as their z value will be rendered
     camera.far = 200.0
     sceneObject.name = 'Orthographic Camera'
-    sceneObject.localTransform = new Editor.Transform(new vec3(-120, 0, 40), new vec3(0, 0, 0), new vec3(1, 1, 1))
+    sceneObject.localTransform = new Editor.Transform(new vec3(-120, 0, 40), new vec3(0, 0, 0), new vec3(1, 1, 1)) as unknown as Editor.Model.TransformEntity
     sceneObject.layer = Editor.Model.LayerId.Ortho
 
     return sceneObject
@@ -189,7 +189,7 @@ export function secondsToDHM(sec: number) {
 }
 
 export function sleep(millisecond: number) {
-    return new Promise(resolve => setTimeout(resolve, millisecond))
+    return new Promise<void>(resolve => setTimeout(resolve, millisecond))
 }
 
 export class Logger {

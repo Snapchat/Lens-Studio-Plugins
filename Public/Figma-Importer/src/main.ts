@@ -66,7 +66,7 @@ export class FigmaImporter extends PanelPlugin {
                 assetManager: assetManager,
                 scene: scene,
                 pluginSystem: pluginSystem,
-                workingDirectory: new Editor.Path(import.meta.resolve('')).parent
+                workingDirectory: new Editor.Path(import.meta.resolve('')).parent.parent // go up two levels to get to the root of the project
             }
         )
 

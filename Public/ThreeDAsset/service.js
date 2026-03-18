@@ -11,7 +11,7 @@ export class ThreeDAssetGenerationService extends EntityGenerator {
         descriptor.name = app.name;
         descriptor.description = app.name;
         descriptor.dependencies = [];
-        descriptor.displayOrder = 4;
+        descriptor.displayOrder = 6;
         descriptor.icon = app.icon;
         descriptor.entityType = 'RenderMesh';
 
