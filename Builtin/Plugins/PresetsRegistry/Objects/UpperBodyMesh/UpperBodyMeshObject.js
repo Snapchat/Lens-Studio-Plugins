@@ -1,4 +1,5 @@
 import { Preset } from 'LensStudio:Preset';
+import * as Utils from 'LensStudio:Utils@1.0.js';
 import { BodyMeshMaterialPreset } from '../../Assets/BodyMeshMaterial/BodyMeshMaterial.js';
 import { UpperBodyObjectTracking3DPreset } from '../ObjectTracking3D/ObjectTracking3D.js';
 import { HeadMeshObjectPreset } from '../FaceMesh/FaceMeshObject.js';
@@ -21,7 +22,7 @@ async function createUpperBodyMeshComponent(model, destinationObject) {
 }
 
 async function createUpperBodyMeshObject(model, sceneObject) {
-    const scene = model.project.scene;
+    const scene = Utils.resolveScene(model, sceneObject);
 
     const headMeshObjectPreset = new HeadMeshObjectPreset(this.pluginSystem);
     await headMeshObjectPreset.createAsync(sceneObject);

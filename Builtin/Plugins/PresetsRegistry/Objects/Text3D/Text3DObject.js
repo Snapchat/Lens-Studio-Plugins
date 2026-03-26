@@ -1,4 +1,5 @@
 import { Preset } from 'LensStudio:Preset';
+import * as Utils from 'LensStudio:Utils@1.0.js';
 import { createText3DComponent } from '../../Components/Text3D/Text3DComponent.js';
 
 export async function createText3DObject(model, destinationObject) {
@@ -24,7 +25,7 @@ export class Text3DObjectPreset extends Preset {
     }
     async createAsync(parent) {
         const model = this.pluginSystem.findInterface(Editor.Model.IModel);
-        const scene = model.project.scene;
+        const scene = Utils.resolveScene(model, parent);
         const destination = scene.addSceneObject(parent);
         const text3DObject = await createText3DObject.call(this, model, destination);
 

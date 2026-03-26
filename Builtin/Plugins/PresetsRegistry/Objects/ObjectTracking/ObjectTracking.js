@@ -1,4 +1,5 @@
 import { Preset } from 'LensStudio:Preset';
+import * as Utils from 'LensStudio:Utils@1.0.js';
 import { createScreenTransformObject } from '../ScreenTransform/ScreenTransformObject.js';
 import { createImageComponent } from '../../Components/Image/ImageComponent.js';
 
@@ -17,7 +18,7 @@ function createObjectTrackingPreset(id, niceName) {
         async createAsync(destination) {
             try {
                 const model = this.pluginSystem.findInterface(Editor.Model.IModel);
-                const scene = model.project.scene;
+                const scene = Utils.resolveScene(model, destination);
 
                 const parentScreenTransform = scene.addSceneObject(destination);
                 const screenTransform = createScreenTransformObject(model, parentScreenTransform);

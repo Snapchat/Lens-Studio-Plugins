@@ -4,7 +4,7 @@ import { OccluderMaterialPreset } from '../../Assets/OccluderMaterial/OccluderMa
 
 export async function createFaceOccluder(model, parent) {
 
-    const scene = model.project.scene;
+    const scene = Utils.resolveScene(model, parent);
     const assetManager = model.project.assetManager;
 
     // Create the required assets
@@ -30,7 +30,7 @@ export async function createFaceOccluder(model, parent) {
 }
 
 export function createHeadBindingObject(model, sceneObject) {
-    const scene = model.project.scene;
+    const scene = Utils.resolveScene(model, sceneObject);
 
     const rootObject = Utils.findOrCreateCameraObject(scene, sceneObject);
     const effectsObject = Utils.findOrCreateChildWithName(rootObject, 'Effects', scene);

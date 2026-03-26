@@ -57,7 +57,7 @@ export function createLineWithButton(
 
     layout.addLayout(hLayout)
 
-    return buttonClickConnection
+    return { connection: buttonClickConnection, button }
 }
 
 export function addSeparator(widget: Ui.Widget, layout: { addWidget: (arg0: Ui.Separator) => void }) {

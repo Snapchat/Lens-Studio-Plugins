@@ -57,3 +57,31 @@ body {
   flex: 1;
   min-height: 200px;
 }
+
+.lang-toggle {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-right: 8px;
+}
+
+.btn-lang {
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  border: none;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.btn-lang.active {
+  background: var(--accent);
+  color: white;
+}
+
+.btn-lang:not(.active):hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}

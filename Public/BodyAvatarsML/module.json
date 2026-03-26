@@ -1,0 +1,5 @@
+{
+    "main": "main.js",
+    "name": "Character Skin Generator",
+    "permissions": ["snap_auth_token", "network", "filesystem", "shell"]
+}

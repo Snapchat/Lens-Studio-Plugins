@@ -16,7 +16,7 @@ export class GPUParticlesTrailsObjectPreset extends Preset {
 
     async createAsync(parent) {
         const model = this.pluginSystem.findInterface(Editor.Model.IModel);
-        const scene = model.project.scene;
+        const scene = Utils.resolveScene(model, parent);
         parent = scene.addSceneObject(parent);
         parent.name = 'GPU Particles Trails';
 

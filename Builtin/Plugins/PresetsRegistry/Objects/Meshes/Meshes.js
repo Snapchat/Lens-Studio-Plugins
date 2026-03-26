@@ -1,4 +1,5 @@
 import { Preset } from 'LensStudio:Preset';
+import * as Utils from 'LensStudio:Utils@1.0.js';
 
 import * as MeshAssets from '../../Assets/Meshes/Meshes.js';
 import { PBRMaterialPreset } from '../../Assets/PBRMaterial/PBRMaterial.js';
@@ -33,7 +34,7 @@ function createMeshObjectClass(name, iconPath, assetMeshPreset, assetMaterialPre
 
                 // Create the RenderMeshVisual
                 const model = this.pluginSystem.findInterface(Editor.Model.IModel);
-                const scene = model.project.scene;
+                const scene = Utils.resolveScene(model, destination);
                 destination = scene.addSceneObject(destination);
                 const meshVisual = destination.addComponent('RenderMeshVisual');
                 meshVisual.mesh = meshAsset;

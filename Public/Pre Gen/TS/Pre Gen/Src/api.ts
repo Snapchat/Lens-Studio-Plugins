@@ -13,13 +13,16 @@ export function getMyDreams(callback: Function, pageToken: any = null) {
     }
 
     Network.performAuthorizedHttpRequest(request, (response) => {
+        let data;
+        try {
+            data = JSON.parse(response.body);
+        } catch (e) {
+            callback(response);
+            return;
+        }
         callback(response);
-        // console.log(response.body);
-
-        //@ts-ignore
-        if (JSON.parse(response.body).nextPageToken) {
-            //@ts-ignore
-            getMyDreams(callback, JSON.parse(response.body).nextPageToken.toString());
+        if (data?.nextPageToken) {
+            getMyDreams(callback, data.nextPageToken.toString());
         }
     });
 }

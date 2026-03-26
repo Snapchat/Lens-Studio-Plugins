@@ -9,12 +9,17 @@ export function getMyDreams(callback, pageToken = null) {
         request.url += '?pageToken=' + pageToken;
     }
     Network.performAuthorizedHttpRequest(request, (response) => {
+        let data;
+        try {
+            data = JSON.parse(response.body);
+        }
+        catch (e) {
+            callback(response);
+            return;
+        }
         callback(response);
-        // console.log(response.body);
-        //@ts-ignore
-        if (JSON.parse(response.body).nextPageToken) {
-            //@ts-ignore
-            getMyDreams(callback, JSON.parse(response.body).nextPageToken.toString());
+        if (data === null || data === void 0 ? void 0 : data.nextPageToken) {
+            getMyDreams(callback, data.nextPageToken.toString());
         }
     });
 }

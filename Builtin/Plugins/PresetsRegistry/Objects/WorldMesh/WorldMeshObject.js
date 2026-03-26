@@ -1,4 +1,5 @@
 import { Preset } from 'LensStudio:Preset';
+import * as Utils from 'LensStudio:Utils@1.0.js';
 import { WorldMeshMaterialPreset } from '../../Assets/WorldMeshMaterial/WorldMeshMaterial.js';
 
 export class WorldMeshObjectPreset extends Preset {
@@ -14,7 +15,7 @@ export class WorldMeshObjectPreset extends Preset {
     }
     async createAsync(parent) {
         const model = this.pluginSystem.findInterface(Editor.Model.IModel);
-        const scene = model.project.scene;
+        const scene = Utils.resolveScene(model, parent);
         parent = scene.addSceneObject(parent);
         parent.name = 'World Mesh';
 

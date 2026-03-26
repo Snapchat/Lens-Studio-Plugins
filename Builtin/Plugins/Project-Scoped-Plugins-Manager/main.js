@@ -1,5 +1,6 @@
 import { CoreService } from 'LensStudio:CoreService';
 import * as fs from 'LensStudio:FileSystem';
+import { PackageTracker } from './PackageTracker.js';
 
 const pluginsFolderName = "Plugins";
 
@@ -14,20 +15,93 @@ export class ProjectScopedPluginsManager extends CoreService {
 
     start() {
         this.model = this.pluginSystem.findInterface(Editor.Model.IModel);
-        this.guards = [];
+        this.modelGuards = [];
+        this.projectGuards = [];
 
-        this.guards.push(this.model.onProjectChanged.connect(() => this.onProjectChanged()));
-        this.guards.push(this.model.onProjectAboutToBeChanged.connect(() => this.onProjectAboutToBeChanged()));
-        this.guards.push(this.model.onProjectSaving.connect((mode, path) => this.onProjectSaving(mode, path)));
+        this.packageTracker = new PackageTracker({
+            getAbsolutePath: (sourcePath) => {
+                const assetManager = this.model.project.assetManager;
+                return assetManager.assetsDirectory.appended(new Editor.Path(sourcePath)).toString();
+            },
+            getProjectDir: () => this.getProjectDirectory().toString(),
+            loadPlugins: (pluginDir) => {
+                const dir = new Editor.Path(pluginDir);
+                if (fs.exists(dir)) {
+                    console.log("[PackageTracker] Loading plugins from: " + pluginDir, console.None);
+                    this.pluginSystem.loadDirectory(dir);
+                }
+            },
+            unloadPlugins: (pluginDir) => {
+                const dir = new Editor.Path(pluginDir);
+                console.log("[PackageTracker] Unloading plugins from: " + pluginDir, console.None);
+                this.pluginSystem.unloadDirectory(dir);
+            }
+        });
+
+        this.modelGuards.push(this.model.onProjectChanged.connect(() => this.onProjectChanged()));
+        this.modelGuards.push(this.model.onProjectAboutToBeChanged.connect(() => this.onProjectAboutToBeChanged()));
+        this.modelGuards.push(this.model.onProjectSaving.connect((mode, path) => this.onProjectSaving(mode, path)));
+
+        this.connectProjectListeners();
 
         this.timeout = setTimeout(() => this.addDirectory(this.getPluginsDirectory()), 0);
     }
 
+    connectProjectListeners() {
+        this.projectGuards.push(this.model.project.onEntityAdded("AssetImportMetadata").connect((entity) => {
+            let pluginId = null;
+            let descriptorId = null;
+            if (entity.nativePackageDescriptor) {
+                pluginId = entity.nativePackageDescriptor.componentId?.toString() || null;
+                descriptorId = entity.nativePackageDescriptor.id?.toString() || null;
+            }
+            this.packageTracker.handleEntityAdded({
+                id: entity.id,
+                sourcePath: entity.sourcePath.toString(),
+                extension: entity.sourcePath.extension,
+                hasNativePackageDescriptor: !!entity.nativePackageDescriptor,
+                pluginId: pluginId,
+                descriptorId: descriptorId
+            });
+        }));
+        this.projectGuards.push(this.model.project.onEntityRemoved("AssetImportMetadata").connect((uuid) => {
+            this.packageTracker.handleEntityRemoved(uuid);
+        }));
+        this.projectGuards.push(this.model.project.onEntityUpdated("AssetImportMetadata").connect((entity) => {
+            let pluginId = null;
+            let descriptorId = null;
+            if (entity.nativePackageDescriptor) {
+                pluginId = entity.nativePackageDescriptor.componentId?.toString() || null;
+                descriptorId = entity.nativePackageDescriptor.id?.toString() || null;
+            }
+            this.packageTracker.handleEntityUpdated({
+                id: entity.id,
+                sourcePath: entity.sourcePath.toString(),
+                extension: entity.sourcePath.extension,
+                isPackedPackageItem: entity.isPackedPackageItem,
+                hasNativePackageDescriptor: !!entity.nativePackageDescriptor,
+                pluginId: pluginId,
+                descriptorId: descriptorId
+            });
+        }));
+        this.projectGuards.push(this.model.project.onEntityRemoved("NativePackageDescriptor").connect((uuid) => {
+            this.packageTracker.handleDescriptorRemoved(uuid);
+        }));
+    }
+
+    disconnectProjectListeners() {
+        this.projectGuards.forEach(guard => guard.disconnect());
+        this.projectGuards.length = 0;
+    }
+
     onProjectChanged() {
+        this.connectProjectListeners();
         this.addDirectory(this.getPluginsDirectory());
     }
 
     onProjectAboutToBeChanged() {
+        this.disconnectProjectListeners();
+        this.packageTracker.clear();
         this.removeDirectory(this.getPluginsDirectory());
     }
 
@@ -58,8 +132,10 @@ export class ProjectScopedPluginsManager extends CoreService {
     }
 
     stop() {
-        this.guards.forEach(guard => guard.disconnect());
-        this.guards.length = 0;
+        this.modelGuards.forEach(guard => guard.disconnect());
+        this.modelGuards.length = 0;
+        this.disconnectProjectListeners();
+        this.packageTracker.clear();
 
         this.removeDirectory(this.getPluginsDirectory());
     }
@@ -79,8 +155,6 @@ export class ProjectScopedPluginsManager extends CoreService {
     }
 
     removeDirectory(directory) {
-        if (fs.exists(directory)) {
-            this.pluginSystem.unloadDirectory(directory);
-        }
+        this.pluginSystem.unloadDirectory(directory);
     }
 }

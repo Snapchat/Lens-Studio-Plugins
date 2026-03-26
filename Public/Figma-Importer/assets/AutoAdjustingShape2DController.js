@@ -20,7 +20,7 @@ script.scrnTrnfmAspectRatio = 0;
 
 
 script.testPrint = (str) => {
-    print("from lens scripting : " + str);
+    print("from Lens scripting : " + str);
 }
 
 function onAwake() {
@@ -172,9 +172,6 @@ script.setProperty = (name, value) => {
  * @private
  */
 function initialShaderSetup() {
-    //print all the properties of the main pass
-
-    script.mainPass['shapeColorInvert'] = true;
 }
 
 //Private
@@ -188,7 +185,6 @@ function autoAdjustShapeDim() {
     script.scrnTrnfmHeight = worldSpaceSize.y;
     script.scrnTrnfmAspectRatio = worldSpaceSize.x / worldSpaceSize.y;
 
-    script.mainPass['shapeColorInvert'] = true
     setShape();
 }
 

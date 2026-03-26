@@ -1,4 +1,5 @@
 import { Preset } from 'LensStudio:Preset';
+import * as Utils from 'LensStudio:Utils@1.0.js';
 import { createTypeScriptAsset } from '../../Assets/TypeScript/TypeScriptComponentPreset.js';
 import { createJavaScriptAsset } from '../../Assets/Script/JavaScriptPreset.js';
 
@@ -33,9 +34,11 @@ function createScriptComponentPreset(id, name, iconPath, createFn, entityType, d
 
             let destination = parent;
 
-            // If there's no destination, we need to add a whole new scene object.
-            if (destination === null) {
-                destination = model.project.scene.addSceneObject(parent);
+            // If the entity type is a SceneObject, add a new child object,
+            // since it means we're adding from the Scene Hierarchy panel.
+            if (entityType === 'SceneObject') {
+                const scene = Utils.resolveScene(model, parent);
+                destination = scene.addSceneObject(parent);
                 destination.name = name;
             }
 

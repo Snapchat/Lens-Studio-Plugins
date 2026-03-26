@@ -15,11 +15,8 @@ export const HintID = {
     'prompt': 11,
     'effect_prompt': 12,
     'image_reference': 13,
-    'reference_strength': 14,
-    'attributes_preservation': 15,
-    'seed': 16,
-    'standard_mode': 17,
-    'enhanced_mode': 18
+    'standard_mode': 14,
+    'enhanced_mode': 15
 };
 
 const hintScheme = {
@@ -115,18 +112,6 @@ const hintScheme = {
     [HintID.image_reference]: {
         'title': 'Image Reference',
         'text': 'Add an image reference to guide the effect. This is the most informative input to shape the result.'
-    },
-    [HintID.reference_strength]: {
-        'title': 'Reference Strength',
-        'text': 'Controls how strongly the effect follows the Image Reference. A higher value makes the result closer to the Image Reference, but reduces similarity to the original user photo.'
-    },
-    [HintID.attributes_preservation]: {
-        'title': 'Attributes preservation',
-        'text': 'Affects the hair and headwear area the most. When increasing the value, the model maintains greater consistency in the hair area and does not remove hair or headwear from the head.'
-    },
-    [HintID.seed]: {
-        'title': 'Seed',
-        'text': 'Control randomness with a seed. Use the same number to recreate the same look, or try different ones for new variations!'
     },
     [HintID.standard_mode] : {
         'image_width': 256,

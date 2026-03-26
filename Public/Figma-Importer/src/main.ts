@@ -41,7 +41,7 @@ export class FigmaImporter extends PanelPlugin {
 
     signals: Editor.ScopedConnection[] = []
 
-    private readonly version = '1.1.11'
+    private readonly version = '1.1.12'
 
     static descriptor() {
         const name = 'Figma Importer'
@@ -261,29 +261,74 @@ export class FigmaImporter extends PanelPlugin {
         const authButton = new Ui.PushButton(preAuthWidget)
         authButton.primary = true
         authButton.text = 'Start Authentication'
-        const authBtnClickCallback = async () => {
-            //core oauth logic
-            const json: any = await oAuthHelper.startOAuth().catch((e) => {
+        const forceAuthButton = new Ui.PushButton(preAuthWidget)
+        forceAuthButton.text = 'Force Re-authenticate'
+        forceAuthButton.visible = false
+        let authInProgress = false
+        let restartRequested = false
+        const setAuthInProgress = (inProgress: boolean) => {
+            authInProgress = inProgress
+            authButton.enabled = !inProgress
+            forceAuthButton.visible = inProgress
+        }
+
+        const runAuthFlow = async () => {
+            if (authInProgress) {
+                logger.warn('Authentication already in progress.')
+                return
+            }
+
+            setAuthInProgress(true)
+
+            try {
+                //core oauth logic
+                const json: any = await oAuthHelper.startOAuth()
+                //save the obtained token
+                if (json) {
+                    //print out the expiration time
+                    logger.info(`Token expires in ${utils.secondsToDHM(json.expires_in)}`)
+                    const token = json.access_token
+                    const expiresIn = json.expires_in
+                    const refreshToken = json.refresh_token
+                    //save the tokens
+                    accessTokenManager.setAccessToken(token, expiresIn, refreshToken)
+                    //switch to the next screen
+                    this.stackedWidget.currentIndex = 1
+                } else {
+                    logger.warn('An error occurred during authentication. Please try again.')
+                }
+            } catch (e) {
                 logger.error('', e)
-            })
-            //save the obtained token
-            if (json) {
-                //print out the expiration time
-                logger.info(`Token expires in ${utils.secondsToDHM(json.expires_in)}`)
-                const token = json.access_token
-                const expiresIn = json.expires_in
-                const refreshToken = json.refresh_token
-                //save the tokens
-                accessTokenManager.setAccessToken(token, expiresIn, refreshToken)
-                //switch to the next screen
-                this.stackedWidget.currentIndex = 1
-            } else {
                 logger.warn('An error occurred during authentication. Please try again.')
+            } finally {
+                setAuthInProgress(false)
+                if (restartRequested) {
+                    restartRequested = false
+                    logger.info('Restarting authentication flow.')
+                    await runAuthFlow()
+                }
             }
         }
+        const authBtnClickCallback = async () => {
+            await runAuthFlow()
+        }
+        const forceAuthBtnClickCallback = async () => {
+            if (authInProgress) {
+                const cancelled = oAuthHelper.cancelOAuthFlow('Authentication restarted by user.')
+                if (cancelled) {
+                    restartRequested = true
+                } else if (!restartRequested) {
+                    logger.warn('No authentication flow is currently active.')
+                }
+                return
+            }
+            await runAuthFlow()
+        }
         this.signals.push(authButton.onClick.connect(authBtnClickCallback))
+        this.signals.push(forceAuthButton.onClick.connect(forceAuthBtnClickCallback))
 
         preAuthLayout.addWidget(authButton)
+        preAuthLayout.addWidget(forceAuthButton)
 
         return preAuthWidget
     }
@@ -303,12 +348,24 @@ export class FigmaImporter extends PanelPlugin {
         containerLayout.setDirection(Ui.Direction.TopToBottom)
         containerLayout.spacing = this.spacing
 
+        let importInProgress = false
+        let importButton: Ui.PushButton | null = null
+
         const pull = async (url: string) => {
+            if (importInProgress) {
+                logger.warn('Import already in progress.')
+                return
+            }
+
+            importInProgress = true
+            if (importButton) importButton.enabled = false
 
             logger.info('Importing started...')
             const progressBarInfo = this.createProgressBarDialog()
             if (!progressBarInfo) {
                 logger.warn('Error creating progress bar dialog')
+                importInProgress = false
+                if (importButton) importButton.enabled = true
                 return
             }
             logger.debug('Progress bar created...')
@@ -340,6 +397,9 @@ export class FigmaImporter extends PanelPlugin {
                 logger.error('', error)
                 progressBarInfo.dialog.close()
                 logger.warn('An error occurred. Please try again.')
+            } finally {
+                importInProgress = false
+                if (importButton) importButton.enabled = true
             }
         }
 
@@ -347,6 +407,7 @@ export class FigmaImporter extends PanelPlugin {
         const backButton = new Ui.PushButton(containerWidget)
         backButton.text = '↶ Re-authenticate'
         this.signals.push(backButton.onClick.connect(() => {
+            accessTokenManager.removeAccessToken()
             this.stackedWidget.currentIndex = 0
         }))
         backButton.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed)
@@ -376,7 +437,7 @@ export class FigmaImporter extends PanelPlugin {
 
         //4. Input bar and confirm button
         //create a horizontal layout for the input bar and confirm button
-        this.signals.push(widgetHelper.createLineWithButton(
+        const lineWithButton = widgetHelper.createLineWithButton(
             containerWidget,
             containerLayout,
             'Paste link here...',
@@ -389,7 +450,9 @@ export class FigmaImporter extends PanelPlugin {
                     logger.error('', e)
                 }
             }
-        ))
+        )
+        this.signals.push(lineWithButton.connection)
+        importButton = lineWithButton.button
 
         const instructionText = [
             'To import a frame:',

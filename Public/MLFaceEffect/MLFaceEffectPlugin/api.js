@@ -91,7 +91,6 @@ export function listEffects(maxPageSize, callback, searchQuery, pageToken) {
     }
 
     if (searchQuery) {
-        searchQuery += ",face-enhanced"
         url += searchQuery;
     }
 

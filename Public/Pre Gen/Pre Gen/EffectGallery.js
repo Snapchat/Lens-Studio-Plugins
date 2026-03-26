@@ -160,7 +160,7 @@ export class EffectGallery {
         this.lastRequestId++;
         const currentRequestId = this.lastRequestId;
         getMyDreams((response) => {
-            if (response.statusCode !== 200 || currentRequestId != this.lastRequestId) {
+            if (!response || response.statusCode !== 200 || currentRequestId != this.lastRequestId) {
                 return;
             }
             if (JSON.parse(response.body).items.length > 0 && this.stackedWidget) {

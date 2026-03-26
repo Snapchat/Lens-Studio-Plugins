@@ -1,4 +1,5 @@
 import { Preset } from 'LensStudio:Preset';
+import * as Utils from 'LensStudio:Utils@1.0.js';
 import { BodyMeshMaterialPreset } from '../../Assets/BodyMeshMaterial/BodyMeshMaterial.js';
 import { BodyObjectTracking3DPreset } from '../ObjectTracking3D/ObjectTracking3D.js';
 
@@ -18,7 +19,7 @@ async function createBodyMeshComponent(model, destinationObject) {
 }
 
 async function createBodyMeshObject(model, sceneObject) {
-    const scene = model.project.scene;
+    const scene = Utils.resolveScene(model, sceneObject);
 
     const bodyTracking3DPreset = new BodyObjectTracking3DPreset(this.pluginSystem);
     const bodyTrackingObject = await bodyTracking3DPreset.createAsync(sceneObject);

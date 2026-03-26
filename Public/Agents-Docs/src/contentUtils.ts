@@ -7,6 +7,7 @@
 // Template placeholders
 export const VERSION_PLACEHOLDER = "{{VERSION}}";
 export const STUDIOLIB_PLACEHOLDER = "{{STUDIOLIB_PATH}}";
+export const PLATFORM_LINE_PLACEHOLDER = "{{PLATFORM_LINE}}";
 
 // StudioLib paths based on flavor
 export const STUDIOLIB_PUBLIC = "StudioLib.d.ts";
@@ -103,7 +104,7 @@ export function buildPatchedAgentsMd(
     let result = "";
 
     // Add user content BEFORE the managed region
-    if (userContent.before && userContent.before.length > 0) {
+    if (userContent.before) {
         result += userContent.before + "\n";
     }
 
@@ -114,7 +115,7 @@ export function buildPatchedAgentsMd(
     result += header + "\n";
 
     // Add user content AFTER the managed region
-    if (userContent.after && userContent.after.length > 0) {
+    if (userContent.after) {
         result += userContent.after + "\n";
     }
 
@@ -122,7 +123,7 @@ export function buildPatchedAgentsMd(
 }
 
 /**
- * Build the default .gitignore content for the .agents/LensStudio/ folder.
+ * Build the default .gitignore content for the .claude/docs/ folder.
  *
  * @returns The complete .gitignore file content
  */
@@ -144,19 +145,48 @@ export function getStudioLibPath(flavor: string): string {
 }
 
 /**
+ * Build the platform line for AGENTS.md based on target platforms.
+ *
+ * - Single platform: "This lens runs on **Spectacles**. When calling tools that accept a target platform, prefer **Spectacles**."
+ * - Multiple platforms: "This lens runs on **Mobile**, **Spectacles**."
+ * - No platforms: returns empty string
+ *
+ * The returned string includes trailing newlines for template spacing when non-empty.
+ *
+ * @param platforms - Array of platform display names (e.g. ["Spectacles"] or ["Mobile", "Web"])
+ * @returns The platform line string (with trailing newlines) or empty string
+ */
+export function buildPlatformLine(platforms: string[]): string {
+    if (platforms.length === 0) {
+        return "";
+    }
+    const bold = platforms.map(p => `**${p}**`);
+    const list = bold.length === 1
+        ? bold[0]
+        : bold.slice(0, -1).join(", ") + " and " + bold[bold.length - 1];
+    if (platforms.length === 1) {
+        return `This lens runs on ${list}. When calling tools that accept a target platform, prefer ${list}.\n\n`;
+    }
+    return `This lens runs on ${list}.\n\n`;
+}
+
+/**
  * Process template content by replacing placeholders with actual values.
  *
- * @param templateContent - The template content with {{VERSION}} and {{STUDIOLIB_PATH}} placeholders
+ * @param templateContent - The template content with {{VERSION}}, {{STUDIOLIB_PATH}}, and {{PLATFORM_LINE}} placeholders
  * @param version - The Lens Studio version string (e.g., "5.17.0.12345")
  * @param flavor - The FeatureSet flavor ("Public", "Internal", or other)
+ * @param platforms - Array of target platform names to include in the platform line (default: [])
  * @returns The processed content with placeholders replaced
  */
-export function processTemplate(templateContent: string, version: string, flavor: string): string {
+export function processTemplate(templateContent: string, version: string, flavor: string, platforms: string[] = []): string {
     const studioLibPath = getStudioLibPath(flavor);
+    const platformLine = buildPlatformLine(platforms);
 
     return templateContent
         .replace(VERSION_PLACEHOLDER, version)
-        .replace(STUDIOLIB_PLACEHOLDER, studioLibPath);
+        .replace(STUDIOLIB_PLACEHOLDER, studioLibPath)
+        .replace(PLATFORM_LINE_PLACEHOLDER, platformLine);
 }
 
 /**

@@ -6,6 +6,7 @@ import {
     AGENTS_GITIGNORE_DISCLAIMER,
     VERSION_PLACEHOLDER,
     STUDIOLIB_PLACEHOLDER,
+    PLATFORM_LINE_PLACEHOLDER,
     STUDIOLIB_PUBLIC,
     STUDIOLIB_INTERNAL,
     FLAVOR_PUBLIC,
@@ -14,6 +15,7 @@ import {
     buildPatchedAgentsMd,
     buildDefaultAgentsGitignore,
     getStudioLibPath,
+    buildPlatformLine,
     processTemplate,
     parseFlavorFromProjectFile,
     UserContent
@@ -789,6 +791,100 @@ export class processTemplate_fullTemplate_replacesAllPlaceholders_verifier exten
         assert(!result.includes(VERSION_PLACEHOLDER), 'Should not contain version placeholder');
         assert(!result.includes(STUDIOLIB_PLACEHOLDER), 'Should not contain StudioLib placeholder');
         console.log('[processTemplate_fullTemplate] PASSED');
+    }
+}
+
+// ============================================================================
+// buildPlatformLine Tests
+// ============================================================================
+
+/**
+ * Test: buildPlatformLine returns empty string for no platforms
+ */
+export class buildPlatformLine_noPlatforms_returnsEmpty_verifier extends PluginVerifier {
+    static descriptor(): Descriptor {
+        return createDescriptor('buildPlatformLine_noPlatforms');
+    }
+
+    override async verify(pluginDescriptor: IPluginDescriptor, outputDir: Editor.Path): Promise<void> {
+        const result = buildPlatformLine([]);
+        assertEqual(result, '', 'Should return empty string for no platforms');
+        console.log('[buildPlatformLine_noPlatforms] PASSED');
+    }
+}
+
+/**
+ * Test: buildPlatformLine with single platform includes preference sentence
+ */
+export class buildPlatformLine_singlePlatform_includesPreferenceSentence_verifier extends PluginVerifier {
+    static descriptor(): Descriptor {
+        return createDescriptor('buildPlatformLine_singlePlatform');
+    }
+
+    override async verify(pluginDescriptor: IPluginDescriptor, outputDir: Editor.Path): Promise<void> {
+        const result = buildPlatformLine(['Spectacles']);
+        assert(result.includes('**Spectacles**'), 'Should bold the platform name');
+        assert(result.includes('This lens runs on **Spectacles**'), 'Should include runs-on sentence');
+        assert(result.includes('prefer **Spectacles**'), 'Should include preference sentence for single platform');
+        assert(result.endsWith('\n\n'), 'Should end with two newlines for template spacing');
+        console.log('[buildPlatformLine_singlePlatform] PASSED');
+    }
+}
+
+/**
+ * Test: buildPlatformLine with multiple platforms omits preference sentence
+ */
+export class buildPlatformLine_multiplePlatforms_omitsPreferenceSentence_verifier extends PluginVerifier {
+    static descriptor(): Descriptor {
+        return createDescriptor('buildPlatformLine_multiplePlatforms');
+    }
+
+    override async verify(pluginDescriptor: IPluginDescriptor, outputDir: Editor.Path): Promise<void> {
+        const result = buildPlatformLine(['Mobile', 'Spectacles']);
+        assert(result.includes('**Mobile**'), 'Should bold Mobile');
+        assert(result.includes('**Spectacles**'), 'Should bold Spectacles');
+        assert(result.includes('This lens runs on **Mobile** and **Spectacles**'), 'Should list all platforms with and');
+        assert(!result.includes('prefer'), 'Should not include preference sentence for multiple platforms');
+        assert(result.endsWith('\n\n'), 'Should end with two newlines for template spacing');
+        console.log('[buildPlatformLine_multiplePlatforms] PASSED');
+    }
+}
+
+/**
+ * Test: processTemplate with platform replaces PLATFORM_LINE_PLACEHOLDER
+ */
+export class processTemplate_withPlatform_replacesPlatformPlaceholder_verifier extends PluginVerifier {
+    static descriptor(): Descriptor {
+        return createDescriptor('processTemplate_withPlatform');
+    }
+
+    override async verify(pluginDescriptor: IPluginDescriptor, outputDir: Editor.Path): Promise<void> {
+        const template = `# Lens Studio ${VERSION_PLACEHOLDER}\n\n${PLATFORM_LINE_PLACEHOLDER}This project uses Lens Studio.`;
+        const result = processTemplate(template, '5.17.0', FLAVOR_PUBLIC, ['Spectacles']);
+
+        assert(result.includes('This lens runs on **Spectacles**'), 'Should include platform line');
+        assert(result.includes('prefer **Spectacles**'), 'Should include preference sentence');
+        assert(!result.includes(PLATFORM_LINE_PLACEHOLDER), 'Should not contain placeholder');
+        console.log('[processTemplate_withPlatform] PASSED');
+    }
+}
+
+/**
+ * Test: processTemplate without platforms removes PLATFORM_LINE_PLACEHOLDER
+ */
+export class processTemplate_withoutPlatforms_removesPlatformPlaceholder_verifier extends PluginVerifier {
+    static descriptor(): Descriptor {
+        return createDescriptor('processTemplate_withoutPlatforms');
+    }
+
+    override async verify(pluginDescriptor: IPluginDescriptor, outputDir: Editor.Path): Promise<void> {
+        const template = `# Lens Studio ${VERSION_PLACEHOLDER}\n\n${PLATFORM_LINE_PLACEHOLDER}This project uses Lens Studio.`;
+        const result = processTemplate(template, '5.17.0', FLAVOR_PUBLIC, []);
+
+        assert(!result.includes(PLATFORM_LINE_PLACEHOLDER), 'Should not contain placeholder');
+        assert(!result.includes('This lens runs on'), 'Should not include platform line when no platforms');
+        assert(result.includes('This project uses Lens Studio'), 'Content after placeholder should be preserved');
+        console.log('[processTemplate_withoutPlatforms] PASSED');
     }
 }
 

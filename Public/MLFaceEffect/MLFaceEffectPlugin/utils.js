@@ -10,6 +10,10 @@ import { logEventLinkOpen } from '../application/analytics.js';
 const termsLink = 'https://www.snap.com/terms/lens-studio-license-agreement';
 const guidelinesLink = 'https://developers.snap.com/lens-studio/features/genai-suite/face-ml-generation';
 
+export function isEnhancedEffectType(effectTypeId) {
+    return effectTypeId === 'face-enhanced' || effectTypeId === 'face-enhanced-v2';
+}
+
 export function convertIntensityToAPIStyle(intensityString) {
     switch (intensityString) {
         case 'Low':
@@ -178,7 +182,7 @@ export function createGenerationInProgressWidget(parent, isStandard = false) {
         disclaimerLabel.text = '<center>Generating preview...<br>This may take up to 10-15 minutes.<br><br>You can close this window and return later.</center>';
     }
     else {
-        disclaimerLabel.text = '<center>Generating preview...<br>This may take up to 5 minutes.<br><br>You can close this window and return later.</center>';
+        disclaimerLabel.text = '<center>Generating preview...<br>This may take up to 20 minutes.<br><br>You can close this window and return later.</center>';
     }
 
     frameLayout.addWidgetWithStretch(disclaimerLabel, 0, Ui.Alignment.AlignCenter);

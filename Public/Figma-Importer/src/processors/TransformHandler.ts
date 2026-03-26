@@ -21,6 +21,27 @@ export default class TransformHandler extends NodeHandler {
         const data = this.convertNodeToScreenTransformData(nodeContext.node, nodeContext.parentNode)
         const screenTransform = nodeContext.screenTransform
         this.applyScreenTransformDataToScreenTransform(screenTransform, data)
+
+        if ('clipsContent' in nodeContext.node && nodeContext.node.clipsContent) {
+            this.addMaskingComponent(nodeContext)
+        }
+    }
+
+    private addMaskingComponent(nodeContext: ProcessorContext) {
+        const node = nodeContext.node
+
+        let cornerRadius = 0
+        if ('rectangleCornerRadii' in node) {
+            const radii = node.rectangleCornerRadii as [number, number, number, number]
+            cornerRadius = Math.max(...radii)
+        } else if ('cornerRadius' in node) {
+            cornerRadius = node.cornerRadius as number
+        }
+
+        if (cornerRadius === 0) return
+
+        const maskingComponent = nodeContext.sceneObject.addComponent('MaskingComponent') as Editor.Components.MaskingComponent
+        maskingComponent.cornerRadius = cornerRadius
     }
 
     private applyScreenTransformDataToScreenTransform(screenTransform: Editor.Components.ScreenTransform, data: ScreenTransformData) {

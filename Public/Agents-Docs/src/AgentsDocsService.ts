@@ -1,6 +1,15 @@
 import { CoreService, Descriptor } from "LensStudio:CoreService";
 import * as FileSystem from "LensStudio:FileSystem";
 import * as App from "LensStudio:App";
+// @ts-ignore - LensStudio:Mcp not yet in type definitions
+import { IMcpServer } from "LensStudio:Mcp";
+
+/** Local type stub — the full IMcpServer definition lives in the C++ MCP bindings. */
+interface McpServerApi {
+    isRunning(): boolean;
+    getConfig(): any;
+}
+
 import {
     AGENTS_MD_HEADER,
     AGENTS_MD_DISCLAIMER,
@@ -11,11 +20,18 @@ import {
     processTemplate,
     parseFlavorFromProjectFile
 } from "./contentUtils.js";
+import {
+    extractProjectName,
+    buildServerName,
+    extractServerConfig,
+    mergeMcpJson,
+    serializeMcpJson
+} from "./mcpUtils.js";
 
 
 /**
  * AgentsDocsService - A CoreService plugin that automatically injects
- * AGENTS.md and .agents/ documentation folder into Lens Studio projects
+ * AGENTS.md and .claude/docs/ documentation into Lens Studio projects
  * when they are opened.
  *
  * This replicates the behavior from SupportFiles.cpp in the C++ codebase.
@@ -31,7 +47,7 @@ export class AgentsDocsService extends CoreService {
         const d = new Descriptor();
         d.id = "com.snap.AgentsDocs.Service";
         d.name = "Agents Docs Service";
-        d.description = "Automatically injects AGENTS.md and .agents/ documentation into projects";
+        d.description = "Automatically injects AGENTS.md and .claude/ configuration into projects";
         d.dependencies = [Editor.Model.IModel];
         return d;
     }
@@ -75,35 +91,43 @@ export class AgentsDocsService extends CoreService {
             const model = this.pluginSystem.findInterface(Editor.Model.IModel) as Editor.Model.IModel;
             const project = model.project;
 
-            if (Editor.isNull(project) || Editor.isNull(project.projectDirectory)) {
+            if (Editor.isNull(project) || Editor.isNull(project.projectDirectory) || Editor.isNull(project.projectFile)) {
                 return;
             }
 
-            const projectDir = project.projectDirectory;
-
-            console.log("projectDir: " + projectDir.toString(), console.None);
-
-            this.injectDocumentation(projectDir, project.projectFile);
+            this.injectDocumentation(project.projectDirectory, project.projectFile);
         } catch (e) {
             console.error("[AgentsDocs] Error in tryInjectDocumentation:", e, console.None);
         }
     }
 
     private injectDocumentation(projectDir: Editor.Path, projectFile: Editor.Path): void {
-        // Get version and flavor information
+        // Get version, flavor, and platform information
         const version = App.version;
         const flavor = this.detectFlavor(projectFile);
+        const platforms = this.detectPlatforms();
 
-        // Copy .agents/LensStudio/ folder
-        this.copyAgentsFolder(projectDir);
+        // Clean up legacy .agents/ directory from earlier plugin versions
+        this.removeLegacyAgentsDir(projectDir);
+
+        // Copy docs into .claude/docs/
+        this.copyInjectedDocs(projectDir);
 
         // Copy editor.d.ts to Support/
         this.copyEditorDts(projectDir);
 
-        // Patch AGENTS.md file with version and flavor info
-        this.patchAgentsMd(projectDir, version, flavor);
+        // Patch AGENTS.md file with version, flavor, and platform info
+        this.patchAgentsMd(projectDir, version, flavor, platforms);
 
-        console.log(`[AgentsDocs] Documentation injection complete. Version: ${version}, Flavor: ${flavor}`, console.None);
+        // Inject skills, agents, and seed instructions file
+        this.copyInjectedSkills(projectDir);
+        this.copyInjectedAgents(projectDir);
+        this.ensureInstructionsMd(projectDir);
+
+        // Write .mcp.json for IDE auto-discovery of the MCP server
+        this.updateMcpJson(projectDir, projectFile);
+
+        console.log(`[AgentsDocs] Documentation injection complete. Version: ${version}, Flavor: ${flavor}, Platforms: ${platforms.join(", ") || "none"}`, console.None);
     }
 
     /**
@@ -133,15 +157,66 @@ export class AgentsDocsService extends CoreService {
     }
 
     /**
-     * Copy the .agents/LensStudio/ documentation folder to the project.
+     * Detect the target platforms from the project's MetaInfo.lensClientCompatibilities.
+     * Returns an array of platform display names (e.g. ["Spectacles"] or ["Mobile", "Web"]).
+     * Falls back to [] if detection fails or no platforms are set.
+     */
+    private detectPlatforms(): string[] {
+        try {
+            const model = this.pluginSystem.findInterface(Editor.Model.IModel) as Editor.Model.IModel;
+            const project = model.project;
+
+            if (Editor.isNull(project) || Editor.isNull(project.metaInfo)) {
+                return [];
+            }
+
+            // @ts-ignore - lensClientCompatibilities is a new API not yet in the type definitions
+            const compatibilities = project.metaInfo.lensClientCompatibilities;
+            if (!compatibilities || compatibilities.length === 0) {
+                return [];
+            }
+
+            // @ts-ignore - LensClientCompatibility is a new API not yet in the type definitions
+            const compat = Editor.Model.LensClientCompatibility;
+            const platformNames: string[] = [];
+            for (const c of compatibilities) {
+                if (c === compat.Mobile) platformNames.push("Mobile");
+                else if (c === compat.Web) platformNames.push("Web");
+                else if (c === compat.Spectacles) platformNames.push("Spectacles");
+                else if (c === compat.CameraKit) platformNames.push("CameraKit");
+            }
+            return platformNames;
+        } catch (e) {
+            console.warn("[AgentsDocs] Error detecting platforms:", e, console.None);
+            return [];
+        }
+    }
+
+    /**
+     * Remove the legacy .agents/ directory left behind by earlier plugin versions.
+     * This runs on every project load so existing projects are cleaned up automatically.
+     */
+    private removeLegacyAgentsDir(projectDir: Editor.Path): void {
+        const legacyDir = projectDir.appended(new Editor.Path(".agents"));
+        if (FileSystem.exists(legacyDir)) {
+            try {
+                FileSystem.remove(legacyDir);
+                console.log("[AgentsDocs] Removed legacy .agents/ directory", console.None);
+            } catch (e) {
+                console.warn("[AgentsDocs] Could not remove legacy .agents/ dir:", e, console.None);
+            }
+        }
+    }
+
+    /**
+     * Copy the .claude/docs/ documentation folder to the project.
      * This wipes and recreates the folder on every project load,
      * but preserves the user's .gitignore if they've modified it.
      */
-    private copyAgentsFolder(projectDir: Editor.Path): void {
-        const resourcesPath = this.resourcesPath;
-        const sourceFolder = resourcesPath.appended(new Editor.Path("LensStudio"));
-        const agentsFolder = projectDir.appended(new Editor.Path(".agents"));
-        const destFolder = agentsFolder.appended(new Editor.Path("LensStudio"));
+    private copyInjectedDocs(projectDir: Editor.Path): void {
+        const sourceFolder = this.resourcesPath.appended(new Editor.Path("injected-docs"));
+        const configDir = projectDir.appended(new Editor.Path(".claude"));
+        const destFolder = configDir.appended(new Editor.Path("docs"));
         const gitIgnorePath = destFolder.appended(new Editor.Path(".gitignore"));
 
         if (!FileSystem.exists(sourceFolder)) {
@@ -156,15 +231,15 @@ export class AgentsDocsService extends CoreService {
                 existingGitignore = FileSystem.readFile(gitIgnorePath);
             }
 
-            // Wipe and recreate the .agents/LensStudio directory
+            // Wipe and recreate the .claude/docs directory
             // This ensures the directory is always in sync with the shipped content
             if (FileSystem.exists(destFolder)) {
                 FileSystem.remove(destFolder);
             }
 
-            // Ensure parent .agents directory exists
-            if (!FileSystem.exists(agentsFolder)) {
-                FileSystem.createDir(agentsFolder, { recursive: true });
+            // Ensure parent .claude directory exists
+            if (!FileSystem.exists(configDir)) {
+                FileSystem.createDir(configDir, { recursive: true });
             }
 
             // Copy the documentation folder
@@ -174,42 +249,35 @@ export class AgentsDocsService extends CoreService {
             if (existingGitignore !== null) {
                 FileSystem.writeFile(gitIgnorePath, existingGitignore);
             } else {
-                this.createAgentsGitignore(gitIgnorePath);
+                this.createDocsGitignore(gitIgnorePath);
             }
 
-            console.log("[AgentsDocs] Copied .agents/LensStudio/ folder", console.None);
+            console.log("[AgentsDocs] Copied .claude/docs/ folder", console.None);
         } catch (e) {
-            console.error("[AgentsDocs] Error copying agents folder:", e, console.None);
+            console.error("[AgentsDocs] Error copying docs folder:", e, console.None);
         }
     }
 
     /**
-     * Create the default .gitignore for the .agents/LensStudio/ folder.
+     * Create the default .gitignore for the .claude/docs/ folder.
      * This ignores all contents by default to prevent committing auto-generated docs.
      */
-    private createAgentsGitignore(gitIgnorePath: Editor.Path): void {
+    private createDocsGitignore(gitIgnorePath: Editor.Path): void {
         FileSystem.writeFile(gitIgnorePath, buildDefaultAgentsGitignore());
     }
 
     /**
      * Copy editor.d.ts (Editor API type definitions) into the project's Support/ directory.
      * The source file is bundled in the plugin's Resources/ folder at build time.
-     * Skips the copy if the destination already exists to avoid redundant I/O on every save.
+     * Always overwrites to ensure users get updated definitions on plugin upgrades.
      */
     private copyEditorDts(projectDir: Editor.Path): void {
-        const resourcesPath = this.resourcesPath;
-        const sourcePath = resourcesPath.appended(new Editor.Path("editor.d.ts"));
+        const sourcePath = this.resourcesPath.appended(new Editor.Path("editor.d.ts"));
         const supportDir = projectDir.appended(new Editor.Path("Support"));
         const destPath = supportDir.appended(new Editor.Path("editor.d.ts"));
 
         if (!FileSystem.exists(sourcePath)) {
             console.warn("[AgentsDocs] editor.d.ts not found in plugin resources: " + sourcePath.toString(), console.None);
-            return;
-        }
-
-        // Skip if already present — the file is static per plugin version,
-        // so re-copying on every save is unnecessary I/O.
-        if (FileSystem.exists(destPath)) {
             return;
         }
 
@@ -242,10 +310,10 @@ export class AgentsDocsService extends CoreService {
      * @param projectDir - The project directory path
      * @param version - The Lens Studio version string
      * @param flavor - The flavor ("Public" or "Internal")
+     * @param platforms - Array of target platform names (e.g. ["Spectacles"])
      */
-    private patchAgentsMd(projectDir: Editor.Path, version: string, flavor: string): void {
-        const resourcesPath = this.resourcesPath;
-        const agentsMdTemplatePath = resourcesPath.appended(new Editor.Path("AGENTS.md.in"));
+    private patchAgentsMd(projectDir: Editor.Path, version: string, flavor: string, platforms: string[] = []): void {
+        const agentsMdTemplatePath = this.resourcesPath.appended(new Editor.Path("AGENTS.md.in"));
         const agentsMdDestPath = projectDir.appended(new Editor.Path("AGENTS.md"));
 
         if (!FileSystem.exists(agentsMdTemplatePath)) {
@@ -257,8 +325,8 @@ export class AgentsDocsService extends CoreService {
             // Read the template content
             const rawTemplate = FileSystem.readFile(agentsMdTemplatePath);
 
-            // Process the template with version and flavor information
-            const templateContent = processTemplate(rawTemplate, version, flavor);
+            // Process the template with version, flavor, and platform information
+            const templateContent = processTemplate(rawTemplate, version, flavor, platforms);
 
             // Read existing file content (if any)
             let existingContent = "";
@@ -276,6 +344,143 @@ export class AgentsDocsService extends CoreService {
             console.log("[AgentsDocs] Patched AGENTS.md", console.None);
         } catch (e) {
             console.error("[AgentsDocs] Error patching AGENTS.md:", e, console.None);
+        }
+    }
+
+    /**
+     * Copy skill definitions from Resources into the project's .claude/skills/ directory.
+     * Wipes and recreates on every project load to ensure definitions stay current.
+     */
+    private copyInjectedSkills(projectDir: Editor.Path): void {
+        const sourceFolder = this.resourcesPath.appended(new Editor.Path("injected-skills"));
+        const configDir = projectDir.appended(new Editor.Path(".claude"));
+        const destFolder = configDir.appended(new Editor.Path("skills"));
+
+        if (!FileSystem.exists(sourceFolder)) {
+            console.warn("[AgentsDocs] injected-skills source not found: " + sourceFolder.toString(), console.None);
+            return;
+        }
+
+        try {
+            if (FileSystem.exists(destFolder)) {
+                FileSystem.remove(destFolder);
+            }
+
+            if (!FileSystem.exists(configDir)) {
+                FileSystem.createDir(configDir, { recursive: true });
+            }
+
+            FileSystem.copyDir(sourceFolder, destFolder, { force: true, recursive: true });
+            console.log("[AgentsDocs] Copied .claude/skills/ folder", console.None);
+        } catch (e) {
+            console.error("[AgentsDocs] Error copying injected skills:", e, console.None);
+        }
+    }
+
+    /**
+     * Copy agent definitions from Resources into the project's .claude/agents/ directory.
+     * Wipes and recreates on every project load to ensure definitions stay current.
+     */
+    private copyInjectedAgents(projectDir: Editor.Path): void {
+        const sourceFolder = this.resourcesPath.appended(new Editor.Path("injected-agents"));
+        const configDir = projectDir.appended(new Editor.Path(".claude"));
+        const destFolder = configDir.appended(new Editor.Path("agents"));
+
+        if (!FileSystem.exists(sourceFolder)) {
+            console.warn("[AgentsDocs] injected-agents source not found: " + sourceFolder.toString(), console.None);
+            return;
+        }
+
+        try {
+            if (FileSystem.exists(destFolder)) {
+                FileSystem.remove(destFolder);
+            }
+
+            if (!FileSystem.exists(configDir)) {
+                FileSystem.createDir(configDir, { recursive: true });
+            }
+
+            FileSystem.copyDir(sourceFolder, destFolder, { force: true, recursive: true });
+            console.log("[AgentsDocs] Copied .claude/agents/ folder", console.None);
+        } catch (e) {
+            console.error("[AgentsDocs] Error copying injected agents:", e, console.None);
+        }
+    }
+
+    /**
+     * Create a CLAUDE.md at the project root if one doesn't already exist.
+     * Seeds it with "@AGENTS.md" so AI coding agents automatically read the
+     * plugin-generated AGENTS.md documentation.
+     */
+    private ensureInstructionsMd(projectDir: Editor.Path): void {
+        const instructionsMdPath = projectDir.appended(new Editor.Path("CLAUDE.md"));
+
+        if (FileSystem.exists(instructionsMdPath)) {
+            return;
+        }
+
+        try {
+            FileSystem.writeFile(instructionsMdPath, "@AGENTS.md\n");
+            console.log("[AgentsDocs] Created CLAUDE.md with @AGENTS.md directive", console.None);
+        } catch (e) {
+            console.error("[AgentsDocs] Error creating CLAUDE.md:", e, console.None);
+        }
+    }
+
+    /**
+     * Write .mcp.json to the project root with current MCP server configuration.
+     * Enables external tools (Claude Code, Cursor) to auto-discover the MCP server.
+     *
+     * Only writes if the MCP server is running. Preserves existing non-lens-studio
+     * servers and removes stale lens-studio-* entries from previous project names.
+     */
+    private updateMcpJson(projectDir: Editor.Path, projectFile: Editor.Path): void {
+        try {
+            const server = this.pluginSystem.findInterface(IMcpServer) as unknown as McpServerApi | null;
+            if (!server) {
+                return;
+            }
+
+            // In CLI mode the server object may be uninitialized
+            let isRunning = false;
+            try {
+                isRunning = server.isRunning();
+            } catch {
+                return;
+            }
+
+            if (!isRunning) {
+                return;
+            }
+
+            const mcpConfig = server.getConfig();
+            if (!mcpConfig) {
+                return;
+            }
+
+            const serverConfig = extractServerConfig(mcpConfig);
+            if (!serverConfig) {
+                console.warn("[AgentsDocs] Unrecognized MCP config structure, skipping .mcp.json update", console.None);
+                return;
+            }
+
+            const projectName = extractProjectName(projectFile);
+            if (!projectName) {
+                return;
+            }
+
+            const mcpJsonPath = projectDir.appended(new Editor.Path(".mcp.json"));
+            let existingContent: string | null = null;
+            if (FileSystem.exists(mcpJsonPath)) {
+                existingContent = FileSystem.readFile(mcpJsonPath);
+            }
+
+            const merged = mergeMcpJson(existingContent, buildServerName(projectName), serverConfig);
+            FileSystem.writeFile(mcpJsonPath, serializeMcpJson(merged));
+
+            console.log(`[AgentsDocs] Updated .mcp.json for project: ${projectName}`, console.None);
+        } catch (e) {
+            console.error("[AgentsDocs] Error updating .mcp.json:", e, console.None);
         }
     }
 }

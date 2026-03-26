@@ -1,4 +1,5 @@
 import { Preset } from 'LensStudio:Preset';
+import * as Utils from 'LensStudio:Utils@1.0.js';
 
 export class PhysicsWorldObjectPreset extends Preset {
     static descriptor() {
@@ -14,7 +15,7 @@ export class PhysicsWorldObjectPreset extends Preset {
     async createAsync(destination) {
         try {
             const model = this.pluginSystem.findInterface(Editor.Model.IModel);
-            const scene = model.project.scene;
+            const scene = Utils.resolveScene(model, destination);
 
             // Add object
             destination = scene.addSceneObject(destination);

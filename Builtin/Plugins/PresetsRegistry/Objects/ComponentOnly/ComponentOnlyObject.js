@@ -1,4 +1,5 @@
 import { Preset } from 'LensStudio:Preset';
+import * as Utils from 'LensStudio:Utils@1.0.js';
 
 function createComponentOnlyObject(componentName, niceName, iconPath, group) {
     class ComponentOnlyObjectPreset extends Preset {
@@ -15,16 +16,11 @@ function createComponentOnlyObject(componentName, niceName, iconPath, group) {
         async createAsync(selectedObject) {
             try {
                 const model = this.pluginSystem.findInterface(Editor.Model.IModel);
-                const scene = model.project.scene;
+                const scene = Utils.resolveScene(model, selectedObject);
 
-                // Create a new object with the component.
-                // If a parent was selected, put it inside the parent.
-                const newObject = scene.createSceneObject(niceName);
-                if (selectedObject) {
-                    {
-                        newObject.setParent(selectedObject, selectedObject.getChildrenCount());
-                    }
-                }
+                // Create a new object with the component as a child of the selected object.
+                const newObject = scene.addSceneObject(selectedObject);
+                newObject.name = niceName;
                 newObject.addComponent(componentName);
 
                 return newObject;

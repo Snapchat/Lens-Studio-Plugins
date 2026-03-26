@@ -15,9 +15,9 @@ import { createEffect, createPostProcessing } from '../api.js';
 import app from '../../application/app.js';
 import { logEventAssetCreation } from '../../application/analytics.js';
 import {EnhancedSettingsDescriptor} from "../Effects/EnhancedSettingsDescriptor";
-import {createSeed, Seed} from "../Effects/Controls/Seed";
 import {createModelType} from "../Effects/Controls/ModelType";
 import {HintID} from "../Hints/HintFactory";
+import {isEnhancedEffectType} from "../utils";
 
 export class CreationMenu {
     constructor(onStateChanged, resetParent) {
@@ -56,9 +56,6 @@ export class CreationMenu {
 
         this.controls['enhancedPromptPicker'].textValue = '';
         this.controls['enhancedPromptPicker'].imageValue = [];
-        this.controls['referenceStrength'].value = 5.5;
-        this.controls['attributesPreservation'].value = 5.5;
-        this.controls['seed'].value = 56;
 
         this.enhancedSettingsCustomizedFlag = false;
     }
@@ -76,17 +73,16 @@ export class CreationMenu {
         if (this.settingsWidget.currentIndex === 0) {
             effectData = {
                 "userNotes": "",
-                "effectTypeId": "face-enhanced",
+                "effectTypeId": "face-enhanced-v2",
                 "settings": {
                     "image_prompts": controls['enhancedPromptPicker'].imageValue,
                     "text_prompt": controls['enhancedPromptPicker'].textValue,
-                    "image_reference_strength": this.convertSliderValue(controls['referenceStrength'].value, 1.0, 10.0, 0.5, 2.5),
-                    "attributes_preservation": this.convertSliderValue(controls['attributesPreservation'].value, 1.0, 10.0, 1.0, 2.0),
-                    "seed": this.controls['seed'].value
                 }
             }
 
-            inputFormat = "TEXT_AND_IMAGE";
+            const hasText = controls['enhancedPromptPicker'].textValue.length > 0;
+            const hasImage = controls['enhancedPromptPicker'].imageValue.length > 0;
+            inputFormat = hasText && hasImage ? "TEXT_AND_IMAGE" : hasText ? "PROMPT_TEXT" : "PROMPT_IMAGE";
             preset = "";
             settings = this.enhancedSettingsCustomizedFlag ? "CUSTOM" : "DEFAULT";
         }
@@ -105,8 +101,8 @@ export class CreationMenu {
                         });
 
                         logEventAssetCreation("SUCCESS", "NEW", inputFormat, preset, settings);
-                        if (effectBody.effectTypeId === 'face-enhanced') {
-                            app.log(`${app.name} is queued. ${app.name} creation is estimated to take up to 5 minutes, please check back later.`, {'progressBar': true});
+                        if (isEnhancedEffectType(effectBody.effectTypeId)) {
+                            app.log(`${app.name} is queued. ${app.name} creation is estimated to take up to 20 minutes, please check back later.`, {'progressBar': true});
                         }
                         else {
                             app.log(`${app.name} is queued. ${app.name} creation is estimated to take 10-15 min, please check back later.`, {'progressBar': true});
@@ -226,9 +222,6 @@ export class CreationMenu {
                 case UserNotesPicker:
                     this.controls[scheme.name] = createUserNotesPicker(scheme);
                     break;
-                case Seed:
-                    this.controls[scheme.name] = createSeed(scheme);
-                    break;
             }
 
             if (scheme.preset_based) {
@@ -313,25 +306,12 @@ export class CreationMenu {
 
         this.presetControl.value = 'Default';
 
-        this.controls['referenceStrength'].value = 5.5;
-        this.controls['attributesPreservation'].value = 5.5;
-        this.controls['seed'].value = 56;
-
-        this.controls['referenceStrength'].addOnValueChanged(() => {
-            this.enhancedSettingsCustomizedFlag = true;
-        })
-
-        this.controls['attributesPreservation'].addOnValueChanged(() => {
-            this.enhancedSettingsCustomizedFlag = true;
-        })
-
         this.controls['promptPicker'].addOnValueChanged((value) => {
             this.generateButton.enabled = !this.stopped && (value.length > 0);
         });
 
         this.controls['enhancedPromptPicker'].addOnValueChanged((value) => {
             this.generateButton.enabled = !this.stopped && this.controls['enhancedPromptPicker'].valueExists;
-            this.controls['referenceStrength'].widget.enabled = this.controls['enhancedPromptPicker'].imagePickerValue.length > 0;
         });
 
 
@@ -366,11 +346,6 @@ export class CreationMenu {
         this.reset();
 
         return this.menu;
-    }
-
-    convertSliderValue(sliderValue, xMin, xMax, yMin, yMax) {
-        const scale = (sliderValue - xMin) / (xMax - xMin);
-        return yMin + scale * (yMax - yMin);
     }
 
     setGenerateButton(button) {

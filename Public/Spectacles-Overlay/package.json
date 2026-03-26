@@ -1,0 +1,6 @@
+{
+  "name": "spectacles-overlay",
+  "version": "5.16.0",
+  "description": "Spectacles Overlay plugin for Lens Studio",
+  "private": true
+}

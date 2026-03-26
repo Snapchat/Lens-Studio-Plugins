@@ -69,7 +69,7 @@ function createColorCorrectionClass(name, assetMaterialPreset) {
 
             // Create the PostEffectVisual
             const model = this.pluginSystem.findInterface(Editor.Model.IModel);
-            const scene = model.project.scene;
+            const scene = Utils.resolveScene(model, destination);
             const rootObject = Utils.findOrCreateCameraObject(scene, destination);
             const effectsObject = Utils.findOrCreateChildWithName(rootObject, 'Effects', scene);
             const PostEffectObject = scene.addSceneObject(effectsObject);

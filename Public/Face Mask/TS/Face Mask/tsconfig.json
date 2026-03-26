@@ -1,7 +1,6 @@
 {
+    "extends": "../../../../tsconfig.base.json",
     "compilerOptions": {
-        "target": "ES2019",
-        "module": "ES2020",
         "isolatedModules": true,
         "allowJs": true,
         "checkJs": true,
@@ -14,15 +13,12 @@
         "strictNullChecks": true,
         "strictFunctionTypes": true,
         "strictPropertyInitialization": false,
-        "lib": [
-            "ES2019"
-        ],
         "types": [],
         "rootDir": "./Src",
         "outDir": "../../Face Mask"
     },
     "include": [
         "Src/**/*",
-        "Declarations/**/*"
+        "../../../../shared-types/**/*.d.ts"
     ]
 }

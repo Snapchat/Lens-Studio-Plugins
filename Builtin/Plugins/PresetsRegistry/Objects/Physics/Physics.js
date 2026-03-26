@@ -1,4 +1,5 @@
 import { Preset } from 'LensStudio:Preset';
+import * as Utils from 'LensStudio:Utils@1.0.js';
 import * as MeshesPreset from '../Meshes/Meshes.js'
 
 function createPhysicsObjectClass(name, iconPath, meshPreset, shapeType) {
@@ -16,7 +17,7 @@ function createPhysicsObjectClass(name, iconPath, meshPreset, shapeType) {
         async createAsync(destination) {
             try {
                 const model = this.pluginSystem.findInterface(Editor.Model.IModel);
-                const scene = model.project.scene;
+                const scene = Utils.resolveScene(model, destination);
 
                 // Add mesh
                 const meshObjectPreset = new meshPreset(this.pluginSystem);

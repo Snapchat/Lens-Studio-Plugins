@@ -958,7 +958,14 @@ export class GalleryView {
     }
 
     constructQuery() {
-        return this.searchQuery + this.filterQuery;
+        let query = this.searchQuery + this.filterQuery;
+        if (query.includes('effectTypeId')) {
+            query = query.replace(
+                /(filter\[\]=effectTypeId%3D)([^&]*)/g,
+                '$1$2,face-enhanced,face-enhanced-v2'
+            );
+        }
+        return query;
     }
 
     reset(state) {
@@ -1185,13 +1192,13 @@ export class GalleryView {
 
         this.filterQuery = this.filter.toString();
 
-        layout.setContentsMargins(Ui.Sizes.HalfPadding, 0, Ui.Sizes.DoublePadding, 0);
+        layout.setContentsMargins(Ui.Sizes.Padding, Ui.Sizes.Padding, 0, 0);
         layout.addWidget(this.reloadButton);
         layout.addWidget(this.searchLine);
         layout.addWidget(this.filter.widget);
 
         widget.layout = layout;
-        widget.visible = false;
+        widget.visible = true;
         return widget;
     }
 

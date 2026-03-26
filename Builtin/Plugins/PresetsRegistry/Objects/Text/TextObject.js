@@ -1,4 +1,5 @@
 import { Preset } from 'LensStudio:Preset';
+import * as Utils from 'LensStudio:Utils@1.0.js';
 import { createTextComponent } from '../../Components/Text/TextComponent.js';
 
 export function createTextObject(model, destinationObject) {
@@ -21,7 +22,7 @@ export class TextObjectPreset extends Preset {
     }
     create(destination) {
         const model = this.pluginSystem.findInterface(Editor.Model.IModel);
-        const scene = model.project.scene;
+        const scene = Utils.resolveScene(model, destination);
         destination = scene.addSceneObject(destination);
         return createTextObject(model, destination);
     }

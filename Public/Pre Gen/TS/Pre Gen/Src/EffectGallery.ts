@@ -209,7 +209,7 @@ export class EffectGallery {
         this.lastRequestId++;
         const currentRequestId = this.lastRequestId;
         getMyDreams((response: any) => {
-            if (response.statusCode !== 200 || currentRequestId != this.lastRequestId) {
+            if (!response || response.statusCode !== 200 || currentRequestId != this.lastRequestId) {
                 return;
             }
 

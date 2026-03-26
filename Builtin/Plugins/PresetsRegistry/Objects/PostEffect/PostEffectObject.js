@@ -1,4 +1,5 @@
 import { Preset } from 'LensStudio:Preset';
+import * as Utils from 'LensStudio:Utils@1.0.js';
 
 import { AnalogTVMaterialPreset } from '../../Assets/AnalogTVMaterial/AnalogTVMaterial.js';
 import { ColorGradientMaterialPreset } from '../../Assets/ColorGradientMaterial/ColorGradientMaterial.js';
@@ -40,7 +41,7 @@ function createPostEffectClass(name, assetMaterialPreset) {
 
             // Create the PostEffectVisual
             const model = this.pluginSystem.findInterface(Editor.Model.IModel);
-            const scene = model.project.scene;
+            const scene = Utils.resolveScene(model, destination);
             destination = scene.addSceneObject(destination);
             const posteffectVisual = destination.addComponent('PostEffectVisual');
             posteffectVisual.mainMaterial = materialAsset;

@@ -2,7 +2,7 @@ import { Preset } from 'LensStudio:Preset';
 import * as Utils from 'LensStudio:Utils@1.0.js';
 
 export function createFaceLiquifyAtAttachment(attachment, model, sceneObject) {
-    const scene = model.project.scene;
+    const scene = Utils.resolveScene(model, sceneObject);
 
     const liquifyVisualObject = scene.addSceneObject(sceneObject);
     liquifyVisualObject.name = 'Liquify Visual';
@@ -18,7 +18,7 @@ export function createFaceLiquifyAtAttachment(attachment, model, sceneObject) {
 }
 
 export function createFaceLiquifyObject(model, sceneObject) {
-    const scene = model.project.scene;
+    const scene = Utils.resolveScene(model, sceneObject);
 
     const rootObject = Utils.findOrCreateCameraObject(scene, sceneObject);
     const effectsObject = Utils.findOrCreateChildWithName(rootObject, 'Effects', scene);

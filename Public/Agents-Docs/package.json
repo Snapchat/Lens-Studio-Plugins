@@ -1,12 +1,12 @@
 {
   "name": "agents-docs-plugin",
-  "version": "5.19.0",
+  "version": "5.20.0",
   "scripts": {
     "prebuild": "cp ../../shared-types/editor.d.ts Resources/editor.d.ts",
     "build": "tsc",
     "watch": "tsc -w",
     "clean": "rimraf ./dist/ ./distTypes/",
-    "export": "mkdir -p storage/resources/$npm_package_version && zip -r storage/resources/$npm_package_version/package.zip dist Resources module.json"
+    "export": "mkdir -p build/resources/$npm_package_version && zip -r build/resources/$npm_package_version/package.zip dist Resources module.json -x 'dist/*.test.js'"
   },
   "private": true,
   "files": [

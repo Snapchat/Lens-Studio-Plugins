@@ -1,4 +1,5 @@
 import { Preset } from 'LensStudio:Preset';
+import * as Utils from 'LensStudio:Utils@1.0.js';
 import { createScreenTransformObject } from '../ScreenTransform/ScreenTransformObject.js';
 
 export function createScreenRegionComponent(model, sceneObject) {
@@ -23,7 +24,7 @@ export class ScreenRegionObjectPreset extends Preset {
     }
     create(destination) {
         const model = this.pluginSystem.findInterface(Editor.Model.IModel);
-        const scene = model.project.scene;
+        const scene = Utils.resolveScene(model, destination);
         destination = scene.addSceneObject(destination);
         const screenTransform = createScreenTransformObject(model, destination, true);
         createScreenRegionComponent(model, screenTransform);

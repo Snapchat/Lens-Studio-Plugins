@@ -1,0 +1,18 @@
+{
+    "extends": "../../../../tsconfig.base.json",
+    "compilerOptions": {
+        "isolatedModules": true,
+        "allowJs": true,
+        "checkJs": true,
+        "strict": true,
+        "noImplicitOverride": true,
+        "noImplicitReturns": true,
+        "types": [],
+        "rootDir": "./Src",
+        "outDir": "../../AI Clips/"
+    },
+    "include": [
+        "Src/**/*",
+        "../../../../shared-types/**/*.d.ts"
+    ]
+}

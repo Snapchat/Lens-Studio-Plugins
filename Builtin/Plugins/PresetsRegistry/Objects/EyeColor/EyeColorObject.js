@@ -3,7 +3,7 @@ import * as Utils from 'LensStudio:Utils@1.0.js';
 import { createEyeColorComponent } from '../../Components/EyeColor/EyeColorComponent.js';
 
 export async function createEyeColorObject(model, sceneObject) {
-    const scene = model.project.scene;
+    const scene = Utils.resolveScene(model, sceneObject);
 
     const rootObject = Utils.findOrCreateCameraObject(scene, sceneObject);
     const effectsObject = Utils.findOrCreateChildWithName(rootObject, 'Effects', scene);

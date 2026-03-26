@@ -2,7 +2,7 @@ import { Preset } from 'LensStudio:Preset';
 import * as Utils from 'LensStudio:Utils@1.0.js';
 
 async function createHandTracking3D(model, sceneObject) {
-    const scene = model.project.scene;
+    const scene = Utils.resolveScene(model, sceneObject);
     const assetManager = model.project.assetManager;
 
     const rootObject = Utils.findOrCreateCameraObject(scene, sceneObject);
@@ -33,7 +33,7 @@ async function createHandTracking3D(model, sceneObject) {
 }
 
 async function createBodyTracking3D(model, sceneObject) {
-    const scene = model.project.scene;
+    const scene = Utils.resolveScene(model, sceneObject);
     const assetManager = model.project.assetManager;
 
     const rootObject = Utils.findOrCreateCameraObject(scene, sceneObject);
@@ -51,7 +51,7 @@ async function createBodyTracking3D(model, sceneObject) {
 }
 
 async function createUpperBodyTracking3D(model, sceneObject) {
-    const scene = model.project.scene;
+    const scene = Utils.resolveScene(model, sceneObject);
     const assetManager = model.project.assetManager;
 
     const rootObject = Utils.findOrCreateCameraObject(scene, sceneObject);

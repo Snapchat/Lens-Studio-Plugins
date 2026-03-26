@@ -1,4 +1,5 @@
 import { Preset } from 'LensStudio:Preset';
+import * as Utils from 'LensStudio:Utils@1.0.js';
 import { createImageComponent } from '../../Components/Image/ImageComponent.js';
 
 export class ImageObjectPreset extends Preset {
@@ -14,10 +15,9 @@ export class ImageObjectPreset extends Preset {
     }
     async createAsync(destination) {
         const model = this.pluginSystem.findInterface(Editor.Model.IModel);
-        const image = model.project.scene.createSceneObject('Image');
-        if (destination !== null) {
-            image.setParent(destination, undefined);
-        }
+        const scene = Utils.resolveScene(model, destination);
+        const image = scene.addSceneObject(destination);
+        image.name = 'Image';
         image.localTransform = new Editor.Transform(new vec3(0, 0, 0),
             new vec3(0, 0, 0),
             new vec3(32, 32, 32));

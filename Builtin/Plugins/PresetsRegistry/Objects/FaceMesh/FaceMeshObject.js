@@ -26,7 +26,7 @@ export async function createFaceMeshComponent(model, destinationObject, headMesh
 }
 
 export async function createFaceMeshObject(model, sceneObject, headMeshMode) {
-    const scene = model.project.scene;
+    const scene = Utils.resolveScene(model, sceneObject);
 
     const rootObject = Utils.findOrCreateCameraObject(scene, sceneObject);
     const effectsObject = Utils.findOrCreateChildWithName(rootObject, 'Effects', scene);

@@ -155,7 +155,35 @@ const HTMLTemplates = {
     authFailure: getHtmlTemplate("Error", "Authentication failed. Please try again.<br>If the problem persists, contact the developer."),
 }
 
+const OAUTH_FLOW_TIMEOUT_MS = 3 * 60 * 1000
+let activeOAuthPromise: Promise<any> | null = null
+let activeOAuthTimeout: Timeout | null = null
+let activeOAuthReject: ((error: Error) => void) | null = null
+
+function clearActiveOAuthState() {
+    if (activeOAuthTimeout) {
+        clearTimeout(activeOAuthTimeout)
+        activeOAuthTimeout = null
+    }
+    activeOAuthPromise = null
+    activeOAuthReject = null
+}
+
+export function cancelOAuthFlow(reason: string = 'OAuth flow cancelled by user.'): boolean {
+    if (!activeOAuthPromise || !activeOAuthReject) {
+        return false
+    }
+
+    activeOAuthReject(new Error(reason))
+    return true
+}
+
 export function startOAuth() {
+    if (activeOAuthPromise) {
+        logger.warn('Authentication is already in progress. Reusing existing flow.')
+        return activeOAuthPromise
+    }
+
     const state = randomStringGenerator(10)
     // TODO: PKCE process disabled due to technical issues.
     // We are currently under a time crunch and will reimplement this when releasing the new version of the plugin before the DDL.
@@ -180,7 +208,31 @@ export function startOAuth() {
     const tcpServer = new TcpServerMan()
     tcpServer.enableLogging = true
 
-    return new Promise((resolve, reject) => {
+    const flowPromise = new Promise((resolve, reject) => {
+        let settled = false
+        const finalize = (callback: (arg: any) => void, value: any) => {
+            if (settled) {
+                return
+            }
+            settled = true
+            clearActiveOAuthState()
+            try {
+                tcpServer.close()
+            } catch (e) {
+                logger.warn('Failed to close TCP server during OAuth cleanup: ' + e)
+            }
+            callback(value)
+        }
+
+        activeOAuthReject = (error: Error) => {
+            finalize(reject, error)
+        }
+
+        activeOAuthTimeout = setTimeout(() => {
+            logger.warn(`Authentication timed out after ${OAUTH_FLOW_TIMEOUT_MS / 1000} seconds.`)
+            finalize(reject, new Error('OAuth flow timed out. Please try again.'))
+        }, OAUTH_FLOW_TIMEOUT_MS)
+
         tcpServer.onClientDataReceived = async (data, socket) => {
             try {
                 const dataStr = data.toString()
@@ -221,25 +273,36 @@ export function startOAuth() {
 
                     // Send success page
                     socket.write(formHttpResponse(200, 'OK', HTMLTemplates.authSuccess))
-                    resolve(tokenResponse)
+                    finalize(resolve, tokenResponse)
                 } catch (exchangeError) {
                     // Send error page on token exchange failure
                     socket.write(formHttpResponse(200, 'OK', HTMLTemplates.authFailure))
                     throw exchangeError
                 }
             } catch (error) {
-                reject(error)
+                finalize(reject, error)
             } finally {
                 socket.close()
             }
         }
 
-        tcpServer.onClientConnected = () => {
-            tcpServer.close()
+        try {
+            tcpServer.start(LOCALHOST_ADDRESS, addr.serverPort)
+        } catch (e) {
+            const error = e instanceof Error ? e : new Error(String(e))
+            finalize(reject, error)
         }
-
-        tcpServer.start(LOCALHOST_ADDRESS, addr.serverPort)
     })
+
+    flowPromise.catch(() => {
+        // Defensive cleanup for any rejection path that bypasses finalize.
+        if (activeOAuthPromise === flowPromise) {
+            clearActiveOAuthState()
+        }
+    })
+
+    activeOAuthPromise = flowPromise
+    return flowPromise
 }
 
 

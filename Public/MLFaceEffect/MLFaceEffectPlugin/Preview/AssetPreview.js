@@ -5,7 +5,7 @@ import { deleteEffect, createModel, getModels } from '../api.js';
 
 import app from '../../application/app.js';
 
-import { createGenerationErrorWidget, createGenerationInProgressWidget } from '../utils.js';
+import { createGenerationErrorWidget, createGenerationInProgressWidget, isEnhancedEffectType } from '../utils.js';
 import { logEventAssetImport, logEventEffectTraining } from '../../application/analytics.js';
 
 const ModelState = {
@@ -281,7 +281,7 @@ export class AssetPreview {
                 // app.log('Model has been queued. Model creation takes approximately 2 hours.');
                 app.log('', { 'enabled': false });
                 this.progressLabel.text = "0" + "%";
-                if (this.effectTypeId === 'face-enhanced') {
+                if (isEnhancedEffectType(this.effectTypeId)) {
                     this.statusLabel.text = '<div style="text-align: right;">' + 'Model training in progress. This may take up to 2 hours.<br>You can close the window and return later.' + '</div>';
                 }
                 else {
@@ -327,7 +327,7 @@ export class AssetPreview {
                         // app.log('Model is training', { 'type': 'percentageBar', 'value': Math.round(response[0].progressPercent) });
                         app.log('', { 'enabled': false });
                         this.progressLabel.text = Math.round(response[0].progressPercent) + "%";
-                        if (this.effectTypeId === 'face-enhanced') {
+                        if (isEnhancedEffectType(this.effectTypeId)) {
                             this.statusLabel.text = '<div style="text-align: right;">' + 'Model training in progress. This may take up to 2 hours.<br>You can close the window and return later.' + '</div>';
                         }
                         else {
@@ -442,7 +442,7 @@ export class AssetPreview {
             this.updatePreviewImage();
             this.stackedWithError.currentIndex = 0;
         } else {
-            if (state.effect_get_response.effectTypeId === 'face-enhanced') {
+            if (isEnhancedEffectType(state.effect_get_response.effectTypeId)) {
                 this.stackedWithError.currentIndex = 2;
             }
             else {

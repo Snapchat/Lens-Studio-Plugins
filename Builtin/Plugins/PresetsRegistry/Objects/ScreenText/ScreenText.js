@@ -1,4 +1,5 @@
 import { Preset } from 'LensStudio:Preset';
+import * as Utils from 'LensStudio:Utils@1.0.js';
 import { createScreenTransformObject } from '../ScreenTransform/ScreenTransformObject.js';
 import { createTextObject } from '../Text/TextObject.js';
 
@@ -16,7 +17,7 @@ export class ScreenTextObjectPreset extends Preset {
 
     create(destination) {
         const model = this.pluginSystem.findInterface(Editor.Model.IModel);
-        const scene = model.project.scene;
+        const scene = Utils.resolveScene(model, destination);
         destination = scene.addSceneObject(destination);
         const screenTransform = createScreenTransformObject(model, destination);
         createTextObject(model, screenTransform);

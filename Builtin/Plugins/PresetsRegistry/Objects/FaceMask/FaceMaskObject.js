@@ -3,7 +3,7 @@ import * as Utils from 'LensStudio:Utils@1.0.js';
 import { createFaceMaskComponent } from '../../Components/FaceMask/FaceMaskComponent.js';
 
 export async function createFaceMaskObject(model, sceneObject) {
-    const scene = model.project.scene;
+    const scene = Utils.resolveScene(model, sceneObject);
 
     const rootObject = Utils.findOrCreateCameraObject(scene, sceneObject);
     const effectsObject = Utils.findOrCreateChildWithName(rootObject, 'Effects', scene);

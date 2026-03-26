@@ -1,4 +1,5 @@
 import { Preset } from 'LensStudio:Preset';
+import * as Utils from 'LensStudio:Utils@1.0.js';
 import { createScreenRegionComponent } from '../ScreenRegion/ScreenRegionObject.js';
 import { findOrCreateOrthoCam } from '../OrthographicCamera/OrthographicCameraObject.js';
 
@@ -11,7 +12,7 @@ export function createScreenTransformComponent(model, sceneObject) {
 }
 
 export function createScreenTransformObject(model, sceneObject, skipIntermediary) {
-    const scene = model.project.scene;
+    const scene = Utils.resolveScene(model, sceneObject);
 
     const parent = sceneObject.getParent();
     let shouldCreateHierarchy = false;
@@ -79,7 +80,7 @@ export class ScreenTransformObjectPreset extends Preset {
     }
     create(destination) {
         const model = this.pluginSystem.findInterface(Editor.Model.IModel);
-        const scene = model.project.scene;
+        const scene = Utils.resolveScene(model, destination);
         destination = scene.addSceneObject(destination);
         return createScreenTransformObject(model, destination);
     }

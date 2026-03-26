@@ -1,12 +1,13 @@
 import { Preset } from 'LensStudio:Preset';
+import * as Utils from 'LensStudio:Utils@1.0.js';
 import { createOrthographicCameraObject }  from '../OrthographicCamera/OrthographicCameraObject.js';
 
-function createOverlayRenderTarget(project) {
-    const scene = project.scene;
-    const assetManager = project.assetManager;
+function createOverlayRenderTarget(scene, assetManager) {
     const renderTarget = assetManager.createNativeAsset('RenderTarget', 'Overlay Render Target', new Editor.Path(''));
 
-    scene.liveOverlayTarget = renderTarget;
+    if (scene.isOfType('Scene')) {
+        scene.liveOverlayTarget = renderTarget;
+    }
 
     return renderTarget;
 }
@@ -25,11 +26,11 @@ export class OverlayCameraObjectPreset extends Preset {
 
     create(destination) {
         const model = this.pluginSystem.findInterface(Editor.Model.IModel);
-        const scene = model.project.scene;
+        const scene = Utils.resolveScene(model, destination);
         destination = scene.addSceneObject(destination);
 
         // Create Overlay Render Target and set it to Scene Overlay Texture
-        const overlayRenderTarget = createOverlayRenderTarget(model.project);
+        const overlayRenderTarget = createOverlayRenderTarget(scene, model.project.assetManager);
 
         // Create Orthographic Camera
         const orthoCameraSceneObj = createOrthographicCameraObject(model, destination);

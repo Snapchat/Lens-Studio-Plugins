@@ -8,9 +8,7 @@ IFS=$'\n\t'
 # Steps:
 #   1. npm install + npm run build (compile TypeScript to dist/)
 #   2. Package: create figma-importer-wrapper/figma-importer/ zip structure
-#   3. Place zip in storage/resources/<version>/package.zip
-#   4. Commit storage/ changes in CI (following AiAssistantV2 pattern)
-#   5. Copy storage/ -> build/ for CDS upload
+#   3. Place zip in build/resources/<version>/package.zip
 # ============================================================================
 
 echo "=== Figma-Importer: preSyncBuild.sh starting ==="
@@ -31,7 +29,7 @@ npm run build --prefix "$SCRIPT_DIR"
 # --------------------------------------------------------------------------
 echo "--- Step 2: Creating package.zip ---"
 
-VERSION=$(node -p "require('./package.json').version")
+VERSION=$(node -p "const v = require('./package.json').version; if (!v) { process.exit(1); } v" 2>/dev/null || echo "1.0.0")
 echo "Package version: $VERSION"
 
 if [ ! -d "dist" ]; then
@@ -64,37 +62,29 @@ else
     echo "WARNING: UI/ directory not found -- plugin UI assets will be missing"
 fi
 
+# assets/ contains shader graphs and scripts referenced at runtime
+if [ -d "assets" ]; then
+    cp -r assets "$INNER_DIR/"
+    echo "Included assets/ directory (shader graphs and scripts)"
+else
+    echo "WARNING: assets/ directory not found -- shader graphs will be missing"
+fi
+
 # Safety net: ensure no .ts source files leaked into dist/
 find "$INNER_DIR/dist" -name "*.ts" -type f -delete 2>/dev/null || true
 
-# Create the zip
-ZIP_DIR="$SCRIPT_DIR/storage/resources/$VERSION"
+# --------------------------------------------------------------------------
+# Step 3: Create zip directly in build/
+# --------------------------------------------------------------------------
+rm -rf "$SCRIPT_DIR/build"
+mkdir -p "$SCRIPT_DIR/build"
+
+ZIP_DIR="$SCRIPT_DIR/build/resources/$VERSION"
 mkdir -p "$ZIP_DIR"
 
 ZIP_DEST="$ZIP_DIR/package.zip"
-rm -f "$ZIP_DEST"
-
 (cd "$STAGE_DIR" && zip -r "$ZIP_DEST" figma-importer-wrapper)
 
 echo "Created: $ZIP_DEST"
-
-# --------------------------------------------------------------------------
-# Step 3: Commit storage/ changes in CI (following AiAssistantV2 pattern)
-# --------------------------------------------------------------------------
-if [ -n "${USER:-}" ] && [ "$USER" == "snapci" ]; then
-    REPO_ROOT="$(git rev-parse --show-toplevel)"
-    "$REPO_ROOT/ci/commit_as_needed.sh" "./storage/" "Build: Update Figma-Importer storage assets"
-else
-    echo "Skipping commit (not running in SnapCI)"
-fi
-
-# --------------------------------------------------------------------------
-# Step 4: Copy storage/ to build/ for CDS upload
-# --------------------------------------------------------------------------
-echo "--- Step 4: Copying storage/ to build/ ---"
-
-rm -rf "$SCRIPT_DIR/build"
-mkdir -p "$SCRIPT_DIR/build"
-rsync -av --exclude=".*" "$SCRIPT_DIR/storage/" "$SCRIPT_DIR/build/"
 
 echo "=== Figma-Importer: preSyncBuild.sh completed ==="

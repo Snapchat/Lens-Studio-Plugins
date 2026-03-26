@@ -21,8 +21,8 @@ import { logEventAssetCreation } from '../../application/analytics.js';
 import {createModelType} from "../Effects/Controls/ModelType";
 import {EnhancedSettingsDescriptor} from "../Effects/EnhancedSettingsDescriptor";
 import {createEnhancedPromptPicker, EnhancedPromptPicker} from "../Effects/Controls/EnhancedPromptPicker";
-import {createSeed, Seed} from "../Effects/Controls/Seed";
 import {HintID} from "../Hints/HintFactory";
+import {isEnhancedEffectType} from "../utils";
 
 export class PreviewMenu {
     constructor(onStateChanged, resetParent, setDefaultState, setPreviewState) {
@@ -54,17 +54,16 @@ export class PreviewMenu {
 
         if (this.settingsWidget.currentIndex === 0) {
             effectData = {
-                "effectTypeId": "face-enhanced",
+                "effectTypeId": "face-enhanced-v2",
                 "settings": {
                     "image_prompts": controls['enhancedPromptPicker'].imageValue,
                     "text_prompt": controls['enhancedPromptPicker'].textValue,
-                    "image_reference_strength": this.convertSliderValue(controls['referenceStrength'].value, 1.0, 10.0, 0.5, 2.5),
-                    "attributes_preservation": this.convertSliderValue(controls['attributesPreservation'].value, 1.0, 10.0, 1.0, 2.0),
-                    "seed": this.controls['seed'].value
                 }
             }
 
-            inputFormat = "TEXT_AND_IMAGE";
+            const hasText = controls['enhancedPromptPicker'].textValue.length > 0;
+            const hasImage = controls['enhancedPromptPicker'].imageValue.length > 0;
+            inputFormat = hasText && hasImage ? "TEXT_AND_IMAGE" : hasText ? "PROMPT_TEXT" : "PROMPT_IMAGE";
         }
 
         createEffect(effectData, (effectResponse) => {
@@ -88,8 +87,8 @@ export class PreviewMenu {
                             'creation': true,
                         });
                         logEventAssetCreation("SUCCESS", "UPDATE_EXISTING", inputFormat);
-                        if (effectBody.effectTypeId === 'face-enhanced') {
-                            app.log(`${app.name} is queued. ${app.name} creation is estimated to take up to 5 minutes, please check back later.`, {'progressBar': true});
+                        if (isEnhancedEffectType(effectBody.effectTypeId)) {
+                            app.log(`${app.name} is queued. ${app.name} creation is estimated to take up to 20 minutes, please check back later.`, {'progressBar': true});
                         }
                         else {
                             app.log(`${app.name} is queued. ${app.name} creation is estimated to take 10-15 min, please check back later.`, {'progressBar': true});
@@ -118,16 +117,11 @@ export class PreviewMenu {
         this.status = 'SUCCESS';
 
         if (effect_settings) {
-            // choose model type
-            if (effect_settings.effectTypeId == 'face-enhanced') {
+            if (isEnhancedEffectType(effect_settings.effectTypeId)) {
                 this.settingsWidget.currentIndex = 0;
                 this.controls['modelType'].showEnhancedButton();
                 this.controls['enhancedPromptPicker'].textValue = effect_settings.settings.text_prompt;
                 this.controls['enhancedPromptPicker'].imageValue = JSON.parse(JSON.stringify(effect_settings.settings.image_prompts));
-
-                this.controls['referenceStrength'].value = this.convertSliderValue(effect_settings.settings.image_reference_strength, 0.5, 2.5, 1.0, 10.0);
-                this.controls['attributesPreservation'].value = this.convertSliderValue(effect_settings.settings.attributes_preservation, 1.0, 2.0, 1.0, 10.0);
-                this.controls['seed'].value = effect_settings.settings.seed;
 
                 this.lockEnhanced();
             }
@@ -201,17 +195,11 @@ export class PreviewMenu {
     lockEnhanced() {
         this.generateButton.visible = false;
         this.controls['enhancedPromptPicker'].lock();
-        this.controls['referenceStrength'].widget.enabled = false;
-        this.controls['attributesPreservation'].widget.enabled = false;
-        this.controls['seed'].widget.enabled = false;
     }
 
     unlockEnhanced() {
         this.generateButton.visible = true;
         this.controls['enhancedPromptPicker'].unlock();
-        this.controls['referenceStrength'].widget.enabled = this.controls['enhancedPromptPicker'].imagePickerValue.length > 0 && !this.controls['enhancedPromptPicker'].locked;
-        this.controls['attributesPreservation'].widget.enabled = true;
-        this.controls['seed'].widget.enabled = true;
     }
 
     lockStandard() {
@@ -241,11 +229,6 @@ export class PreviewMenu {
         this.controls['browsPreservationSettings'].widget.enabled = state;
         this.controls['faceContourPreservationSettings'].widget.enabled = state;
         this.controls['hairPreservationSettings'].widget.enabled = state;
-    }
-
-    convertSliderValue(sliderValue, xMin, xMax, yMin, yMax) {
-        const scale = (sliderValue - xMin) / (xMax - xMin);
-        return yMin + scale * (yMax - yMin);
     }
 
     reset() {
@@ -346,7 +329,6 @@ export class PreviewMenu {
         this.editEffectButton.text = `Copy Settings`;
 
         this.connections.push(this.editEffectButton.onClick.connect(() => {
-            // this.createEffect(this.controls);
             this.editEffectButton.visible = false;
             this.unlockEnhanced();
             this.unlockStandard();
@@ -413,9 +395,6 @@ export class PreviewMenu {
                     break;
                 case UserNotesPicker:
                     this.controls[scheme.name] = createUserNotesPicker(scheme);
-                    break;
-                case Seed:
-                    this.controls[scheme.name] = createSeed(scheme);
                     break;
             }
 
@@ -537,7 +516,6 @@ export class PreviewMenu {
 
         this.controls['enhancedPromptPicker'].addOnValueChanged((value) => {
             this.editEffectButton.enabled = this.controls['enhancedPromptPicker'].valueExists && this.status == 'SUCCESS';
-            this.controls['referenceStrength'].widget.enabled = this.controls['enhancedPromptPicker'].imagePickerValue.length > 0 && !this.controls['enhancedPromptPicker'].locked;
             if (this.generateButton) {
                 this.generateButton.enabled = this.controls['enhancedPromptPicker'].valueExists && this.status == 'SUCCESS';
             }

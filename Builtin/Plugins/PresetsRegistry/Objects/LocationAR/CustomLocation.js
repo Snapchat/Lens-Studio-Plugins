@@ -29,10 +29,16 @@ function findOrCreateDeviceTracking(scene) {
         deviceTracking.deviceTrackingMode = Editor.Components.DeviceTrackingMode.World;
         return deviceTracking;
     } else {
-        const cameraObject = scene.createSceneObject('Perspective Camera');
+        // For prefabs, add under the root object (prefabs must have exactly one root).
+        const cameraObject = scene.addSceneObject(Utils.getSafeParent(scene));
+        cameraObject.name = 'Perspective Camera';
         const camera = cameraObject.addComponent('Camera');
         camera.cameraType = Editor.Components.CameraType.Perspective;
-        camera.renderTarget = scene.captureTarget;
+        if (scene.isOfType('Scene')) {
+            camera.renderTarget = scene.captureTarget;
+        } else {
+            console.warn('[CustomLocation] A new camera was added without a render target. Please set the render target manually.');
+        }
         const deviceTracking = cameraObject.addComponent('DeviceTracking');
         deviceTracking.deviceTrackingMode = Editor.Components.DeviceTrackingMode.World;
         return deviceTracking;
@@ -52,7 +58,7 @@ export class CustomLocationObjectPreset extends Preset {
     }
     async createAsync(destination) {
         const model = this.pluginSystem.findInterface(Editor.Model.IModel);
-        const scene = model.project.scene;
+        const scene = Utils.resolveScene(model, destination);
         destination = scene.addSceneObject(destination);
         const assetManager = model.project.assetManager;
 

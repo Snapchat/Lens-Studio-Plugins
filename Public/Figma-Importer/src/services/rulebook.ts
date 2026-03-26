@@ -32,6 +32,16 @@ export enum RecreationMethod {
 type recreateConfigurations = Readonly<Record<string, RecreationConfig>>
 
 export const content: recreateConfigurations = {
+    'DOCUMENT': {
+        recreationMethod: RecreationMethod.Shape2D,
+        ignoreChildren: false,
+        ignoreSelf: true
+    },
+    'CANVAS': {
+        recreationMethod: RecreationMethod.Shape2D,
+        ignoreChildren: false,
+        ignoreSelf: true
+    },
     'BOOLEAN_OPERATION': {
         recreationMethod: RecreationMethod.Rasterization,
         ignoreChildren: true,

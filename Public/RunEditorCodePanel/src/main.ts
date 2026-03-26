@@ -49,13 +49,33 @@ export class RunEditorCode extends PanelPlugin {
             this.handleClientMessage(msg);
         });
 
-        const htmlPath = import.meta.resolve("./ui/index.html");
-        const cleanPath = htmlPath.replace(/^file:\/\//, "");
-        this.webView!.load(`file://${cleanPath}?wsPort=${port}`);
+        const htmlUrl = this.resolveFileUrl("./ui/index.html");
+        // Use hash (#) instead of query (?) to prevent Windows file not found errors
+        this.webView!.load(`${htmlUrl}#wsPort=${port}`);
+
+        this.connections.push(
+            this.webView!.onLoadFinished.connect(() => {
+                this.webView?.setFocus();
+            })
+        );
 
         this.wsBridge.waitForReady().catch((error) => {
             console.error("[RunEditorCode] Failed to connect to web client:", error, console.None);
         });
+    }
+
+    private resolveFileUrl(relativePath: string): string {
+        const resolved = import.meta.resolve(relativePath);
+        // Strip the file:// scheme (if present) then normalize backslashes for Windows.
+        // Handles all runtime variants:
+        //   - Mac native:      /Users/.../file.html
+        //   - Mac URL:         file:///Users/.../file.html  → /Users/.../file.html
+        //   - Win URL:         file:///C:/path/file.html   → /C:/path/file.html
+        //   - Win native:      C:\path\file.html           → C:/path/file.html
+        const pathPart = resolved.replace(/^file:\/\//i, "").replace(/\\/g, "/");
+        // Re-attach scheme. A Windows drive letter (e.g. "C:/") needs an extra leading
+        // slash so the URL has the correct three-slash form: file:///C:/...
+        return /^[a-zA-Z]:/.test(pathPart) ? `file:///${pathPart}` : `file://${pathPart}`;
     }
 
     private handleClientMessage(msg: { event: string; payload?: unknown }): void {

@@ -26,15 +26,16 @@ export default class GraphicsHandler extends NodeHandler {
             throw new Error('NodeContext or GlobalContext is not set.')
         }
 
-        //add & set image component
-        const imageComponent = this.nodeContext.sceneObject.addComponent('Image') as Editor.Components.Image
-
-        //set texture
         switch (this.nodeContext.method) {
             case RecreationMethod.Rasterization:
                 try {
                     if (!this.nodeContext.owner) throw new Error('Owner is not set.')
                     if (!this.globalContext.assetManager) throw new Error('AssetManager is not set.')
+                    if (!this.nodeContext.imageUrl) {
+                        logger.debug(`Node ${nodeContext.node.name} has no image URL, skipping rasterization`)
+                        return
+                    }
+                    const imageComponent = this.nodeContext.sceneObject.addComponent('Image') as Editor.Components.Image
                     await this.loadAndSetTexture(imageComponent, this.nodeContext.node.name, this.nodeContext.imageUrl, this.globalContext.assetManager, this.nodeContext.owner)
                 } catch (e) {
                     logger.error(`Error when setting texture for node ${nodeContext.node.name}`, e)
@@ -42,6 +43,11 @@ export default class GraphicsHandler extends NodeHandler {
                 break
             case RecreationMethod.Shape2D:
                 try {
+                    if (!GraphicsHandler.hasVisualContent(this.nodeContext.node)) {
+                        logger.debug(`Node ${this.nodeContext.node.name} has no fills or background, skipping 2D shape`)
+                        return
+                    }
+                    const imageComponent = this.nodeContext.sceneObject.addComponent('Image') as Editor.Components.Image
                     await this.set2DShape(imageComponent)
                 } catch (e) {
                     logger.error(`Error when setting 2D shape for node ${nodeContext.node.name}`, e)
@@ -49,6 +55,52 @@ export default class GraphicsHandler extends NodeHandler {
                 break
             default:
                 throw new Error(`Unsupported recreation method: ${this.nodeContext.method}`)
+        }
+    }
+
+    private static hasVisualContent(node: Figma.Node): boolean {
+        const hasVisiblePaints = (paints: Figma.Paint[]) =>
+            Array.isArray(paints) && paints.some(p => p.visible !== false)
+
+        const hasVisibleFills = 'fills' in node && hasVisiblePaints(node.fills)
+        const hasVisibleStrokes = 'strokes' in node && hasVisiblePaints(node.strokes)
+        const hasVisibleBackground = 'background' in node && hasVisiblePaints(node.background)
+
+        return hasVisibleFills || hasVisibleStrokes || hasVisibleBackground
+    }
+
+    private static applyLinearGradient(mainPass: any, fill: Figma.Paint) {
+        const stops = fill.gradientStops
+        const handles = fill.gradientHandlePositions
+
+        // Switch fill mode to gradient (NODE_161_DROPLIST_ITEM = 2)
+        const defines: string[] = []
+        for (const key in mainPass.defines) {
+            const d = mainPass.defines[key]
+            if (typeof d === 'string' && !d.startsWith('NODE_161_DROPLIST_ITEM')) {
+                defines.push(d)
+            }
+        }
+        defines.push('NODE_161_DROPLIST_ITEM 2')
+        mainPass.defines = defines
+
+        // Map first and last gradient stops to shader colors
+        const firstStop = stops[0]
+        const lastStop = stops[stops.length - 1]
+
+        if (firstStop?.color) {
+            const c = firstStop.color
+            mainPass.shapeGradColorA = new vec4(c.r, c.g, c.b, c.a)
+        }
+        if (lastStop?.color) {
+            const c = lastStop.color
+            mainPass.shapeGradColorB = new vec4(c.r, c.g, c.b, c.a)
+        }
+
+        // Map Figma's gradient handle positions (normalized 0-1) to shader point A/B
+        if (handles.length >= 2) {
+            mainPass.shapeGradPointA = new vec2(handles[0].x, handles[0].y)
+            mainPass.shapeGradPointB = new vec2(handles[1].x, handles[1].y)
         }
     }
 
@@ -83,7 +135,7 @@ export default class GraphicsHandler extends NodeHandler {
         //set the stretch mode to fill becasue the 2D shape shader will handle the reshaping
         imageComponent.stretchMode = Editor.Components.StretchMode.Fill
         //TODO: parameterize the shader name
-        const shaderName = '2D Shapes Shader v1.ss_graph'
+        const shaderName = '2D Shapes Shader v2.ss_graph'
         const { material } = await this.createMaterial(shaderName, node.name)
 
         imageComponent.materials = [material]
@@ -93,23 +145,32 @@ export default class GraphicsHandler extends NodeHandler {
         const mainPass = material.passInfos[0] as any
 
         mainPass.shapeRoundness = 0.0
-        mainPass.shapeColorInvert = true
         mainPass.shapeRotation = 0
 
+        const defines: string[] = []
+        for (const key in mainPass.defines) {
+            const d = mainPass.defines[key]
+            if (typeof d === 'string') defines.push(d)
+        }
+        defines.push('shapeColorInvert')
+        mainPass.defines = defines
+
         if (node && 'fills' in node && node.fills.length > 0) {
-            //TODO: process more than 1 fills
             const fill = node.fills[0]
 
             if (fill && 'opacity' in fill) {
                 mainPass.shapeAlpha = fill.opacity
             }
 
-            if (fill && 'color' in fill) {
-                //get color from figma node
+            if (fill && fill.type === 'SOLID' && 'color' in fill) {
                 const fillColor = fill.color
                 const color = new vec4(fillColor.r, fillColor.g, fillColor.b, fillColor.a)
                 mainPass.shapeColor = color
+            } else if (fill && fill.type === 'GRADIENT_LINEAR' && fill.gradientStops && fill.gradientHandlePositions) {
+                GraphicsHandler.applyLinearGradient(mainPass, fill)
             }
+        } else {
+            mainPass.shapeAlpha = 0
         }
 
         if (node && 'strokes' in node && node.strokes.length > 0) {

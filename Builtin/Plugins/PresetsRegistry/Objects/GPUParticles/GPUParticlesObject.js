@@ -1,4 +1,5 @@
 import { Preset } from 'LensStudio:Preset';
+import * as Utils from 'LensStudio:Utils@1.0.js';
 import { createGPUParticlesComponent } from '../../Components/GPUParticles/GPUParticlesComponent.js';
 
 export class GPUParticlesObjectPreset extends Preset {
@@ -15,7 +16,7 @@ export class GPUParticlesObjectPreset extends Preset {
 
     async createAsync(destination) {
         const model = this.pluginSystem.findInterface(Editor.Model.IModel);
-        const scene = model.project.scene;
+        const scene = Utils.resolveScene(model, destination);
         destination = scene.addSceneObject(destination);
         destination.name = 'GPU Particles';
         return await createGPUParticlesComponent.call(this, model, destination);
