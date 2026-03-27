@@ -1,4 +1,5 @@
 {
+  "$schema": "https://unpkg.com/@anthropic-ai/mcpb@2.1.2/schemas/mcpb-manifest-v0.2.schema.json",
   "manifest_version": "0.2",
   "name": "lens-studio",
   "display_name": "Lens Studio",
@@ -16,7 +17,7 @@
   "homepage": "https://ar.snap.com/lens-studio",
   "documentation": "https://developers.snap.com/lens-studio/features/lens-studio-ai/overview",
   "support": "https://discord.com/invite/snapar",
-  "icon": "icon.svg",
+  "icon": "icon.png",
   "privacy_policies": ["https://values.snap.com/privacy/privacy-policy"],
   "server": {
     "type": "node",
@@ -74,7 +75,7 @@
       "win32"
     ],
     "runtimes": {
-      "node": ">=16.0.0"
+      "node": ">=18.0.0"
     }
   }
 }
