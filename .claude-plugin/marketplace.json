@@ -1,0 +1,19 @@
+{
+  "name": "lens-studio-extensions",
+  "repo": "Snapchat/Lens-Studio-Plugins",
+  "owner": {
+    "name": "Snap Inc. — Lens Studio Team"
+  },
+  "metadata": {
+    "description": "AI agent components for Lens Studio development",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "lens-studio-core",
+      "description": "Core agent components for Lens Studio — Lens API reference, Editor API delegation, debugging, and environment management",
+      "version": "0.1.0",
+      "source": "./lsai-agent-components/plugins/lens-studio-core"
+    }
+  ]
+}

@@ -34,6 +34,7 @@ RESET = "\033[0m"
 
 # ─── Helpers ─────────────────────────────────────────────────────────────────
 
+
 def load_json(path: Path) -> dict:
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
@@ -65,28 +66,28 @@ def count_code_braces(line: str, in_block_comment: bool) -> tuple[int, int, bool
     j = 0
     while j < len(line):
         if in_block_comment:
-            end_idx = line.find('*/', j)
+            end_idx = line.find("*/", j)
             if end_idx == -1:
                 break
             j = end_idx + 2
             in_block_comment = False
         else:
-            block_start = line.find('/*', j)
-            line_comment = line.find('//', j)
+            block_start = line.find("/*", j)
+            line_comment = line.find("//", j)
 
             # Single-line comment starts before block comment
             if line_comment != -1 and (block_start == -1 or line_comment < block_start):
                 # Count braces before the comment
                 segment = line[j:line_comment]
-                opens += segment.count('{')
-                closes += segment.count('}')
+                opens += segment.count("{")
+                closes += segment.count("}")
                 break
 
             if block_start != -1:
                 segment = line[j:block_start]
-                opens += segment.count('{')
-                closes += segment.count('}')
-                end_idx = line.find('*/', block_start + 2)
+                opens += segment.count("{")
+                closes += segment.count("}")
+                end_idx = line.find("*/", block_start + 2)
                 if end_idx != -1:
                     j = end_idx + 2
                 else:
@@ -94,8 +95,8 @@ def count_code_braces(line: str, in_block_comment: bool) -> tuple[int, int, bool
                     break
             else:
                 segment = line[j:]
-                opens += segment.count('{')
-                closes += segment.count('}')
+                opens += segment.count("{")
+                closes += segment.count("}")
                 break
 
     return opens, closes, in_block_comment
@@ -103,12 +104,14 @@ def count_code_braces(line: str, in_block_comment: bool) -> tuple[int, int, bool
 
 # ─── StudioLib.d.ts Parser ──────────────────────────────────────────────────
 
+
 class DeprecatedItem:
     """Represents a deprecated item found in StudioLib.d.ts."""
+
     def __init__(self, name: str, context: str, message: str, line: int):
-        self.name = name            # e.g. "TextToSpeech.VoiceNames"
-        self.context = context      # e.g. "class", "property", "method", "enum_value"
-        self.message = message      # deprecation message from @deprecated or DEPRECATED
+        self.name = name  # e.g. "TextToSpeech.VoiceNames"
+        self.context = context  # e.g. "class", "property", "method", "enum_value"
+        self.message = message  # deprecation message from @deprecated or DEPRECATED
         self.line = line
 
     def __repr__(self):
@@ -140,7 +143,7 @@ def parse_dts(filepath: Path) -> list[DeprecatedItem]:
     # Track which namespace/class scope each line belongs to.
     # We must strip comments before counting braces to avoid JSDoc braces.
     scope_at_line: dict[int, list[str]] = {}
-    scope_stack: list[tuple[str, int]] = []   # (name, brace_depth when scope was entered)
+    scope_stack: list[tuple[str, int]] = []  # (name, brace_depth when scope was entered)
     bd = 0  # brace depth
     in_block_comment = False  # track multi-line /* ... */ comments
 
@@ -151,11 +154,11 @@ def parse_dts(filepath: Path) -> list[DeprecatedItem]:
         open_b, close_b, in_block_comment = count_code_braces(line, in_block_comment)
 
         # Detect scope-opening declarations BEFORE updating brace depth
-        ns_match = re.match(r'declare\s+namespace\s+(\w+(?:\.\w+)*)\s*\{', stripped)
-        cls_match = re.match(r'declare\s+(?:class|enum)\s+(\w+)', stripped)
+        ns_match = re.match(r"declare\s+namespace\s+(\w+(?:\.\w+)*)\s*\{", stripped)
+        cls_match = re.match(r"declare\s+(?:class|enum)\s+(\w+)", stripped)
         inner_match = None
-        if not stripped.startswith('declare') and scope_stack:
-            inner_match = re.match(r'(?:class|enum)\s+(\w+)', stripped)
+        if not stripped.startswith("declare") and scope_stack:
+            inner_match = re.match(r"(?:class|enum)\s+(\w+)", stripped)
 
         if ns_match:
             scope_stack.append((ns_match.group(1), bd))
@@ -178,14 +181,14 @@ def parse_dts(filepath: Path) -> list[DeprecatedItem]:
 
     # === Pass 2: Find deprecated items ===
     # Skip zones
-    SKIP_NAMESPACES = {'_palette'}
+    SKIP_NAMESPACES = {"_palette"}
 
     i = 0
     while i < len(lines):
         stripped = lines[i].strip()
 
         # Skip the _palette namespace (it's just a reference namespace, not real APIs)
-        ns_skip = re.match(r'declare\s+namespace\s+(\w+)\s*\{', stripped)
+        ns_skip = re.match(r"declare\s+namespace\s+(\w+)\s*\{", stripped)
         if ns_skip and ns_skip.group(1) in SKIP_NAMESPACES:
             depth = 0
             skip_in_comment = False
@@ -201,34 +204,36 @@ def parse_dts(filepath: Path) -> list[DeprecatedItem]:
         dep_message = ""
 
         # Check for @deprecated JSDoc tag
-        if '@deprecated' in stripped:
+        if "@deprecated" in stripped:
             is_deprecated = True
-            dep_match = re.search(r'@deprecated\s*(.*?)(?:\*/|\*)?$', stripped)
+            dep_match = re.search(r"@deprecated\s*(.*?)(?:\*/|\*)?$", stripped)
             if dep_match:
-                dep_message = dep_match.group(1).strip().rstrip('*').strip()
+                dep_message = dep_match.group(1).strip().rstrip("*").strip()
                 # Clean up {@link Foo} → Foo
-                dep_message = re.sub(r'\{@link\s+(\w+)\}', r'\1', dep_message)
+                dep_message = re.sub(r"\{@link\s+(\w+)\}", r"\1", dep_message)
 
         # Check for "DEPRECATED" in comments (not JSDoc @deprecated, but prose)
-        elif 'DEPRECATED' in stripped and ('*' in stripped or stripped.startswith('//')):
+        elif "DEPRECATED" in stripped and ("*" in stripped or stripped.startswith("//")):
             is_deprecated = True
-            dep_message = stripped.lstrip('/*').rstrip('*/').strip()
+            dep_message = stripped.lstrip("/*").rstrip("*/").strip()
 
         if is_deprecated:
             dep_line = i
             # Look ahead (up to 15 lines) to find the declaration this deprecation applies to
             j = i + 1
-            found = False
+
             while j < len(lines) and j < i + 15:
                 decl = lines[j].strip()
 
                 # Skip blank, comment continuation, @hidden, constructor
-                if (not decl or
-                    decl.startswith('*') or
-                    decl.startswith('/**') or
-                    decl == '*/' or
-                    '@hidden' in decl or
-                    'protected constructor' in decl):
+                if (
+                    not decl
+                    or decl.startswith("*")
+                    or decl.startswith("/**")
+                    or decl == "*/"
+                    or "@hidden" in decl
+                    or "protected constructor" in decl
+                ):
                     j += 1
                     continue
 
@@ -239,70 +244,78 @@ def parse_dts(filepath: Path) -> list[DeprecatedItem]:
                 parent_scope = scope_at_line.get(dep_line, [])
 
                 # Class declaration (top-level or nested)
-                m = re.match(r'(?:declare\s+)?class\s+(\w+)', decl)
+                m = re.match(r"(?:declare\s+)?class\s+(\w+)", decl)
                 if m:
                     name = m.group(1)
                     # For nested classes, parent_scope has the enclosing namespace
                     if parent_scope:
-                        name = '.'.join(parent_scope) + '.' + name
-                    items.append(DeprecatedItem(name, 'class', dep_message, dep_line + 1))
-                    found = True
+                        name = ".".join(parent_scope) + "." + name
+                    items.append(DeprecatedItem(name, "class", dep_message, dep_line + 1))
+
                     break
 
                 # Enum declaration
-                m = re.match(r'(?:declare\s+)?enum\s+(\w+)', decl)
+                m = re.match(r"(?:declare\s+)?enum\s+(\w+)", decl)
                 if m:
                     name = m.group(1)
                     if parent_scope:
-                        name = '.'.join(parent_scope) + '.' + name
-                    items.append(DeprecatedItem(name, 'enum', dep_message, dep_line + 1))
-                    found = True
+                        name = ".".join(parent_scope) + "." + name
+                    items.append(DeprecatedItem(name, "enum", dep_message, dep_line + 1))
+
                     break
 
                 # Namespace declaration
-                m = re.match(r'(?:declare\s+)?namespace\s+(\w+(?:\.\w+)*)\s*\{', decl)
+                m = re.match(r"(?:declare\s+)?namespace\s+(\w+(?:\.\w+)*)\s*\{", decl)
                 if m:
                     name = m.group(1)
                     # Skip namespaces in the skip list (e.g. _palette)
                     if name in SKIP_NAMESPACES:
                         break
-                    items.append(DeprecatedItem(name, 'namespace', dep_message, dep_line + 1))
-                    found = True
+                    items.append(DeprecatedItem(name, "namespace", dep_message, dep_line + 1))
+
                     break
 
                 # Method: name followed by parentheses
-                m = re.match(r'(?:static\s+)?(\w+)\s*[\(<]', decl)
-                if m and m.group(1) not in ('if', 'for', 'while', 'switch', 'return', 'class', 'enum', 'declare', 'namespace'):
+                m = re.match(r"(?:static\s+)?(\w+)\s*[\(<]", decl)
+                if m and m.group(1) not in (
+                    "if",
+                    "for",
+                    "while",
+                    "switch",
+                    "return",
+                    "class",
+                    "enum",
+                    "declare",
+                    "namespace",
+                ):
                     name = m.group(1)
                     if parent_scope:
-                        name = '.'.join(parent_scope) + '.' + name
-                    items.append(DeprecatedItem(name, 'method', dep_message, dep_line + 1))
-                    found = True
+                        name = ".".join(parent_scope) + "." + name
+                    items.append(DeprecatedItem(name, "method", dep_message, dep_line + 1))
+
                     break
 
                 # Let in namespace
-                m = re.match(r'let\s+(\w+)\s*:', decl)
+                m = re.match(r"let\s+(\w+)\s*:", decl)
                 if m:
                     # Skip _palette-style underscore names
                     let_name = m.group(1)
-                    if '_' in let_name:
+                    if "_" in let_name:
                         j += 1
                         continue
                     name = let_name
                     if parent_scope:
-                        name = '.'.join(parent_scope) + '.' + name
-                    items.append(DeprecatedItem(name, 'property', dep_message, dep_line + 1))
-                    found = True
+                        name = ".".join(parent_scope) + "." + name
+                    items.append(DeprecatedItem(name, "property", dep_message, dep_line + 1))
                     break
 
                 # Property/field: name : type
-                m = re.match(r'(?:readonly\s+)?(\w+)\s*[?]?\s*:\s*', decl)
+                m = re.match(r"(?:readonly\s+)?(\w+)\s*[?]?\s*:\s*", decl)
                 if m:
                     name = m.group(1)
                     if parent_scope:
-                        name = '.'.join(parent_scope) + '.' + name
-                    items.append(DeprecatedItem(name, 'property', dep_message, dep_line + 1))
-                    found = True
+                        name = ".".join(parent_scope) + "." + name
+                    items.append(DeprecatedItem(name, "property", dep_message, dep_line + 1))
                     break
 
                 # If we've hit something we can't parse, stop looking
@@ -317,6 +330,7 @@ def parse_dts(filepath: Path) -> list[DeprecatedItem]:
 
 # ─── Category Classification ────────────────────────────────────────────────
 
+
 def classify_api(name: str, context: str) -> str:
     """
     Classify an API into one of: classes, methods, properties, events, enums.
@@ -325,40 +339,49 @@ def classify_api(name: str, context: str) -> str:
     lower = name.lower()
 
     # Context-based
-    if context == 'enum':
-        return 'enums'
-    if context == 'method':
-        return 'methods'
+    if context == "enum":
+        return "enums"
+    if context == "method":
+        return "methods"
 
     # Event patterns
-    if 'event' in lower or lower.startswith('on') or 'callback' in lower:
-        return 'events'
+    if "event" in lower or lower.startswith("on") or "callback" in lower:
+        return "events"
 
     # Enum value patterns (all caps, known enums)
-    if context == 'enum_value':
-        return 'enums'
+    if context == "enum_value":
+        return "enums"
 
     # Class detection: PascalCase without dots, or context says class
-    if context == 'class':
-        return 'classes'
+    if context == "class":
+        return "classes"
 
     # Property: has a dot (ClassName.propertyName) where propertyName is camelCase
-    if '.' in name:
-        parts = name.rsplit('.', 1)
+    if "." in name:
+        parts = name.rsplit(".", 1)
         member = parts[1]
         # Methods have parens or are known action verbs
-        if member.startswith('get') or member.startswith('set') or member.startswith('create') or member.startswith('add') or member.startswith('remove') or member.startswith('start') or member.startswith('stop'):
-            return 'methods'
-        return 'properties'
+        if (
+            member.startswith("get")
+            or member.startswith("set")
+            or member.startswith("create")
+            or member.startswith("add")
+            or member.startswith("remove")
+            or member.startswith("start")
+            or member.startswith("stop")
+        ):
+            return "methods"
+        return "properties"
 
     # Default heuristics
     if name[0].isupper():
-        return 'classes'
+        return "classes"
 
-    return 'properties'
+    return "properties"
 
 
 # ─── Interactive Prompt ──────────────────────────────────────────────────────
+
 
 def prompt_replacement(item: DeprecatedItem) -> tuple[str, str] | None:
     """
@@ -375,25 +398,25 @@ def prompt_replacement(item: DeprecatedItem) -> tuple[str, str] | None:
 
     # Ask for tag
     print(f"  {YELLOW}Tag options:{RESET}")
-    print(f"    1) [Deprecated] - API deprecated, no direct replacement")
-    print(f"    2) [Replaced]   - API replaced with a modern alternative")
-    print(f"    s) Skip this API")
-    print(f"    q) Quit (save what we have so far)")
+    print("    1) [Deprecated] - API deprecated, no direct replacement")
+    print("    2) [Replaced]   - API replaced with a modern alternative")
+    print("    s) Skip this API")
+    print("    q) Quit (save what we have so far)")
     print()
 
     while True:
         choice = input(f"  {BOLD}Choose tag (1/2/s/q):{RESET} ").strip().lower()
-        if choice in ('1', '2', 's', 'q'):
+        if choice in ("1", "2", "s", "q"):
             break
         print(f"  {RED}Invalid choice. Enter 1, 2, s, or q.{RESET}")
 
-    if choice == 's':
+    if choice == "s":
         print(f"  {DIM}Skipped.{RESET}")
         return None
-    if choice == 'q':
-        return 'QUIT', ''
+    if choice == "q":
+        return "QUIT", ""
 
-    tag = '[Deprecated]' if choice == '1' else '[Replaced]'
+    tag = "[Deprecated]" if choice == "1" else "[Replaced]"
 
     # Pre-fill with deprecation message if available
     default_desc = item.message if item.message else ""
@@ -410,6 +433,7 @@ def prompt_replacement(item: DeprecatedItem) -> tuple[str, str] | None:
 
 
 # ─── Main ────────────────────────────────────────────────────────────────────
+
 
 def main():
     # Resolve StudioLib.d.ts path
@@ -431,7 +455,7 @@ def main():
     dts_version = "unknown"
     with open(dts_path, "r", encoding="utf-8") as f:
         for line in f:
-            m = re.search(r'@version\s+([\d.]+)', line)
+            m = re.search(r"@version\s+([\d.]+)", line)
             if m:
                 dts_version = m.group(1)
                 break
@@ -492,7 +516,7 @@ def main():
 
     # Ask user whether to proceed
     proceed = input(f"  {BOLD}Add these to replacements_grouped.json? (y/n):{RESET} ").strip().lower()
-    if proceed != 'y':
+    if proceed != "y":
         print(f"  {DIM}Aborted.{RESET}")
         return
 
@@ -502,7 +526,7 @@ def main():
         result = prompt_replacement(item)
         if result is None:
             continue
-        if result[0] == 'QUIT':
+        if result[0] == "QUIT":
             print(f"\n  {YELLOW}Quitting early. Saving {added_count} new entries...{RESET}")
             break
 
@@ -511,8 +535,10 @@ def main():
 
         # Allow user to override category
         print(f"  {DIM}Auto-classified as:{RESET} {category}")
-        cat_override = input(f"  {BOLD}Category (classes/methods/properties/events/enums) [{category}]:{RESET} ").strip().lower()
-        if cat_override in ('classes', 'methods', 'properties', 'events', 'enums'):
+        cat_override = (
+            input(f"  {BOLD}Category (classes/methods/properties/events/enums) [{category}]:{RESET} ").strip().lower()
+        )
+        if cat_override in ("classes", "methods", "properties", "events", "enums"):
             category = cat_override
 
         # Add to data
@@ -550,9 +576,9 @@ def main():
     print(f"  {GREEN}═══════════════════════════════════════════════════════{RESET}")
     print()
     print(f"  {YELLOW}Next steps:{RESET}")
-    print(f"    1. Review the changes in replacements_grouped.json")
+    print("    1. Review the changes in replacements_grouped.json")
     print(f"    2. Run: cd {REPO_ROOT} && npm run build")
-    print(f"    3. Test the chat tool in Lens Studio")
+    print("    3. Test the chat tool in Lens Studio")
     print()
 
 

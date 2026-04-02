@@ -2,7 +2,7 @@
   "name": "agents-docs-plugin",
   "version": "5.20.0",
   "scripts": {
-    "prebuild": "mkdir -p Resources && cp ../../shared-types/editor.d.ts Resources/editor.d.ts",
+    "prebuild": "mkdir -p Resources && cp ../../shared-types/editor.d.ts Resources/editor.d.ts && cp ../../lsai-agent-components/AGENTS.md Resources/AGENTS.md",
     "build": "tsc",
     "watch": "tsc -w",
     "clean": "rimraf ./dist/ ./distTypes/",

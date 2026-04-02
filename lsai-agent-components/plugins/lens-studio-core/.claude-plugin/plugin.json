@@ -1,0 +1,9 @@
+{
+  "name": "lens-studio-core",
+  "version": "0.1.0",
+  "description": "Core agent components for Lens Studio — Lens API reference, Editor API delegation, debugging, and environment management",
+  "author": {
+    "name": "Snap Inc. — Lens Studio Team"
+  },
+  "keywords": ["lens-studio", "ar", "snap", "agent-components", "core"]
+}

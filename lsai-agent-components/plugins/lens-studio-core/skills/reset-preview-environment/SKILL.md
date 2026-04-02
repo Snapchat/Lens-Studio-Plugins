@@ -1,7 +1,7 @@
 ---
 name: reset-preview-environment
 description: Reset the Lens Studio preview to a clean state before scene generation. Captures a baseline log timestamp. Use before any scene generation task or when starting fresh.
-user-invocable: false
+user-invocable: true
 ---
 
 # Reset Preview Environment

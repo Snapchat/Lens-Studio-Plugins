@@ -1,7 +1,7 @@
 ---
 name: ensure-package-installed
 description: Verifies a Lens Studio package is installed and installs it from the Asset Library if missing. Supports any package including SpectaclesUIKit and SpectaclesInteractionKit. When installing SpectaclesUIKit, also ensures SpectaclesInteractionKit is present first (UIKit depends on SIK). Use when a workflow depends on a specific Lens Studio package.
-user-invocable: false
+user-invocable: true
 arguments:
   - name: package_name
     description: "Name of the package to ensure is installed (e.g., SpectaclesUIKit, SpectaclesInteractionKit)"
