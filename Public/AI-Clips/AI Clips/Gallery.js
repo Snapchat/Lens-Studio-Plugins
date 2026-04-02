@@ -2,16 +2,16 @@
 import * as Ui from "LensStudio:Ui";
 import { GalleryItem } from "./GalleryItem.js";
 export class Gallery {
-    constructor(onTileClickCallback, onImportClickCallback, onReloadClickCallback) {
-        this.allItems = [];
-        this.visibleItems = [];
+    constructor(onTileClickCallback, onImportClickCallback, onReloadClickCallback, onScrollToBottomCallback, onSearchChangedCallback) {
+        this.items = [];
         this.isWaitingForCallback = false;
         this.pendingPreviews = {};
         this.tilesPerRow = 3;
         this.onTileClickCallback = onTileClickCallback;
         this.onImportClickCallback = onImportClickCallback;
         this.onReloadClickCallback = onReloadClickCallback;
-        this.searchText = "";
+        this.onScrollToBottomCallback = onScrollToBottomCallback;
+        this.onSearchChangedCallback = onSearchChangedCallback;
     }
     create(parent) {
         const widget = new Ui.Widget(parent);
@@ -34,11 +34,16 @@ export class Gallery {
         const scrollWidget = new Ui.Widget(gridWidget);
         scrollWidget.setContentsMargins(0, 0, 16, 0);
         scrollWidget.layout = grid;
-        const verticalScrollArea = new Ui.VerticalScrollArea(gridWidget);
-        verticalScrollArea.setWidget(scrollWidget);
+        this.verticalScrollArea = new Ui.VerticalScrollArea(gridWidget);
+        this.verticalScrollArea.setWidget(scrollWidget);
+        this.verticalScrollArea.onValueChange.connect((value) => {
+            if (this.verticalScrollArea && value >= this.verticalScrollArea.maximum * 0.9) {
+                this.onScrollToBottomCallback();
+            }
+        });
         const scrollLayout = new Ui.BoxLayout();
         scrollLayout.setDirection(Ui.Direction.TopToBottom);
-        scrollLayout.addWidget(verticalScrollArea);
+        scrollLayout.addWidget(this.verticalScrollArea);
         scrollLayout.spacing = 0;
         scrollLayout.setContentsMargins(0, 0, 0, 0);
         this.gridLayout = grid;
@@ -76,7 +81,7 @@ export class Gallery {
         layout.addWidget(searchLine);
         widget.layout = layout;
         searchLine.onTextChange.connect((text) => {
-            this.onSearchTextChanged(text.toLowerCase());
+            this.onSearchChangedCallback(text);
         });
         reloadButton.onClick.connect(() => {
             this.onReloadClickCallback();
@@ -84,8 +89,32 @@ export class Gallery {
         return widget;
     }
     addItem(id, description, previewUrl, isDefault = false, inProgress = false, isTraining = false, isTrained = false) {
+        const startIndex = this.items.length;
+        const item = this.createItem(id, description, previewUrl, isDefault, inProgress, isTraining, isTrained);
+        if (item) {
+            item.widget.visible = false;
+            this.appendToLayout(startIndex);
+            item.widget.visible = true;
+        }
+    }
+    addItems(itemsData) {
+        const startIndex = this.items.length;
+        const newItems = [];
+        itemsData.forEach((data) => {
+            const item = this.createItem(data.id, data.description, data.previewUrl, data.isDefault ?? false, data.inProgress ?? false, data.isTraining ?? false, data.isTrained ?? false);
+            if (item) {
+                item.widget.visible = false;
+                newItems.push(item);
+            }
+        });
+        this.appendToLayout(startIndex);
+        newItems.forEach((item) => {
+            item.widget.visible = true;
+        });
+    }
+    createItem(id, description, previewUrl, isDefault, inProgress, isTraining, isTrained) {
         if (!this.parent || !this.gridLayout) {
-            return;
+            return undefined;
         }
         this.spinner.visible = false;
         const item = new GalleryItem(this.parent, id);
@@ -124,11 +153,8 @@ export class Gallery {
             return this.onImportClickCallback(id);
         });
         item.addDescription(description);
-        this.allItems.push(item);
-        if (this.shouldItemBeVisible(item)) {
-            this.visibleItems.push(item);
-        }
-        this.arrangeLayout();
+        this.items.push(item);
+        return item;
     }
     addPreview(id, previewUrl) {
         if (this.pendingPreviews[id]) {
@@ -148,61 +174,47 @@ export class Gallery {
             delete this.pendingPreviews[id];
         }
     }
-    arrangeLayout() {
+    appendToLayout(startIndex) {
         if (!this.gridLayout || !this.spacer) {
             return;
         }
-        this.gridLayout.clear(Ui.ClearLayoutBehavior.KeepClearedWidgets);
-        let row = 0, col = 0;
-        this.visibleItems.forEach((item, i) => {
-            if (!this.gridLayout) {
-                return;
-            }
+        let row = Math.floor(startIndex / this.tilesPerRow);
+        let col = startIndex % this.tilesPerRow;
+        for (let i = startIndex; i < this.items.length; i++) {
             if (col === 0) {
                 this.gridLayout.setRowStretch(row, 0);
             }
-            this.gridLayout.addWidgetAt(item.widget, row, col, Ui.Alignment.AlignCenter);
+            this.gridLayout.addWidgetAt(this.items[i].widget, row, col, Ui.Alignment.AlignCenter);
             col++;
             if (col >= this.tilesPerRow) {
                 col = 0;
                 row++;
             }
-        });
+        }
         this.gridLayout.addWidgetAt(this.spacer, row, col, Ui.Alignment.Default);
         this.gridLayout.setRowStretch(row + 1, 1);
     }
-    onSearchTextChanged(newSearchText) {
-        this.searchText = newSearchText;
-        this.selectVisibleItems();
-    }
-    selectVisibleItems() {
-        this.visibleItems = [];
-        this.allItems.forEach((item) => {
-            if (this.shouldItemBeVisible(item)) {
-                item.widget.visible = true;
-                this.visibleItems.push(item);
-            }
-            else {
-                item.widget.visible = false;
-            }
-        });
-        this.arrangeLayout();
-    }
-    shouldItemBeVisible(item) {
-        if ((this.searchText === "" || item.getDescription().toLowerCase().search(this.searchText) !== -1)) {
-            return true;
+    rebuildLayout() {
+        if (!this.gridLayout || !this.spacer) {
+            return;
         }
-        return false;
+        this.gridLayout.clear(Ui.ClearLayoutBehavior.KeepClearedWidgets);
+        this.appendToLayout(0);
+    }
+    isNearBottom() {
+        if (!this.verticalScrollArea) {
+            return false;
+        }
+        return this.verticalScrollArea.value >= this.verticalScrollArea.maximum * 0.9;
     }
     reset() {
-        this.allItems.forEach((item, i) => {
+        this.items.forEach((item, i) => {
             item.widget.visible = false;
         });
-        this.allItems = [];
-        this.visibleItems = [];
+        this.items = [];
         this.pendingPreviews = {};
         this.isWaitingForCallback = false;
-        this.arrangeLayout();
+        this.rebuildLayout();
         this.spinner.visible = true;
     }
 }

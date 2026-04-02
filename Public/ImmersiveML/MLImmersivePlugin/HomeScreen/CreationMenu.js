@@ -35,11 +35,13 @@ export class CreationMenu {
     }
 
     reset() {
+        const savedIndex = this.controls['promptPicker'].buttonGroup.currentIndex;
+        const savedMode = this.controls['promptPicker'].mode;
+
         this.controls['promptPicker'].mode = 'Text';
         this.controls['promptPicker'].value = '';
         this.controls['promptPicker'].mode = 'Image';
         this.controls['promptPicker'].value = [];
-        this.controls['promptPicker'].resetMode();
 
         this.controls['promptPicker'].enhanceTextPromptValue = '';
         this.controls['promptPicker'].enhanceImagePromptValue = [];
@@ -47,6 +49,9 @@ export class CreationMenu {
         this.controls['promptPicker'].seedValue = 56;
 
         this.controls['promptPicker'].disableReferenceStrengthSlider();
+
+        this.controls['promptPicker'].buttonGroup.currentIndex = savedIndex;
+        this.controls['promptPicker'].applyModeVisibility(savedMode);
 
         // this.controls['userNotes'].value = '';
     }
@@ -101,14 +106,39 @@ export class CreationMenu {
                         else {
                             app.log(`${app.name} is queued. ${app.name} creation is estimated to take 10-15 min, please check back later.`, {'progressBar': true});
                         }
+                    } else if (postProcessingResponse.statusCode == 400) {
+                        try {
+                            const errorBody = JSON.parse(postProcessingResponse.body.toString());
+                            if (errorBody.detail && errorBody.detail.toLowerCase().includes('limit')) {
+                                logEventAssetCreation("RATE_LIMITED", "NEW", inputFormat);
+                                app.log('Limit reached — A maximum of 5 effects can be generated at once.');
+                            } else {
+                                logEventAssetCreation("GUIDELINES_VIOLATION", "NEW", inputFormat);
+                                app.log('The result violates our community guidelines');
+                            }
+                        } catch (e) {
+                            logEventAssetCreation("FAILED", "NEW", inputFormat);
+                            app.log('Something went wrong during post-processing creation, please try again.');
+                        }
                     } else {
                         logEventAssetCreation("FAILED", "NEW", inputFormat);
                         app.log('Something went wrong during post-processing creation, please try again.');
                     }
                 });
             } else if (effectResponse.statusCode == 400) {
-                logEventAssetCreation("GUIDELINES_VIOLATION", "NEW", inputFormat);
-                app.log('The result violates our community guidelines');
+                try {
+                    const errorBody = JSON.parse(effectResponse.body.toString());
+                    if (errorBody.detail && errorBody.detail.toLowerCase().includes('limit')) {
+                        logEventAssetCreation("RATE_LIMITED", "NEW", inputFormat);
+                        app.log('Limit reached — A maximum of 5 effects can be generated at once.');
+                    } else {
+                        logEventAssetCreation("GUIDELINES_VIOLATION", "NEW", inputFormat);
+                        app.log('The result violates our community guidelines');
+                    }
+                } catch (e) {
+                    logEventAssetCreation("GUIDELINES_VIOLATION", "NEW", inputFormat);
+                    app.log('The result violates our community guidelines');
+                }
             } else {
                 logEventAssetCreation("FAILED", "NEW", inputFormat);
                 app.log(`Something went wrong during ${app.name} creation, please try again.`);

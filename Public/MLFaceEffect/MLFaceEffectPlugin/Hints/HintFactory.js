@@ -15,8 +15,12 @@ export const HintID = {
     'prompt': 11,
     'effect_prompt': 12,
     'image_reference': 13,
-    'standard_mode': 14,
-    'enhanced_mode': 15
+    'reference_strength': 14,
+    'attributes_preservation': 15,
+    'seed': 16,
+    'standard_mode': 17,
+    'enhanced_mode': 18,
+    'advanced_mode': 19
 };
 
 const hintScheme = {
@@ -113,6 +117,18 @@ const hintScheme = {
         'title': 'Image Reference',
         'text': 'Add an image reference to guide the effect. This is the most informative input to shape the result.'
     },
+    [HintID.reference_strength]: {
+        'title': 'Reference Strength',
+        'text': 'Controls how strongly the effect follows the Image Reference. A higher value makes the result closer to the Image Reference, but reduces similarity to the original user photo.'
+    },
+    [HintID.attributes_preservation]: {
+        'title': 'Attributes preservation',
+        'text': 'Affects the hair and headwear area the most. When increasing the value, the model maintains greater consistency in the hair area and does not remove hair or headwear from the head.'
+    },
+    [HintID.seed]: {
+        'title': 'Seed',
+        'text': 'Control randomness with a seed. Use the same number to recreate the same look, or try different ones for new variations!'
+    },
     [HintID.standard_mode] : {
         'image_width': 256,
         'image_height': 86,
@@ -125,6 +141,13 @@ const hintScheme = {
         'image_height': 86,
         'image_path': new Editor.Path(import.meta.resolve('./Resources/enhanced_mode.png')),
         'title': 'Enhanced Model',
+        'text': 'Good for morphs, characters, and animal transformations, while preserving identity.'
+    },
+    [HintID.advanced_mode] : {
+        'image_width': 256,
+        'image_height': 86,
+        'image_path': new Editor.Path(import.meta.resolve('./Resources/advanced_mode.png')),
+        'title': 'Advanced Model',
         'text': 'Good for morphs, characters, and animal transformations, while preserving identity.'
     },
 };

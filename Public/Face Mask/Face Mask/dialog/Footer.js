@@ -102,8 +102,7 @@ export class Footer {
         footerLayout.addLayout(footerRight);
         this.footer.layout = footerLayout;
         Object.entries(this.stateToButtonConfig).forEach(([state, handler]) => {
-            var _a;
-            (_a = app.generator) === null || _a === void 0 ? void 0 : _a.stateChanged.on(parseInt(state), handler);
+            app.generator?.stateChanged.on(parseInt(state), handler);
         });
         return this.footer;
     }

@@ -3,7 +3,7 @@ import * as Ui from "LensStudio:Ui";
 import * as Shell from 'LensStudio:Shell';
 import { ColorRole } from "LensStudio:Ui";
 import { Gallery } from "./Gallery.js";
-import { getDreamByID, getMyDreams } from "./api.js";
+import { getDreamByID, listDreams } from "./api.js";
 import app from "./app.js";
 export class EffectGallery {
     constructor(parent, openEffectSettingsPage, checkDreamStateById, onImportClickCallback, showLoginPageCallback, showPluginPageCallback) {
@@ -11,7 +11,15 @@ export class EffectGallery {
         this.movieViews = [];
         this.settings = {};
         this.lastRequestId = 0;
-        this.gallery = new Gallery(this.onTileClicked.bind(this), onImportClickCallback, this.updateGallery.bind(this));
+        this.nextPageToken = null;
+        this.searchQuery = '';
+        this.prefetchedItems = null;
+        this.prefetchedPageToken = null;
+        this.isPrefetching = false;
+        this.INITIAL_PAGE_SIZE = 12;
+        this.VISIBLE_PAGE_SIZE = 9;
+        this.EXPAND_PAGE_SIZE = 3;
+        this.gallery = new Gallery(this.onTileClicked.bind(this), onImportClickCallback, this.updateGallery.bind(this), this.expandGallery.bind(this), this.onSearchTextChanged.bind(this));
         this.curWidget = this.create(parent, showLoginPageCallback, showPluginPageCallback);
         this.openEffectSettingsPage = openEffectSettingsPage;
         this.checkDreamStateById = checkDreamStateById;
@@ -158,33 +166,122 @@ export class EffectGallery {
         }
         this.lastRequestId++;
         const currentRequestId = this.lastRequestId;
-        getMyDreams((response) => {
-            if (response.statusCode !== 200 || currentRequestId != this.lastRequestId) {
+        listDreams(this.INITIAL_PAGE_SIZE, (response) => {
+            if (response.statusCode !== 200 || currentRequestId !== this.lastRequestId) {
                 return;
             }
-            if (JSON.parse(response.body).items.length > 0 && this.stackedWidget) {
+            const body = JSON.parse(response.body);
+            this.nextPageToken = body.nextPageToken || null;
+            if (body.items.length > 0 && this.stackedWidget) {
                 this.stackedWidget.currentIndex = 1;
-                JSON.parse(response.body).items.forEach((item) => {
-                    if (item.state.startsWith("PACK") && item.state !== "PACK_FAILED" && item.state !== "PACK_SUCCESS") {
-                        this.gallery.addItem(item.id, item.prompt, item.previewUrl, false, false, true);
-                        this.checkDreamStateById(item.id, item.state);
-                    }
-                    else if (item.state === "PACK_SUCCESS") {
-                        this.gallery.addItem(item.id, item.prompt, item.previewUrl, false, false, false, true);
-                    }
-                    else if (item.state === "SUCCESS" || item.state === "PACK_SUCCESS") {
-                        this.gallery.addItem(item.id, item.prompt, item.previewUrl);
-                    }
-                    else {
-                        this.gallery.addItem(item.id, item.prompt, item.previewUrl, false, true);
-                        if (item.state === "FAILED" || item.state === "PACK_FAILED") {
-                            this.gallery.setFailed(item.id);
-                        }
-                        else {
-                            this.checkDreamStateById(item.id, item.state);
-                        }
-                    }
-                });
+                const visibleItems = body.items.slice(0, this.VISIBLE_PAGE_SIZE);
+                const cachedItems = body.items.slice(this.VISIBLE_PAGE_SIZE);
+                this.processItems(visibleItems);
+                if (cachedItems.length > 0) {
+                    this.prefetchedItems = cachedItems;
+                    this.prefetchedPageToken = this.nextPageToken;
+                }
+                else {
+                    this.prefetchNextPage();
+                }
+            }
+        }, this.searchQuery);
+    }
+    expandGallery() {
+        if (this.prefetchedItems && this.prefetchedItems.length > 0) {
+            const items = this.prefetchedItems;
+            this.prefetchedItems = null;
+            this.nextPageToken = this.prefetchedPageToken;
+            this.prefetchedPageToken = null;
+            this.processItems(items);
+            this.prefetchNextPage();
+            return;
+        }
+        if (this.isPrefetching) {
+            return;
+        }
+        if (!this.nextPageToken || !this.authComponent || !this.authComponent.isAuthorized) {
+            return;
+        }
+        this.isPrefetching = true;
+        this.lastRequestId++;
+        const currentRequestId = this.lastRequestId;
+        listDreams(this.EXPAND_PAGE_SIZE, (response) => {
+            if (response.statusCode !== 200 || currentRequestId !== this.lastRequestId) {
+                this.isPrefetching = false;
+                return;
+            }
+            const body = JSON.parse(response.body);
+            this.nextPageToken = body.nextPageToken || null;
+            this.processItems(body.items);
+            this.isPrefetching = false;
+            this.prefetchNextPage();
+        }, this.searchQuery, this.nextPageToken);
+    }
+    prefetchNextPage() {
+        if (!this.nextPageToken || !this.authComponent || !this.authComponent.isAuthorized) {
+            return;
+        }
+        this.isPrefetching = true;
+        const currentRequestId = this.lastRequestId;
+        listDreams(this.EXPAND_PAGE_SIZE, (response) => {
+            if (response.statusCode !== 200 || currentRequestId !== this.lastRequestId) {
+                this.isPrefetching = false;
+                return;
+            }
+            const body = JSON.parse(response.body);
+            this.prefetchedItems = body.items;
+            this.prefetchedPageToken = body.nextPageToken || null;
+            this.isPrefetching = false;
+            if (this.gallery.isNearBottom()) {
+                this.expandGallery();
+            }
+        }, this.searchQuery, this.nextPageToken);
+    }
+    onSearchTextChanged(text) {
+        if (text.length > 0) {
+            this.searchQuery = '&filter[]=search%3D' + encodeURIComponent(text);
+        }
+        else {
+            this.searchQuery = '';
+        }
+        this.gallery.reset();
+        this.settings = {};
+        this.settings['00'] = { "state": "DEFAULT", "prompt": "" };
+        this.nextPageToken = null;
+        this.prefetchedItems = null;
+        this.prefetchedPageToken = null;
+        this.isPrefetching = false;
+        this.getDreamsGallery();
+    }
+    processItems(items) {
+        const batchData = [];
+        items.forEach((item) => {
+            if (item.state.startsWith("PACK") && item.state !== "PACK_FAILED" && item.state !== "PACK_SUCCESS") {
+                batchData.push({ id: item.id, description: item.prompt, previewUrl: item.previewUrl, isTraining: true });
+            }
+            else if (item.state === "PACK_SUCCESS") {
+                batchData.push({ id: item.id, description: item.prompt, previewUrl: item.previewUrl, isTrained: true });
+            }
+            else if (item.state === "SUCCESS") {
+                batchData.push({ id: item.id, description: item.prompt, previewUrl: item.previewUrl });
+            }
+            else {
+                batchData.push({ id: item.id, description: item.prompt, previewUrl: item.previewUrl, inProgress: true });
+            }
+        });
+        this.gallery.addItems(batchData);
+        items.forEach((item) => {
+            if (item.state.startsWith("PACK") && item.state !== "PACK_FAILED" && item.state !== "PACK_SUCCESS") {
+                this.checkDreamStateById(item.id, item.state);
+            }
+            else if (item.state !== "PACK_SUCCESS" && item.state !== "SUCCESS") {
+                if (item.state === "FAILED" || item.state === "PACK_FAILED") {
+                    this.gallery.setFailed(item.id);
+                }
+                else {
+                    this.checkDreamStateById(item.id, item.state);
+                }
             }
         });
     }
@@ -207,11 +304,19 @@ export class EffectGallery {
     resetGallery() {
         this.lastRequestId++;
         this.gallery.reset();
+        this.prefetchedItems = null;
+        this.prefetchedPageToken = null;
+        this.isPrefetching = false;
     }
     updateGallery() {
         this.gallery.reset();
         this.settings = {};
         this.settings['00'] = { "state": "DEFAULT", "prompt": "" };
+        this.nextPageToken = null;
+        this.searchQuery = '';
+        this.prefetchedItems = null;
+        this.prefetchedPageToken = null;
+        this.isPrefetching = false;
         this.getDreamsGallery();
     }
     setItemTrained(id) {

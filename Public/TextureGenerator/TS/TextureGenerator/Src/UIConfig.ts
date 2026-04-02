@@ -10,8 +10,8 @@ export const UIConfig = {
     PREVIEW: {
         WIDTH: 421,
         HEIGHT: 555,
-        IMAGE_WIDTH: 378,
-        IMAGE_HEIGHT: 378
+        IMAGE_WIDTH: 281,
+        IMAGE_HEIGHT: 491
     },
     FOOTER: {
         WIDTH: 800,

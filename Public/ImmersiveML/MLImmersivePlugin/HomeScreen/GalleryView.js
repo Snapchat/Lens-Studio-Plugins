@@ -962,7 +962,14 @@ export class GalleryView {
     }
 
     constructQuery() {
-        return this.searchQuery + this.filterQuery;
+        let query = this.searchQuery + this.filterQuery;
+        if (query.includes('effectTypeId')) {
+            query = query.replace(
+                /(filter\[\]=effectTypeId%3D)([^&]*)/g,
+                '$1$2,full-frame-enhanced'
+            );
+        }
+        return query;
     }
 
     reset(state) {
@@ -1175,13 +1182,13 @@ export class GalleryView {
 
         this.filterQuery = this.filter.toString();
 
-        layout.setContentsMargins(Ui.Sizes.HalfPadding, 0, Ui.Sizes.DoublePadding, 0);
+        layout.setContentsMargins(Ui.Sizes.Padding, Ui.Sizes.Padding, 0, 0);
         layout.addWidget(this.reloadButton);
         layout.addWidget(this.searchLine);
         layout.addWidget(this.filter.widget);
 
         widget.layout = layout;
-        widget.visible = false;
+        widget.visible = true;
 
         return widget;
     }
@@ -1331,7 +1338,7 @@ export class GalleryView {
 
         this.layout.addWidget(this.createFooter(this.widget));
 
-        this.layout.setContentsMargins(0, 0, 0, 0);
+        this.layout.setContentsMargins(0, 0, 12, 0);
         this.widget.layout = this.layout;
 
         this.dialog = this.createDeletionDialog();

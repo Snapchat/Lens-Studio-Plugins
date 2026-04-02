@@ -29,8 +29,7 @@ export class Generator {
         this.stateChanged = new EventEmitter();
         this.stopper = { stop: false };
         app.subscribeOnAuth((authorized) => {
-            var _a;
-            if ((_a = app.plugin) === null || _a === void 0 ? void 0 : _a.isActive) {
+            if (app.plugin?.isActive) {
                 if (authorized) {
                     if (this.mState === GeneratorState.Unauthorized) {
                         this.verificationFlow();
@@ -70,7 +69,7 @@ export class Generator {
             if (!pluginSystem) {
                 throw new Error('Texture generator: plugin system not found');
             }
-            const imageBytes = await TextureGenAPI.generate(pluginSystem, params.prompt, params.negativePrompt, params.seed, params.genSteps, params.guidanceScale);
+            const imageBytes = await TextureGenAPI.generate(pluginSystem, params.prompt);
             if (!imageBytes) {
                 throw new Error('Texture generator: failed to generate image');
             }
@@ -107,7 +106,7 @@ export class Generator {
     }
     retrieveTexturesFromBytes(bytes) {
         const storage = new Storage();
-        const archivePath = storage.createFile("TextureGen.jpg", bytes);
+        const archivePath = storage.createFile("TextureGen.png", bytes);
         this.textureBytes = storage.readBytes(archivePath);
     }
     get state() {

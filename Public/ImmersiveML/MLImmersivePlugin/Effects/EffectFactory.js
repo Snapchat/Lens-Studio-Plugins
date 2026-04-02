@@ -14,7 +14,7 @@ export function buildEffectData(controls) {
             request.effectTypeId = 'full-frame-text';
         }
         request.settings.text_prompt = controls['promptPicker'].value;
-    } else if (controls['promptPicker'].mode = 'Image') {
+    } else if (controls['promptPicker'].mode == 'Image') {
         request.effectTypeId = 'full-frame-image';
         request.settings.image_prompts = controls['promptPicker'].value;
     }
@@ -40,7 +40,7 @@ export function buildEffectDataFromResponse(response, controls) {
             request.effectTypeId = 'full-frame-text';
         }
         request.settings.text_prompt = controls['promptPicker'].value;
-    } else if (controls['promptPicker'].mode = 'Image') {
+    } else if (controls['promptPicker'].mode == 'Image') {
         request.effectTypeId = 'full-frame-image';
         request.settings.image_prompts = controls['promptPicker'].value;
     }

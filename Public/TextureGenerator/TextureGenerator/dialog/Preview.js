@@ -36,23 +36,20 @@ export class Preview {
             [GeneratorState.Failed]: this.showFailed.bind(this)
         };
         Object.entries(this.stateToScreen).forEach(([state, show]) => {
-            var _a;
-            (_a = app.generator) === null || _a === void 0 ? void 0 : _a.stateChanged.on(parseInt(state), show);
+            app.generator?.stateChanged.on(parseInt(state), show);
         });
     }
     init() {
-        var _a, _b, _c, _d;
-        const currentState = (_b = (_a = app.generator) === null || _a === void 0 ? void 0 : _a.state) !== null && _b !== void 0 ? _b : GeneratorState.Uninitialized;
-        (_d = (_c = this.stateToScreen)[currentState]) === null || _d === void 0 ? void 0 : _d.call(_c);
+        const currentState = app.generator?.state ?? GeneratorState.Uninitialized;
+        this.stateToScreen[currentState]?.();
     }
     onCtaClicked() {
-        var _a;
         switch (this.state) {
             case PreviewState.Login:
                 app.authorize();
                 break;
             case PreviewState.Reload:
-                (_a = app.generator) === null || _a === void 0 ? void 0 : _a.init();
+                app.generator?.init();
                 break;
             case PreviewState.ApiVersion:
                 Shell.openUrl('https://ar.snap.com/download', {});
@@ -76,10 +73,9 @@ export class Preview {
         this.stackedWidget.currentIndex = PageIndex.home;
     }
     showTexture() {
-        var _a;
         this.state = PreviewState.Preview;
         this.stackedWidget.currentIndex = PageIndex.preview;
-        if ((_a = app.generator) === null || _a === void 0 ? void 0 : _a.textureBytes) {
+        if (app.generator?.textureBytes) {
             this.previewImage.pixmap = new Ui.Pixmap(app.storage.createFile("Texture Generator Preview.png", app.generator.textureBytes));
         }
     }

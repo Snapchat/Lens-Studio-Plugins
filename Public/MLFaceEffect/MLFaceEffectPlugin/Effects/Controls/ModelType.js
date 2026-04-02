@@ -3,7 +3,7 @@ import {Control} from "./Control";
 import {getHintFactory} from "../../Hints/HintFactory";
 
 export class ModelType extends Control{
-    constructor(parent, label, valueImporter, valueExporter, textHint, imageHint) {
+    constructor(parent, label, valueImporter, valueExporter, textHint, imageHint, advancedHint) {
         super(parent, null, valueImporter, valueExporter, null);
         this.connections = [];
 
@@ -25,22 +25,26 @@ export class ModelType extends Control{
 
         const enhancedButton = new Ui.RadioButton(modelTypeButtonGroup);
         enhancedButton.text = "Enhanced";
+        const advancedButton = new Ui.RadioButton(modelTypeButtonGroup);
+        advancedButton.text = "Advanced";
         const standardButton = new Ui.RadioButton(modelTypeButtonGroup);
         standardButton.text = "Original";
 
         this.enhancedButton = enhancedButton;
+        this.advancedButton = advancedButton;
         this.standardButton = standardButton;
 
         modelTypeButtonGroup.addButton(enhancedButton, 0);
-        modelTypeButtonGroup.addButton(standardButton, 1);
+        modelTypeButtonGroup.addButton(advancedButton, 1);
+        modelTypeButtonGroup.addButton(standardButton, 2);
 
         this.textPromptHint = this['createHintWidget'](this.widget, imageHint, this.enhancedButton);
+        this.advancedPromptHint = this['createHintWidget'](this.widget, advancedHint, this.advancedButton);
         this.imagePromptHint = this['createHintWidget'](this.widget, textHint, this.standardButton);
 
-        // gridLayout.addWidgetAt(enhancedButton, 0, 0, Ui.Alignment.Default);
         gridLayout.addWidgetAt(this.textPromptHint, 0, 0, Ui.Alignment.AlignLeft)
-        // gridLayout.addWidgetAt(standardButton, 1, 0, Ui.Alignment.Default);
-        gridLayout.addWidgetAt(this.imagePromptHint, 1, 0, Ui.Alignment.AlignLeft)
+        gridLayout.addWidgetAt(this.advancedPromptHint, 1, 0, Ui.Alignment.AlignLeft)
+        gridLayout.addWidgetAt(this.imagePromptHint, 2, 0, Ui.Alignment.AlignLeft)
 
         modelTypeButtonGroup.currentIndex = 0;
 
@@ -49,6 +53,10 @@ export class ModelType extends Control{
         })
 
         standardButton.onClick.connect(() => {
+            this.mOnValueChanged.forEach((callback) => callback(this.modelTypeButtonGroup.currentIndex));
+        })
+
+        advancedButton.onClick.connect(() => {
             this.mOnValueChanged.forEach((callback) => callback(this.modelTypeButtonGroup.currentIndex));
         })
 
@@ -105,20 +113,42 @@ export class ModelType extends Control{
         this.modelTypeButtonGroup.currentIndex = 0;
         this.standardButton.visible = false;
         this.imagePromptHint.visible = false;
+        this.advancedButton.visible = false;
+        this.advancedPromptHint.visible = false;
         this.enhancedButton.visible = true;
         this.textPromptHint.visible = true;
-
     }
 
-    showStandardButton() {
+    showAdvancedButton() {
         this.modelTypeButtonGroup.currentIndex = 1;
         this.enhancedButton.visible = false;
         this.textPromptHint.visible = false;
+        this.standardButton.visible = false;
+        this.imagePromptHint.visible = false;
+        this.advancedButton.visible = true;
+        this.advancedPromptHint.visible = true;
+    }
+
+    showStandardButton() {
+        this.modelTypeButtonGroup.currentIndex = 2;
+        this.enhancedButton.visible = false;
+        this.textPromptHint.visible = false;
+        this.advancedButton.visible = false;
+        this.advancedPromptHint.visible = false;
         this.standardButton.visible = true;
         this.imagePromptHint.visible = true;
     }
+
+    showAllButtons() {
+        this.enhancedButton.visible = true;
+        this.textPromptHint.visible = true;
+        this.standardButton.visible = true;
+        this.imagePromptHint.visible = true;
+        this.advancedButton.visible = true;
+        this.advancedPromptHint.visible = true;
+    }
 }
 
-export function createModelType(parent, label, textHint, imageHint) {
-    return new ModelType(parent, label, null, null, textHint, imageHint);
+export function createModelType(parent, label, textHint, imageHint, advancedHint) {
+    return new ModelType(parent, label, null, null, textHint, imageHint, advancedHint);
 }

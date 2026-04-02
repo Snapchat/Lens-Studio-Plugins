@@ -38,6 +38,7 @@ export class CreationMenu {
     reset() {
         this.controls['imageReferencePicker'].value = [];
         this.controls['humanoidAnatomy'].value = false;
+        this.controls['faceSwap'].value = false;
     }
 
     generateEffect(controls) {

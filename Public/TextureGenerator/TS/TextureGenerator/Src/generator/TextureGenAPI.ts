@@ -1,21 +1,12 @@
 import * as Network from 'LensStudio:Network';
 
 export class TextureGenAPI {
-    // API Constants from C++ implementation
-    static readonly BASE_URL = "https://aws.api.snapchat.com/snapml.api.maui/stable-diffusion/txt2img/with-validation";
-    static readonly X_API_KEY = "7Kp3x9Yz";
-    static readonly DEFAULT_NEGATIVE_PROMPT = "EasyNegative, nsfw, oversaturated, harsh lighting, ugly, deformed, bad anatomy, signature, watermark, username, error, watermark, text, out of frame, lowres, low quality, jpeg artifacts, watermark, signature, blurry, blurry image, human, person, woman, man, girl, boy, face";
+    static readonly BASE_URL = "https://ml.snap.com/api/genai-assets/background";
+    static readonly POLL_INTERVAL_MS = 500;
 
-    /**
-     * Generate texture using sync API (single request, immediate response)
-     */
     static async generate(
         pluginSystem: Editor.PluginSystem,
-        prompt: string,
-        negativePrompt?: string,
-        seed: number = -1,
-        steps: number = 50,
-        guidanceScale: number = 7.5
+        prompt: string
     ): Promise<Uint8Array | null> {
         try {
             const authorization = pluginSystem.findInterface(Editor.IAuthorization) as Editor.IAuthorization;
@@ -24,58 +15,91 @@ export class TextureGenAPI {
                 throw new Error('Please log into your Snapchat account in Lens Studio to use this tool. You can log in from the Menu Bar: Go to My Lenses > Login');
             }
 
-            const request = new Network.HttpRequest();
-            request.url = TextureGenAPI.BASE_URL;
-            request.method = Network.HttpRequest.Method.Post;
-            request.headers = {
-                'X-API-Key': TextureGenAPI.X_API_KEY,
-                'Content-Type': 'application/json'
-            };
+            const job = await TextureGenAPI.createJob(prompt);
+            const resultUrl = await TextureGenAPI.waitForJob(job.id);
+            const resource = JSON.parse(await TextureGenAPI.getResource(resultUrl));
+            const base64Data = resource.image;
 
-            const requestBody = {
-                prompt: prompt,
-                negative_prompt: [negativePrompt, TextureGenAPI.DEFAULT_NEGATIVE_PROMPT].filter(Boolean).join(" "),
-                steps: steps.toString(),
-                seed: seed.toString(),
-                guidance_scale: guidanceScale.toString(),
-                return_type: "base64"
-            };
-
-            request.body = JSON.stringify(requestBody);
-
-            return new Promise((resolve, reject) => {
-                Network.performAuthorizedHttpRequest(request, (response) => {
-                    if (response.statusCode === 200) {
-                        try {
-                            const responseData = JSON.parse(response.body.toString());
-                            const base64Data = responseData.image;
-
-                            if (base64Data) {
-                                const imageBuffer = TextureGenAPI.base64ToArrayBuffer(base64Data);
-                                resolve(imageBuffer);
-                            } else {
-                                console.error('[GenerateTexture] No image data in response');
-                                resolve(null);
-                            }
-                        } catch (e) {
-                            console.error('[GenerateTexture] Failed to parse response:', e);
-                            resolve(null);
-                        }
-                    } else {
-                        console.error(`[GenerateTexture] Generation failed: ${response.statusCode}`);
-                        reject(new Error(`HTTP ${response.statusCode}: ${response.body.toString()}`));
-                    }
-                });
-            });
+            if (base64Data) {
+                return TextureGenAPI.base64ToArrayBuffer(base64Data);
+            } else {
+                console.error('[GenerateTexture] No image data in response');
+                return null;
+            }
         } catch (e: any) {
             console.error('[GenerateTexture] Generation error:', e);
             return null;
         }
     }
 
-    /**
-     * Convert base64 string to Uint8Array using Lens Studio's built-in Base64 class
-     */
+    private static createJob(prompt: string, retriesLeft: number = 3): Promise<{ id: string }> {
+        return new Promise((resolve, reject) => {
+            const request = new Network.HttpRequest();
+            request.url = TextureGenAPI.BASE_URL;
+            request.method = Network.HttpRequest.Method.Post;
+            request.body = JSON.stringify({ positive_prompt: prompt, output_file_type: "PNG" });
+
+            Network.performAuthorizedHttpRequest(request, (response) => {
+                if (response.statusCode === 200) {
+                    try {
+                        resolve(JSON.parse(response.body.toString()));
+                    } catch (e) {
+                        reject(new Error('Failed to create generation job: invalid response'));
+                    }
+                } else if (retriesLeft > 0) {
+                    TextureGenAPI.createJob(prompt, retriesLeft - 1).then(resolve).catch(reject);
+                } else {
+                    reject(new Error(`Failed to create generation job: HTTP ${response.statusCode}`));
+                }
+            });
+        });
+    }
+
+    private static waitForJob(jobId: string): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const interval = setInterval(() => {
+                const request = new Network.HttpRequest();
+                request.url = `${TextureGenAPI.BASE_URL}/${jobId}`;
+                request.method = Network.HttpRequest.Method.Get;
+
+                Network.performAuthorizedHttpRequest(request, (response) => {
+                    try {
+                        const jobStatus = JSON.parse(response.body.toString());
+
+                        if (jobStatus.status === "SUCCESS") {
+                            clearInterval(interval);
+                            resolve(jobStatus.result);
+                        } else if (jobStatus.status === "FAILED") {
+                            clearInterval(interval);
+                            reject(new Error("Texture generation job failed"));
+                        }
+                    } catch (e) {
+                        clearInterval(interval);
+                        reject(new Error('Failed to check generation status: invalid response'));
+                    }
+                });
+            }, TextureGenAPI.POLL_INTERVAL_MS);
+        });
+    }
+
+    private static getResource(url: string): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const request = new Network.HttpRequest();
+            request.url = url;
+            request.method = Network.HttpRequest.Method.Get;
+
+            Network.performHttpRequest(request, (response) => {
+                if (response.statusCode === 200) {
+                    resolve(response.body.toString());
+                } else if (response.statusCode === 302) {
+                    TextureGenAPI.getResource((response.headers as any).location).then(resolve).catch(reject);
+                } else {
+                    reject(new Error(`Failed to fetch resource: HTTP ${response.statusCode}`));
+                }
+            });
+        });
+    }
+
     static base64ToArrayBuffer(base64: string): Uint8Array {
         return Base64.decode(base64);
     }

@@ -1,25 +1,20 @@
 // @ts-nocheck
 import * as Network from 'LensStudio:Network';
 const BASE_URL = 'https://ml.snap.com';
-export function getMyDreams(callback, pageToken = null) {
+export function listDreams(maxPageSize, callback, searchQuery, pageToken) {
     const request = new Network.HttpRequest();
-    request.url = BASE_URL + '/api/dreams';
-    request.method = Network.HttpRequest.Method.Get;
+    let url = BASE_URL + '/api/dreams?maxPageSize=' + maxPageSize;
+    url += '&filter[]=dream_type%3DCLIPS';
     if (pageToken) {
-        request.url += '?pageToken=' + pageToken;
-        request.url += '&';
+        url += '&pageToken=' + pageToken;
     }
-    else {
-        request.url += '?';
+    if (searchQuery) {
+        url += searchQuery;
     }
-    request.url += 'filter[]=dream_type%3DCLIPS';
+    request.url = url;
+    request.method = Network.HttpRequest.Method.Get;
     Network.performAuthorizedHttpRequest(request, (response) => {
         callback(response);
-        //@ts-ignore
-        if (JSON.parse(response.body).nextPageToken) {
-            //@ts-ignore
-            getMyDreams(callback, JSON.parse(response.body).nextPageToken.toString());
-        }
     });
 }
 export function createDream(prompt, seed, callback) {

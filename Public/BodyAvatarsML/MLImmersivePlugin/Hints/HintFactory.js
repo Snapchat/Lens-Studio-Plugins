@@ -2,7 +2,8 @@ import * as Ui from 'LensStudio:Ui';
 
 export const HintID = {
     'imagePrompt': 0,
-    'humanoidAnatomy': 1
+    'humanoidAnatomy': 1,
+    'faceSwap': 2
 };
 
 const hintScheme = {
@@ -15,6 +16,10 @@ const hintScheme = {
     [HintID.humanoidAnatomy]: {
         'title': 'Non-humanoid anatomy',
         'text': 'Enable this option if your reference image shows a character or object without a human-like body structure (for example: a banana, cactus, snowman, or other non-humanoid shapes).'
+    },
+    [HintID.faceSwap]: {
+        'title': 'Preserve user’s face',
+        'text': '"Preserve user’s face" inserts the Lens user’s face into the generated character. This option works only if the uploaded image reference contains recognizable human facial features.'
     }
 };
 

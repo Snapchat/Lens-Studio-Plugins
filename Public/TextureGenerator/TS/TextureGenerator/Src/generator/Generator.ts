@@ -24,10 +24,6 @@ export enum GeneratorState {
 
 export interface GenerateParams {
     prompt: string;
-    negativePrompt: string;
-    seed: number;
-    genSteps: number;
-    guidanceScale: number;
 }
 
 export class Generator {
@@ -89,7 +85,7 @@ export class Generator {
             if (!pluginSystem) {
                 throw new Error('Texture generator: plugin system not found');
             }
-            const imageBytes = await TextureGenAPI.generate(pluginSystem, params.prompt, params.negativePrompt, params.seed, params.genSteps, params.guidanceScale);
+            const imageBytes = await TextureGenAPI.generate(pluginSystem, params.prompt);
             if (!imageBytes) {
                 throw new Error('Texture generator: failed to generate image');
             }
@@ -126,7 +122,7 @@ export class Generator {
 
     retrieveTexturesFromBytes(bytes: Uint8Array) {
         const storage = new Storage();
-        const archivePath = storage.createFile("TextureGen.jpg", bytes);
+        const archivePath = storage.createFile("TextureGen.png", bytes);
         this.textureBytes = storage.readBytes(archivePath);
     }
 

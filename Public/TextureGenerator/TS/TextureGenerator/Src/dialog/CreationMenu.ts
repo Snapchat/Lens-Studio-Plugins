@@ -4,16 +4,9 @@ import * as GuidelineAndTermsWidget from '../common-ui/GuidelineAndTermsWidget';
 import * as Hint from '../common-ui/Hint';
 import { UIConfig } from '../UIConfig';
 import { TextInput } from '../common-ui/controls/TextInput';
-import { SeedControl } from '../common-ui/controls/SeedControl';
-import { GenStepsControl } from '../common-ui/controls/GenStepsControl';
-import { GuidanceScaleControl } from '../common-ui/controls/GuidanceScaleControl';
-
-function getRandomSeed(): number {
-    return Math.floor(Math.random() * 2147483647);
-}
 
 export class CreationMenu {
-    public controls: Record<string, TextInput | SeedControl | GenStepsControl | GuidanceScaleControl> = {};
+    public controls: Record<string, TextInput> = {};
     private widget!: Ui.Widget;
     private menu!: Ui.Widget;
     private menuLayout: Ui.BoxLayout = new Ui.BoxLayout();
@@ -30,10 +23,6 @@ export class CreationMenu {
 
     reset() {
         this.controls["prompt"].reset();
-        this.controls["negativePrompt"].reset();
-        this.controls["seed"].reset();
-        this.controls["genSteps"].reset();
-        this.controls["guidanceScale"].reset();
     }
 
     createMenu(parent: Ui.Widget): Ui.Widget {
@@ -92,54 +81,8 @@ export class CreationMenu {
         });
         promptLayout.addWidget(this.controls["prompt"].widget);
 
-        const negativePromptHint = Hint.createStandardHintWidget(
-            promptContainer,
-            'Negative Prompt',
-            'Specify what you don\'t want to see in the generated texture. This helps refine the output.'
-        );
-        this.controls["negativePrompt"] = new TextInput(
-            promptContainer,
-            'Negative Prompt',
-            '',
-            'Enter what you don\'t want...',
-            200,
-            negativePromptHint
-        );
-        promptLayout.addWidget(this.controls["negativePrompt"].widget);
         promptContainer.layout = promptLayout;
         this.menuLayout.addWidget(promptContainer);
-
-        // Gen Steps
-        this.controls["genSteps"] = new GenStepsControl(this.menu, 'Gen Steps', 50);
-        this.menuLayout.addWidgetWithStretch(this.controls["genSteps"].widget, 1, Ui.Alignment.AlignBaseline);
-
-        // Guidance Scale
-        this.controls["guidanceScale"] = new GuidanceScaleControl(this.menu, 'Guidance Scale', 7.5);
-        this.menuLayout.addWidget(this.controls["guidanceScale"].widget);
-
-        // Separator line
-        const separatorContainer = new Ui.Widget(this.menu);
-        const separatorLayout = new Ui.BoxLayout();
-        separatorLayout.setDirection(Ui.Direction.TopToBottom);
-        separatorLayout.setContentsMargins(0, 16, 0, 16);
-
-        const separator = new Ui.Widget(separatorContainer);
-        separator.setFixedHeight(1);
-        separator.autoFillBackground = true;
-        separator.backgroundRole = Ui.ColorRole.Light;
-
-        separatorLayout.addWidget(separator);
-        separatorContainer.layout = separatorLayout;
-        this.menuLayout.addWidget(separatorContainer);
-
-        // Seed
-        const seedHint = Hint.createStandardHintWidget(
-            this.menu,
-            'Seed',
-            'The seed value controls randomness. Using the same seed with identical settings will produce consistent results.'
-        );
-        this.controls["seed"] = new SeedControl(this.menu, 'Seed', getRandomSeed(), seedHint);
-        this.menuLayout.addWidget(this.controls["seed"].widget);
 
         this.menuLayout.spacing = Ui.Sizes.Spacing;
         this.menu.layout = this.menuLayout;

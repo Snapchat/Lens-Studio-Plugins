@@ -75,10 +75,9 @@ export class FaceMaskDialog {
             this.footer.importToProjectButton.enabled = false;
             this.footer.importToProjectButton.text = "Importing...";
             app.importer.importTextureAndCreateFaceMask(app.generator.textureBytes, this.lastPrompt).then(() => {
-                var _a;
                 logEventAssetImport(EVENT_STATUS.SUCCESS);
                 app.notificationManager.showNotification(NotificationKey.InfoImportSuccess);
-                (_a = app.generator) === null || _a === void 0 ? void 0 : _a.changeState(GeneratorState.Idle);
+                app.generator?.changeState(GeneratorState.Idle);
             }).catch((error) => {
                 logEventAssetImport(EVENT_STATUS.FAILED);
                 app.notificationManager.showNotification(NotificationKey.ErrorImportFailed);

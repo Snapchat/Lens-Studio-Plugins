@@ -429,11 +429,18 @@ export class AssetPreview {
             if (state.post_processing_get_response.state == "SUCCESS") {
                 state.status = 'SUCCESS';
                 this.imageLinks = state.post_processing_get_response.samples;
+            } else if (state.post_processing_get_response.state == "FAILED") {
+                state.status = 'FAILED';
+                this.imageLinks = [];
             } else {
                 state.status = "RUNNING";
             }
         } else {
-            state.status = 'FAILED';
+            if (state.effect_get_response && (state.effect_get_response.state == "QUEUED" || state.effect_get_response.state == "RUNNING")) {
+                state.status = 'RUNNING';
+            } else {
+                state.status = 'FAILED';
+            }
         }
 
         this.effectId = state.effect_id;

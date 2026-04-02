@@ -85,8 +85,19 @@ export class PreviewMenu {
                     this.editEffectButton.enabled = true;
                 });
             } else if (effectResponse.statusCode == 400) {
-                logEventAssetCreation("GUIDELINES_VIOLATION", "UPDATE_EXISTING", inputFormat);
-                app.log('The result violates our community guidelines');
+                try {
+                    const errorBody = JSON.parse(effectResponse.body.toString());
+                    if (errorBody.detail && errorBody.detail.toLowerCase().includes('limit')) {
+                        logEventAssetCreation("RATE_LIMITED", "UPDATE_EXISTING", inputFormat);
+                        app.log('Limit reached — A maximum of 5 effects can be generated at once.');
+                    } else {
+                        logEventAssetCreation("GUIDELINES_VIOLATION", "UPDATE_EXISTING", inputFormat);
+                        app.log('The result violates our community guidelines');
+                    }
+                } catch (e) {
+                    logEventAssetCreation("GUIDELINES_VIOLATION", "UPDATE_EXISTING", inputFormat);
+                    app.log('The result violates our community guidelines');
+                }
                 this.editEffectButton.enabled = true;
             } else {
                 logEventAssetCreation("FAILED", "UPDATE_EXISTING", inputFormat);

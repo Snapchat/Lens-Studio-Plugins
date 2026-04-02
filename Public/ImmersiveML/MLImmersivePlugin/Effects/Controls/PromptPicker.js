@@ -187,6 +187,26 @@ export class PromptPicker extends Control {
         this.enhancedMenu.widget.visible = true;
     }
 
+    applyModeVisibility(savedMode) {
+        const idx = this.buttonGroup.currentIndex;
+        if (idx === RadioButtonMode.Enhanced) {
+            this.contentWidget.visible = false;
+            this.enhancedMenu.widget.visible = true;
+        } else if (idx === RadioButtonMode.Cartoonish) {
+            this.enhancedMenu.widget.visible = false;
+            this.contentWidget.visible = true;
+            this.promptModeBar.widget.visible = true;
+            if (savedMode) {
+                this.promptModeBar.value = savedMode;
+            }
+        } else if (idx === RadioButtonMode.Realistic) {
+            this.enhancedMenu.widget.visible = false;
+            this.contentWidget.visible = true;
+            this.promptModeBar.value = 'Text';
+            this.promptModeBar.widget.visible = false;
+        }
+    }
+
     disableReferenceStrengthSlider() {
         this.enhancedMenu.disableReferenceStrengthSlider();
     }

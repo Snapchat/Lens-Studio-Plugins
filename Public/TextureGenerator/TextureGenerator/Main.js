@@ -1,6 +1,7 @@
 //@ts-ignore
 import { EntityGenerator, Descriptor } from 'LensStudio:EntityGenerator';
 import app from "./Application";
+export { GenerateTextureChatTool } from "./chat-tools/GenerateTextureChatTool";
 export class TextureGenerator extends EntityGenerator {
     static descriptor() {
         const descriptor = new Descriptor();
@@ -17,6 +18,7 @@ export class TextureGenerator extends EntityGenerator {
         super(pluginSystem, descriptor);
         app.init(pluginSystem);
     }
+    // @ts-ignore - returns null because generation is handled via the dialog UI
     async generate() {
         app.show();
         return null;

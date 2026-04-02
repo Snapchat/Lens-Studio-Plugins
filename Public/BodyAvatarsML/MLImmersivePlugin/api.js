@@ -99,7 +99,6 @@ export function listEffects(maxPageSize, callback, searchQuery, pageToken) {
     request.method = Network.HttpRequest.Method.Get;
 
     Network.performAuthorizedHttpRequest(request, function(response) {
-        console.log(response.body.toString());
         callback(response);
     });
 }

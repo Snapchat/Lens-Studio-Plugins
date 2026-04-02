@@ -20,9 +20,11 @@ import app from '../../application/app.js';
 import { logEventAssetCreation } from '../../application/analytics.js';
 import {createModelType} from "../Effects/Controls/ModelType";
 import {EnhancedSettingsDescriptor} from "../Effects/EnhancedSettingsDescriptor";
+import {AdvancedSettingsDescriptor} from "../Effects/AdvancedSettingsDescriptor";
 import {createEnhancedPromptPicker, EnhancedPromptPicker} from "../Effects/Controls/EnhancedPromptPicker";
+import {createSeed, Seed} from "../Effects/Controls/Seed";
 import {HintID} from "../Hints/HintFactory";
-import {isEnhancedEffectType} from "../utils";
+import {isEnhancedEffectType, isAdvancedEffectType} from "../utils";
 
 export class PreviewMenu {
     constructor(onStateChanged, resetParent, setDefaultState, setPreviewState) {
@@ -54,15 +56,32 @@ export class PreviewMenu {
 
         if (this.settingsWidget.currentIndex === 0) {
             effectData = {
-                "effectTypeId": "face-enhanced-v2",
+                "effectTypeId": "face-enhanced",
                 "settings": {
                     "image_prompts": controls['enhancedPromptPicker'].imageValue,
                     "text_prompt": controls['enhancedPromptPicker'].textValue,
+                    "image_reference_strength": this.convertSliderValue(controls['referenceStrength'].value, 1.0, 10.0, 0.5, 2.5),
+                    "attributes_preservation": this.convertSliderValue(controls['attributesPreservation'].value, 1.0, 10.0, 1.0, 2.0),
+                    "seed": this.controls['seed'].value
                 }
             }
 
             const hasText = controls['enhancedPromptPicker'].textValue.length > 0;
             const hasImage = controls['enhancedPromptPicker'].imageValue.length > 0;
+            inputFormat = hasText && hasImage ? "TEXT_AND_IMAGE" : hasText ? "PROMPT_TEXT" : "PROMPT_IMAGE";
+        }
+
+        if (this.settingsWidget.currentIndex === 1) {
+            effectData = {
+                "effectTypeId": "face-enhanced-v2",
+                "settings": {
+                    "image_prompts": controls['advancedPromptPicker'].imageValue,
+                    "text_prompt": controls['advancedPromptPicker'].textValue,
+                }
+            }
+
+            const hasText = controls['advancedPromptPicker'].textValue.length > 0;
+            const hasImage = controls['advancedPromptPicker'].imageValue.length > 0;
             inputFormat = hasText && hasImage ? "TEXT_AND_IMAGE" : hasText ? "PROMPT_TEXT" : "PROMPT_IMAGE";
         }
 
@@ -87,10 +106,11 @@ export class PreviewMenu {
                             'creation': true,
                         });
                         logEventAssetCreation("SUCCESS", "UPDATE_EXISTING", inputFormat);
-                        if (isEnhancedEffectType(effectBody.effectTypeId)) {
+                        if (isAdvancedEffectType(effectBody.effectTypeId)) {
                             app.log(`${app.name} is queued. ${app.name} creation is estimated to take up to 20 minutes, please check back later.`, {'progressBar': true});
-                        }
-                        else {
+                        } else if (isEnhancedEffectType(effectBody.effectTypeId)) {
+                            app.log(`${app.name} is queued. ${app.name} creation is estimated to take up to 5 minutes, please check back later.`, {'progressBar': true});
+                        } else {
                             app.log(`${app.name} is queued. ${app.name} creation is estimated to take 10-15 min, please check back later.`, {'progressBar': true});
                         }
                     } else {
@@ -100,8 +120,19 @@ export class PreviewMenu {
                     this.editEffectButton.enabled = true;
                 });
             } else if (effectResponse.statusCode == 400) {
-                app.log('The result violates our community guidelines');
-                logEventAssetCreation("GUIDELINES_VIOLATION", "UPDATE_EXISTING", inputFormat);
+                try {
+                    const errorBody = JSON.parse(effectResponse.body.toString());
+                    if (errorBody.detail && errorBody.detail.toLowerCase().includes('limit')) {
+                        logEventAssetCreation("RATE_LIMITED", "UPDATE_EXISTING", inputFormat);
+                        app.log('Limit reached — A maximum of 5 effects can be generated at once.');
+                    } else {
+                        logEventAssetCreation("GUIDELINES_VIOLATION", "UPDATE_EXISTING", inputFormat);
+                        app.log('The result violates our community guidelines');
+                    }
+                } catch (e) {
+                    logEventAssetCreation("GUIDELINES_VIOLATION", "UPDATE_EXISTING", inputFormat);
+                    app.log('The result violates our community guidelines');
+                }
                 this.editEffectButton.enabled = true;
             } else {
                 app.log('Something went wrong, please try again.');
@@ -117,16 +148,28 @@ export class PreviewMenu {
         this.status = 'SUCCESS';
 
         if (effect_settings) {
-            if (isEnhancedEffectType(effect_settings.effectTypeId)) {
+            if (isAdvancedEffectType(effect_settings.effectTypeId)) {
+                this.settingsWidget.currentIndex = 1;
+                this.controls['modelType'].showAdvancedButton();
+                this.controls['advancedPromptPicker'].textValue = effect_settings.settings.text_prompt;
+                this.controls['advancedPromptPicker'].imageValue = JSON.parse(JSON.stringify(effect_settings.settings.image_prompts));
+
+                this.lockAdvanced();
+            }
+            else if (isEnhancedEffectType(effect_settings.effectTypeId)) {
                 this.settingsWidget.currentIndex = 0;
                 this.controls['modelType'].showEnhancedButton();
                 this.controls['enhancedPromptPicker'].textValue = effect_settings.settings.text_prompt;
                 this.controls['enhancedPromptPicker'].imageValue = JSON.parse(JSON.stringify(effect_settings.settings.image_prompts));
 
+                this.controls['referenceStrength'].value = this.convertSliderValue(effect_settings.settings.image_reference_strength, 0.5, 2.5, 1.0, 10.0);
+                this.controls['attributesPreservation'].value = this.convertSliderValue(effect_settings.settings.attributes_preservation, 1.0, 2.0, 1.0, 10.0);
+                this.controls['seed'].value = effect_settings.settings.seed;
+
                 this.lockEnhanced();
             }
             else {
-                this.settingsWidget.currentIndex = 1;
+                this.settingsWidget.currentIndex = 2;
                 this.controls['modelType'].showStandardButton();
                 if (effect_settings.effectTypeId == 'face-text') {
                     this.controls['promptPicker'].mode = 'Image';
@@ -195,11 +238,27 @@ export class PreviewMenu {
     lockEnhanced() {
         this.generateButton.visible = false;
         this.controls['enhancedPromptPicker'].lock();
+        this.controls['referenceStrength'].widget.enabled = false;
+        this.controls['attributesPreservation'].widget.enabled = false;
+        this.controls['seed'].widget.enabled = false;
     }
 
     unlockEnhanced() {
         this.generateButton.visible = true;
         this.controls['enhancedPromptPicker'].unlock();
+        this.controls['referenceStrength'].widget.enabled = this.controls['enhancedPromptPicker'].imagePickerValue.length > 0 && !this.controls['enhancedPromptPicker'].locked;
+        this.controls['attributesPreservation'].widget.enabled = true;
+        this.controls['seed'].widget.enabled = true;
+    }
+
+    lockAdvanced() {
+        this.generateButton.visible = false;
+        this.controls['advancedPromptPicker'].lock();
+    }
+
+    unlockAdvanced() {
+        this.generateButton.visible = true;
+        this.controls['advancedPromptPicker'].unlock();
     }
 
     lockStandard() {
@@ -229,6 +288,11 @@ export class PreviewMenu {
         this.controls['browsPreservationSettings'].widget.enabled = state;
         this.controls['faceContourPreservationSettings'].widget.enabled = state;
         this.controls['hairPreservationSettings'].widget.enabled = state;
+    }
+
+    convertSliderValue(sliderValue, xMin, xMax, yMin, yMax) {
+        const scale = (sliderValue - xMin) / (xMax - xMin);
+        return yMin + scale * (yMax - yMin);
     }
 
     reset() {
@@ -332,6 +396,7 @@ export class PreviewMenu {
             this.editEffectButton.visible = false;
             this.unlockEnhanced();
             this.unlockStandard();
+            this.unlockAdvanced();
             this.setDefaultState();
         }));
 
@@ -396,6 +461,9 @@ export class PreviewMenu {
                 case UserNotesPicker:
                     this.controls[scheme.name] = createUserNotesPicker(scheme);
                     break;
+                case Seed:
+                    this.controls[scheme.name] = createSeed(scheme);
+                    break;
             }
 
             if (scheme.preset_based) {
@@ -450,7 +518,7 @@ export class PreviewMenu {
             return separator;
         };
 
-        this.controls['modelType'] = createModelType(this.menu, "Model Type", HintID.standard_mode, HintID.enhanced_mode);
+        this.controls['modelType'] = createModelType(this.menu, "Model Type", HintID.standard_mode, HintID.enhanced_mode, HintID.advanced_mode);
         this.menuLayout.addWidget(this.controls['modelType'].widget);
 
         this.settingsWidget = new Ui.StackedWidget(this.menu);
@@ -467,10 +535,17 @@ export class PreviewMenu {
         this.enhancedSettingsLayout.setContentsMargins(0, 0, 0, 0);
         this.enhancedSettingsWidget.layout = this.enhancedSettingsLayout;
 
+        this.advancedSettingsWidget = new Ui.Widget(this.settingsWidget);
+        this.advancedSettingsLayout = new Ui.BoxLayout();
+        this.advancedSettingsLayout.setDirection(Ui.Direction.TopToBottom);
+        this.advancedSettingsLayout.setContentsMargins(0, 0, 0, 0);
+        this.advancedSettingsWidget.layout = this.advancedSettingsLayout;
+
         this.settingsWidget.addWidget(this.enhancedSettingsWidget);
+        this.settingsWidget.addWidget(this.advancedSettingsWidget);
         this.settingsWidget.addWidget(this.standardSettingsWidget);
 
-        this.settingsWidget.currentIndex = 1;
+        this.settingsWidget.currentIndex = 2;
 
         this.controls['modelType'].addOnValueChanged((value) => {
             this.settingsWidget.currentIndex = value;
@@ -478,6 +553,7 @@ export class PreviewMenu {
 
         this.settingsScheme = new SettingsDescriptor().getSettingsDescriptor(this.menu);
         this.enhancedSettingsScheme = new EnhancedSettingsDescriptor().getSettingsDescriptor(this.enhancedSettingsWidget);
+        this.advancedSettingsScheme = new AdvancedSettingsDescriptor().getSettingsDescriptor(this.advancedSettingsWidget);
 
         this.settingsScheme.items.forEach((settingItem) => {
             switch (settingItem.type) {
@@ -507,6 +583,17 @@ export class PreviewMenu {
             }
         })
 
+        this.advancedSettingsScheme.items.forEach((settingItem) => {
+            switch (settingItem.type) {
+                case 'control':
+                    this.advancedSettingsLayout.addWidget(createControl(settingItem).widget);
+                    break;
+                case 'separator':
+                    this.advancedSettingsLayout.addWidget(createSeparator(settingItem));
+                    break;
+            }
+        })
+
         this.controls['promptPicker'].addOnValueChanged((value) => {
             this.editEffectButton.enabled = value.length > 0 && this.status == 'SUCCESS';
             if (this.generateButton) {
@@ -516,13 +603,22 @@ export class PreviewMenu {
 
         this.controls['enhancedPromptPicker'].addOnValueChanged((value) => {
             this.editEffectButton.enabled = this.controls['enhancedPromptPicker'].valueExists && this.status == 'SUCCESS';
+            this.controls['referenceStrength'].widget.enabled = this.controls['enhancedPromptPicker'].imagePickerValue.length > 0 && !this.controls['enhancedPromptPicker'].locked;
             if (this.generateButton) {
                 this.generateButton.enabled = this.controls['enhancedPromptPicker'].valueExists && this.status == 'SUCCESS';
             }
         });
 
+        this.controls['advancedPromptPicker'].addOnValueChanged((value) => {
+            this.editEffectButton.enabled = this.controls['advancedPromptPicker'].valueExists && this.status == 'SUCCESS';
+            if (this.generateButton) {
+                this.generateButton.enabled = this.controls['advancedPromptPicker'].valueExists && this.status == 'SUCCESS';
+            }
+        });
+
         this.standardSettingsLayout.addStretch(0);
         this.enhancedSettingsLayout.addStretch(0);
+        this.advancedSettingsLayout.addStretch(0);
 
         this.menuLayout.addWidget(this.settingsWidget);
         this.menuLayout.addStretch(0);

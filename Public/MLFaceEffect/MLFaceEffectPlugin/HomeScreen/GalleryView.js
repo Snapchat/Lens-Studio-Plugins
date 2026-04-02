@@ -1,4 +1,5 @@
 import * as Ui from 'LensStudio:Ui';
+import * as Shell from 'LensStudio:Shell';
 
 import { listEffects, getEffect, getPostProcessing, getModels, deleteEffect, updateFavorites, deleteFavorites } from '../api.js';
 import {downloadFileFromBucket, importToProject} from '../utils.js';
@@ -430,13 +431,13 @@ export class GalleryView {
         if ((this.renderedViews + items.length) === 0) {
             if (this.searchQuery.length > 0 || !this.filter.isDefault()) {
                 this.disclaimer.text = "<center>No matching results found.<br>Try adjust your search query.<center>";
+                this.emptyPlaceholder.visible = true;
             } else {
-                this.disclaimer.text = `<center>You don't have any ${app.name} created yet,<br>try to create a new one.<center>`;
+                this.emptyGalleryPage.visible = true;
             }
-
-            this.emptyPlaceholder.visible = true;
         } else {
             this.emptyPlaceholder.visible = false;
+            this.emptyGalleryPage.visible = false;
         }
 
         const startSize = this.renderedViews;
@@ -1015,6 +1016,96 @@ export class GalleryView {
         this.emptyPlaceholder.layout = layout;
     }
 
+    createEmptyGalleryPage(parent) {
+        this.emptyGalleryPage = new Ui.Widget(parent);
+        this.emptyGalleryPage.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
+        this.emptyGalleryPage.setFixedWidth(422);
+        this.emptyGalleryPage.setFixedHeight(500);
+
+        this.logo = new Ui.ImageView(this.emptyGalleryPage);
+        this.logo.pixmap = new Ui.Pixmap(new Editor.Path(import.meta.resolve('../Resources/icon.svg')));
+        this.logo.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
+        this.logo.setFixedWidth(32);
+        this.logo.setFixedHeight(32);
+        this.logo.scaledContents = true;
+
+        this.logo.move(192, 69);
+
+        const title = new Ui.Label(this.emptyGalleryPage);
+        title.fontRole = Ui.FontRole.TitleBold;
+        title.foregroundRole = Ui.ColorRole.BrightText;
+        title.text = '<center>Welcome to<br><span style="font-size: 16px; font-weight: bold; color: #FFF0B9;">Face Effect Generator</span><center>';
+        title.wordWrap = true;
+        title.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Preferred);
+        title.setFixedWidth(180);
+
+        title.move(121, 112);
+
+        this.movieView = new Ui.MovieView(this.emptyGalleryPage);
+        this.movieView.setFixedWidth(122);
+        this.movieView.setFixedHeight(216);
+        this.movieView.radius = 8;
+        this.movieView.scaledContents = true;
+        this.movieView.animated = true;
+
+        const movie = new Ui.Movie(new Editor.Path(import.meta.resolve('../Resources/p_01.webp')));
+        movie.resize(122, 216);
+        this.movieView.movie = movie;
+
+        this.movieView.move(20, 170);
+
+        this.movieView1 = new Ui.MovieView(this.emptyGalleryPage);
+        this.movieView1.setFixedWidth(122);
+        this.movieView1.setFixedHeight(216);
+        this.movieView1.radius = 8;
+        this.movieView1.scaledContents = true;
+        this.movieView1.animated = true;
+
+        const movie1 = new Ui.Movie(new Editor.Path(import.meta.resolve('../Resources/p_02.webp')));
+        movie1.resize(122, 216);
+        this.movieView1.movie = movie1;
+
+        this.movieView1.move(149, 170);
+
+        this.movieView2 = new Ui.MovieView(this.emptyGalleryPage);
+        this.movieView2.setFixedWidth(122);
+        this.movieView2.setFixedHeight(216);
+        this.movieView2.radius = 8;
+        this.movieView2.scaledContents = true;
+        this.movieView2.animated = true;
+
+        const movie2 = new Ui.Movie(new Editor.Path(import.meta.resolve('../Resources/p_03.webp')));
+        movie2.resize(122, 216);
+        this.movieView2.movie = movie2;
+
+        this.movieView2.move(278, 170);
+
+        const disclaimer = new Ui.Label(this.emptyGalleryPage);
+        disclaimer.wordWrap = true;
+        disclaimer.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Preferred);
+        disclaimer.setFixedWidth(300);
+
+        disclaimer.text = `<center>You don't have any generated effects yet.<br>Try creating a new one!<center>`;
+
+        disclaimer.move(61, 424)
+
+        const guidelinesButton = new Ui.PushButton(this.emptyGalleryPage);
+        guidelinesButton.text = 'Guidelines';
+        const importImagePath = new Editor.Path(import.meta.resolve('../Resources/Guides.svg'));
+        guidelinesButton.setIconWithMode(Editor.Icon.fromFile(importImagePath), Ui.IconMode.MonoChrome);
+        guidelinesButton.primary = false;
+        guidelinesButton.enabled = true;
+        guidelinesButton.visible = true;
+
+        guidelinesButton.move(164, 468);
+
+        guidelinesButton.onClick.connect(() => {
+            Shell.openUrl('https://developers.snap.com/lens-studio/features/genai-suite/face-ml-generation', {});
+        })
+
+        this.emptyGalleryPage.visible = false;
+    }
+
     createGalleryGrid(parent) {
         this.galleryGridWidget = new Ui.Widget(parent);
 
@@ -1049,6 +1140,8 @@ export class GalleryView {
 
         this.emptyPlaceHolder = this.createEmptyPlaceholder(this.galleryGridWidget);
         this.emptyPlaceholder.visible = false;
+
+        this.createEmptyGalleryPage(this.galleryGridWidget);
 
         return this.galleryGridWidget;
     }

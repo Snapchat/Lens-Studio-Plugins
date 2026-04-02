@@ -1,7 +1,7 @@
 /**
  * @module Editor Scripting
- * @version 5.19.0
- * For Snapchat Version: 13.82
+ * @version 5.21.0
+ * For Snapchat Version: 13.88
 */
 interface ComponentNameMap {
     "AnimationPlayer": Editor.Components.AnimationPlayer;
@@ -381,6 +381,23 @@ declare namespace Editor {
 
 declare namespace Editor {
     namespace Assets {
+        class AssetCompressionSettings extends Editor.Model.EntityStructure {
+            
+            /** @hidden */
+            protected constructor()
+            
+            static getMeta(): Editor.Model.Meta
+            
+            static getTypeName(): string
+            
+        }
+    
+    }
+
+}
+
+declare namespace Editor {
+    namespace Assets {
         class AudioTrackAsset extends Editor.Assets.Asset {
             
             /** @hidden */
@@ -592,6 +609,35 @@ declare namespace Editor {
 
 declare namespace Editor {
     namespace Assets {
+        class DracoCompressionSettings extends Editor.Assets.FileCompressionSettings {
+            
+            /** @hidden */
+            protected constructor()
+            
+            colorBits: number
+            
+            compressionLevel: number
+            
+            normalBits: number
+            
+            positionBits: number
+            
+            texcoordBits: number
+            
+            static create(scene: Editor.Assets.Scene): Editor.Assets.DracoCompressionSettings
+            
+            static getMeta(): Editor.Model.Meta
+            
+            static getTypeName(): string
+            
+        }
+    
+    }
+
+}
+
+declare namespace Editor {
+    namespace Assets {
         /**
         * A native asset that provides a cropped region of the input texture, calculated based on face position. Import with {@link Editor.Model.AssetManager#createNativeAsset}.   Learn more in {@link LensScripting.FaceCropTextureProvider}
         
@@ -663,6 +709,23 @@ declare namespace Editor {
 
 declare namespace Editor {
     namespace Assets {
+        class FileCompressionSettings extends Editor.Assets.AssetCompressionSettings {
+            
+            /** @hidden */
+            protected constructor()
+            
+            static getMeta(): Editor.Model.Meta
+            
+            static getTypeName(): string
+            
+        }
+    
+    }
+
+}
+
+declare namespace Editor {
+    namespace Assets {
         /**
         * An asset for 3D meshes.
         */
@@ -670,6 +733,11 @@ declare namespace Editor {
             
             /** @hidden */
             protected constructor()
+            
+            /**
+            * @readonly
+            */
+            info: Editor.Assets.MeshInfo
             
             static getMeta(): Editor.Model.Meta
             
@@ -842,6 +910,40 @@ declare namespace Editor {
         * Settings used with {@link Editor.Components.Text} and {@link Editor.Components.Text3D}.
         */
         class Font extends Editor.Assets.Asset {
+            
+            /** @hidden */
+            protected constructor()
+            
+            static getMeta(): Editor.Model.Meta
+            
+            static getTypeName(): string
+            
+        }
+    
+    }
+
+}
+
+declare namespace Editor {
+    namespace Assets {
+        class FontCollection extends Editor.Assets.Asset {
+            
+            /** @hidden */
+            protected constructor()
+            
+            static getMeta(): Editor.Model.Meta
+            
+            static getTypeName(): string
+            
+        }
+    
+    }
+
+}
+
+declare namespace Editor {
+    namespace Assets {
+        class FontFamily extends Editor.Assets.Asset {
             
             /** @hidden */
             protected constructor()
@@ -1178,6 +1280,48 @@ declare namespace Editor {
             addPass(pass: Editor.Assets.Pass): Editor.Assets.PassInfo
             
             passInfos: Editor.Assets.PassInfo[]
+            
+            static getMeta(): Editor.Model.Meta
+            
+            static getTypeName(): string
+            
+        }
+    
+    }
+
+}
+
+declare namespace Editor {
+    namespace Assets {
+        class MeshInfo extends Editor.Model.EntityStructure {
+            
+            /** @hidden */
+            protected constructor()
+            
+            /**
+            * @readonly
+            */
+            aabbSize: vec3
+            
+            /**
+            * @readonly
+            */
+            blendshapes: string[]
+            
+            /**
+            * @readonly
+            */
+            joints: number
+            
+            /**
+            * @readonly
+            */
+            triangles: number
+            
+            /**
+            * @readonly
+            */
+            vertices: number
             
             static getMeta(): Editor.Model.Meta
             
@@ -1582,6 +1726,27 @@ declare namespace Editor {
             * @readonly
             */
             shaderType: Editor.Assets.ShaderType
+            
+        }
+    
+    }
+
+}
+
+declare namespace Editor {
+    namespace Assets {
+        class PerformanceCompressionSettings extends Editor.Assets.SizeCompressionSettings {
+            
+            /** @hidden */
+            protected constructor()
+            
+            mipmap: boolean
+            
+            static create(scene: Editor.Assets.Scene): Editor.Assets.PerformanceCompressionSettings
+            
+            static getMeta(): Editor.Model.Meta
+            
+            static getTypeName(): string
             
         }
     
@@ -2061,6 +2226,27 @@ declare namespace Editor {
 
 declare namespace Editor {
     namespace Assets {
+        class SizeCompressionSettings extends Editor.Assets.FileCompressionSettings {
+            
+            /** @hidden */
+            protected constructor()
+            
+            level: Editor.Assets.TextureCompressionLevel
+            
+            static create(scene: Editor.Assets.Scene): Editor.Assets.SizeCompressionSettings
+            
+            static getMeta(): Editor.Model.Meta
+            
+            static getTypeName(): string
+            
+        }
+    
+    }
+
+}
+
+declare namespace Editor {
+    namespace Assets {
         /**
         * A native asset that can be used with {@link LensScripting.MarkerTrackingComponent} Learn more at {@link LensScripting.SnapcodeMarkerProvider}. Import with {@link Editor.Model.AssetManager#createNativeAsset}. 
         */
@@ -2139,6 +2325,18 @@ declare namespace Editor {
 
 declare namespace Editor {
     namespace Assets {
+        enum TextureCompressionLevel {
+            Low,
+            Medium,
+            High
+        }
+    
+    }
+
+}
+
+declare namespace Editor {
+    namespace Assets {
         class TextureParameter {
             constructor(id: import('LensStudio:Uuid').Uuid)
             
@@ -2179,7 +2377,7 @@ declare namespace Editor {
             /**
             * scriptAsset.version = new Editor.Assets.Version(1,2,3);
             */
-            constructor(major: number, minor: number, patch: number)
+            constructor(major: number, minor: number, patch: number, prerelease?: string)
             
             /**
             * Major version number.
@@ -2195,6 +2393,8 @@ declare namespace Editor {
             * Patch version number. 
             */
             patch: number
+            
+            prerelease: string
             
         }
     
@@ -4667,7 +4867,11 @@ declare namespace Editor {
             
             editable: boolean
             
+            enableRichText: boolean
+            
             font: Editor.Assets.Font
+            
+            fontSource: (Editor.Assets.FontCollection|Editor.Assets.FontFamily|Editor.Assets.Font)
             
             horizontalOverflow: Editor.Components.HorizontalOverflow
             
@@ -4727,11 +4931,15 @@ declare namespace Editor {
             
             enableBatching: boolean
             
+            enableRichText: boolean
+            
             extrudeDirection: Editor.Components.ExtrudeDirection
             
             extrusionDepth: number
             
             font: Editor.Assets.Font
+            
+            fontSource: (Editor.Assets.FontCollection|Editor.Assets.FontFamily|Editor.Assets.Font)
             
             horizontalOverflow: Editor.Components.HorizontalOverflow
             
@@ -5063,6 +5271,94 @@ declare namespace Editor {
 }
 
 declare namespace Editor {
+    class GaussianSplatting {
+        
+        /** @hidden */
+        protected constructor()
+        
+        static createGsafFromPlyFiles(inputFiles: Editor.Path[], outputPath: Editor.Path, settings: Editor.GaussianSplatting.GsafImporterSettings): Promise<Editor.GaussianSplatting.GsafCreationInfo>
+        
+        static createGsafImporterSettings(scene: Editor.Assets.Scene): Editor.GaussianSplatting.GsafImporterSettings
+        
+    }
+
+}
+
+declare namespace Editor {
+    namespace GaussianSplatting {
+        class GsafCreationInfo {
+            
+            /** @hidden */
+            protected constructor()
+            
+            /**
+            * @readonly
+            */
+            bps: number
+            
+            /**
+            * @readonly
+            */
+            errorMetrics: string
+            
+            /**
+            * @readonly
+            */
+            qpmInfo: string
+            
+        }
+    
+    }
+
+}
+
+declare namespace Editor {
+    namespace GaussianSplatting {
+        class GsafImporterSettings extends Editor.Model.Entity {
+            
+            /** @hidden */
+            protected constructor()
+            
+            bitsDeltaPos: number
+            
+            bitsDeltaRot: number
+            
+            calculateErrorMetrics: boolean
+            
+            groupOfPictures: boolean
+            
+            keyFrameInterval: number
+            
+            minimumOpacity: number
+            
+            /**
+            * @readonly
+            */
+            numFrames: number
+            
+            preserveOrder: boolean
+            
+            static getMeta(): Editor.Model.Meta
+            
+            static getTypeName(): string
+            
+        }
+    
+    }
+
+}
+
+declare namespace Editor {
+    class Graph {
+        
+        /** @hidden */
+        protected constructor()
+        
+    }
+
+}
+
+declare namespace Editor {
     /**
     * Component that allows you to check whether Lens Studio is authorized, as well as get authorization. Requires `snap_auth_token` in the `module.json` of your plugin.
     */
@@ -5234,6 +5530,8 @@ declare namespace Editor {
         /** @hidden */
         protected constructor()
         
+        exportAsZip(exportPath: Editor.Path, exportOptions: Editor.Model.ExportOptions, includeCache: boolean): void
+        
         exportPackage(nativePackageDescriptor: Editor.Assets.NativePackageDescriptor, path: Editor.Path, exportOptions: Editor.Model.ExportOptions): void
         
         exportScript(scriptAsset: Editor.Assets.ScriptAsset, path: Editor.Path, exportOptions: Editor.Model.ExportOptions): void
@@ -5393,6 +5691,8 @@ declare namespace Editor {
             * @readonly
             */
             assets: Editor.Assets.Asset[]
+            
+            compressionSettings: Editor.Assets.AssetCompressionSettings
             
             /**
             * @readonly
@@ -5676,6 +5976,8 @@ declare namespace Editor {
             externalDependencies: Editor.Model.ExternalPackageDependency[]
             
             packagePolicy: Editor.Assets.PackagePolicy
+            
+            pluginsToInclude: Editor.Path[]
             
         }
     
@@ -6116,6 +6418,19 @@ declare namespace Editor {
 
 declare namespace Editor {
     namespace Model {
+        enum LensClientCompatibility {
+            Mobile,
+            Web,
+            Spectacles,
+            CameraKit
+        }
+    
+    }
+
+}
+
+declare namespace Editor {
+    namespace Model {
         /**
         * The metadata of an entity.
         */
@@ -6152,6 +6467,8 @@ declare namespace Editor {
             */
             setIcon(externalPath: Editor.Path): void
             
+            setVideoPreview(externalPath: Editor.Path): void
+            
             /**
             * The camera which will be activated when this Lens is turned on. 
             */
@@ -6176,10 +6493,17 @@ declare namespace Editor {
             */
             lensApplicability: Editor.Model.LensApplicability[]
             
+            lensClientCompatibilities: Editor.Model.LensClientCompatibility[]
+            
             /**
             * The publicly visible name of the Lens.
             */
             lensName: string
+            
+            /**
+            * @readonly
+            */
+            videoPreviewPath: Editor.Path
             
             /**
             * Checks whether the Lens Name is valid. See Project Info guide to learn more.
@@ -7042,7 +7366,7 @@ declare module "LensStudio:AssetInstantiator" {
         /**
         * Instantiates an asset into a scene under the given target scene object, returning the created prefabable objects.
         */
-        instantiate(asset: Editor.Assets.Asset, scene: Editor.Assets.Scene, target: Editor.Model.SceneObject): Editor.Model.Prefabable[]
+        instantiate(asset: Editor.Assets.Asset, scene: Editor.Assets.ObjectOwner, target: Editor.Model.SceneObject): Editor.Model.Prefabable[]
         
         /**
         * Resolves and prepares all asset dependencies required before instantiation, returning them as a promise.
@@ -8232,6 +8556,28 @@ declare module "LensStudio:CoreService" {
 }
 
 /**
+* @module LensStudio:Crypto
+*/
+declare module "LensStudio:Crypto" {
+    export function getRandomValues(typedArray: Uint8Array): Uint8Array
+    
+    export function randomUUID(): string
+    
+}
+
+declare module "LensStudio:Crypto" {
+    class subtle {
+        
+        /** @hidden */
+        protected constructor()
+        
+        static digest(algorithm: string, data: Uint8Array): Promise<Uint8Array>
+        
+    }
+
+}
+
+/**
 * Plugin module for creating modal or floating dialog windows with custom UI widgets.
 
 * @module LensStudio:DialogPlugin
@@ -8756,6 +9102,32 @@ declare module "LensStudio:Logger" {
         /**
         * Unique identifier for the IUserLogCollector interface.
         */
+        static interfaceId: Editor.InterfaceId
+        
+    }
+
+}
+
+/**
+* @module LensStudio:Mcp
+*/
+declare module "LensStudio:Mcp" {
+}
+
+declare module "LensStudio:Mcp" {
+    class IMcpServer extends Editor.IPluginComponent {
+        
+        /** @hidden */
+        protected constructor()
+        
+        getConfig(): any | undefined
+        
+        getServerToken(): string
+        
+        getServerUrl(): string
+        
+        isRunning(): boolean
+        
         static interfaceId: Editor.InterfaceId
         
     }
@@ -10167,6 +10539,48 @@ declare module "LensStudio:SysInfo" {
 }
 
 /**
+* @module LensStudio:TypeScript
+*/
+declare module "LensStudio:TypeScript" {
+}
+
+declare module "LensStudio:TypeScript" {
+    class ITypeScriptCompilationApi extends Editor.IPluginComponent {
+        
+        /** @hidden */
+        protected constructor()
+        
+        refreshProjectCompilation(): Promise<TypeScriptCompilationResult>
+        
+        runIsolatedCompilation(tsconfigPath: string): Promise<TypeScriptCompilationResult>
+        
+        static interfaceId: Editor.InterfaceId
+        
+    }
+
+}
+
+declare module "LensStudio:TypeScript" {
+    class TypeScriptCompilationResult {
+        
+        /** @hidden */
+        protected constructor()
+        
+        /**
+        * @readonly
+        */
+        errors: string[]
+        
+        /**
+        * @readonly
+        */
+        succeeded: boolean
+        
+    }
+
+}
+
+/**
 * Before using anything in this namespace, make sure to import `LensStudio:Ui`.
 
 * @module LensStudio:Ui
@@ -10619,20 +11033,10 @@ declare module "LensStudio:Ui" {
     /**
     * Event triggered when a window or dialog closes.
     */
-    class CloseEvent extends ScriptObject {
+    class CloseEvent extends Event {
         
         /** @hidden */
         protected constructor()
-        
-        /**
-        * Accept and process the close event.
-        */
-        accept(): void
-        
-        /**
-        * Reject and ignore the close event.
-        */
-        ignore(): void
         
     }
 
@@ -11320,6 +11724,20 @@ declare module "LensStudio:Ui" {
 }
 
 declare module "LensStudio:Ui" {
+    class Event extends ScriptObject {
+        
+        /** @hidden */
+        protected constructor()
+        
+        accept(): void
+        
+        ignore(): void
+        
+    }
+
+}
+
+declare module "LensStudio:Ui" {
     /**
     * Enum specifying font role for styling.
     */
@@ -11815,6 +12233,62 @@ declare module "LensStudio:Ui" {
 }
 
 declare module "LensStudio:Ui" {
+    enum Key {
+        Key_Space,
+        Key_0,
+        Key_1,
+        Key_2,
+        Key_3,
+        Key_4,
+        Key_5,
+        Key_6,
+        Key_7,
+        Key_8,
+        Key_9,
+        Key_A,
+        Key_B,
+        Key_C,
+        Key_D,
+        Key_E,
+        Key_F,
+        Key_G,
+        Key_H,
+        Key_I,
+        Key_J,
+        Key_K,
+        Key_L,
+        Key_M,
+        Key_N,
+        Key_O,
+        Key_P,
+        Key_Q,
+        Key_R,
+        Key_S,
+        Key_T,
+        Key_U,
+        Key_V,
+        Key_W,
+        Key_X,
+        Key_Y,
+        Key_Z,
+        Key_Escape,
+        Key_Tab,
+        Key_Backspace,
+        Key_Return,
+        Key_Delete,
+        Key_Left,
+        Key_Up,
+        Key_Right,
+        Key_Down,
+        Key_Shift,
+        Key_Control,
+        Key_Meta,
+        Key_Alt
+    }
+
+}
+
+declare module "LensStudio:Ui" {
     /**
     * Enum representing keyboard modifier keys.
     */
@@ -11847,6 +12321,31 @@ declare module "LensStudio:Ui" {
         * Group switch key modifier.
         */
         GroupSwitchModifier
+    }
+
+}
+
+declare module "LensStudio:Ui" {
+    class KeyEvent extends Event {
+        
+        /** @hidden */
+        protected constructor()
+        
+        /**
+        * @readonly
+        */
+        key: Key
+        
+        /**
+        * @readonly
+        */
+        modifiers: KeyboardModifier
+        
+        /**
+        * @readonly
+        */
+        text: string
+        
     }
 
 }
@@ -12323,20 +12822,10 @@ declare module "LensStudio:Ui" {
     /**
     * Event object containing mouse interaction data.
     */
-    class MouseEvent extends ScriptObject {
+    class MouseEvent extends Event {
         
         /** @hidden */
         protected constructor()
-        
-        /**
-        * Marks the mouse event as accepted, preventing further propagation
-        */
-        accept(): void
-        
-        /**
-        * Marks the mouse event as ignored, allowing further propagation
-        */
-        ignore(): void
         
         /**
         * The specific mouse button that triggered the event
@@ -12401,10 +12890,19 @@ declare module "LensStudio:Ui" {
         */
         constructor(filename: Editor.Path)
         
+        jumpToFrame(frame: number): boolean
+        
         /**
         * Resizes the movie to the specified width and height
         */
         resize(width: number, height: number): void
+        
+        cacheMode: Movie.CacheMode
+        
+        /**
+        * @readonly
+        */
+        frameCount: number
         
         /**
         * The width of the movie in pixels
@@ -12421,6 +12919,17 @@ declare module "LensStudio:Ui" {
         */
         width: number
         
+    }
+
+}
+
+declare module "LensStudio:Ui" {
+    namespace Movie {
+        enum CacheMode {
+            CacheNone,
+            CacheAll
+        }
+    
     }
 
 }
@@ -12924,6 +13433,34 @@ declare module "LensStudio:Ui" {
         * Shadow style that makes an element appear recessed into the surface.
         */
         Sunken
+    }
+
+}
+
+declare module "LensStudio:Ui" {
+    class Shortcut extends ScriptObject {
+        constructor(parent: Widget, keySequence: string, context: ShortcutContext)
+        
+        /**
+        * @readonly
+        */
+        onActivated: signal0<void>
+        
+        /**
+        * @readonly
+        */
+        onActivatedAmbiguously: signal0<void>
+        
+    }
+
+}
+
+declare module "LensStudio:Ui" {
+    enum ShortcutContext {
+        WidgetShortcut,
+        WindowShortcut,
+        ApplicationShortcut,
+        WidgetWithChildrenShortcut
     }
 
 }
@@ -14009,6 +14546,10 @@ declare module "LensStudio:Ui" {
         */
         deleteLater(): void
         
+        findChild(objectName: string): Widget
+        
+        getProperty(name: string): any
+        
         /**
         * Captures the widget's current rendered content as a Pixmap.
         */
@@ -14076,6 +14617,8 @@ declare module "LensStudio:Ui" {
         */
         setMinimumWidth(width: number): void
         
+        setProperty(name: string, value: any): boolean
+        
         /**
         * Controls how the widget grows or shrinks relative to its layout.
         */
@@ -14112,6 +14655,11 @@ declare module "LensStudio:Ui" {
         backgroundRole: ColorRole
         
         /**
+        * @readonly
+        */
+        className: string
+        
+        /**
         * Controls how the widget handles context menu requests.
         */
         contextMenuPolicy: ContextMenuPolicy
@@ -14139,6 +14687,11 @@ declare module "LensStudio:Ui" {
         foregroundRole: ColorRole
         
         /**
+        * @readonly
+        */
+        hasFocus: boolean
+        
+        /**
         * Current height of the widget in pixels.
         
         * @readonly
@@ -14157,10 +14710,14 @@ declare module "LensStudio:Ui" {
         */
         isNull: boolean
         
+        isTransparentForMouseEvents: boolean
+        
         /**
         * The layout manager assigned to arrange child widgets.
         */
         layout: Layout
+        
+        objectName: string
         
         /**
         * Signal emitted when the widget is closed.
@@ -14168,6 +14725,16 @@ declare module "LensStudio:Ui" {
         * @readonly
         */
         onClose: signal1<import('LensStudio:Ui').CloseEvent, void>
+        
+        /**
+        * @readonly
+        */
+        onFocusIn: signal0<void>
+        
+        /**
+        * @readonly
+        */
+        onFocusOut: signal0<void>
         
         /**
         * Signal emitted when the widget becomes hidden.
@@ -14371,6 +14938,48 @@ declare module "LensStudio:Ui" {
             
         }
     
+    }
+
+}
+
+/**
+* @module LensStudio:UiTest
+*/
+declare module "LensStudio:UiTest" {
+    export function KeyEvent(type: EventType, key: import('LensStudio:Ui').Key, modifiers: import('LensStudio:Ui').KeyboardModifier, text: string): import('LensStudio:Ui').KeyEvent
+    
+    export function MouseEvent(type: EventType, button: import('LensStudio:Ui').MouseButton, modifiers: import('LensStudio:Ui').KeyboardModifier, x: number, y: number): import('LensStudio:Ui').MouseEvent
+    
+    export function findChildren(widget: import('LensStudio:Ui').Widget, className: string): import('LensStudio:Ui').Widget[]
+    
+    export function invoke(widget: import('LensStudio:Ui').Widget, method: string): boolean
+    
+    export function itemClick(widget: import('LensStudio:Ui').Widget, path: number[]): void
+    
+    export function itemCollapse(widget: import('LensStudio:Ui').Widget, path: number[]): void
+    
+    export function itemCount(widget: import('LensStudio:Ui').Widget, path: number[]): number
+    
+    export function itemExpand(widget: import('LensStudio:Ui').Widget, path: number[]): void
+    
+    export function itemText(widget: import('LensStudio:Ui').Widget, path: number[]): string
+    
+    export function mainWindow(gui: import('LensStudio:Ui').IGui): import('LensStudio:Ui').Widget
+    
+    export function processEvents(ms: number): void
+    
+    export function sendEvent(widget: import('LensStudio:Ui').Widget, event: import('LensStudio:Ui').Event): void
+    
+}
+
+declare module "LensStudio:UiTest" {
+    enum EventType {
+        MouseButtonPress,
+        MouseButtonRelease,
+        MouseButtonDblClick,
+        MouseMove,
+        KeyPress,
+        KeyRelease
     }
 
 }
@@ -16228,6 +16837,8 @@ declare namespace _palette {
     */
     let Editor_Assets_Asset: Editor.Assets.Asset
     
+    let Editor_Assets_AssetCompressionSettings: Editor.Assets.AssetCompressionSettings
+    
     let Editor_Assets_AudioTrackAsset: Editor.Assets.AudioTrackAsset
     
     /**
@@ -16261,6 +16872,8 @@ declare namespace _palette {
     */
     let Editor_Assets_DeviceCameraTexture: Editor.Assets.DeviceCameraTexture
     
+    let Editor_Assets_DracoCompressionSettings: Editor.Assets.DracoCompressionSettings
+    
     /**
     * A native asset that provides a cropped region of the input texture, calculated based on face position. Import with {@link Editor.Model.AssetManager#createNativeAsset}.   Learn more in {@link LensScripting.FaceCropTextureProvider}
     
@@ -16271,6 +16884,8 @@ declare namespace _palette {
     * A native asset that provides a 3D mesh of the user's face. Import with {@link Editor.Model.AssetManager#createNativeAsset}.   Learn more in the Face Mesh guide.
     */
     let Editor_Assets_FaceMesh: Editor.Assets.FaceMesh
+    
+    let Editor_Assets_FileCompressionSettings: Editor.Assets.FileCompressionSettings
     
     /**
     * An asset for 3D meshes.
@@ -16301,6 +16916,10 @@ declare namespace _palette {
     * Settings used with {@link Editor.Components.Text} and {@link Editor.Components.Text3D}.
     */
     let Editor_Assets_Font: Editor.Assets.Font
+    
+    let Editor_Assets_FontCollection: Editor.Assets.FontCollection
+    
+    let Editor_Assets_FontFamily: Editor.Assets.FontFamily
     
     /**
     * The same entity as in Lens Scripting.  @see {link Editor.Assets.PassInfo}. 
@@ -16368,6 +16987,8 @@ declare namespace _palette {
     */
     let Editor_Assets_Material: Editor.Assets.Material
     
+    let Editor_Assets_MeshInfo: Editor.Assets.MeshInfo
+    
     /**
     * A native asset that provides information for visual objects rendering. Learn more at {@link LensScripting.MLAsset}. Import with {@link Editor.Model.AssetManager#createNativeAsset}. 
     
@@ -16424,6 +17045,8 @@ declare namespace _palette {
     
     let Editor_Assets_PassUiData: Editor.Assets.PassUiData
     
+    let Editor_Assets_PerformanceCompressionSettings: Editor.Assets.PerformanceCompressionSettings
+    
     let Editor_Assets_Physics: Editor.Assets.Physics
     
     let Editor_Assets_Physics_Filter: Editor.Assets.Physics.Filter
@@ -16479,6 +17102,8 @@ declare namespace _palette {
     
     let Editor_Assets_ShaderType: Editor.Assets.ShaderType
     
+    let Editor_Assets_SizeCompressionSettings: Editor.Assets.SizeCompressionSettings
+    
     /**
     * A native asset that can be used with {@link LensScripting.MarkerTrackingComponent} Learn more at {@link LensScripting.SnapcodeMarkerProvider}. Import with {@link Editor.Model.AssetManager#createNativeAsset}. 
     */
@@ -16492,6 +17117,8 @@ declare namespace _palette {
     * A 2D texture asset.
     */
     let Editor_Assets_Texture: Editor.Assets.Texture
+    
+    let Editor_Assets_TextureCompressionLevel: Editor.Assets.TextureCompressionLevel
     
     let Editor_Assets_TextureParameter: Editor.Assets.TextureParameter
     
@@ -16968,6 +17595,14 @@ declare namespace _palette {
     */
     let Editor_Dock_IDockManager: Editor.Dock.IDockManager
     
+    let Editor_GaussianSplatting: Editor.GaussianSplatting
+    
+    let Editor_GaussianSplatting_GsafCreationInfo: Editor.GaussianSplatting.GsafCreationInfo
+    
+    let Editor_GaussianSplatting_GsafImporterSettings: Editor.GaussianSplatting.GsafImporterSettings
+    
+    let Editor_Graph: Editor.Graph
+    
     /**
     * Component that allows you to check whether Lens Studio is authorized, as well as get authorization. Requires `snap_auth_token` in the `module.json` of your plugin.
     */
@@ -17107,6 +17742,8 @@ declare namespace _palette {
     * The various contexts in which this Lens can be used.
     */
     let Editor_Model_LensApplicability: Editor.Model.LensApplicability
+    
+    let Editor_Model_LensClientCompatibility: Editor.Model.LensClientCompatibility
     
     /**
     * The metadata of an entity.
@@ -17405,6 +18042,10 @@ declare namespace _palette {
     */
     let LensStudio_CoreService_Descriptor: "LensStudio:CoreService.Descriptor"
     
+    let LensStudio_Crypto: "LensStudio:Crypto"
+    
+    let LensStudio_Crypto_subtle: "LensStudio:Crypto.subtle"
+    
     /**
     * Plugin module for creating modal or floating dialog windows with custom UI widgets.
     */
@@ -17509,6 +18150,10 @@ declare namespace _palette {
     * Plugin component interface for collecting and exposing user log data.
     */
     let LensStudio_Logger_IUserLogCollector: "LensStudio:Logger.IUserLogCollector"
+    
+    let LensStudio_Mcp: "LensStudio:Mcp"
+    
+    let LensStudio_Mcp_IMcpServer: "LensStudio:Mcp.IMcpServer"
     
     /**
     * Before using anything in this namespace, make sure to import `LensStudio:ModelUI`.
@@ -17799,6 +18444,12 @@ declare namespace _palette {
     */
     let LensStudio_SysInfo: "LensStudio:SysInfo"
     
+    let LensStudio_TypeScript: "LensStudio:TypeScript"
+    
+    let LensStudio_TypeScript_ITypeScriptCompilationApi: "LensStudio:TypeScript.ITypeScriptCompilationApi"
+    
+    let LensStudio_TypeScript_TypeScriptCompilationResult: "LensStudio:TypeScript.TypeScriptCompilationResult"
+    
     /**
     * Before using anything in this namespace, make sure to import `LensStudio:Ui`.
     */
@@ -17954,6 +18605,8 @@ declare namespace _palette {
     */
     let LensStudio_Ui_EditorsManager: "LensStudio:Ui.EditorsManager"
     
+    let LensStudio_Ui_Event: "LensStudio:Ui.Event"
+    
     /**
     * Enum specifying font role for styling.
     */
@@ -18004,10 +18657,14 @@ declare namespace _palette {
     */
     let LensStudio_Ui_IWorkspaceManager: "LensStudio:Ui.IWorkspaceManager"
     
+    let LensStudio_Ui_Key: "LensStudio:Ui.Key"
+    
     /**
     * Enum representing keyboard modifier keys.
     */
     let LensStudio_Ui_KeyboardModifier: "LensStudio:Ui.KeyboardModifier"
+    
+    let LensStudio_Ui_KeyEvent: "LensStudio:Ui.KeyEvent"
     
     /**
     * Widget displaying read-only text.
@@ -18075,6 +18732,8 @@ declare namespace _palette {
     * Represents an animated movie or video file.
     */
     let LensStudio_Ui_Movie: "LensStudio:Ui.Movie"
+    
+    let LensStudio_Ui_Movie_CacheMode: "LensStudio:Ui.Movie.CacheMode"
     
     /**
     * Widget for playing movies or animations.
@@ -18170,6 +18829,10 @@ declare namespace _palette {
     * Enum specifying shadow effect style.
     */
     let LensStudio_Ui_Shadow: "LensStudio:Ui.Shadow"
+    
+    let LensStudio_Ui_Shortcut: "LensStudio:Ui.Shortcut"
+    
+    let LensStudio_Ui_ShortcutContext: "LensStudio:Ui.ShortcutContext"
     
     /**
     * Represents width and height dimensions.
@@ -18318,6 +18981,10 @@ declare namespace _palette {
     * @beta
     */
     let LensStudio_Ui_Workspaces_Workspace: "LensStudio:Ui.Workspaces.Workspace"
+    
+    let LensStudio_UiTest: "LensStudio:UiTest"
+    
+    let LensStudio_UiTest_EventType: "LensStudio:UiTest.EventType"
     
     /**
     * Plugin module that enables custom URI scheme handling within Lens Studio.

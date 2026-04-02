@@ -11,8 +11,13 @@ const termsLink = 'https://www.snap.com/terms/lens-studio-license-agreement';
 const guidelinesLink = 'https://developers.snap.com/lens-studio/features/genai-suite/face-ml-generation';
 
 export function isEnhancedEffectType(effectTypeId) {
-    return effectTypeId === 'face-enhanced' || effectTypeId === 'face-enhanced-v2';
+    return effectTypeId === 'face-enhanced';
 }
+
+export function isAdvancedEffectType(effectTypeId) {
+    return effectTypeId === 'face-enhanced-v2';
+}
+
 
 export function convertIntensityToAPIStyle(intensityString) {
     switch (intensityString) {
@@ -149,7 +154,7 @@ export function createGuidelinesWidget(parent) {
     return createCalloutWidget(parent, 'Check our ' + urlString + ' for examples, prompting best practices and usage guidelines.', guidelinesLink);
 }
 
-export function createGenerationInProgressWidget(parent, isStandard = false) {
+export function createGenerationInProgressWidget(parent, timeEstimate = '5 minutes') {
     const frame = new Ui.Widget(parent);
 
     frame.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Expanding);
@@ -178,12 +183,7 @@ export function createGenerationInProgressWidget(parent, isStandard = false) {
     frameLayout.addWidgetWithStretch(header, 0, Ui.Alignment.AlignCenter);
 
     const disclaimerLabel = new Ui.Label(frame);
-    if (isStandard) {
-        disclaimerLabel.text = '<center>Generating preview...<br>This may take up to 10-15 minutes.<br><br>You can close this window and return later.</center>';
-    }
-    else {
-        disclaimerLabel.text = '<center>Generating preview...<br>This may take up to 20 minutes.<br><br>You can close this window and return later.</center>';
-    }
+    disclaimerLabel.text = '<center>Generating preview...<br>This may take up to ' + timeEstimate + '.<br><br>You can close this window and return later.</center>';
 
     frameLayout.addWidgetWithStretch(disclaimerLabel, 0, Ui.Alignment.AlignCenter);
     frameLayout.addStretch(0);
@@ -308,6 +308,51 @@ export function getRandomEnhancedPrompt() {
         '3D stylized caricature of an elderly woman with exaggerated facial features, grey hair, red lips in a kissing expression, highly detailed render',
         'Fantasy creature with pointed ears, wrinkled skin, dark purple eye sockets, bold purple lips, dark clothing, highly detailed',
         'a stylized dragon with red scales, oversized green eyes, and glowing wings, designed in a detailed 3D style'
+    ];
+
+    return prompts[Math.floor(Math.random() * prompts.length)];
+}
+
+export function getRandomAdvancedPrompt() {
+    const prompts = [
+        'heart shaped glasses pink',
+        'pixel sunglasses meme style',
+        'futuristic visor transparent neon',
+        'cyberpunk respirator mask',
+        'transparent glass face shield',
+        'tiny oval glasses retro',
+        'oversized sunglasses black',
+        'thick brown eyeglasses, brown frame',
+        'angry man with a large nose',
+        'wide mouth stretch face',
+        'big mouth funny distortion',
+        'balloon head face',
+        'crying face',
+        'old age face realistic',
+        'glittery pink makeup',
+        'gothic makeup',
+        'under eye gems sparkle',
+        'green cute orc',
+        'a chibi-style monster with green skin',
+        '3D character, a charming lemon',
+        'anthropomorphic carrot character, friendly and calm expression',
+        'cute monster sharp teeth',
+        'orc warrior rough skin',
+        'troll heavy face',
+        'alien face green skin',
+        'elf human hybrid',
+        'a cute alien with big eyes',
+        'Humanoid goblin',
+        'wooden character',
+        'wet plastic face',
+        'melting wax face effect',
+        'robot cyborg face metallic',
+        'cute panda face',
+        'big cheeks chipmunk face',
+        'red fox sly face',
+        'cute capybara chill face',
+        '2D cartoon-style dog',
+        'a cute fantasy axolotl creature, pastel pink and turquoise skin',
     ];
 
     return prompts[Math.floor(Math.random() * prompts.length)];

@@ -86,11 +86,7 @@ export class FaceMaskDialog {
             this.lastPrompt = this.creationMenu.controls["prompt"].value as string;
 
             await app.generator.generate({
-                prompt: this.creationMenu.controls["prompt"].value as string,
-                negativePrompt: this.creationMenu.controls["negativePrompt"].value as string,
-                seed: this.creationMenu.controls["seed"].value as number,
-                genSteps: this.creationMenu.controls["genSteps"].value as number,
-                guidanceScale: this.creationMenu.controls["guidanceScale"].value as number
+                prompt: this.creationMenu.controls["prompt"].value as string
             }, origin);
         }
     }

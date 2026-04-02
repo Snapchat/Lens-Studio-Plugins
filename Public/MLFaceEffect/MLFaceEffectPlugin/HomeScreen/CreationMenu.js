@@ -15,9 +15,11 @@ import { createEffect, createPostProcessing } from '../api.js';
 import app from '../../application/app.js';
 import { logEventAssetCreation } from '../../application/analytics.js';
 import {EnhancedSettingsDescriptor} from "../Effects/EnhancedSettingsDescriptor";
+import {AdvancedSettingsDescriptor} from "../Effects/AdvancedSettingsDescriptor";
+import {createSeed, Seed} from "../Effects/Controls/Seed";
 import {createModelType} from "../Effects/Controls/ModelType";
 import {HintID} from "../Hints/HintFactory";
-import {isEnhancedEffectType} from "../utils";
+import {isEnhancedEffectType, isAdvancedEffectType} from "../utils";
 
 export class CreationMenu {
     constructor(onStateChanged, resetParent) {
@@ -56,6 +58,12 @@ export class CreationMenu {
 
         this.controls['enhancedPromptPicker'].textValue = '';
         this.controls['enhancedPromptPicker'].imageValue = [];
+        this.controls['referenceStrength'].value = 5.5;
+        this.controls['attributesPreservation'].value = 5.5;
+        this.controls['seed'].value = 56;
+
+        this.controls['advancedPromptPicker'].textValue = '';
+        this.controls['advancedPromptPicker'].imageValue = [];
 
         this.enhancedSettingsCustomizedFlag = false;
     }
@@ -73,10 +81,13 @@ export class CreationMenu {
         if (this.settingsWidget.currentIndex === 0) {
             effectData = {
                 "userNotes": "",
-                "effectTypeId": "face-enhanced-v2",
+                "effectTypeId": "face-enhanced",
                 "settings": {
                     "image_prompts": controls['enhancedPromptPicker'].imageValue,
                     "text_prompt": controls['enhancedPromptPicker'].textValue,
+                    "image_reference_strength": this.convertSliderValue(controls['referenceStrength'].value, 1.0, 10.0, 0.5, 2.5),
+                    "attributes_preservation": this.convertSliderValue(controls['attributesPreservation'].value, 1.0, 10.0, 1.0, 2.0),
+                    "seed": this.controls['seed'].value
                 }
             }
 
@@ -85,6 +96,23 @@ export class CreationMenu {
             inputFormat = hasText && hasImage ? "TEXT_AND_IMAGE" : hasText ? "PROMPT_TEXT" : "PROMPT_IMAGE";
             preset = "";
             settings = this.enhancedSettingsCustomizedFlag ? "CUSTOM" : "DEFAULT";
+        }
+
+        if (this.settingsWidget.currentIndex === 1) {
+            effectData = {
+                "userNotes": "",
+                "effectTypeId": "face-enhanced-v2",
+                "settings": {
+                    "image_prompts": controls['advancedPromptPicker'].imageValue,
+                    "text_prompt": controls['advancedPromptPicker'].textValue,
+                }
+            }
+
+            const hasText = controls['advancedPromptPicker'].textValue.length > 0;
+            const hasImage = controls['advancedPromptPicker'].imageValue.length > 0;
+            inputFormat = hasText && hasImage ? "TEXT_AND_IMAGE" : hasText ? "PROMPT_TEXT" : "PROMPT_IMAGE";
+            preset = "";
+            settings = "DEFAULT";
         }
 
         createEffect(effectData, (effectResponse) => {
@@ -101,10 +129,11 @@ export class CreationMenu {
                         });
 
                         logEventAssetCreation("SUCCESS", "NEW", inputFormat, preset, settings);
-                        if (isEnhancedEffectType(effectBody.effectTypeId)) {
+                        if (isAdvancedEffectType(effectBody.effectTypeId)) {
                             app.log(`${app.name} is queued. ${app.name} creation is estimated to take up to 20 minutes, please check back later.`, {'progressBar': true});
-                        }
-                        else {
+                        } else if (isEnhancedEffectType(effectBody.effectTypeId)) {
+                            app.log(`${app.name} is queued. ${app.name} creation is estimated to take up to 5 minutes, please check back later.`, {'progressBar': true});
+                        } else {
                             app.log(`${app.name} is queued. ${app.name} creation is estimated to take 10-15 min, please check back later.`, {'progressBar': true});
                         }
                     } else {
@@ -113,8 +142,19 @@ export class CreationMenu {
                     }
                 });
             } else if (effectResponse.statusCode == 400) {
-                logEventAssetCreation("GUIDELINES_VIOLATION", "NEW", inputFormat, preset, settings);
-                app.log('The result violates our community guidelines');
+                try {
+                    const errorBody = JSON.parse(effectResponse.body.toString());
+                    if (errorBody.detail && errorBody.detail.toLowerCase().includes('limit')) {
+                        logEventAssetCreation("RATE_LIMITED", "NEW", inputFormat, preset, settings);
+                        app.log('Limit reached — A maximum of 5 effects can be generated at once.');
+                    } else {
+                        logEventAssetCreation("GUIDELINES_VIOLATION", "NEW", inputFormat, preset, settings);
+                        app.log('The result violates our community guidelines');
+                    }
+                } catch (e) {
+                    logEventAssetCreation("GUIDELINES_VIOLATION", "NEW", inputFormat, preset, settings);
+                    app.log('The result violates our community guidelines');
+                }
             } else {
                 logEventAssetCreation("FAILED", "NEW", inputFormat, preset, settings);
                 app.log('Something went wrong during effect creation, please try again.');
@@ -167,7 +207,7 @@ export class CreationMenu {
         this.menuLayout.addWidget(createGuidelinesWidget(this.menu));
         this.menuLayout.addWidget(createTermsWidget(this.menu));
 
-        this.controls['modelType'] = createModelType(this.menu, "Model Type", HintID.standard_mode, HintID.enhanced_mode);
+        this.controls['modelType'] = createModelType(this.menu, "Model Type", HintID.standard_mode, HintID.enhanced_mode, HintID.advanced_mode);
         this.menuLayout.addWidget(this.controls['modelType'].widget);
 
         this.settingsWidget = new Ui.StackedWidget(this.menu);
@@ -184,7 +224,14 @@ export class CreationMenu {
         this.enhancedSettingsLayout.setContentsMargins(0, 0, 0, 0);
         this.enhancedSettingsWidget.layout = this.enhancedSettingsLayout;
 
+        this.advancedSettingsWidget = new Ui.Widget(this.settingsWidget);
+        this.advancedSettingsLayout = new Ui.BoxLayout();
+        this.advancedSettingsLayout.setDirection(Ui.Direction.TopToBottom);
+        this.advancedSettingsLayout.setContentsMargins(0, 0, 0, 0);
+        this.advancedSettingsWidget.layout = this.advancedSettingsLayout;
+
         this.settingsWidget.addWidget(this.enhancedSettingsWidget);
+        this.settingsWidget.addWidget(this.advancedSettingsWidget);
         this.settingsWidget.addWidget(this.standardSettingsWidget);
 
         this.settingsWidget.currentIndex = 0;
@@ -195,6 +242,7 @@ export class CreationMenu {
 
         this.settingsScheme = new SettingsDescriptor().getSettingsDescriptor(this.standardSettingsWidget);
         this.enhancedSettingsScheme = new EnhancedSettingsDescriptor().getSettingsDescriptor(this.enhancedSettingsWidget);
+        this.advancedSettingsScheme = new AdvancedSettingsDescriptor().getSettingsDescriptor(this.advancedSettingsWidget);
 
         // Preset
         this.presetControl = new ComboBox(this.menu, 'Preset', null, null, this.presetList);
@@ -221,6 +269,9 @@ export class CreationMenu {
                     break;
                 case UserNotesPicker:
                     this.controls[scheme.name] = createUserNotesPicker(scheme);
+                    break;
+                case Seed:
+                    this.controls[scheme.name] = createSeed(scheme);
                     break;
             }
 
@@ -304,7 +355,30 @@ export class CreationMenu {
             }
         })
 
+        this.advancedSettingsScheme.items.forEach((settingItem) => {
+            switch (settingItem.type) {
+                case 'control':
+                    this.advancedSettingsLayout.addWidget(createControl(settingItem).widget);
+                    break;
+                case 'separator':
+                    this.advancedSettingsLayout.addWidget(createSeparator(settingItem));
+                    break;
+            }
+        })
+
         this.presetControl.value = 'Default';
+
+        this.controls['referenceStrength'].value = 5.5;
+        this.controls['attributesPreservation'].value = 5.5;
+        this.controls['seed'].value = 56;
+
+        this.controls['referenceStrength'].addOnValueChanged(() => {
+            this.enhancedSettingsCustomizedFlag = true;
+        })
+
+        this.controls['attributesPreservation'].addOnValueChanged(() => {
+            this.enhancedSettingsCustomizedFlag = true;
+        })
 
         this.controls['promptPicker'].addOnValueChanged((value) => {
             this.generateButton.enabled = !this.stopped && (value.length > 0);
@@ -312,12 +386,16 @@ export class CreationMenu {
 
         this.controls['enhancedPromptPicker'].addOnValueChanged((value) => {
             this.generateButton.enabled = !this.stopped && this.controls['enhancedPromptPicker'].valueExists;
+            this.controls['referenceStrength'].widget.enabled = this.controls['enhancedPromptPicker'].imagePickerValue.length > 0;
         });
 
-
+        this.controls['advancedPromptPicker'].addOnValueChanged((value) => {
+            this.generateButton.enabled = !this.stopped && this.controls['advancedPromptPicker'].valueExists;
+        });
 
         this.standardSettingsLayout.addStretch(0);
         this.enhancedSettingsLayout.addStretch(0);
+        this.advancedSettingsLayout.addStretch(0);
 
         this.menuLayout.addWidget(this.settingsWidget);
         this.menuLayout.addStretch(0);
@@ -346,6 +424,11 @@ export class CreationMenu {
         this.reset();
 
         return this.menu;
+    }
+
+    convertSliderValue(sliderValue, xMin, xMax, yMin, yMax) {
+        const scale = (sliderValue - xMin) / (xMax - xMin);
+        return yMin + scale * (yMax - yMin);
     }
 
     setGenerateButton(button) {

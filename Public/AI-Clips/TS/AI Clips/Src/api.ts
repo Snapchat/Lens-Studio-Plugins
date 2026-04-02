@@ -3,29 +3,24 @@ import * as Network from 'LensStudio:Network';
 
 const BASE_URL = 'https://ml.snap.com';
 
-export function getMyDreams(callback: Function, pageToken: any = null) {
+export function listDreams(maxPageSize: number, callback: Function, searchQuery?: string, pageToken?: string) {
     const request = new Network.HttpRequest();
-    request.url = BASE_URL + '/api/dreams';
-    request.method = Network.HttpRequest.Method.Get;
+    let url = BASE_URL + '/api/dreams?maxPageSize=' + maxPageSize;
+    url += '&filter[]=dream_type%3DCLIPS';
 
     if (pageToken) {
-        request.url += '?pageToken=' + pageToken;
-        request.url += '&';
-    } else {
-        request.url += '?';
+        url += '&pageToken=' + pageToken;
     }
 
-    request.url += 'filter[]=dream_type%3DCLIPS'
+    if (searchQuery) {
+        url += searchQuery;
+    }
 
+    request.url = url;
+    request.method = Network.HttpRequest.Method.Get;
 
     Network.performAuthorizedHttpRequest(request, (response) => {
         callback(response);
-
-        //@ts-ignore
-        if (JSON.parse(response.body).nextPageToken) {
-            //@ts-ignore
-            getMyDreams(callback, JSON.parse(response.body).nextPageToken.toString());
-        }
     });
 }
 

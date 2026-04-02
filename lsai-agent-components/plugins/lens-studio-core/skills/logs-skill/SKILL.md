@@ -1,5 +1,5 @@
 ---
-name: lens-studio-logs
+name: logs-skill
 description: Lens Studio log format, thread categories, and grep patterns for reading compiler and preview logs. Use when analyzing logs, debugging compilation failures, or reading preview runtime output.
 user-invocable: false
 ---

@@ -31,10 +31,9 @@ class Application {
         }));
     }
     show() {
-        var _a;
         if (this.mPlugin && !this.mPlugin.isActive) {
             this.mPlugin.init();
-            (_a = this.mGenerator) === null || _a === void 0 ? void 0 : _a.init();
+            this.mGenerator?.init();
         }
         if (this.mPlugin) {
             this.mPlugin.isActive = true;
@@ -42,12 +41,11 @@ class Application {
         }
     }
     close() {
-        var _a;
         if (this.mPlugin) {
             this.mPlugin.isActive = false;
             this.mPlugin.close();
         }
-        (_a = this.mGenerator) === null || _a === void 0 ? void 0 : _a.reset();
+        this.mGenerator?.reset();
     }
     subscribeOnAuth(callback) {
         if (this.mAuthComponent) {
@@ -55,12 +53,10 @@ class Application {
         }
     }
     get authStatus() {
-        var _a;
-        return ((_a = this.mAuthComponent) === null || _a === void 0 ? void 0 : _a.isAuthorized) || false;
+        return this.mAuthComponent?.isAuthorized || false;
     }
     authorize() {
-        var _a;
-        (_a = this.mAuthComponent) === null || _a === void 0 ? void 0 : _a.authorize();
+        this.mAuthComponent?.authorize();
     }
     get pluginSystem() {
         return this.mPluginSystem;
@@ -90,8 +86,7 @@ class Application {
         return this.mNotificationManager;
     }
     findInterface(interfaceID) {
-        var _a;
-        return (_a = this.mPluginSystem) === null || _a === void 0 ? void 0 : _a.findInterface(interfaceID);
+        return this.mPluginSystem?.findInterface(interfaceID);
     }
 }
 const app = new Application();

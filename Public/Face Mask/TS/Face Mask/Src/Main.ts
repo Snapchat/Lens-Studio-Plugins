@@ -2,6 +2,7 @@
 import { EntityGenerator, Descriptor } from 'LensStudio:EntityGenerator';
 import app from "./Application";
 
+export { GenerateFaceMaskTextureChatTool } from "./chat-tools/GenerateFaceMaskTextureChatTool";
 
 export class FaceMask extends EntityGenerator {
     static descriptor() {
@@ -22,8 +23,9 @@ export class FaceMask extends EntityGenerator {
         app.init(pluginSystem);
     }
 
-    async generate() {
+    // @ts-ignore - returns null because generation is handled via the dialog UI
+    override async generate(): Promise<Editor.Model.Entity> {
         app.show();
-        return null;
+        return null as any;
     }
 }

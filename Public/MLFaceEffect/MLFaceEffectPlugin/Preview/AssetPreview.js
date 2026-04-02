@@ -5,7 +5,7 @@ import { deleteEffect, createModel, getModels } from '../api.js';
 
 import app from '../../application/app.js';
 
-import { createGenerationErrorWidget, createGenerationInProgressWidget, isEnhancedEffectType } from '../utils.js';
+import { createGenerationErrorWidget, createGenerationInProgressWidget, isEnhancedEffectType, isAdvancedEffectType } from '../utils.js';
 import { logEventAssetImport, logEventEffectTraining } from '../../application/analytics.js';
 
 const ModelState = {
@@ -283,8 +283,9 @@ export class AssetPreview {
                 this.progressLabel.text = "0" + "%";
                 if (isEnhancedEffectType(this.effectTypeId)) {
                     this.statusLabel.text = '<div style="text-align: right;">' + 'Model training in progress. This may take up to 2 hours.<br>You can close the window and return later.' + '</div>';
-                }
-                else {
+                } else if (isAdvancedEffectType(this.effectTypeId)) {
+                    this.statusLabel.text = '<div style="text-align: right;">' + 'Model training in progress. This may take up to 2 hours.<br>You can close the window and return later.' + '</div>';
+                } else {
                     this.statusLabel.text = '<div style="text-align: right;">' + 'Model training in progress. This may take 3-4 hours.<br>You can close the window and return later.' + '</div>';
                 }
                 this.statusWidget.visible = this.footer.visible;
@@ -329,8 +330,9 @@ export class AssetPreview {
                         this.progressLabel.text = Math.round(response[0].progressPercent) + "%";
                         if (isEnhancedEffectType(this.effectTypeId)) {
                             this.statusLabel.text = '<div style="text-align: right;">' + 'Model training in progress. This may take up to 2 hours.<br>You can close the window and return later.' + '</div>';
-                        }
-                        else {
+                        } else if (isAdvancedEffectType(this.effectTypeId)) {
+                            this.statusLabel.text = '<div style="text-align: right;">' + 'Model training in progress. This may take up to 2 hours.<br>You can close the window and return later.' + '</div>';
+                        } else {
                             this.statusLabel.text = '<div style="text-align: right;">' + 'Model training in progress. This may take 3-4 hours.<br>You can close the window and return later.' + '</div>';
                         }
                         this.statusWidget.visible = this.footer.visible;
@@ -418,6 +420,9 @@ export class AssetPreview {
             if (state.post_processing_get_response.state == "SUCCESS") {
                 state.status = 'SUCCESS';
                 this.imageLinks = state.post_processing_get_response.samples;
+            } else if (state.post_processing_get_response.state == "FAILED") {
+                state.status = 'FAILED';
+                this.imageLinks = [];
             } else {
                 state.status = "RUNNING";
             }
@@ -444,8 +449,9 @@ export class AssetPreview {
         } else {
             if (isEnhancedEffectType(state.effect_get_response.effectTypeId)) {
                 this.stackedWithError.currentIndex = 2;
-            }
-            else {
+            } else if (isAdvancedEffectType(state.effect_get_response.effectTypeId)) {
+                this.stackedWithError.currentIndex = 4;
+            } else {
                 this.stackedWithError.currentIndex = 3;
             }
         }
@@ -720,8 +726,9 @@ export class AssetPreview {
 
         this.stackedWithError.addWidget(this.createPreview(this.widget));
         this.stackedWithError.addWidget(createGenerationErrorWidget(this.widget));
-        this.stackedWithError.addWidget(createGenerationInProgressWidget(this.widget, false));
-        this.stackedWithError.addWidget(createGenerationInProgressWidget(this.widget, true));
+        this.stackedWithError.addWidget(createGenerationInProgressWidget(this.widget, '5 minutes'));
+        this.stackedWithError.addWidget(createGenerationInProgressWidget(this.widget, '10-15 minutes'));
+        this.stackedWithError.addWidget(createGenerationInProgressWidget(this.widget, '20 minutes'));
 
         this.stackedWithError.currentIndex = 0;
 

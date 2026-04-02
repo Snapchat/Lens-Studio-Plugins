@@ -1,6 +1,12 @@
 import app from "../Application.js";
 import * as FileSystem from 'LensStudio:FileSystem';
 
+export interface FaceMaskImportResult {
+    textureAsset: Editor.Assets.Asset;
+    sceneObject: Editor.Model.SceneObject;
+    faceMaskComponent: Editor.Components.FaceMaskVisual | undefined;
+}
+
 export class Importer {
     private tempDir: FileSystem.TempDir;
 
@@ -8,9 +14,9 @@ export class Importer {
         this.tempDir = FileSystem.TempDir.create();
     }
 
-    async importTextureAndCreateFaceMask(textureBytes: Uint8Array, prompt: string) {
-        const pluginSystem: Editor.PluginSystem = app.pluginSystem as Editor.PluginSystem;
-        const model: Editor.Model.IModel = pluginSystem.findInterface(Editor.Model.IModel);
+    async importTextureAndCreateFaceMask(textureBytes: Uint8Array, prompt: string, pluginSystemOverride?: Editor.PluginSystem): Promise<FaceMaskImportResult> {
+        const pluginSystem: Editor.PluginSystem = pluginSystemOverride ?? (app.pluginSystem as Editor.PluginSystem);
+        const model = pluginSystem.findInterface(Editor.Model.IModel) as Editor.Model.IModel;
         const assetManager: Editor.Model.AssetManager = model.project.assetManager;
         const scene = model.project.scene;
 
@@ -22,18 +28,16 @@ export class Importer {
         // 4. Export the package and re-import it as packed to Packages
         // 5. Create scene object with Face Mask component
 
-        let promptSuffix = prompt.replace(/[^a-zA-Z0-9\s]/g, "_");
-        if (/^[_\s]+$/.test(promptSuffix)) {
-            promptSuffix = "";
+        let textureName = prompt.replace(/[^a-zA-Z0-9\s]/g, "").trim().slice(0, 50).trim();
+        if (!textureName) {
+            textureName = "Face Mask";
         }
-        let textureFileName;
-        if (promptSuffix) {
-            textureFileName = `FaceMask (${promptSuffix}).jpg`;
-        } else {
-            textureFileName = "FaceMask.jpg";
-        }
-        const generatedTexture = assetManager.importExternalFile(
-            app.storage.createFile(textureFileName, textureBytes),
+        const textureFileName = textureName + ".png";
+        const texturePath = app.storage.createFile(textureFileName, textureBytes);
+
+        // Import texture temporarily into the lspkg so the material can reference it
+        const tempTexture = assetManager.importExternalFile(
+            texturePath,
             new Editor.Model.SourcePath(new Editor.Path(""), Editor.Model.SourceRootDirectory.Assets),
             Editor.Model.ResultType.Auto
         );
@@ -45,7 +49,7 @@ export class Importer {
         );
 
         assetManager.move(
-            generatedTexture.primary.fileMeta,
+            tempTexture.primary.fileMeta,
             new Editor.Model.SourcePath(faceMaskPackage.path, Editor.Model.SourceRootDirectory.Assets)
         );
 
@@ -60,21 +64,21 @@ export class Importer {
         let materialPath = faceMaskPackage.path.appended(new Editor.Path("Face Mask.mat"));
         let materialMeta = assetManager.getFileMeta(new Editor.Model.SourcePath(materialPath, Editor.Model.SourceRootDirectory.Assets));
         let material = materialMeta.primaryAsset as Editor.Assets.Material;
-        const mainTexParam = new Editor.Assets.TextureParameter(generatedTexture.primary.id);
+        const mainTexParam = new Editor.Assets.TextureParameter(tempTexture.primary.id);
         //@ts-ignore
         material.passInfos[0].baseTex = mainTexParam;
 
-        // Export the package to temp folder and re-import it as packed to Packages
+        // Export the package to temp folder and re-import it unpacked to Assets
         const actionManager = pluginSystem.findInterface(Editor.IPackageActions) as Editor.IPackageActions;
         const exportOptions = new Editor.Model.ExportOptions();
-        const exportPath = new Editor.Path(this.tempDir.path + "/FaceMask.lspkg");
+        const exportPath = this.tempDir.path.appended(new Editor.Path(`${textureName}.lspkg`));
         exportOptions.packagePolicy = Editor.Assets.PackagePolicy.CanBeUnpacked;
         actionManager.exportPackage(nativePackageDescriptorFile!, exportPath, exportOptions);
 
-        let packedFaceMaskPackage = assetManager.importExternalFile(
+        let unpackedFaceMaskPackage = assetManager.importExternalFile(
             exportPath,
-            new Editor.Model.SourcePath(new Editor.Path(""), Editor.Model.SourceRootDirectory.Packages),
-            Editor.Model.ResultType.Packed
+            new Editor.Model.SourcePath(new Editor.Path("Generated Face Masks"), Editor.Model.SourceRootDirectory.Assets),
+            Editor.Model.ResultType.Unpacked
         );
 
         assetManager.remove(new Editor.Model.SourcePath(faceMaskPackage.path, Editor.Model.SourceRootDirectory.Assets));
@@ -82,22 +86,24 @@ export class Importer {
         const effectsObject = this.findOrCreateEffectsObject(model);
         const faceMaskSceneObject = scene.addSceneObject(effectsObject) as Editor.Model.SceneObject;
         faceMaskSceneObject.name = `Face Mask`;
-        await this.addFaceMaskComponent(faceMaskSceneObject, packedFaceMaskPackage);
+        const faceMaskComponent = await this.addFaceMaskComponent(faceMaskSceneObject, unpackedFaceMaskPackage, pluginSystem);
 
-        return new Promise<void>((resolve) => {
-            resolve();
-        });
+        return {
+            textureAsset: tempTexture.primary,
+            sceneObject: faceMaskSceneObject,
+            faceMaskComponent
+        };
     }
 
-    async addFaceMaskComponent(sceneObject: Editor.Model.SceneObject, packageResult: Editor.Model.ImportResult): Promise<Editor.Components.FaceMaskVisual | undefined> {
+    async addFaceMaskComponent(sceneObject: Editor.Model.SceneObject, packageResult: Editor.Model.ImportResult, pluginSystemOverride?: Editor.PluginSystem): Promise<Editor.Components.FaceMaskVisual | undefined> {
         try {
-            const pluginSystem: Editor.PluginSystem = app.pluginSystem as Editor.PluginSystem;
-            const model: Editor.Model.IModel = pluginSystem.findInterface(Editor.Model.IModel);
+            const pluginSystem: Editor.PluginSystem = pluginSystemOverride ?? (app.pluginSystem as Editor.PluginSystem);
+            const model = pluginSystem.findInterface(Editor.Model.IModel) as Editor.Model.IModel;
             const assetManager: Editor.Model.AssetManager = model.project.assetManager;
 
             const materialPath = packageResult.path.appended(new Editor.Path("Face Mask.mat"));
             const materialMeta = assetManager.getFileMeta(
-                new Editor.Model.SourcePath(materialPath, Editor.Model.SourceRootDirectory.Packages)
+                new Editor.Model.SourcePath(materialPath, Editor.Model.SourceRootDirectory.Assets)
             );
             const material = materialMeta.primaryAsset as Editor.Assets.Material;
 

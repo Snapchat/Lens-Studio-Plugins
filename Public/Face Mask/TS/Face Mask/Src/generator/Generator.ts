@@ -121,7 +121,7 @@ export class Generator {
 
     retrieveTexturesFromBytes(bytes: Uint8Array) {
         const storage = new Storage();
-        const archivePath = storage.createFile("FaceMask.jpg", bytes);
+        const archivePath = storage.createFile("FaceMask.png", bytes);
         this.textureBytes = storage.readBytes(archivePath);
     }
 

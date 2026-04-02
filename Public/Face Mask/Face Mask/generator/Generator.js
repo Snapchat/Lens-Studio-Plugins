@@ -29,8 +29,7 @@ export class Generator {
         this.stateChanged = new EventEmitter();
         this.stopper = { stop: false };
         app.subscribeOnAuth((authorized) => {
-            var _a;
-            if ((_a = app.plugin) === null || _a === void 0 ? void 0 : _a.isActive) {
+            if (app.plugin?.isActive) {
                 if (authorized) {
                     if (this.mState === GeneratorState.Unauthorized) {
                         this.verificationFlow();

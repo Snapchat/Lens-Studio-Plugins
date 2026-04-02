@@ -1,7 +1,7 @@
 import * as Ui from 'LensStudio:Ui';
 import {Control} from "./Control.js";
 import {getHintFactory} from "../../Hints/HintFactory.js";
-import {getRandomEnhancedPrompt, getRandomPrompt} from "../../utils.js";
+import {getRandomEnhancedPrompt, getRandomAdvancedPrompt, getRandomPrompt} from "../../utils.js";
 import {TextEdit} from "./TextEdit";
 import {ImagePicker} from "./ImagePicker";
 
@@ -9,10 +9,11 @@ const MAX_SYMBOLS = 500;
 
 export class EnhancedPromptPicker extends Control {
 
-    constructor(parent, textLabel, imageLabel, valueImporter, valueExporter, prompt_hint, image_hint) {
+    constructor(parent, textLabel, imageLabel, valueImporter, valueExporter, prompt_hint, image_hint, randomPromptFn) {
         super(parent, null, valueImporter, valueExporter);
         this.connections = [];
         this.isLocked = false;
+        this.getRandomPromptFn = randomPromptFn || getRandomEnhancedPrompt;
 
         const layout = new Ui.BoxLayout();
         layout.setDirection(Ui.Direction.TopToBottom);
@@ -118,10 +119,10 @@ export class EnhancedPromptPicker extends Control {
             this.surpriseMeLabel.text = Ui.getUrlString('Surprise me', '');
 
             this.connections.push(this.surpriseMeLabel.onClick.connect(function () {
-                let newPrompt = getRandomEnhancedPrompt();
+                let newPrompt = this.getRandomPromptFn();
                 let maxCnt = 5;
                 while (this.textEdit.value === newPrompt && --maxCnt >= 0) {
-                    newPrompt = getRandomEnhancedPrompt();
+                    newPrompt = this.getRandomPromptFn();
                 }
                 this.textEdit.value = newPrompt;
             }.bind(this)));
@@ -186,5 +187,5 @@ export class EnhancedPromptPicker extends Control {
 }
 
 export function createEnhancedPromptPicker(scheme) {
-    return new EnhancedPromptPicker(scheme.parent, scheme.textLabel, scheme.imageLabel, scheme.importer, scheme.exporter, scheme.prompt_hint, scheme.image_hint);
+    return new EnhancedPromptPicker(scheme.parent, scheme.textLabel, scheme.imageLabel, scheme.importer, scheme.exporter, scheme.prompt_hint, scheme.image_hint, scheme.randomPromptFn);
 }
