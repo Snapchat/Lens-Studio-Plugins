@@ -56,6 +56,10 @@ export class GalleryView {
         this.TILE_HEIGHT = 184;
         this.TILE_MARGIN = 8;
 
+        this.modelCheckQueue = [];
+        this.modelCheckInFlight = 0;
+        this.MODEL_CHECK_CONCURRENCY = 2;
+
         this.requestTokenManager = new RequestTokenManager();
 
         this.borderImage = new Ui.Pixmap(new Editor.Path(import.meta.resolve('../Resources/full_frame_hover.svg')));
@@ -180,7 +184,6 @@ export class GalleryView {
                 });
             }
         } else {
-            // check for effect id status, update if status changed
             const requestToken = this.requestTokenManager.generateToken();
 
             this.effectStatus[i] = null;
@@ -228,6 +231,7 @@ export class GalleryView {
         this.statusLabels[i].text = '';
         this.queuedViews[i].visible = false;
         this.statusIndicators[i].visible = false;
+        this.imageViews[i].visible = false;
         this.failedViews[i].visible = true;
         this.deleteButtons[i].visible = true;
     }
@@ -273,6 +277,7 @@ export class GalleryView {
         })
 
         this.requestTokenManager.invalidateTokenAll();
+        this.modelCheckQueue = [];
         this.effectIds = [];
         this.effectStatus = [];
         this.postProcessingStatus = [];
@@ -306,20 +311,40 @@ export class GalleryView {
         connections = {};
     }
 
-    checkModelStatus(id, callback) {
+    processModelCheckQueue() {
+        if (this.modelCheckInFlight >= this.MODEL_CHECK_CONCURRENCY || this.modelCheckQueue.length === 0) {
+            return;
+        }
+        const { id, callback } = this.modelCheckQueue.shift();
+        this.modelCheckInFlight += 1;
         getModels(id, (modelsResponse) => {
             if (modelsResponse.length > 0) {
                 this.modelData[id] = modelsResponse[0];
-            }
-            else {
+            } else {
                 this.modelData[id] = null;
             }
-            callback();
-        })
+            this.modelCheckInFlight -= 1;
+            try {
+                callback();
+            } finally {
+                this.processModelCheckQueue();
+            }
+        });
+    }
+
+    checkModelStatus(id, callback) {
+        this.modelCheckQueue.push({ id, callback });
+        this.processModelCheckQueue();
     }
 
     onTrainingStarted(id) {
         if (this.idToOverlay[id]) {
+            const tileIndex = this.effectIds.indexOf(id);
+            if (tileIndex !== -1) {
+                this.imageViews[tileIndex].visible = true;
+                this.failedViews[tileIndex].visible = false;
+                this.deleteButtons[tileIndex].visible = false;
+            }
             this.checkModelStatus(id, () => {});
             this.idToOverlay[id].visible = true;
         }
@@ -335,8 +360,12 @@ export class GalleryView {
                 if (this.requestTokenManager.isValid(requestToken)) {
                     const image = new Ui.Pixmap(preview_path);
                     this.imageViews[i].pixmap = image;
-                    this.imageViews[i].visible = true;
                     this.imageViews[i].blockSignals(false);
+
+                    this.imageViews[i].visible = true;
+                    if (this.modelData[item.id] && this.modelData[item.id].trainingState === "FAILED") {
+                        this.showFailed(i);
+                    }
 
                     const onOpen = () => {
                         if (this.getRequestGuard == false) {
@@ -350,8 +379,7 @@ export class GalleryView {
                                 getModels(item.id, (modelsResponse) => {
 
                                     const modelData = modelsResponse.find(
-                                        item => item.trainingState !== 'FAILED' &&
-                                        item.settings.modelSize === 'large' &&
+                                        item => item.settings.modelSize === 'large' &&
                                         (item.trainingState !== "SUCCESS" || item.objectLsUrl !== null)
                                     ) || null;
 
@@ -508,6 +536,9 @@ export class GalleryView {
                 if (this.modelData[item.id] && (this.modelData[item.id].trainingState !== "SUCCESS" && this.modelData[item.id].trainingState !== "FAILED")) {
                     this.loadingOverlays[i].visible = true;
                 }
+                if (this.modelData[item.id] && this.modelData[item.id].trainingState === "FAILED") {
+                    this.showFailed(i);
+                }
 
                 importButton = this.importButtons[i];
                 if (this.modelData[item.id] && this.modelData[item.id].trainingState === "SUCCESS") {
@@ -606,6 +637,7 @@ export class GalleryView {
                 failedView.setFixedHeight(this.TILE_HEIGHT);
                 failedView.setContentsMargins(0, 0, 0, 0);
                 failedView.scaledContents = true;
+                failedView.radius = Math.round(16 / app.dialog.devicePixelRatio);
                 failedView.visible = false;
 
                 loadingOverlay = new Ui.ImageView(imageView);
@@ -652,11 +684,11 @@ export class GalleryView {
                 favoriteButton.visible = favoriteButton.checked;
 
                 if (this.favoriteConnections[i]) {
-                    this.failedConnections[i].disconnect();
+                    this.favoriteConnections[i].disconnect();
                 }
 
                 this.favoriteConnections[i] = favoriteButton.onClick.connect(() => {
-                    updateButton(favoriteButton, item.id);
+                    updateButton(favoriteButton, this.effectIds[i]);
                 });
 
                 this.favoritesButtons.push(favoriteButton);
@@ -734,6 +766,9 @@ export class GalleryView {
                     if (this.modelData[item.id] && (this.modelData[item.id].trainingState !== "SUCCESS" && this.modelData[item.id].trainingState !== "FAILED")) {
                         loadingOverlay.visible = true;
                     }
+                    if (this.modelData[item.id] && this.modelData[item.id].trainingState === "FAILED") {
+                        this.showFailed(i);
+                    }
                 })
 
                 frame.layout = frameLayout;
@@ -748,7 +783,7 @@ export class GalleryView {
                     'created_on': this.effectResponse[this.effectIds[i]].createdAt,
                     'effect_get_response': this.effectResponse[this.effectIds[i]],
                     'post_processing_get_response': this.postProcessingResponse[this.effectIds[i]],
-                    'models_response': null,
+                    'models_response': this.modelData[this.effectIds[i]] || null,
                     // 'userNotes': this.effectResponse[this.effectIds[i]].userNotes,
                 });
                 app.log('', { 'enabled': false });

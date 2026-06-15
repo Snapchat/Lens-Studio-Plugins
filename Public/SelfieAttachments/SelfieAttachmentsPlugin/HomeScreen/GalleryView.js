@@ -98,6 +98,7 @@ export class GalleryView {
         } else {
             const requestToken = this.requestTokenManager.generateToken();
             getAsset(this.items[i].id, (item) => {
+                if (!app.authStatus) return;
                 if (this.requestTokenManager.isValid(requestToken)) {
                     if (item) {
                         this.items[i] = item;
@@ -241,6 +242,7 @@ export class GalleryView {
 
         try {
             downloadFileFromBucket(item.previewUrl, item.id + '_preview.webp', (preview_path) => {
+                if (!app.authStatus) return;
                 if (this.requestTokenManager.isValid(requestToken)) {
                     const movie = new Ui.Movie(preview_path);
 
@@ -616,6 +618,7 @@ export class GalleryView {
             app.log('Importing Selfie Attachments asset to the project...', { 'progressBar': true });
 
             getAsset(asset_id, (data) => {
+                if (!app.authStatus) return;
                 if (data) {
                     let lspkgUrl = null;
 
@@ -652,6 +655,7 @@ export class GalleryView {
 
         this.deletionDialog = gui.createDialog();
         this.deletionDialog.windowTitle = 'Delete Selfie Attachments asset?';
+        this.deletionDialog.setModal(true);
 
         this.deletionDialog.resize(460, 140);
 
@@ -734,6 +738,7 @@ export class GalleryView {
         app.log('Deleting the Selfie Attachments asset...', { 'progressBar': true });
 
         deleteAsset(id, function(response) {
+            if (!app.authStatus) return;
             this.deletionDialog.close();
 
             if (response.statusCode == 204) {
@@ -787,6 +792,7 @@ export class GalleryView {
             const requestToken = this.requestTokenManager.generateToken();
 
             listAssets(15, (response) => {
+                if (!app.authStatus) return;
                 if (this.requestTokenManager.isValid(requestToken)) {
                     // guarantee that our response is still relevant
                     // if other request was sent after this one, there
@@ -828,6 +834,7 @@ export class GalleryView {
         const requestToken = this.requestTokenManager.generateToken();
 
         listAssets(15, (response) => {
+            if (!app.authStatus) return;
             if (this.requestTokenManager.isValid(requestToken)) {
                 // guarantee that our response is still relevant
                 // if other request was sent after this one, there

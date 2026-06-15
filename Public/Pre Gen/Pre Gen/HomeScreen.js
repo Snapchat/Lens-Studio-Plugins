@@ -10,8 +10,7 @@ export class HomeScreen {
         this.effectSettings = new EffectSettings(this.openGallery.bind(this), this.onNewDreamCreated.bind(this), this.onPreviewLoaded.bind(this), this.updateSettings.bind(this), this.resetGallery.bind(this));
     }
     create(parent) {
-        var _a;
-        this.authComponent = (_a = app.pluginSystem) === null || _a === void 0 ? void 0 : _a.findInterface(Editor.IAuthorization);
+        this.authComponent = app.pluginSystem?.findInterface(Editor.IAuthorization);
         const stackedWidget = new Ui.StackedWidget(parent);
         stackedWidget.setContentsMargins(0, 0, 0, 0);
         stackedWidget.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Expanding);
@@ -53,8 +52,7 @@ export class HomeScreen {
         createNewButton.setFixedHeight(24);
         createNewButton.move(361, 350);
         this.connections.push(createNewButton.onClick.connect(() => {
-            var _a;
-            (_a = this.authComponent) === null || _a === void 0 ? void 0 : _a.authorize();
+            this.authComponent?.authorize();
         }));
         widget.layout = layout;
         return widget;
@@ -88,27 +86,22 @@ export class HomeScreen {
         this.stackedWidget.currentIndex = 0;
     }
     onNewDreamCreated() {
-        var _a;
-        (_a = this.effectGallery) === null || _a === void 0 ? void 0 : _a.updateGallery();
+        this.effectGallery?.updateGallery();
     }
     resetGallery() {
-        var _a;
-        (_a = this.effectGallery) === null || _a === void 0 ? void 0 : _a.resetGallery();
+        this.effectGallery?.resetGallery();
     }
     onPreviewLoaded(id, previewUrl, isFailed = false) {
-        var _a;
-        (_a = this.effectGallery) === null || _a === void 0 ? void 0 : _a.addPreview(id, previewUrl, isFailed);
+        this.effectGallery?.addPreview(id, previewUrl, isFailed);
     }
     checkDreamStateById(id, state) {
         this.effectSettings.checkDreamStateById(id, state);
     }
     updateSettings(settings) {
-        var _a;
-        (_a = this.effectGallery) === null || _a === void 0 ? void 0 : _a.updateSettings(settings);
+        this.effectGallery?.updateSettings(settings);
     }
     updateGallery() {
-        var _a;
-        (_a = this.effectGallery) === null || _a === void 0 ? void 0 : _a.updateGallery();
+        this.effectGallery?.updateGallery();
     }
     onImportClick(id) {
         this.effectSettings.importById(id);

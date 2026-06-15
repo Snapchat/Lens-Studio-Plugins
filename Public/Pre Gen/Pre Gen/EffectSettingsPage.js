@@ -178,7 +178,6 @@ export class EffectSettingsPage {
         return imageView;
     }
     setSettings(settings) {
-        var _a;
         const prompts = settings.prompt.match(/1\.(.*?)2\.(.*?)3\.(.*)/s);
         this.textFields.forEach((field, i) => {
             if (prompts && i + 1 < prompts.length) {
@@ -188,24 +187,22 @@ export class EffectSettingsPage {
                 field.setText("");
             }
         });
-        (_a = this.seedField) === null || _a === void 0 ? void 0 : _a.setValue(Number(settings.seed));
+        this.seedField?.setValue(Number(settings.seed));
     }
     onPromptChanged() {
         this.onPromptChangedCallback();
     }
     lock() {
-        var _a;
         this.textFields.forEach((textField) => {
             textField.lock();
         });
-        (_a = this.seedField) === null || _a === void 0 ? void 0 : _a.lock();
+        this.seedField?.lock();
     }
     unlock() {
-        var _a;
         this.textFields.forEach((textField) => {
             textField.unlock();
         });
-        (_a = this.seedField) === null || _a === void 0 ? void 0 : _a.unlock();
+        this.seedField?.unlock();
     }
     setId(id) {
         this.curId = id;
@@ -246,8 +243,7 @@ export class EffectSettingsPage {
         return curPrompt;
     }
     get seed() {
-        var _a;
-        return (_a = this.seedField) === null || _a === void 0 ? void 0 : _a.getValue();
+        return this.seedField?.getValue();
     }
 }
 class TextField {

@@ -53,6 +53,14 @@ export class Importer {
         const videoPreviewImportResult = await assetManager.importExternalFileAsync(previewsPath[0], new Editor.Path('./AI Clips Resources/'), Editor.Model.ResultType.Auto);
         const aiOutputRenderTarget = assetManager.createNativeAsset('RenderTarget', 'AI Output', new Editor.Path(`./AI Clips Resources/`));
 
+        const project = model.project;
+        const metaInfo = project.metaInfo;
+
+        // @ts-ignore
+        metaInfo.setVideoPreview(previewsPath[0]);
+
+        project.metaInfo = metaInfo;
+
         const scriptAsset = scriptAssetImportResult.primary;
 
         let cameraObject = this.getOrthoCameraObject(model);

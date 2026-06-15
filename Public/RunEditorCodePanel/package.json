@@ -10,7 +10,7 @@
   "scripts": {
     "build:plugin": "tsc",
     "build:ui": "vite build",
-    "prebuild": "node -e \"const fs=require('fs');fs.mkdirSync('ui/types',{recursive:true});fs.copyFileSync('../../shared-types/editor.d.ts','ui/types/editor.d.ts');fs.copyFileSync('../../shared-types/editor.d.ts','ui/types/editor.txt');\"",
+    "prebuild": "node -e \"const fs=require('fs');fs.mkdirSync('ui/types',{recursive:true});fs.copyFileSync('../../public-docs/public-editor.d.ts','ui/types/editor.d.ts');fs.copyFileSync('../../public-docs/public-editor.d.ts','ui/types/editor.txt');\"",
     "build": "npm run build:ui && npm run build:plugin",
     "clean": "rm -rf dist",
     "watch": "tsc -w",

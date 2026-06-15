@@ -62,8 +62,12 @@ export class GenerateTextureChatTool extends ChatTool {
                 result.error = 'Please log into your Snapchat account in Lens Studio to use this tool. You can log in from the Menu Bar: Go to My Lenses > Login';
                 return result;
             }
-            const imageBuffer = await TextureGenAPI.generate(this.pluginSystem, prompt);
+            const imageBuffer = await TextureGenAPI.generate(this.pluginSystem, prompt, () => !authorization.isAuthorized);
             if (!imageBuffer) {
+                if (!authorization.isAuthorized) {
+                    result.error = 'Please log into your Snapchat account in Lens Studio to use this tool. You can log in from the Menu Bar: Go to My Lenses > Login';
+                    return result;
+                }
                 result.error = 'Texture generation failed. The server may be unavailable — please try again.';
                 return result;
             }

@@ -200,12 +200,16 @@ export class AssetPreview {
     }
 
     setLoadedImages(index) {
+        const slot = this.loadedImages[index];
+        if (!slot) {
+            return;
+        }
         if (this.showOriginal) {
             this.compareButton.pixmap = this.compareDefaultImage;
-            this.splitViewer.pixmap = this.loadedImages[index][0];
+            this.splitViewer.pixmap = slot[0];
         } else {
             this.compareButton.pixmap = this.compareActiveImage;
-            this.splitViewer.pixmap = this.loadedImages[index][1];
+            this.splitViewer.pixmap = slot[1];
         }
         this.stackedWidget.currentIndex = 1;
     }
@@ -215,14 +219,23 @@ export class AssetPreview {
         let loaded = 0;
         const imageIndex = this.previewImageIndex;
 
-        if (!this.loadedImages[imageIndex][0]) {
+        const slot = this.loadedImages[imageIndex];
+        if (!slot) {
+            return;
+        }
+
+        if (!slot[0]) {
             downloadFileFromBucket(this.imageLinks[imageIndex]['sourceImageUrl'],
                 this.effectId + imageIndex + 'source.webp',
                 (filepath) => {
+                    const targetSlot = this.loadedImages[imageIndex];
+                    if (!targetSlot) {
+                        return;
+                    }
                     const image = new Ui.Pixmap(filepath);
                     image.transformationMode = Ui.TransformationMode.SmoothTransformation;
                     image.resize(ASSET_PREVIEW_WIDTH * this.splitViewer.devicePixelRatio, ASSET_PREVIEW_HEIGHT * this.splitViewer.devicePixelRatio);
-                    this.loadedImages[imageIndex][0] = image;
+                    targetSlot[0] = image;
                     loaded += 1;
                     if (loaded === 2 && this.previewImageIndex === imageIndex) {
                         this.setLoadedImages(imageIndex);
@@ -232,14 +245,18 @@ export class AssetPreview {
             loaded += 1;
         }
 
-        if (!this.loadedImages[imageIndex][1]) {
+        if (!slot[1]) {
             downloadFileFromBucket(this.imageLinks[imageIndex]['targetImageUrl'],
                 this.effectId + imageIndex + 'target.webp',
                 (filepath) => {
+                    const targetSlot = this.loadedImages[imageIndex];
+                    if (!targetSlot) {
+                        return;
+                    }
                     const image = new Ui.Pixmap(filepath);
                     image.transformationMode = Ui.TransformationMode.SmoothTransformation;
                     image.resize(ASSET_PREVIEW_WIDTH * this.splitViewer.devicePixelRatio, ASSET_PREVIEW_HEIGHT * this.splitViewer.devicePixelRatio);
-                    this.loadedImages[imageIndex][1] = image;
+                    targetSlot[1] = image;
                     loaded += 1;
                     if (loaded === 2 && this.previewImageIndex === imageIndex) {
                         this.setLoadedImages(imageIndex);
@@ -292,7 +309,7 @@ export class AssetPreview {
                 this.statusWidget.raise();
                 this.modelState = ModelState.Processing;
 
-                this.ctaButton.text = 'Import to Project';
+                this.ctaButton.text = 'Import to project';
                 this.ctaButton.setIconSize(16, 16);
                 this.ctaButton.enabled = false;
 
@@ -345,7 +362,7 @@ export class AssetPreview {
                         }
                     }
                 });
-                this.ctaButton.text = 'Import to Project';
+                this.ctaButton.text = 'Import to project';
                 this.ctaButton.setIconSize(16, 16);
                 this.ctaButton.enabled = false;
                 break;
@@ -355,7 +372,7 @@ export class AssetPreview {
                 }
 
                 // app.log('Model is ready');
-                this.ctaButton.text = 'Import to Project';
+                this.ctaButton.text = 'Import to project';
                 this.ctaButton.setIconSize(16, 16);
                 this.ctaButton.enabled = true;
                 break;
@@ -481,7 +498,7 @@ export class AssetPreview {
         const gui = app.gui;
 
         this.deletionDialog = gui.createDialog();
-
+        this.deletionDialog.setModal(true);
         this.deletionDialog.resize(310, 94);
 
         const boxLayout1 = new Ui.BoxLayout();
@@ -672,7 +689,7 @@ export class AssetPreview {
 
         // Import To Project button
         this.ctaButton = new Ui.PushButton(this.footer);
-        this.ctaButton.text = 'Import to Project';
+        this.ctaButton.text = 'Import to project';
         this.ctaButton.setIconSize(16, 16);
         const importImagePath = new Editor.Path(import.meta.resolve('../Resources/import.svg'));
         this.ctaButton.setIconWithMode(Editor.Icon.fromFile(importImagePath), Ui.IconMode.MonoChrome);

@@ -112,7 +112,7 @@ export function findOrCreateOrthoCam(model: Editor.Model.IModel, sceneObject: Ed
             regionBearer.name = 'Screen Region'
             const regionComponent = regionBearer.addComponent('ScreenRegionComponent') as Editor.Components.ScreenRegionComponent
             regionBearer.addComponent('ScreenTransform')
-            regionBearer.layer = Editor.Model.LayerId.Ortho
+            regionBearer.layers = Editor.Model.LayerSet.fromId(Editor.Model.LayerId.Ortho)
             regionComponent.region = Editor.Components.ScreenRegionType.FullFrame
             return regionBearer
         }
@@ -174,7 +174,7 @@ export function createOrthographicCameraObject(model: Editor.Model.IModel, scene
     camera.far = 200.0
     sceneObject.name = 'Orthographic Camera'
     sceneObject.localTransform = new Editor.Transform(new vec3(-120, 0, 40), new vec3(0, 0, 0), new vec3(1, 1, 1)) as unknown as Editor.Model.TransformEntity
-    sceneObject.layer = Editor.Model.LayerId.Ortho
+    sceneObject.layers = Editor.Model.LayerSet.fromId(Editor.Model.LayerId.Ortho)
 
     return sceneObject
 }

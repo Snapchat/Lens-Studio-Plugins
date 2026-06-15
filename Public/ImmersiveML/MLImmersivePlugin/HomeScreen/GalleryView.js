@@ -679,11 +679,11 @@ export class GalleryView {
                 favoriteButton.visible = favoriteButton.checked;
 
                 if (this.favoriteConnections[i]) {
-                    this.failedConnections[i].disconnect();
+                    this.favoriteConnections[i].disconnect();
                 }
 
                 this.favoriteConnections[i] = favoriteButton.onClick.connect(() => {
-                    updateButton(favoriteButton, item.id);
+                    updateButton(favoriteButton, this.effectIds[i]);
                 });
 
                 this.favoritesButtons.push(favoriteButton);
@@ -1199,7 +1199,7 @@ export class GalleryView {
 
         this.deletionDialog = gui.createDialog();
         this.deletionDialog.windowTitle = `Delete ${app.name}`;
-
+        this.deletionDialog.setModal(true);
         this.deletionDialog.resize(460, 140);
 
         const boxLayout1 = new Ui.BoxLayout();

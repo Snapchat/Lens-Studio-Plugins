@@ -132,10 +132,21 @@ export class Footer {
             app.generator?.stateChanged.on(parseInt(state), handler);
         });
 
+        app.subscribeOnAuth(() => {
+            if (app.plugin?.isActive) {
+                this.updateGenerateButton();
+            }
+        });
+
         return this.footer;
     }
 
     updateGenerateButton() {
+        if (!app.authStatus) {
+            this.generateButton.enabled = false;
+            this.regenerateButton.enabled = false;
+            return;
+        }
         const promptControl = this.creationMenuControls["prompt"];
         if (!this.canGenerate || (promptControl && promptControl.value.length === 0)) {
             this.generateButton.enabled = false;

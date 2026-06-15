@@ -39,7 +39,7 @@ export function acceptTerms(terms, callback) {
 
 export function updateFavorites(effect_id, callback) {
     const request = new Network.HttpRequest();
-    request.url = 'https://ml.snap.com/api/me/favorites/' + effect_id;
+    request.url = 'https://ml.snap.com/api/effects/' + effect_id + ':favorite';
     request.method = Network.HttpRequest.Method.Put;
 
     Network.performAuthorizedHttpRequest(request, function(response) {
@@ -49,8 +49,8 @@ export function updateFavorites(effect_id, callback) {
 
 export function deleteFavorites(effect_id, callback) {
     const request = new Network.HttpRequest();
-    request.url = 'https://ml.snap.com/api/me/favorites/' + effect_id;
-    request.method = Network.HttpRequest.Method.Delete;
+    request.url = 'https://ml.snap.com/api/effects/' + effect_id + ':unfavorite';
+    request.method = Network.HttpRequest.Method.Put;
 
     Network.performAuthorizedHttpRequest(request, function(response) {
         callback(response);
@@ -110,7 +110,7 @@ export function getEffect(id, callback) {
         try {
             callback(JSON.parse(response.body.toString()));
         } catch(error) {
-            console.log(`${app.name}`, "Failed to load the effect.");
+            // console.log(`${app.name}`, "Failed to load the effect.");
         }
     });
 }
@@ -124,7 +124,7 @@ export function getPostProcessing(id, callback) {
         try {
             callback(JSON.parse(response.body.toString()));
         } catch (error) {
-            console.log(`${app.name}`, "Failed to load the effect.");
+            // console.log(`${app.name}`, "Failed to load the effect.");
         }
     });
 }
@@ -189,7 +189,7 @@ export function getModels(id, callback) {
                 try {
                     callback(JSON.parse(response.body.toString()));
                 } catch (error) {
-                    console.log(`${app.name}`, "Failed to parse models response.");
+                    // console.log(`${app.name}`, "Failed to parse models response.");
                     callback([]);
                 }
                 return;

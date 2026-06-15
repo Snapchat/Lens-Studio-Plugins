@@ -39,7 +39,15 @@ export class Importer {
         const selection = model.project.selection;
         const scriptAssetImportResult = await assetManager.importExternalFileAsync(filePath, new Editor.Path('/'), Editor.Model.ResultType.Auto);
         const videoPreviewImportResult = await assetManager.importExternalFileAsync(previewsPath[0], new Editor.Path('./AI Clips Resources/'), Editor.Model.ResultType.Auto);
+
+        const project = model.project;
+        const metaInfo = project.metaInfo;
+        // @ts-ignore
+        metaInfo.setVideoPreview(previewsPath[0]);
+        project.metaInfo = metaInfo;
+
         const aiOutputRenderTarget = assetManager.createNativeAsset('RenderTarget', 'AI Output', new Editor.Path(`./AI Clips Resources/`));
+
         const scriptAsset = scriptAssetImportResult.primary;
         let cameraObject = this.getOrthoCameraObject(model);
         if (cameraObject == null) {

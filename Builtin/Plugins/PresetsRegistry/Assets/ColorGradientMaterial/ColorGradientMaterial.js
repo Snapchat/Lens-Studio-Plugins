@@ -7,7 +7,7 @@ const params = {
         'description': 'PostEffectVisual material mapping screen color ranges to four-color gradient',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
-    graph_path: import.meta.resolve('Resources/color_gradient.ss_graph'),
+    graph_path: import.meta.resolve('Resources/color_gradient.graphShader'),
     pass_info: {
         'depthTest': false,
         'depthWrite': false,

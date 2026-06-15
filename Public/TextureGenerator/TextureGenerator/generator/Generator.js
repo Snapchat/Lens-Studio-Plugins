@@ -36,6 +36,7 @@ export class Generator {
                     }
                 }
                 else {
+                    this.cancel();
                     this.changeState(GeneratorState.Unauthorized);
                 }
             }
@@ -69,13 +70,21 @@ export class Generator {
             if (!pluginSystem) {
                 throw new Error('Texture generator: plugin system not found');
             }
-            const imageBytes = await TextureGenAPI.generate(pluginSystem, params.prompt);
+            const imageBytes = await TextureGenAPI.generate(pluginSystem, params.prompt, () => this.stopper.stop || !app.authStatus);
+            if (!app.authStatus) {
+                this.changeState(GeneratorState.Unauthorized);
+                return;
+            }
             if (!imageBytes) {
                 throw new Error('Texture generator: failed to generate image');
             }
             this.retrieveTexturesFromBytes(imageBytes);
         }
         catch (error) {
+            if (!app.authStatus) {
+                this.changeState(GeneratorState.Unauthorized);
+                return;
+            }
             if (error instanceof ErrorWithCode) {
                 this.changeState(GeneratorState.Failed, error.message);
                 if (error.code === ErrorCode.ViolatesCommunityGuidelines) {
@@ -96,6 +105,10 @@ export class Generator {
                 app.notificationManager.showNotification(NotificationKey.ErrorUnknown);
                 logEventCreateAsset(EVENT_STATUS.FAILED, origin, EVENT_CREATE_ASSET.INPUT_FORMAT.TEXT);
             }
+            return;
+        }
+        if (!app.authStatus) {
+            this.changeState(GeneratorState.Unauthorized);
             return;
         }
         logEventCreateAsset(EVENT_STATUS.SUCCESS, origin, EVENT_CREATE_ASSET.INPUT_FORMAT.TEXT);

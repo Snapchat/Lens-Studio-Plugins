@@ -11,7 +11,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const inputRelativePath = '../../../shared-types/editor.d.ts';
+const inputRelativePath = '../../../public-docs/public-editor.d.ts';
 const outputRelativeDir = '../dist/Data';
 const outputRelativeFile = 'ls-api-definition.json';
 

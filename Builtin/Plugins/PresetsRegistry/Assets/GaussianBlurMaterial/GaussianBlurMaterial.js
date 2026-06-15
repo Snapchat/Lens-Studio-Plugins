@@ -7,7 +7,7 @@ const params = {
         'description': 'PostEffectVisual material applying gaussian blur with optional area masking',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
-    graph_path: import.meta.resolve('Resources/gauss_blur.ss_graph'),
+    graph_path: import.meta.resolve('Resources/gauss_blur.graphShader'),
     pass_info: {
         'depthTest': false,
         'depthWrite': false,

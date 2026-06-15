@@ -7,7 +7,7 @@ const params = {
         'description': 'GPU-based particle system with configurable lifetime, alpha, velocity, rotation, size, and gravity properties',
         'icon': import.meta.resolve('../Resources/GPUParticles.svg')
     },
-    graph_path: import.meta.resolve('../Resources/gpu_particles.ss_graph'),
+    graph_path: import.meta.resolve('../Resources/gpu_particles.graphShader'),
     custom_defines: [
         'LIFETIMEMINMAX',
         'ENABLE_FACE_TEX',

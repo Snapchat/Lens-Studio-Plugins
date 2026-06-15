@@ -1,0 +1,1012 @@
+SchemaVersion: 1
+Nodes:
+  ChildNodes:
+    Node0:
+      DependencyIndex: 0
+      LevelID: 16
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        CreateGroup:
+          Variable: true
+        Group:
+          String: ""
+        OptimizeOnExport:
+          Variable: true
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: Tweak_N16
+        SortIndex:
+          Variable: 0
+        SpecifySpecConst:
+          Variable: false
+        Static:
+          Variable: true
+        Tooltip:
+          String: ""
+        UniqueID:
+          String: Opacity
+      PositionX: -630
+      PositionY: -317
+      TemplateID: nodes_inputs_parameters_bool
+      Title1: Bool Parameter
+      Title2: Opacity
+    Node1:
+      DependencyIndex: 1
+      LevelID: 0
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        DepthMap:
+          Variable: false
+        ExtraOutputs:
+          Variable: true
+        Group:
+          String: ""
+        PixelSize:
+          IOType: 1
+          Variable: [0.0, 0.0]
+        ScriptName:
+          String: screenTexture
+        SortIndex:
+          Variable: 0
+        Texture:
+          ClassType2: TEXTURE_OBJECT_2D
+          IOType: 1
+        TextureSize:
+          IOType: 1
+          Variable: [0.0, 0.0]
+        Title:
+          String: Screen Texture
+        Tooltip:
+          String: ""
+      PositionX: -1348
+      PositionY: -18
+      TemplateID: nodes_inputs_parameters_texture2d_object
+      Title1: Texture 2D Object Parameter
+      Title2: Screen Texture
+    Node10:
+      DependencyIndex: 22
+      LevelID: 18
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Bool1:
+          Connection0:
+            NodeLevelID: 16
+            PortID: Output
+          Variable: 0.0
+        Channels:
+          ItemIndex: 0
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Count:
+          ItemIndex: 0
+          ItemList: "1 : 2 : 3 : 4 : 5 : 6"
+        Default:
+          Connection0:
+            NodeLevelID: 3
+            PortID: SubGraphUniqueID13
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        Result:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        Value1:
+          Connection0:
+            NodeLevelID: 19
+            PortID: Output
+          Variable: [0.0, 0.0, 0.0, 0.0]
+      PositionX: -387
+      PositionY: -222
+      TemplateID: nodes_main_if_else
+      Title1: If / else
+    Node11:
+      CommentSizeX: 0
+      CommentSizeY: 0
+      DependencyIndex: 23
+      LevelID: 4
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Depth:
+          Variable: 1.0
+        DepthMode:
+          ItemIndex: 0
+          ItemList: |2-
+            		Non-Linear - Normalized [0 to 1] ) :		Linear - Normalized [-1 to 1] :		View Space - Non-Normalized [-near to -far]	
+        DontFreezeSpec:
+          Variable: false
+        FinalColor:
+          ClassType1: COLOR
+          Connection0:
+            NodeLevelID: 18
+            PortID: Result
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        FinalColor1:
+          ClassType1: COLOR
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        FinalColor2:
+          ClassType1: COLOR
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        FinalColor3:
+          ClassType1: COLOR
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        GSplatPointSize:
+          Variable: 0.0
+        Negative:
+          Variable: false
+        RayDirection:
+          Variable: [0.0, 1.0, 0.0]
+        RayOrigin:
+          Variable: [0.0, 0.0, 0.0]
+        Targets:
+          ItemIndex: 0
+          ItemList: "1 : 2 : 3 : 4"
+        Type:
+          ItemIndex: 1
+          ItemList: "3D : Post Effect : Hair : Gaussian Splatting"
+        WorldNormal:
+          Variable: [0.0, 1.0, 0.0]
+        WorldPosition:
+          Variable: [0.0, 0.0, 0.0]
+        WorldTangent:
+          Variable: [0.0, 0.0, 1.0]
+        WriteDepth:
+          Variable: false
+      PositionX: -194
+      PositionY: -222
+      TemplateID: nodes_main_graph
+      Title1: Shader
+      Title2: Post Effect
+    Node12:
+      CommentSizeX: 570
+      CommentSizeY: 297
+      DependencyIndex: 24
+      LevelID: 28
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Color:
+          ClassType1: COLOR
+          Variable: [0.4000000059604645, 0.699999988079071, 1.0, 0.10000000149011612]
+        Comment:
+          String: Blurred opacity mask
+        NewComment:
+          ClassType1: TEXT
+          String: Blurred opacity mask
+        NewToolTip:
+          ClassType1: TEXT
+          String: ""
+        Tooltip:
+          String: ""
+        Upgraded:
+          Variable: true
+      PositionX: -1317
+      PositionY: -505
+      TemplateID: node_util_comment
+      Title1: ""
+    Node2:
+      DependencyIndex: 2
+      LevelID: 1
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        ScreenCoord:
+          IOType: 1
+          Variable: [0.0, 0.0]
+      PositionX: -1303
+      PositionY: -137
+      TemplateID: node_input_shader_screencoord
+      Title1: Screen UV Coord
+    Node3:
+      DependencyIndex: 3
+      LevelID: 11
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Color:
+          ClassType1: COLOR
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        Coords:
+          ItemIndex: 2
+          ItemList: "UV Coord 0 : UV Coord 1 : Custom"
+        LODMode:
+          ItemIndex: 0
+          ItemList: "Auto : Custom"
+        LODValue:
+          Variable: 0.0
+        Texture:
+          ClassType2: TEXTURE_OBJECT_2D
+          Connection0:
+            NodeLevelID: 0
+            PortID: Texture
+        Type:
+          ItemIndex: 0
+          ItemList: "2D Map : 2D Normal Map"
+        UVCoord:
+          Connection0:
+            NodeLevelID: 1
+            PortID: ScreenCoord
+          Variable: [0.0, 0.0]
+      PositionX: -930
+      PositionY: -170
+      TemplateID: node_function_util_sample
+      TemplateVersionMajor: 2
+      TemplateVersionMinor: 1
+      Title1: Texture 2D Sample
+    Node4:
+      DependencyIndex: 4
+      LevelID: 9
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 5
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: true
+        EnableMin:
+          Variable: true
+        Group:
+          String: ""
+        Max:
+          Variable: 5.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: blurFactor
+        SortIndex:
+          Variable: 0
+        Step:
+          Variable: 0.01
+        Title:
+          String: Blur Factor
+        Tooltip:
+          String: ""
+      PositionX: -1282
+      PositionY: 132
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Blur Factor
+    Node5:
+      ChildNodes:
+        Node0:
+          DependencyIndex: 5
+          LevelID: 5
+          NodeCount: 0
+          NodeType: 1
+          Ports:
+            Group:
+              String: ""
+            Import:
+              ClassType2: TEXTURE_OBJECT_2D
+            SortIndex:
+              Variable: 0
+            Title:
+              String: Texture
+            Tooltip:
+              String: ""
+            Value:
+              ClassType2: TEXTURE_OBJECT_2D
+              IOType: 1
+          PositionX: -46
+          PositionY: -198
+          TemplateID: nodes_import_texture_object
+          Title1: Texture Object 2D Import
+          Title2: Texture
+        Node1:
+          DependencyIndex: 6
+          LevelID: 6
+          NodeCount: 0
+          NodeType: 1
+          Ports:
+            Channels:
+              ItemIndex: 6
+              ItemList: "auto : xyzw : rgba : xyz : rgb : xy : x"
+            EnableMax:
+              Variable: false
+            EnableMin:
+              Variable: false
+            Group:
+              String: ""
+            Import:
+              Variable: [3.0, 1.0, 1.0, 1.0]
+            Max:
+              Variable: 1.0
+            Min:
+              Variable: 1.0
+            SortIndex:
+              Variable: 3
+            Step:
+              Variable: 0.009999999776482582
+            Title:
+              String: Blur Factor
+            Tooltip:
+              String: ""
+            Value:
+              IOType: 1
+              Variable: [0.0, 0.0, 0.0, 0.0]
+          PositionX: 20
+          PositionY: -100
+          TemplateID: nodes_import_float
+          Title1: Float Import
+          Title2: Blur Factor
+        Node2:
+          DependencyIndex: 7
+          LevelID: 7
+          NodeCount: 0
+          NodeType: 1
+          Ports:
+            Channels:
+              ItemIndex: 5
+              ItemList: "auto : xyzw : rgba : xyz : rgb : xy : x"
+            EnableMax:
+              Variable: false
+            EnableMin:
+              Variable: false
+            Group:
+              String: ""
+            Import:
+              Variable: [0.0, 0.0, 0.0, 0.0]
+            Max:
+              Variable: 1.0
+            Min:
+              Variable: 0.0
+            SortIndex:
+              Variable: 1
+            Step:
+              Variable: 0.009999999776482582
+            Title:
+              String: Pixel Size
+            Tooltip:
+              String: ""
+            Value:
+              IOType: 1
+              Variable: [0.0, 0.0, 0.0, 0.0]
+          PositionX: 20
+          PositionY: 0
+          TemplateID: nodes_import_float
+          Title1: Float Import
+          Title2: Pixel Size
+        Node3:
+          DependencyIndex: 8
+          LevelID: 10
+          NodeCount: 0
+          NodeType: 1
+          Ports:
+            Channels:
+              ItemIndex: 5
+              ItemList: "auto : xyzw : rgba : xyz : rgb : xy : x"
+            EnableMax:
+              Variable: false
+            EnableMin:
+              Variable: false
+            Group:
+              String: ""
+            Import:
+              Variable: [0.0, 0.0, 0.0, 0.0]
+            Max:
+              Variable: 1.0
+            Min:
+              Variable: 0.0
+            SortIndex:
+              Variable: 2
+            Step:
+              Variable: 0.009999999776482582
+            Title:
+              String: TexCoords
+            Tooltip:
+              String: ""
+            Value:
+              IOType: 1
+              Variable: [0.0, 0.0, 0.0, 0.0]
+          PositionX: 20
+          PositionY: 100
+          TemplateID: nodes_import_float
+          Title1: Float Import
+          Title2: TexCoords
+        Node4:
+          DependencyIndex: 9
+          LevelID: 12
+          NodeCount: 0
+          NodeType: 1
+          Ports:
+            BlurFactor:
+              Connection0:
+                NodeLevelID: 6
+                PortID: Value
+              Variable: 0.0
+            Code:
+              ClassType1: TEXT
+              String: |-
+                input_texture_2d Texture;
+                input_float BlurFactor;
+                input_vec2  PixelSize;
+                input_vec2  TexCoord;
+                
+                output_vec4 Result; 
+                
+                void main()
+                {
+                	if (BlurFactor <= 0.0) {
+                		Result = Texture.sample(TexCoord);
+                	}
+                	else {
+                		const int loopIter = 8;
+                		const float loopDenom = 1.0 / float(loopIter);
+                
+                		vec4 blurredTex = vec4(0.0);
+                		float lod = BlurFactor + 0.7;
+                
+                		vec2 arr[8] = vec2[](vec2( 1.0162,  1.0162),
+                						 	vec2( 0.4209,  1.0162),
+                						 	vec2(-0.4209,  1.0162),
+                						 	vec2(-1.0162,  0.4209),
+                						 	vec2(-1.0162, -0.4209),
+                						 	vec2(-0.4209, -1.0162),
+                						 	vec2( 0.4209, -1.0162),
+                						 	vec2( 1.0162, -0.4209));
+                
+                		for (int i = 0; i < loopIter; i++) {
+                			vec2 uvIter = arr[i] * PixelSize * exp2(BlurFactor) + TexCoord;
+                			blurredTex += Texture.sampleLod(uvIter, lod) * loopDenom;
+                		}
+                
+                		float fadeOutBlur = min(BlurFactor, 1.0);
+                		vec4 baseTex = Texture.sampleLod(TexCoord, lod * fadeOutBlur);
+                		Result = mix(baseTex, blurredTex, 0.84 * fadeOutBlur);
+                	}
+                }
+            Description:
+              ClassType1: TEXT
+              String: ""
+            Examples:
+              ItemIndex: 0
+              ItemList: "Custom : Input/Output/Global Types : Extra Functions : Procedural Execution : Lighting Loop : System Built-In Values/Functions"
+            ID:
+              Variable: 12
+            Locked:
+              Variable: false
+            PixelSize:
+              Connection0:
+                NodeLevelID: 7
+                PortID: Value
+              Variable: [0.0, 0.0]
+            Result:
+              IOType: 1
+              Variable: [0.0, 0.0, 0.0, 0.0]
+            Stage:
+              ItemIndex: 1
+              ItemList: "Vertex : Pixel"
+            TexCoord:
+              Connection0:
+                NodeLevelID: 10
+                PortID: Value
+              Variable: [0.0, 0.0]
+            Texture:
+              ClassType2: TEXTURE_OBJECT_2D
+              Connection0:
+                NodeLevelID: 5
+                PortID: Value
+            Title:
+              String: Gaussian Blur
+            ngs_Height:
+              Variable: 600
+            ngs_Version:
+              String: 0.1.0
+          PositionX: 310
+          PositionY: -130
+          TemplateID: node_util_custom
+          TemplateVersionMinor: 2
+          Title1: Gaussian Blur
+        Node5:
+          DependencyIndex: 10
+          LevelID: 13
+          NodeCount: 0
+          NodeType: 1
+          Ports:
+            Channels:
+              ItemIndex: 2
+              ItemList: "auto : xyzw : rgba : xyz : rgb : xy : x"
+            Export:
+              IOType: 1
+              Variable: [0.0, 0.0, 0.0, 0.0]
+            SortIndex:
+              Variable: 0
+            Title:
+              String: Color
+            Tooltip:
+              String: ""
+            Value:
+              Connection0:
+                NodeLevelID: 12
+                PortID: Result
+              Variable: [0.0, 0.0, 0.0, 0.0]
+          PositionX: 540
+          PositionY: -130
+          TemplateID: nodes_export_float
+          Title1: Float Export
+          Title2: Color
+      DependencyIndex: 11
+      LevelID: 3
+      NodeType: 3
+      Ports:
+        Description:
+          String: ""
+        DescriptionText:
+          ClassType1: TEXT
+          String: |-
+            Post Effect graph,  a simple gaussian kernel to reduce image noise and detail. 
+            
+            Blur Factor settings can be adjusted to control the blur amount. For this subgraph to work properly, Pixel Size and TexCoords must be connected, and Mipmaps must be enabled for the texture on the material.
+            
+            Tip:
+            You can enable Expose Size Out in the Texture 2D Object Parameter node and connect it to the Gaussian Blur's Pixel Size, as well as TexCoords to Screen UV coords.
+        FirstTime:
+          Variable: false
+        Locked:
+          Variable: false
+        SubGraphUniqueID10:
+          Connection0:
+            NodeLevelID: 1
+            PortID: ScreenCoord
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        SubGraphUniqueID13:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        SubGraphUniqueID5:
+          ClassType2: TEXTURE_OBJECT_2D
+          Connection0:
+            NodeLevelID: 0
+            PortID: Texture
+        SubGraphUniqueID6:
+          Connection0:
+            NodeLevelID: 9
+            PortID: Output
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        SubGraphUniqueID7:
+          Connection0:
+            NodeLevelID: 0
+            PortID: PixelSize
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        Title1:
+          String: Gaussian Blur
+      PositionX: -926
+      PositionY: 42
+      TemplateID: nodes_main_subgraph
+      Title1: Gaussian Blur
+    Node6:
+      DependencyIndex: 12
+      LevelID: 2
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        DepthMap:
+          Variable: false
+        ExtraOutputs:
+          Variable: true
+        Group:
+          String: Opacity
+        PixelSize:
+          IOType: 1
+          Variable: [0.0, 0.0]
+        ScriptName:
+          String: opacityTex
+        SortIndex:
+          Variable: 0
+        Texture:
+          ClassType2: TEXTURE_OBJECT_2D
+          IOType: 1
+        TextureSize:
+          IOType: 1
+          Variable: [0.0, 0.0]
+        Title:
+          String: Texture
+        Tooltip:
+          String: ""
+      PositionX: -1287
+      PositionY: -457
+      TemplateID: nodes_inputs_parameters_texture2d_object
+      Title1: Texture 2D Object Parameter
+      Title2: Texture
+    Node7:
+      DependencyIndex: 13
+      LevelID: 17
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 5
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: true
+        EnableMin:
+          Variable: true
+        Group:
+          String: Opacity
+        Max:
+          Variable: 5.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: opacityblurFactor
+        SortIndex:
+          Variable: 0
+        Step:
+          Variable: 0.01
+        Title:
+          String: Opacity Blur Factor
+        Tooltip:
+          String: ""
+      PositionX: -1251
+      PositionY: -310
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Opacity Blur Factor
+    Node8:
+      ChildNodes:
+        Node0:
+          DependencyIndex: 14
+          LevelID: 33
+          NodeCount: 0
+          NodeType: 1
+          Ports:
+            Group:
+              String: ""
+            Import:
+              ClassType2: TEXTURE_OBJECT_2D
+            SortIndex:
+              Variable: 0
+            Title:
+              String: Texture
+            Tooltip:
+              String: ""
+            Value:
+              ClassType2: TEXTURE_OBJECT_2D
+              IOType: 1
+          PositionX: -46
+          PositionY: -198
+          TemplateID: nodes_import_texture_object
+          Title1: Texture Object 2D Import
+          Title2: Texture
+        Node1:
+          DependencyIndex: 15
+          LevelID: 30
+          NodeCount: 0
+          NodeType: 1
+          Ports:
+            Channels:
+              ItemIndex: 6
+              ItemList: "auto : xyzw : rgba : xyz : rgb : xy : x"
+            EnableMax:
+              Variable: false
+            EnableMin:
+              Variable: false
+            Group:
+              String: ""
+            Import:
+              Variable: [3.0, 1.0, 1.0, 1.0]
+            Max:
+              Variable: 1.0
+            Min:
+              Variable: 1.0
+            SortIndex:
+              Variable: 3
+            Step:
+              Variable: 0.009999999776482582
+            Title:
+              String: Blur Factor
+            Tooltip:
+              String: ""
+            Value:
+              IOType: 1
+              Variable: [0.0, 0.0, 0.0, 0.0]
+          PositionX: 20
+          PositionY: -100
+          TemplateID: nodes_import_float
+          Title1: Float Import
+          Title2: Blur Factor
+        Node2:
+          DependencyIndex: 16
+          LevelID: 31
+          NodeCount: 0
+          NodeType: 1
+          Ports:
+            Channels:
+              ItemIndex: 5
+              ItemList: "auto : xyzw : rgba : xyz : rgb : xy : x"
+            EnableMax:
+              Variable: false
+            EnableMin:
+              Variable: false
+            Group:
+              String: ""
+            Import:
+              Variable: [0.0, 0.0, 0.0, 0.0]
+            Max:
+              Variable: 1.0
+            Min:
+              Variable: 0.0
+            SortIndex:
+              Variable: 1
+            Step:
+              Variable: 0.009999999776482582
+            Title:
+              String: Pixel Size
+            Tooltip:
+              String: ""
+            Value:
+              IOType: 1
+              Variable: [0.0, 0.0, 0.0, 0.0]
+          PositionX: 20
+          PositionY: 0
+          TemplateID: nodes_import_float
+          Title1: Float Import
+          Title2: Pixel Size
+        Node3:
+          DependencyIndex: 17
+          LevelID: 32
+          NodeCount: 0
+          NodeType: 1
+          Ports:
+            Channels:
+              ItemIndex: 5
+              ItemList: "auto : xyzw : rgba : xyz : rgb : xy : x"
+            EnableMax:
+              Variable: false
+            EnableMin:
+              Variable: false
+            Group:
+              String: ""
+            Import:
+              Variable: [0.0, 0.0, 0.0, 0.0]
+            Max:
+              Variable: 1.0
+            Min:
+              Variable: 0.0
+            SortIndex:
+              Variable: 2
+            Step:
+              Variable: 0.009999999776482582
+            Title:
+              String: TexCoords
+            Tooltip:
+              String: ""
+            Value:
+              IOType: 1
+              Variable: [0.0, 0.0, 0.0, 0.0]
+          PositionX: 20
+          PositionY: 100
+          TemplateID: nodes_import_float
+          Title1: Float Import
+          Title2: TexCoords
+        Node4:
+          DependencyIndex: 18
+          LevelID: 34
+          NodeCount: 0
+          NodeType: 1
+          Ports:
+            BlurFactor:
+              Connection0:
+                NodeLevelID: 30
+                PortID: Value
+              Variable: 0.0
+            Code:
+              ClassType1: TEXT
+              String: |-
+                input_texture_2d Texture;
+                input_float BlurFactor;
+                input_vec2  PixelSize;
+                input_vec2  TexCoord;
+                
+                output_vec4 Result; 
+                
+                void main()
+                {
+                	if (BlurFactor <= 0.0) {
+                		Result = Texture.sample(TexCoord);
+                	}
+                	else {
+                		const int loopIter = 8;
+                		const float loopDenom = 1.0 / float(loopIter);
+                
+                		vec4 blurredTex = vec4(0.0);
+                		float lod = BlurFactor + 0.7;
+                
+                		vec2 arr[8] = vec2[](vec2( 1.0162,  1.0162),
+                						 	vec2( 0.4209,  1.0162),
+                						 	vec2(-0.4209,  1.0162),
+                						 	vec2(-1.0162,  0.4209),
+                						 	vec2(-1.0162, -0.4209),
+                						 	vec2(-0.4209, -1.0162),
+                						 	vec2( 0.4209, -1.0162),
+                						 	vec2( 1.0162, -0.4209));
+                
+                		for (int i = 0; i < loopIter; i++) {
+                			vec2 uvIter = arr[i] * PixelSize * exp2(BlurFactor) + TexCoord;
+                			blurredTex += Texture.sampleLod(uvIter, lod) * loopDenom;
+                		}
+                
+                		float fadeOutBlur = min(BlurFactor, 1.0);
+                		vec4 baseTex = Texture.sampleLod(TexCoord, lod * fadeOutBlur);
+                		Result = mix(baseTex, blurredTex, 0.84 * fadeOutBlur);
+                	}
+                }
+            Description:
+              ClassType1: TEXT
+              String: ""
+            Examples:
+              ItemIndex: 0
+              ItemList: "Custom : Input/Output/Global Types : Extra Functions : Procedural Execution : Lighting Loop : System Built-In Values/Functions"
+            ID:
+              Variable: 34
+            Locked:
+              Variable: false
+            PixelSize:
+              Connection0:
+                NodeLevelID: 31
+                PortID: Value
+              Variable: [0.0, 0.0]
+            Result:
+              IOType: 1
+              Variable: [0.0, 0.0, 0.0, 0.0]
+            Stage:
+              ItemIndex: 1
+              ItemList: "Vertex : Pixel"
+            TexCoord:
+              Connection0:
+                NodeLevelID: 32
+                PortID: Value
+              Variable: [0.0, 0.0]
+            Texture:
+              ClassType2: TEXTURE_OBJECT_2D
+              Connection0:
+                NodeLevelID: 33
+                PortID: Value
+            Title:
+              String: Gaussian Blur
+            ngs_Height:
+              Variable: 600
+            ngs_Version:
+              String: 0.1.0
+          PositionX: 310
+          PositionY: -130
+          TemplateID: node_util_custom
+          TemplateVersionMinor: 2
+          Title1: Gaussian Blur
+        Node5:
+          DependencyIndex: 19
+          LevelID: 35
+          NodeCount: 0
+          NodeType: 1
+          Ports:
+            Channels:
+              ItemIndex: 2
+              ItemList: "auto : xyzw : rgba : xyz : rgb : xy : x"
+            Export:
+              IOType: 1
+              Variable: [0.0, 0.0, 0.0, 0.0]
+            SortIndex:
+              Variable: 0
+            Title:
+              String: Color
+            Tooltip:
+              String: ""
+            Value:
+              Connection0:
+                NodeLevelID: 34
+                PortID: Result
+              Variable: [0.0, 0.0, 0.0, 0.0]
+          PositionX: 540
+          PositionY: -130
+          TemplateID: nodes_export_float
+          Title1: Float Export
+          Title2: Color
+      DependencyIndex: 20
+      LevelID: 29
+      NodeType: 3
+      Ports:
+        Description:
+          String: ""
+        DescriptionText:
+          ClassType1: TEXT
+          String: |-
+            Post Effect graph,  a simple gaussian kernel to reduce image noise and detail. 
+            
+            Blur Factor settings can be adjusted to control the blur amount. For this subgraph to work properly, Pixel Size and TexCoords must be connected, and Mipmaps must be enabled for the texture on the material.
+            
+            Tip:
+            You can enable Expose Size Out in the Texture 2D Object Parameter node and connect it to the Gaussian Blur's Pixel Size, as well as TexCoords to Screen UV coords.
+        FirstTime:
+          Variable: false
+        Locked:
+          Variable: false
+        SubGraphUniqueID30:
+          Connection0:
+            NodeLevelID: 17
+            PortID: Output
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        SubGraphUniqueID31:
+          Connection0:
+            NodeLevelID: 2
+            PortID: PixelSize
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        SubGraphUniqueID32:
+          Connection0:
+            NodeLevelID: 1
+            PortID: ScreenCoord
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        SubGraphUniqueID33:
+          ClassType2: TEXTURE_OBJECT_2D
+          Connection0:
+            NodeLevelID: 2
+            PortID: Texture
+        SubGraphUniqueID35:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        Title1:
+          String: Gaussian Blur
+      PositionX: -925
+      PositionY: -431
+      TemplateID: nodes_main_subgraph
+      Title1: Gaussian Blur
+    Node9:
+      DependencyIndex: 21
+      LevelID: 19
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Input0:
+          Connection0:
+            NodeLevelID: 11
+            PortID: Color
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        Input1:
+          Connection0:
+            NodeLevelID: 3
+            PortID: SubGraphUniqueID13
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        Input2:
+          Connection0:
+            NodeLevelID: 29
+            PortID: SubGraphUniqueID35
+          Variable: [0.5, 0.5, 0.5, 0.5]
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        Type0:
+          ItemIndex: 0
+          ItemList: "auto : xyzw : rgba : xyz : rgb : xy : x"
+        Type1:
+          ItemIndex: 0
+          ItemList: "auto : xyzw : rgba : xyz : rgb : xy : x"
+        Type2:
+          ItemIndex: 6
+          ItemList: "auto : xyzw : rgba : xyz : rgb : xy : x"
+      PositionX: -630
+      PositionY: -187
+      TemplateID: nodes_math_mix
+      Title1: Mix
+  IsSubGraph0: true
+  IsSubGraph1: true
+  IsSubGraph2: true
+  IsSubGraph3: true
+  LevelID: 0
+  NodeType: 3
+  PositionX: 0
+  PositionY: 0
+  TemplateID: nodes_main_subgraph
+  Title1: ""
+SystemID: dev.snap.shaders

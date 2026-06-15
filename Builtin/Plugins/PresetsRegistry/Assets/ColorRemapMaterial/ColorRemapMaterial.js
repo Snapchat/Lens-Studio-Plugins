@@ -7,7 +7,7 @@ const params = {
         'description': 'PostEffectVisual material remapping screen texture with four color mixers',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
-    graph_path: import.meta.resolve('Resources/color_remap.ss_graph'),
+    graph_path: import.meta.resolve('Resources/color_remap.graphShader'),
     pass_info: {
         'depthTest': false,
         'depthWrite': false,

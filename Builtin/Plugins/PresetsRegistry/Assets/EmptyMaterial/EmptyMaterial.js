@@ -7,7 +7,7 @@ const params = {
         'description': 'Empty shader graph material.',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
-    graph_path: import.meta.resolve('Resources/empty.ss_graph'),
+    graph_path: import.meta.resolve('Resources/Empty.graphShader'),
 };
 
 export const EmptyMaterialPreset = MaterialPresetFactory.createMaterialPreset(params);

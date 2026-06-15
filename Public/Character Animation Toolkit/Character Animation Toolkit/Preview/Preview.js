@@ -110,8 +110,7 @@ export class Preview {
             this.bitmojiButton.pixmap = hovered ? this.bitmojiButtonHoveredBackground : this.bitmojiButtonBackground;
         });
         this.bodyMorphButton.onHover.connect((hovered) => {
-            var _a;
-            if (!this.bodyMorphButton || ((_a = this.stackedWidget) === null || _a === void 0 ? void 0 : _a.currentIndex) === 1) {
+            if (!this.bodyMorphButton || this.stackedWidget?.currentIndex === 1) {
                 return;
             }
             if (this.characterType === 0) {
@@ -128,8 +127,7 @@ export class Preview {
             this.onBitmojiButtonClicked();
         });
         this.bodyMorphButton.onClick.connect(() => {
-            var _a;
-            if (((_a = this.stackedWidget) === null || _a === void 0 ? void 0 : _a.currentIndex) === 1) {
+            if (this.stackedWidget?.currentIndex === 1) {
                 return;
             }
             this.onBodyMorphButtonClicked();
@@ -139,7 +137,6 @@ export class Preview {
         return widget;
     }
     onBitmojiButtonClicked() {
-        var _a, _b;
         this.characterType = 0;
         if (this.stackedWidget) {
             this.stackedWidget.currentIndex = 0;
@@ -150,15 +147,14 @@ export class Preview {
         }
         if (this.footer && this.transitionMenuWidget) {
             this.footer.toNativeWidget().visible = true;
-            (_a = this.transitionMenuWidget) === null || _a === void 0 ? void 0 : _a.toNativeWidget().visible = true;
-            (_b = this.lbePreview) === null || _b === void 0 ? void 0 : _b.sendMessage({
+            this.transitionMenuWidget?.toNativeWidget().visible = true;
+            this.lbePreview?.sendMessage({
                 "event_type": "select_bitmoji"
             });
         }
         this.onCharacterTypeChange();
     }
     onBodyMorphButtonClicked() {
-        var _a;
         if (this.stackedWidget && (this.characterType !== 0 || this.isFirstBodyMorphClick)) {
             this.stackedWidget.currentIndex = 1;
             if (this.footer && this.transitionMenuWidget) {
@@ -170,7 +166,7 @@ export class Preview {
             this.bodyMorphButton.pixmap = this.bodyMorphButtonSelectedBackground;
             this.bitmojiButton.pixmap = this.bitmojiButtonBackground;
         }
-        (_a = this.lbePreview) === null || _a === void 0 ? void 0 : _a.sendMessage({
+        this.lbePreview?.sendMessage({
             "event_type": "select_body_morph"
         });
         if (this.characterType !== 1) {
@@ -202,7 +198,6 @@ export class Preview {
         this.blendButton.primary = true;
         this.blendButton.visible = false;
         this.blendButton.onClick.connect(() => {
-            var _a;
             this.blendButton.visible = false;
             this.importButton.enabled = false;
             this.importButton.visible = true;
@@ -215,7 +210,7 @@ export class Preview {
             animationLibrary.clearSelection();
             this.transitionMenu.reset();
             this.fbxPath = undefined;
-            (_a = this.lbePreview) === null || _a === void 0 ? void 0 : _a.sendMessage({
+            this.lbePreview?.sendMessage({
                 "event_type": "reset_animation"
             });
             const startIntervalFunction = animationLibrary.addAnimationToMyGallery("STITCHED");
@@ -292,8 +287,7 @@ export class Preview {
     }
     async getStitchedAsset(fileName, url) {
         return new Promise((resolve) => {
-            var _a;
-            (_a = this.assetLibImporter) === null || _a === void 0 ? void 0 : _a.downloadAsset(url, fileName, (response) => {
+            this.assetLibImporter?.downloadAsset(url, fileName, (response) => {
                 if (!this.isActive) {
                     return;
                 }
@@ -359,30 +353,27 @@ export class Preview {
         this.onCharacterTypeChange = callback;
     }
     onTransitionTileClicked(pageName, id) {
-        var _a;
         const animLibrary = dependencyContainer.get(DependencyKeys.AnimationLibrary);
         if (pageName !== null && id !== null && id !== undefined && pageName !== undefined) {
             animLibrary.selectTile(pageName, id);
         }
         else {
             animLibrary.clearSelection();
-            (_a = this.lbePreview) === null || _a === void 0 ? void 0 : _a.sendMessage({
+            this.lbePreview?.sendMessage({
                 "event_type": "reset_animation"
             });
         }
     }
     onNewTileClicked() {
-        var _a;
         if (this.transitionMenu.getNonEmptyTilesCount() > 1) {
             this.importButton.visible = false;
             this.blendButton.visible = true;
         }
-        (_a = this.lbePreview) === null || _a === void 0 ? void 0 : _a.sendMessage({
+        this.lbePreview?.sendMessage({
             "event_type": "reset_animation"
         });
     }
     onTransitionTileRemoved() {
-        var _a;
         const visibleTilesCnt = this.transitionMenu.getVisibleTilesCount();
         const nonEmptyTilesCount = this.transitionMenu.getNonEmptyTilesCount();
         if (nonEmptyTilesCount == 1) {
@@ -397,7 +388,7 @@ export class Preview {
         }
         if (visibleTilesCnt == 0) {
             this.importButton.visible = false;
-            (_a = this.lbePreview) === null || _a === void 0 ? void 0 : _a.sendMessage({
+            this.lbePreview?.sendMessage({
                 "event_type": "reset_animation"
             });
         }

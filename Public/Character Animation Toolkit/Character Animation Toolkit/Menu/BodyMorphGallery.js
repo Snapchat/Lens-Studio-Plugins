@@ -82,7 +82,6 @@ export class BodyMorphGallery {
             this.lbePreview = dependencyContainer.get(DependencyKeys.LBEPreview);
         }
         downloadFile(glbUrl, (response) => {
-            var _a;
             if (!this.isActive) {
                 return;
             }
@@ -104,7 +103,7 @@ export class BodyMorphGallery {
             FileSystem.remove(tempFolderPath);
             this.onBodyMorphTapped(this.tempDir.path + "/" + assetName);
             if (this.lbePreview) {
-                (_a = this.lbePreview) === null || _a === void 0 ? void 0 : _a.sendMessage({
+                this.lbePreview?.sendMessage({
                     "event_type": "update_body_morph",
                     "path": this.tempDir.path + "/" + assetName
                 });
@@ -122,11 +121,10 @@ export class BodyMorphGallery {
                     return;
                 }
                 JSON.parse(response.body).items.forEach((item) => {
-                    var _a;
                     if (!item.previewUrl || !item.glbUrl) {
                         return;
                     }
-                    (_a = this.assetLibImporter) === null || _a === void 0 ? void 0 : _a.downloadAsset(item.previewUrl, item.id + '_preview.webp', (response) => {
+                    this.assetLibImporter?.downloadAsset(item.previewUrl, item.id + '_preview.webp', (response) => {
                         if (!this.isActive) {
                             return;
                         }

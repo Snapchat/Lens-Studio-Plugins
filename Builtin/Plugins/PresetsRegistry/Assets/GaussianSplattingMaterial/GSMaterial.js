@@ -14,7 +14,7 @@ const params = {
         'twoSided': true,
         'colorMask': new vec4b(true, true, true, true)
     },
-    graph_path: import.meta.resolve('Resources/Gaussian Splatting.ss_graph'),
+    graph_path: import.meta.resolve('Resources/Gaussian Splatting.graphShader'),
 };
 
 export const EmptyGSMaterialPreset = MaterialPresetFactory.createMaterialPreset(params);

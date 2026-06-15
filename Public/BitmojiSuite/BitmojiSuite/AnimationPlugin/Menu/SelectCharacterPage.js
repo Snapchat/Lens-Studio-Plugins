@@ -25,8 +25,7 @@ export class SelectCharacterPage {
         layout.setContentsMargins(Ui.Sizes.Padding, Ui.Sizes.Padding, 0, Ui.Sizes.DoublePadding);
         this.createWarningDialog(onReturnCallback);
         const header = this.menuTemplate.createHeader(widget, 'Video Source', () => {
-            var _a;
-            (_a = this.warningDialog) === null || _a === void 0 ? void 0 : _a.show();
+            this.warningDialog?.show();
         });
         const contentWidget = new Widget(widget);
         contentWidget.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Expanding);
@@ -98,8 +97,7 @@ export class SelectCharacterPage {
         tile.radius = 8;
         galleryWidget.addTile(tile);
         tile.addOnClickCallback(() => {
-            var _a;
-            (_a = this.grid) === null || _a === void 0 ? void 0 : _a.getVisibleTiles().forEach((tile) => {
+            this.grid?.getVisibleTiles().forEach((tile) => {
                 tile.selected = false;
                 tile.hideCheckmarkOverlay();
             });
@@ -135,7 +133,6 @@ export class SelectCharacterPage {
         }
         this.grid.setVisibleCnt(tracks.length);
         tracks.forEach((track, i) => {
-            var _a;
             if (!this.grid) {
                 return;
             }
@@ -143,7 +140,7 @@ export class SelectCharacterPage {
             tile.selected = false;
             tile.background = this.tileBackground;
             tile.hideCheckmarkOverlay();
-            (_a = this.assetLibImporter) === null || _a === void 0 ? void 0 : _a.downloadAsset(track.previewUrl, "track_" + i + ".jpg", (response) => {
+            this.assetLibImporter?.downloadAsset(track.previewUrl, "track_" + i + ".jpg", (response) => {
                 if (!this.isActive) {
                     return;
                 }
@@ -207,13 +204,11 @@ export class SelectCharacterPage {
         deleteButton.primary = true;
         const _this = this;
         this.connections.push(cancelButton.onClick.connect(function () {
-            var _a;
-            (_a = _this.warningDialog) === null || _a === void 0 ? void 0 : _a.close();
+            _this.warningDialog?.close();
         }.bind(this)));
         this.connections.push(deleteButton.onClick.connect(function () {
-            var _a;
             onReturnCallback();
-            (_a = _this.warningDialog) === null || _a === void 0 ? void 0 : _a.close();
+            _this.warningDialog?.close();
         }.bind(this)));
         buttonsLayout.addStretch(0);
         buttonsLayout.addWidget(cancelButton);

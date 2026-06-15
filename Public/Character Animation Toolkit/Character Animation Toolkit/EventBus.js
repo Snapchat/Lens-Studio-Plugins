@@ -9,22 +9,19 @@ export class EventBus {
         this.events = new Map();
     }
     on(event, listener) {
-        var _a;
         if (!this.events.has(event)) {
             this.events.set(event, new Set());
         }
-        (_a = this.events.get(event)) === null || _a === void 0 ? void 0 : _a.add(listener);
+        this.events.get(event)?.add(listener);
     }
     emit(event, ...args) {
-        var _a;
         if (this.events.has(event)) {
-            (_a = this.events.get(event)) === null || _a === void 0 ? void 0 : _a.forEach((listener) => listener(...args));
+            this.events.get(event)?.forEach((listener) => listener(...args));
         }
     }
     off(event, listener) {
-        var _a;
         if (this.events.has(event)) {
-            (_a = this.events.get(event)) === null || _a === void 0 ? void 0 : _a.delete(listener);
+            this.events.get(event)?.delete(listener);
         }
     }
     addDynamicEvent(event) {

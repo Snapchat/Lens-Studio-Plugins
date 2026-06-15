@@ -27,6 +27,7 @@ export class ChangeAttachmentMenu {
         let inputFormat = controls["imageReferencePicker"].value.length > 0 ? "PROMPT_IMAGE" : "PROMPT_TEXT";
 
         createAsset(buildAssetData(controls), (response) => {
+            if (!app.authStatus) return;
             // this.editEffectButton.enabled = true;
 
             if (response.statusCode == 200) {
@@ -67,6 +68,7 @@ export class ChangeAttachmentMenu {
         const settings = buildAnimationUpdateData(controls);
 
         copyAnimation(this.asset_id, settings, (response) => {
+            if (!app.authStatus) return;
             // this.editEffectButton.enabled = true;
 
             if (response.statusCode == 200) {
@@ -106,9 +108,11 @@ export class ChangeAttachmentMenu {
         const settings = buildAnimationUpdateData(controls);
 
         addAnimationToAsset(this.asset_id, settings, (response) => {
+            if (!app.authStatus) return;
             if (response.statusCode == 200) {
                 //logEventAssetCreation("SUCCESS", "UPDATE_EXISTING", inputFormat, "GENERATE_PREVIEW");
                 getAsset(this.asset_id, (responseBody) => {
+                    if (!app.authStatus) return;
                     // this.editEffectButton.enabled = true;
 
                     this.draftMeshState = true;
@@ -147,6 +151,7 @@ export class ChangeAttachmentMenu {
         app.log('Preparing animations...', { 'progressBar': true });
 
         getAsset(this.asset_id, (responseBody) => {
+            if (!app.authStatus) return;
             if (responseBody.selectedDrivingAnimationId != null) {
                 this.copyAnimationFromAsset(this.controls);
             } else {

@@ -570,6 +570,7 @@ export class GalleryView {
 
         this.deletionDialog = gui.createDialog();
         this.deletionDialog.windowTitle = 'Delete 3D Asset';
+        this.deletionDialog.setModal(true);
 
         this.deletionDialog.resize(460, 140);
 

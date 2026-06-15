@@ -7,7 +7,7 @@ const params = {
         'description': 'PostEffectVisual material simulating old VCR effects (scanlines, distortion, noise)',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
-    graph_path: import.meta.resolve('Resources/analog_tv.ss_graph'),
+    graph_path: import.meta.resolve('Resources/analog_tv.graphShader'),
     pass_info: {
         'depthTest': false,
         'depthWrite': false,

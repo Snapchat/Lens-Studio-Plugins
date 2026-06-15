@@ -25,8 +25,8 @@ export class FaceAnimator extends EntityGenerator {
         return descriptor;
     }
 
-    constructor(pluginSystem: Editor.PluginSystem) {
-        super(pluginSystem);
+    constructor(pluginSystem: Editor.PluginSystem, descriptor: Descriptor) {
+        super(pluginSystem, descriptor);
         app.initialize(pluginSystem);
         this.mGui = this.pluginSystem.findInterface(Ui.IGui);
         this.dialog = new Dialog(this.mGui.createDialog(), this.name);

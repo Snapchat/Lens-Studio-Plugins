@@ -4,7 +4,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 var _AssetMenuItem_guards;
-import GuiService from "LensStudio:GuiService";
+import { GuiService } from "LensStudio:GuiService";
 import * as Ui from "LensStudio:Ui";
 import { isAssetContext, isFileMesh } from "./guards.js";
 import { convertMeshFile } from "./mesh.js";

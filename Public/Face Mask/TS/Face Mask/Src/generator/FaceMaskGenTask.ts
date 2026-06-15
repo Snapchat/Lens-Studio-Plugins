@@ -27,6 +27,7 @@ export class FaceMaskGenTask {
     private negativePrompt: string;
     private seed: number;
     private stopper: { stop: boolean };
+    private shouldAbort: () => boolean;
     private timeoutTimer: any;
     private updateTimer: any;
     private id: string | null;
@@ -38,11 +39,18 @@ export class FaceMaskGenTask {
         reject: ((reason: Error) => void) | null
     };
 
-    constructor(prompt: string, negativePrompt: string, seed: number, stopper: { stop: boolean }) {
+    constructor(
+        prompt: string,
+        negativePrompt: string,
+        seed: number,
+        stopper: { stop: boolean },
+        shouldAbort: () => boolean = () => false
+    ) {
         this.prompt = prompt;
         this.negativePrompt = negativePrompt;
         this.seed = seed;
         this.stopper = stopper;
+        this.shouldAbort = shouldAbort;
         this.timeoutTimer = null;
         this.updateTimer = null;
         this.id = null;
@@ -76,7 +84,7 @@ export class FaceMaskGenTask {
             return;
         }
 
-        if (this.stopper.stop) {
+        if (this.stopper.stop || this.shouldAbort()) {
             this.jobFailed(new ErrorWithCode('Cancelled', ErrorCode.Cancelled));
             return;
         }
@@ -89,6 +97,10 @@ export class FaceMaskGenTask {
             }
             try {
                 this.id = await this.runJob();
+                if (this.stopper.stop || this.shouldAbort()) {
+                    this.jobFailed(new ErrorWithCode('Cancelled', ErrorCode.Cancelled));
+                    return;
+                }
                 this.setState(JobState.Waiting);
                 this.updateTimer = setTimeout(() => this.update(), POLL_DELAY_MS);
             } catch (e: any) {
@@ -102,6 +114,10 @@ export class FaceMaskGenTask {
             }
             try {
                 const result = await this.checkJobStatus(this.id!);
+                if (this.stopper.stop || this.shouldAbort()) {
+                    this.jobFailed(new ErrorWithCode('Cancelled', ErrorCode.Cancelled));
+                    return;
+                }
                 if (result === 'Failed') {
                     this.jobFailed(new ErrorWithCode('Job failed while waiting', ErrorCode.FailedWhileWaiting));
                 } else {
@@ -116,6 +132,10 @@ export class FaceMaskGenTask {
         } else if (this.state === JobState.GetOutput) {
             try {
                 const output = await this.getFinalOutput(this.id!);
+                if (this.stopper.stop || this.shouldAbort()) {
+                    this.jobFailed(new ErrorWithCode('Cancelled', ErrorCode.Cancelled));
+                    return;
+                }
                 this.clearTimers();
                 this.setState(JobState.Finished);
                 this.promise.resolve!(output);
@@ -145,7 +165,7 @@ export class FaceMaskGenTask {
     private jobFailed(errorWithCode: ErrorWithCode) {
         this.clearTimers();
 
-        if (this.stopper.stop) {
+        if (this.stopper.stop || this.shouldAbort()) {
             this.setState(JobState.Error);
             this.promise.reject!(new ErrorWithCode('Cancelled', ErrorCode.Cancelled));
             return;

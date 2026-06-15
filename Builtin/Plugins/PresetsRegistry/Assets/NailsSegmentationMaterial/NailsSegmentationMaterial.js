@@ -7,7 +7,7 @@ const params = {
         'description': 'Nail segmentation material using Object Tracking Texture with configurable base color, radius, and softness',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
-    graph_path: import.meta.resolve('Resources/object_seg.ss_graph'),
+    graph_path: import.meta.resolve('Resources/object_seg.graphShader'),
     custom_defines: [
         'ENABLE_ADVANCED'
     ],

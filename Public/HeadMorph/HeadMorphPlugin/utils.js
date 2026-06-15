@@ -290,8 +290,35 @@ function createColor(r, g, b, a) {
     return color;
 }
 
+/** Resolves a temp download filename from the artifact URL path (e.g. .lsc vs .lspkg). No URL API — Lens Studio runtime may omit it. */
+export function getHeadMorphArtifactFilename(objectUrl) {
+    const fallback = 'Head Morph Generator.lsc';
+    if (typeof objectUrl !== 'string' || objectUrl.length === 0) {
+        return fallback;
+    }
+    let pathPart = objectUrl;
+    const queryIdx = pathPart.indexOf('?');
+    if (queryIdx !== -1) {
+        pathPart = pathPart.slice(0, queryIdx);
+    }
+    const hashIdx = pathPart.indexOf('#');
+    if (hashIdx !== -1) {
+        pathPart = pathPart.slice(0, hashIdx);
+    }
+    const lastSlash = pathPart.lastIndexOf('/');
+    const segment = lastSlash === -1 ? pathPart : pathPart.slice(lastSlash + 1);
+    const dot = segment.lastIndexOf('.');
+    if (dot === -1 || dot === segment.length - 1) {
+        return fallback;
+    }
+    const ext = segment.slice(dot + 1).toLowerCase();
+    return `Head Morph Generator.${ext}`;
+}
+
 export function importToProject(objectUrl, callback) {
-    downloadFileFromBucket(objectUrl, `${app.name} Component.lsc`, function(filePath, tempDir) {
+    const fileName = getHeadMorphArtifactFilename(objectUrl);
+
+    downloadFileFromBucket(objectUrl, fileName, function(filePath, tempDir) {
         importHeadmorph(filePath, tempDir).then(() => {
             callback(true);
         })

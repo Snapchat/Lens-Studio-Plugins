@@ -675,12 +675,12 @@ export class GalleryView {
                 favoriteButton.visible = this.isFavoriteButtonChecked[this.isFavoriteButtonChecked.length - 1];
 
                 if (this.favoriteConnections[i]) {
-                    this.failedConnections[i].disconnect();
+                    this.favoriteConnections[i].disconnect();
                 }
 
                 this.favoriteConnections[i] = favoriteButton.onClick.connect(() => {
                     this.isFavoriteButtonChecked[i] = !this.isFavoriteButtonChecked[i];
-                    updateButton(favoriteButton, item.id, i);
+                    updateButton(favoriteButton, this.effectIds[i], i);
                 });
 
                 this.favoritesButtons.push(favoriteButton);
@@ -1150,7 +1150,7 @@ export class GalleryView {
         const gui = app.gui;
 
         this.deletionDialog = gui.createDialog();
-
+        this.deletionDialog.setModal(true);
         this.deletionDialog.resize(310, 94);
 
         const boxLayout1 = new Ui.BoxLayout();

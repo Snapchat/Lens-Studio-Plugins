@@ -11,7 +11,7 @@ export class BodyMorphService extends EntityGenerator {
         descriptor.name = app.name;
         descriptor.description = app.name;
         descriptor.dependencies = [];
-        descriptor.displayOrder = 1;
+        descriptor.displayOrder = 15;
         descriptor.icon = app.icon;
         descriptor.entityType = 'RenderMesh';
 

@@ -23,9 +23,16 @@ export class PreviewMenu {
         this.onStateChanged = onStateChanged;
         this.controls = {};
         this.resetParent = resetParent;
+        /** Bumped on leaving preview; in-flight create/retexture callbacks no-op if stale. */
+        this._modifySeq = 0;
+    }
+
+    invalidateInFlightModify() {
+        this._modifySeq++;
     }
 
     modifyAsset(controls) {
+        const myId = ++this._modifySeq;
         this.editEffectButton.enabled = false;
         app.log('Creating new asset...', { 'progressBar': true });
 
@@ -33,6 +40,11 @@ export class PreviewMenu {
 
         if (this.updateAssetOption.value == 'Change Texture') {
             retextureAsset(this.asset_id, buildAssetData(controls, false), (retextureResponse) => {
+                if (myId !== this._modifySeq) {
+                    app.log('', { 'enabled': false });
+                    this.updateEditButtonVisibility();
+                    return;
+                }
                 if (retextureResponse.statusCode == 200) {
                     logEventAssetCreation("SUCCESS", "CHANGE_TEXTURE", inputFormat);
                     this.onStateChanged({
@@ -57,6 +69,11 @@ export class PreviewMenu {
             const settings = buildAssetData(controls, true);
 
             createAsset(settings, (response) => {
+                if (myId !== this._modifySeq) {
+                    app.log('', { 'enabled': false });
+                    this.updateEditButtonVisibility();
+                    return;
+                }
                 if (response.statusCode == 200) {
                     logEventAssetCreation("SUCCESS", "CHANGE_GEOMETRY", inputFormat);
                     const responseBody = JSON.parse(response.body.toString());

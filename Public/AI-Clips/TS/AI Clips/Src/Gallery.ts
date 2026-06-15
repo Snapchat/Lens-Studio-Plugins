@@ -15,16 +15,33 @@ export class Gallery {
     private onReloadClickCallback: Function;
     private onScrollToBottomCallback: Function;
     private onSearchChangedCallback: Function;
+    private onFavoriteClickCallback: Function;
+    private onFavoritesFilterCallback: Function;
     private isWaitingForCallback: boolean = false;
     private pendingPreviews: Record<string, GalleryItem> = {};
     private tilesPerRow = 3;
+    private filterButton: Ui.ToolButton | undefined;
+    private filterMenu: Ui.Menu | undefined;
+    private showAllAction: Ui.Action | undefined;
+    private myFavoritesAction: Ui.Action | undefined;
+    private _favoritesFilterActive: boolean = false;
 
-    constructor(onTileClickCallback: Function, onImportClickCallback: Function, onReloadClickCallback: Function, onScrollToBottomCallback: Function, onSearchChangedCallback: Function) {
+    constructor(
+        onTileClickCallback: Function,
+        onImportClickCallback: Function,
+        onReloadClickCallback: Function,
+        onScrollToBottomCallback: Function,
+        onSearchChangedCallback: Function,
+        onFavoriteClickCallback: Function,
+        onFavoritesFilterCallback: Function
+    ) {
         this.onTileClickCallback = onTileClickCallback;
         this.onImportClickCallback = onImportClickCallback;
         this.onReloadClickCallback = onReloadClickCallback;
         this.onScrollToBottomCallback = onScrollToBottomCallback;
         this.onSearchChangedCallback = onSearchChangedCallback;
+        this.onFavoriteClickCallback = onFavoriteClickCallback;
+        this.onFavoritesFilterCallback = onFavoritesFilterCallback;
     }
 
     create(parent: Ui.Widget): Ui.Widget {
@@ -111,8 +128,64 @@ export class Gallery {
 
         const searchLine = new Ui.SearchLineEdit(widget);
 
+        this.filterButton = new Ui.ToolButton(widget);
+        const filterIconPath = new Editor.Path(import.meta.resolve('./Resources/filter.svg'));
+        this.filterButton.setIcon(Editor.Icon.fromFile(filterIconPath));
+
+        this.filterMenu = new Ui.Menu(widget);
+
+        this.showAllAction = new Ui.Action(widget);
+        this.showAllAction.text = 'Show All';
+        this.showAllAction.checkable = true;
+        this.showAllAction.checked = true;
+
+        this.myFavoritesAction = new Ui.Action(widget);
+        this.myFavoritesAction.text = 'My Favorites';
+        this.myFavoritesAction.checkable = true;
+        this.myFavoritesAction.checked = false;
+
+        this.filterMenu.addAction(this.showAllAction);
+        this.filterMenu.addAction(this.myFavoritesAction);
+
+        this.showAllAction.onToggle.connect((toggled: boolean) => {
+            if (!toggled && !this.myFavoritesAction!.checked) {
+                this.showAllAction!.blockSignals(true);
+                this.showAllAction!.checked = true;
+                this.showAllAction!.blockSignals(false);
+                return;
+            }
+            if (toggled) {
+                this.myFavoritesAction!.blockSignals(true);
+                this.myFavoritesAction!.checked = false;
+                this.myFavoritesAction!.blockSignals(false);
+                this._favoritesFilterActive = false;
+                this.onFavoritesFilterCallback(false);
+            }
+        });
+
+        this.myFavoritesAction.onToggle.connect((toggled: boolean) => {
+            if (!toggled && !this.showAllAction!.checked) {
+                this.myFavoritesAction!.blockSignals(true);
+                this.myFavoritesAction!.checked = true;
+                this.myFavoritesAction!.blockSignals(false);
+                return;
+            }
+            if (toggled) {
+                this.showAllAction!.blockSignals(true);
+                this.showAllAction!.checked = false;
+                this.showAllAction!.blockSignals(false);
+                this._favoritesFilterActive = true;
+                this.onFavoritesFilterCallback(true);
+            }
+        });
+
+        this.filterButton.onClick.connect(() => {
+            this.filterMenu!.popup(this.filterButton!);
+        });
+
         layout.addWidget(reloadButton);
         layout.addWidget(searchLine);
+        layout.addWidget(this.filterButton);
 
         widget.layout = layout;
 
@@ -124,12 +197,16 @@ export class Gallery {
             this.onReloadClickCallback();
         })
 
+        widget.onShow.connect(() => {
+            searchLine.setFocus();
+        });
+
         return widget;
     }
 
-    addItem(id: string, description: string, previewUrl: string, isDefault: boolean = false, inProgress: boolean = false, isTraining: boolean = false, isTrained: boolean = false) {
+    addItem(id: string, description: string, previewUrl: string, isDefault: boolean = false, inProgress: boolean = false, isTraining: boolean = false, isTrained: boolean = false, isFavorite: boolean = false) {
         const startIndex = this.items.length;
-        const item = this.createItem(id, description, previewUrl, isDefault, inProgress, isTraining, isTrained);
+        const item = this.createItem(id, description, previewUrl, isDefault, inProgress, isTraining, isTrained, isFavorite);
         if (item) {
             item.widget.visible = false;
             this.appendToLayout(startIndex);
@@ -137,11 +214,11 @@ export class Gallery {
         }
     }
 
-    addItems(itemsData: Array<{id: string, description: string, previewUrl: string, isDefault?: boolean, inProgress?: boolean, isTraining?: boolean, isTrained?: boolean}>) {
+    addItems(itemsData: Array<{id: string, description: string, previewUrl: string, isDefault?: boolean, inProgress?: boolean, isTraining?: boolean, isTrained?: boolean, isFavorite?: boolean}>) {
         const startIndex = this.items.length;
         const newItems: GalleryItem[] = [];
         itemsData.forEach((data) => {
-            const item = this.createItem(data.id, data.description, data.previewUrl, data.isDefault ?? false, data.inProgress ?? false, data.isTraining ?? false, data.isTrained ?? false);
+            const item = this.createItem(data.id, data.description, data.previewUrl, data.isDefault ?? false, data.inProgress ?? false, data.isTraining ?? false, data.isTrained ?? false, data.isFavorite ?? false);
             if (item) {
                 item.widget.visible = false;
                 newItems.push(item);
@@ -153,7 +230,7 @@ export class Gallery {
         });
     }
 
-    private createItem(id: string, description: string, previewUrl: string, isDefault: boolean, inProgress: boolean, isTraining: boolean, isTrained: boolean): GalleryItem | undefined {
+    private createItem(id: string, description: string, previewUrl: string, isDefault: boolean, inProgress: boolean, isTraining: boolean, isTrained: boolean, isFavorite: boolean = false): GalleryItem | undefined {
         if (!this.parent || !this.gridLayout) {
             return undefined;
         }
@@ -199,6 +276,11 @@ export class Gallery {
             return this.onImportClickCallback(id);
         })
 
+        item.setOnFavoriteClickCallback((id: string, isFav: boolean) => {
+            this.onFavoriteClickCallback(id, isFav, item);
+        })
+
+        item.setFavorite(isFavorite);
         item.addDescription(description);
 
         this.items.push(item);
@@ -267,6 +349,18 @@ export class Gallery {
             return false;
         }
         return this.verticalScrollArea.value >= this.verticalScrollArea.maximum * 0.9;
+    }
+
+    resetFilter() {
+        this._favoritesFilterActive = false;
+        if (this.showAllAction && this.myFavoritesAction) {
+            this.showAllAction.blockSignals(true);
+            this.myFavoritesAction.blockSignals(true);
+            this.showAllAction.checked = true;
+            this.myFavoritesAction.checked = false;
+            this.showAllAction.blockSignals(false);
+            this.myFavoritesAction.blockSignals(false);
+        }
     }
 
     reset() {

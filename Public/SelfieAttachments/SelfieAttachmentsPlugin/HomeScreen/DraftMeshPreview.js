@@ -214,6 +214,7 @@ export class DraftMeshPreview {
         let settings = this.parentScreen == "preview" ? "UPDATE_EXISTING" : "NEW";
 
         continueGeneration(asset_id, driving_image_id, (response) => {
+            if (!app.authStatus) return;
             if (response.statusCode == 200) {
                 if (this.animation_prompt) {
                     app.log('Creating animation previews...', { 'progressBar': true });
@@ -251,6 +252,7 @@ export class DraftMeshPreview {
         let settings = this.parentScreen == "preview" ? "UPDATE_EXISTING" : "NEW";
 
         continueAnimationGeneration(asset_id, draft_animation_id, (response) => {
+            if (!app.authStatus) return;
             if (response.statusCode == 200) {
                 logEventAssetCreation("SUCCESS", settings, inputFormat, "SUBMISSION");
                 this.onStateChanged({
@@ -372,6 +374,7 @@ export class DraftMeshPreview {
         if (id && !this.modelIsReady) {
             try {
                 getAsset(id, (data) => {
+                    if (!app.authStatus) return;
                     if (data) {
                         this.updateModel(data);
                     }
@@ -430,6 +433,7 @@ export class DraftMeshPreview {
                             this.tiles[i][j].previewImageUrl = foundDrivingImage.previewImageUrl;
 
                             downloadFileFromBucket(foundDrivingImage.previewImageUrl, this.tiles[i][j].driving_image_id + '.webp', (preview_path, tempDir) => {
+                                if (!app.authStatus) return;
                                 const movie = new Ui.Movie(preview_path);
                                 movie.resize(186, 186);
                                 this.tiles[i][j].tile_image.movie = movie;

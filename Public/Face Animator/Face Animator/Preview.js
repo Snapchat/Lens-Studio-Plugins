@@ -278,9 +278,8 @@ export class Preview {
         return widget;
     }
     onImportButtonClicked() {
-        var _a;
         if (this.mp3Url) {
-            (_a = this.warningDialog) === null || _a === void 0 ? void 0 : _a.show();
+            this.warningDialog?.show();
         }
         else {
             if (this.importButton) {
@@ -499,13 +498,11 @@ export class Preview {
         deleteButton.text = 'Add Audio';
         const _this = this;
         this.connections.push(cancelButton.onClick.connect(function () {
-            var _a;
-            (_a = _this.warningDialog) === null || _a === void 0 ? void 0 : _a.close();
+            _this.warningDialog?.close();
             skipAudioCallback();
         }.bind(this)));
         this.connections.push(deleteButton.onClick.connect(function () {
-            var _a;
-            (_a = _this.warningDialog) === null || _a === void 0 ? void 0 : _a.close();
+            _this.warningDialog?.close();
             addAudioCallback();
         }.bind(this)));
         buttonsLayout.addStretch(0);

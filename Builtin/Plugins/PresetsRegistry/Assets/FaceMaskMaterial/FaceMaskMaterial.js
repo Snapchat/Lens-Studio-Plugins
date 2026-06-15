@@ -7,7 +7,7 @@ const params = {
         'description': 'Default material for FaceMaskVisual component',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
-    graph_path: import.meta.resolve('../Resources/flat.ss_graph'),
+    graph_path: import.meta.resolve('../Resources/flat.graphShader'),
     pass_info: {
         'depthTest': false,
         'depthWrite': false,

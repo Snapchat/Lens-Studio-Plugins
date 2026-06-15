@@ -7,7 +7,7 @@ const params = {
         'description': 'Default material used for Face Mesh',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
-    graph_path: import.meta.resolve('Resources/face_mesh.ss_graph'),
+    graph_path: import.meta.resolve('Resources/face_mesh.graphShader'),
     custom_defines: [
         'ENABLE_SMOOTH_EDGES',
         'ENABLE_FACE_TEX'

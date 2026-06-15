@@ -37,7 +37,7 @@ function findOrCreateCameraObject(scene, parentObject) {
 }
 
 function setRenderLayerRecursively(object, renderLayer) {
-    object.layers = renderLayer;
+    object.layer = renderLayer;
 
     object.children.forEach((child) => setRenderLayerRecursively(child, renderLayer));
 }

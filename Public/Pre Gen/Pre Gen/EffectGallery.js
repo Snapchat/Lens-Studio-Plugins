@@ -18,7 +18,6 @@ export class EffectGallery {
         this.settings['00'] = { "state": "DEFAULT", "prompt": "" };
     }
     create(parent, showLoginPageCallback, showPluginPageCallback) {
-        var _a;
         const widget = new Ui.Widget(parent);
         widget.setSizePolicy(Ui.SizePolicy.Policy.Expanding, Ui.SizePolicy.Policy.Expanding);
         widget.autoFillBackground = true;
@@ -37,9 +36,9 @@ export class EffectGallery {
         this.stackedWidget.addWidget(galleryWidget);
         layout.addWidget(this.stackedWidget);
         widget.layout = layout;
-        this.authComponent = (_a = app.pluginSystem) === null || _a === void 0 ? void 0 : _a.findInterface(Editor.IAuthorization);
+        this.authComponent = app.pluginSystem?.findInterface(Editor.IAuthorization);
         this.authComponent.onAuthorizationChange.connect((authStatus) => {
-            if (!this.stackedWidget || !this.stackedWidget.visible) {
+            if (!this.stackedWidget) {
                 return;
             }
             if (authStatus) {

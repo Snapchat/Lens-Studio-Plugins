@@ -1,6 +1,7 @@
 // Assets
 export { BeautyMaterialPreset } from '../Assets/ColorCorrectionMaterial/ColorCorrectionMaterial.js';
 export { BodyMeshMaterialPreset } from '../Assets/BodyMeshMaterial/BodyMeshMaterial.js';
+export { CodeNodeMaterialPreset } from '../Assets/CodeNodeMaterial/CodeNodeMaterial.js';
 export { UpperBodyMeshObjectPreset } from '../Objects/UpperBodyMesh/UpperBodyMeshObject.js';
 export { EmptyMaterialPreset } from '../Assets/EmptyMaterial/EmptyMaterial.js';
 export { EmptyGSMaterialPreset } from '../Assets/GaussianSplattingMaterial/GSMaterial.js';
@@ -64,7 +65,8 @@ export { ImageComponentPreset } from '../Components/Image/ImageComponent.js';
 export { TextComponentPreset } from '../Components/Text/TextComponent.js';
 export { CanvasComponentPreset } from '../Components/Canvas/CanvasComponent.js';
 export { Text3DComponentPreset } from '../Components/Text3D/Text3DComponent.js';
-export { RenderMeshVisualPBRComponentPreset } from '../Components/RenderMeshVisualPBR/RenderMeshVisualPBRComponent.js';
+export { RenderMeshVisualPBRComponentPreset } from '../Components/RenderMeshVisual/RenderMeshVisualPBRComponent.js';
+export { RenderMeshVisualComponentPreset } from '../Components/RenderMeshVisual/RenderMeshVisualComponent.js';
 export { TypeScriptFileComponentPreset, JavaScriptFileComponentPreset } from '../Components/Script/ScriptComponent.js';
 export { ScreenRegionComponentPreset } from '../Components/ScreenRegion/ScreenRegionComponent.js';
 

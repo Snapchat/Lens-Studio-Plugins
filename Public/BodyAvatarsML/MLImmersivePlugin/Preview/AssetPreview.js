@@ -7,6 +7,7 @@ import app from '../../application/app.js';
 
 import { createGenerationErrorWidget } from '../utils.js';
 import { logEventAssetImport, logEventEffectTraining } from '../../application/analytics.js';
+import { FeedbackManager } from '../FeedbackManager.js';
 
 const ModelState = {
     'Ready': 0,
@@ -34,6 +35,7 @@ export class AssetPreview {
         this.onStateChanged = onStateChanged;
         this.onTrainingStarted = onTrainingStarted;
         this.showOriginal = false;
+        this.feedbackManager = new FeedbackManager();
     }
 
     deleteItem(id) {
@@ -291,9 +293,11 @@ export class AssetPreview {
             if (response.statusCode == 201) {
                 logEventEffectTraining("SUCCESS");
                 this.onTrainingStarted(id);
+                this.feedbackManager.hide();
+                this.popup.visible = false;
                 app.log('', { 'enabled': false });
                 this.progressLabel.text = "0" + "%";
-                this.statusLabel.text = '<div style="text-align: right;">' + 'Model training in progress. This may take up to 8-12 hours.<br>You can close the window and return later.' + '</div>';
+                this.statusLabel.text = '<div style="text-align: right;">' + 'Model training in progress. This may take up to 8 hours.<br>You can close the window and return later.' + '</div>';
                 this.statusWidget.visible = this.footer.visible;
                 this.statusWidget.raise();
                 this.modelState = ModelState.Processing;
@@ -306,8 +310,7 @@ export class AssetPreview {
                 this.startCheckingModelStatus();
             } else if (response.statusCode == 400) {
                 logEventEffectTraining("RATE_LIMITED");
-                this.popup.visible = this.footer.visible;
-                this.popup.raise();
+                this.showLimitReachedPopup();
                 this.ctaButton.enabled = true;
             } else {
                 logEventEffectTraining("FAILED");
@@ -320,18 +323,27 @@ export class AssetPreview {
     updateModelStatus() {
         switch (this.modelState) {
             case ModelState.NotReady:
+                this.feedbackManager.show();
                 this.ctaButton.text = 'Train model';
                 this.ctaButton.setIconSize(0, 0);
                 this.ctaButton.enabled = true;
                 break;
             case ModelState.Processing:
+                this.feedbackManager.hide();
                 getModels(this.effectId, (response) => {
                     if (response[0]) {
-                        // app.log('Model is training', { 'type': 'percentageBar', 'value': Math.round(response[0].progressPercent) });
+                        if (response[0].trainingState == 'FAILED') {
+                            this.modelState = ModelState.NotReady;
+                            if (this.footer && this.footer.visible) {
+                                this.showTrainingFailedPopup();
+                            }
+                            this.updateModelStatus();
+                            return;
+                        }
 
                         app.log('', { 'enabled': false });
                         this.progressLabel.text = Math.round(response[0].progressPercent) + "%";
-                        this.statusLabel.text = '<div style="text-align: right;">' + 'Model training in progress. This may take 8-12 hours.<br>You can close the window and return later.' + '</div>';
+                        this.statusLabel.text = '<div style="text-align: right;">' + 'Model training in progress. This may take up to 8 hours.<br>You can close the window and return later.' + '</div>';
                         this.statusWidget.visible = this.footer.visible;
                         this.statusWidget.raise();
 
@@ -351,6 +363,7 @@ export class AssetPreview {
                     clearInterval(this.modelStatusChecker);
                 }
 
+                this.feedbackManager.hide();
                 app.log('Model is ready');
                 this.ctaButton.text = 'Import to project';
                 this.ctaButton.setIconSize(16, 16);
@@ -387,6 +400,8 @@ export class AssetPreview {
         app.log('', { 'type': 'percentageBar', 'enabled': false });
         this.statusWidget.visible = false;
         this.popup.visible = false;
+        this.feedbackManager.hide();
+        this.feedbackManager.reset();
 
         if (this.modelStatusChecker) {
             clearInterval(this.modelStatusChecker);
@@ -435,11 +450,12 @@ export class AssetPreview {
 
         if (state.status == 'FAILED') {
             this.stackedWithError.currentIndex = 1;
+            this.feedbackManager.hide();
         } else if (state.status == "SUCCESS") {
-
             this.updatePreviewImage();
             this.stackedWithError.currentIndex = 0;
         } else {
+            this.feedbackManager.hide();
             if (state.effect_get_response.effectTypeId === 'full-frame-enhanced') {
                 this.stackedWithError.currentIndex = 2;
             }
@@ -449,7 +465,9 @@ export class AssetPreview {
         }
 
         if (state.models_response) {
-            if (state.models_response.trainingState != 'SUCCESS') {
+            if (state.models_response.trainingState == 'FAILED') {
+                this.modelState = ModelState.NotReady;
+            } else if (state.models_response.trainingState != 'SUCCESS') {
                 this.modelState = ModelState.Processing;
                 this.startCheckingModelStatus();
             } else {
@@ -463,10 +481,13 @@ export class AssetPreview {
         } else {
             this.modelState = ModelState.NotReady;
         }
-
         this.updateModelStatus();
 
         this.showFooter();
+
+        if (state.models_response && state.models_response.trainingState == 'FAILED') {
+            this.showTrainingFailedPopup();
+        }
     }
 
     createDeletionDialog() {
@@ -576,12 +597,25 @@ export class AssetPreview {
         this.popup.visible = false;
 
         this.popup.setFixedHeight(32);
-        this.popup.setFixedWidth(368);
-        this.popup.move(216, 4);
-
-        this.popupLabel.text = "Limit reached - A maximum of 5 models can be trained at once";
+        this.popup.visible = false;
 
         popupLayout.addWidgetWithStretch(this.popupLabel, 1, Ui.Alignment.AlignLeft | Ui.Alignment.AlignCenter)
+    }
+
+    showLimitReachedPopup() {
+        this.popupLabel.text = "Limit reached - A maximum of 5 models can be trained at once";
+        this.popup.setFixedWidth(368);
+        this.popup.move(216, 4);
+        this.popup.visible = this.footer.visible;
+        this.popup.raise();
+    }
+
+    showTrainingFailedPopup() {
+        this.popupLabel.text = "Something went wrong during model training. Please try again.";
+        this.popup.setFixedWidth(380);
+        this.popup.move(184, 4);
+        this.popup.visible = true;
+        this.popup.raise();
     }
 
     createColor(r, g, b, a) {
@@ -628,7 +662,7 @@ export class AssetPreview {
 
         const statusLabel = new Ui.Label(statusWidget);
         statusLabel.foregroundRole = Ui.ColorRole.PlaceholderText;
-        statusLabel.text = '<div style="text-align: right;">' + 'Model training in progress. This may take up to 8-12 hours.<br>You can close the window and return later.' + '</div>';
+        statusLabel.text = '<div style="text-align: right;">' + 'Model training in progress. This may take up to 8 hours.<br>You can close the window and return later.' + '</div>';
         statusLabel.setFixedHeight(24);
 
         this.statusLabel = statusLabel;
@@ -675,6 +709,11 @@ export class AssetPreview {
         }));
 
         footerLayout.addStretch(0);
+
+        this.feedbackWidget = this.feedbackManager.create(this.footer);
+        footerLayout.addWidgetWithStretch(this.feedbackWidget, 0, Ui.Alignment.AlignRight | Ui.Alignment.AlignCenter);
+        this.feedbackManager.hide();
+
         footerLayout.addWidgetWithStretch(this.ctaButton, 0, Ui.Alignment.AlignRight | Ui.Alignment.AlignCenter);
 
         this.generateButton = new Ui.PushButton(this.footer);

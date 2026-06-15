@@ -7,7 +7,7 @@ const params = {
         'description': 'PostEffectVisual material creating comic book-style halftone dots with configurable colors',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
-    graph_path: import.meta.resolve('Resources/half_tone.ss_graph'),
+    graph_path: import.meta.resolve('Resources/half_tone.graphShader'),
     pass_info: {
         'depthTest': false,
         'depthWrite': false,

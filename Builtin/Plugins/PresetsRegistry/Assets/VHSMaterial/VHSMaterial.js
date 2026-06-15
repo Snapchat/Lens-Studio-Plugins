@@ -7,7 +7,7 @@ const params = {
         'description': 'PostEffectVisual material simulating VHS tape effects (chromatic aberration, distortion)',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
-    graph_path: import.meta.resolve('Resources/vhs.ss_graph'),
+    graph_path: import.meta.resolve('Resources/vhs.graphShader'),
     pass_info: {
         depthTest :false,
         depthWrite :false,

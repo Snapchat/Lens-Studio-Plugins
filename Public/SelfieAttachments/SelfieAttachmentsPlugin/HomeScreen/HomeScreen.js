@@ -45,6 +45,7 @@ export class HomeScreen {
             app.authorize();
 
             me((user) => {
+                if (!app.authStatus) return;
                 if (user.statusCode != 200) {
                     console.log("Access to server failed with error: " + user.statusCode);
                     this.galleryView.stop();
@@ -60,6 +61,7 @@ export class HomeScreen {
                 for (const terms of autoAcceptedTerms) {
                     if (!user.termsAccepted.includes(terms)) {
                         acceptTerms(terms, (response) => {
+                            if (!app.authStatus) return;
                             this.init();
                         });
 
@@ -68,6 +70,7 @@ export class HomeScreen {
                 }
 
                 versions((version_list) => {
+                    if (!app.authStatus) return;
                     if (version_list.includes(app.apiVersion)) {
                         this.galleryView.init();
                         this.creationMenu.init();

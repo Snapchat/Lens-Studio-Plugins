@@ -1,0 +1,23 @@
+{
+    "extends": "../../tsconfig.base.json",
+    "compilerOptions": {
+        "noEmit": true,
+        "skipLibCheck": true,
+        "types": [],
+        "baseUrl": ".",
+        "paths": {
+            "@design-system": ["../../Internal/Gen-Ai-Suite-Design-System/Src/index.ts"],
+            "@design-system/*": ["../../Internal/Gen-Ai-Suite-Design-System/Src/*"],
+            "@Components/*": ["../../Internal/Gen-Ai-Suite-Design-System/Src/Components/*"],
+            "@Interfaces/*": ["../../Internal/Gen-Ai-Suite-Design-System/Src/Interfaces/*"],
+            "@Utils/*": ["../../Internal/Gen-Ai-Suite-Design-System/Src/Utils/*"],
+            "@Providers/*": ["../../Internal/Gen-Ai-Suite-Design-System/Src/Providers/*"]
+        }
+    },
+    "include": [
+        "./Src/**/*.ts",
+        "../../Internal/Gen-Ai-Suite-Design-System/Src/**/*.ts",
+        "../../shared-types/**/*.d.ts",
+        "../../Builtin/UtilsSource/declaration/**/*.d.ts"
+    ]
+}

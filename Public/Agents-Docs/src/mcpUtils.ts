@@ -18,6 +18,14 @@ export interface McpJsonContent {
     [key: string]: unknown;
 }
 
+/** VS Code uses "servers" instead of "mcpServers" as the top-level key. */
+export interface VsCodeMcpJsonContent {
+    servers: {
+        [serverName: string]: McpServerConfig;
+    };
+    [key: string]: unknown;
+}
+
 /**
  * Extract the project name from a project file path.
  *
@@ -50,10 +58,10 @@ export function extractProjectName(projectFile: Editor.Path): string | null {
 
 /**
  * Build the MCP server name for a Lens Studio project.
- * Format: "lens-studio-{ProjectName}"
+ * Uses a fixed name so that agent tool references (mcp__lens-studio__*) always match.
  */
-export function buildServerName(projectName: string): string {
-    return `lens-studio-${projectName}`;
+export function buildServerName(_projectName?: string): string {
+    return "lens-studio";
 }
 
 /**
@@ -88,7 +96,47 @@ export function extractServerConfig(mcpConfig: any): McpServerConfig | null {
 }
 
 /**
+ * Internal helper: merge a new MCP server config into existing JSON content
+ * using the specified server key (e.g., "mcpServers" or "servers").
+ */
+function _mergeServers(
+    existingContent: string | null,
+    newServerName: string,
+    newServerConfig: McpServerConfig,
+    serverKey: string
+): Record<string, unknown> {
+    let data: Record<string, unknown>;
+    let servers: { [key: string]: McpServerConfig };
+
+    try {
+        if (existingContent && existingContent.trim().length > 0) {
+            data = JSON.parse(existingContent);
+            servers = (data[serverKey] as { [key: string]: McpServerConfig }) || {};
+        } else {
+            data = {};
+            servers = {};
+        }
+    } catch {
+        data = {};
+        servers = {};
+    }
+
+    const filtered: { [key: string]: McpServerConfig } = {};
+    for (const [key, value] of Object.entries(servers)) {
+        // Remove any previous lens-studio entry (both old per-project and new fixed names)
+        if (key !== newServerName && !key.startsWith('lens-studio-')) {
+            filtered[key] = value as McpServerConfig;
+        }
+    }
+
+    filtered[newServerName] = newServerConfig;
+
+    return { ...data, [serverKey]: filtered };
+}
+
+/**
  * Merge a new MCP server config into existing .mcp.json content.
+ * Uses "mcpServers" key (Claude Code / Cursor format).
  *
  * Strategy:
  * 1. Parse existing JSON (or start with empty structure)
@@ -101,37 +149,26 @@ export function mergeMcpJson(
     newServerName: string,
     newServerConfig: McpServerConfig
 ): McpJsonContent {
-    let data: McpJsonContent;
+    return _mergeServers(existingContent, newServerName, newServerConfig, "mcpServers") as McpJsonContent;
+}
 
-    try {
-        if (existingContent && existingContent.trim().length > 0) {
-            const parsed = JSON.parse(existingContent);
-            data = {
-                ...parsed,
-                mcpServers: parsed.mcpServers || {}
-            };
-        } else {
-            data = { mcpServers: {} };
-        }
-    } catch {
-        data = { mcpServers: {} };
-    }
-
-    const filtered: { [key: string]: McpServerConfig } = {};
-    for (const [key, value] of Object.entries(data.mcpServers)) {
-        if (!key.startsWith('lens-studio-')) {
-            filtered[key] = value as McpServerConfig;
-        }
-    }
-
-    filtered[newServerName] = newServerConfig;
-
-    return { ...data, mcpServers: filtered };
+/**
+ * Merge a new MCP server config into existing VS Code mcp.json content.
+ * Uses "servers" key (VS Code format).
+ *
+ * Same merge strategy as mergeMcpJson — only the top-level key differs.
+ */
+export function mergeVsCodeMcpJson(
+    existingContent: string | null,
+    newServerName: string,
+    newServerConfig: McpServerConfig
+): VsCodeMcpJsonContent {
+    return _mergeServers(existingContent, newServerName, newServerConfig, "servers") as VsCodeMcpJsonContent;
 }
 
 /**
  * Serialize MCP JSON content to a formatted string with 2-space indentation.
  */
-export function serializeMcpJson(content: McpJsonContent): string {
+export function serializeMcpJson(content: McpJsonContent | VsCodeMcpJsonContent): string {
     return JSON.stringify(content, null, 2);
 }

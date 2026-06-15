@@ -12,8 +12,7 @@ export class HomeScreen {
         this.animatorPage = new AnimatorPage();
     }
     create(parent) {
-        var _a;
-        this.authComponent = (_a = app.pluginSystem) === null || _a === void 0 ? void 0 : _a.findInterface(Editor.IAuthorization);
+        this.authComponent = app.pluginSystem?.findInterface(Editor.IAuthorization);
         const stackedWidget = new Ui.StackedWidget(parent);
         stackedWidget.setContentsMargins(0, 0, 0, 0);
         stackedWidget.setSizePolicy(Ui.SizePolicy.Policy.Fixed, Ui.SizePolicy.Policy.Fixed);
@@ -118,8 +117,7 @@ export class HomeScreen {
         createNewButton.setFixedHeight(24);
         createNewButton.move(361, 350);
         this.connections.push(createNewButton.onClick.connect(() => {
-            var _a;
-            (_a = this.authComponent) === null || _a === void 0 ? void 0 : _a.authorize();
+            this.authComponent?.authorize();
         }));
         widget.layout = layout;
         return widget;

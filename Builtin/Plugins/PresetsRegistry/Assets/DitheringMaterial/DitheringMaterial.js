@@ -7,7 +7,7 @@ const params = {
         'description': 'PostEffectVisual material applying color or grayscale dithering with tunable size',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
-    graph_path: import.meta.resolve('Resources/dithering.ss_graph'),
+    graph_path: import.meta.resolve('Resources/dithering.graphShader'),
     custom_defines: [
         'COLOR_MODE 0'
     ],

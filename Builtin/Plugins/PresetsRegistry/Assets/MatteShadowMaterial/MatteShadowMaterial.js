@@ -7,7 +7,7 @@ const params = {
         'description': 'Renders only shadows cast on object surface, hiding the object itself',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
-    graph_path: import.meta.resolve('Resources/matte_shadow.ss_graph'),
+    graph_path: import.meta.resolve('Resources/matte_shadow.graphShader'),
     pass_info: {
         'blendMode': Editor.Assets.BlendMode.Multiply,
     }

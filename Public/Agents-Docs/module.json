@@ -1,5 +1,5 @@
 {
   "name": "Agents Docs",
   "main": "dist/AgentsDocsService.js",
-  "permissions": ["filesystem", "mcp"]
+  "permissions": ["filesystem", "mcp", "network", "asset_library", "snap_auth_token"]
 }

@@ -1,0 +1,13 @@
+{
+    "name": "bitmoji-stories",
+    "description": "Comic Maker Beta - Bitmoji Stories editor plugin for Lens Studio",
+    "scripts": {
+        "build": "node build.js",
+        "watch": "node build.js --watch"
+    },
+    "devDependencies": {
+        "chokidar": "^4.0.3",
+        "esbuild": "^0.24.0",
+        "typescript": "^5.9.3"
+    }
+}

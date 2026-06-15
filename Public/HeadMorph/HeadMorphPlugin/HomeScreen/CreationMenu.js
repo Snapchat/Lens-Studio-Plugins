@@ -45,8 +45,6 @@ export class CreationMenu {
             this.generateButton.visible = false;
             this.regenerateButton.visible = true;
 
-            this.promptPickerRadioButton.enabled = false;
-            this.imagePickerRadioButton.enabled = false;
             this.controls['promptPicker'].hide();
             this.controls['imageReferencePicker'].hide();
 
@@ -55,12 +53,8 @@ export class CreationMenu {
             this.controls['promptPicker'].value = '';
             this.controls['imageReferencePicker'].value = [];
             this.generateButton.enabled = false;
-            this.promptPickerRadioButton.checked = true;
-            this.imagePickerRadioButton.checked = false;
-            this.promptPickerRadioButton.enabled = true;
-            this.imagePickerRadioButton.enabled = true;
             this.controls['promptPicker'].show();
-            this.controls['imageReferencePicker'].hide();
+            this.controls['imageReferencePicker'].show();
 
             this.regenerateButton.visible = false;
             this.isGenerationInProgress = false;
@@ -74,26 +68,8 @@ export class CreationMenu {
         this.generateButton.enabled = false;
         app.log('Generating new previews...', { 'progressBar': true });
 
-        let data = {};
-        let inputFormat = "";
-
-        if (this.promptPickerRadioButton.checked) {
-            data = {
-                'prompt': controls['promptPicker'].value,
-                'seed': 0,
-                'uploadUid': null
-            }
-
-            inputFormat = "PROMPT_TEXT";
-        } else {
-            data = {
-                'prompt': null,
-                'seed': 0,
-                'uploadUid': controls['imageReferencePicker'].value[0].uid
-            }
-
-            inputFormat = "PROMPT_IMAGE";
-        }
+        const data = buildAssetData(controls);
+        let inputFormat = controls["imageReferencePicker"].value.length > 0 ? "PROMPT_IMAGE" : "PROMPT_TEXT";
 
         createAsset(data, (response) => {
             if (response.statusCode == 200) {
@@ -191,29 +167,16 @@ export class CreationMenu {
     }
 
     checkInputs() {
-        const isEnabled = ((this.promptPickerRadioButton.checked && this.controls["promptPicker"].value.length > 0) || (this.imagePickerRadioButton.checked && this.controls["imageReferencePicker"].value.length > 0)) && !this.stopped && !this.isGenerationInProgress;
-        this.generateButton.enabled = isEnabled;
-        this.regenerateButton.enabled = isEnabled;
+        const isEnabled = (this.controls["promptPicker"].value.length > 0 || this.controls["imageReferencePicker"].value.length > 0) && !this.stopped;
+        this.generateButton.enabled = isEnabled && !this.isGenerationInProgress;
+        this.regenerateButton.enabled = isEnabled && !this.isGenerationInProgress;
     }
 
     onAllPreviewsGenerated() {
         this.isGenerationInProgress = false;
         this.regenerateButton.enabled = ((this.controls['promptPicker'].value.length > 0) || (this.controls['imageReferencePicker'].value.length > 0));
-        if (this.controls['imageReferencePicker'].value.length > 0) {
-            this.promptPickerRadioButton.checked = false;
-            this.imagePickerRadioButton.checked = true;
-            this.controls['promptPicker'].hide();
-            this.controls['imageReferencePicker'].show();
-        }
-        else {
-            this.promptPickerRadioButton.checked = true;
-            this.imagePickerRadioButton.checked = false;
-            this.controls['promptPicker'].show();
-            this.controls['imageReferencePicker'].hide();
-        }
-
-        this.promptPickerRadioButton.enabled = true;
-        this.imagePickerRadioButton.enabled = true;
+        this.controls['promptPicker'].show();
+        this.controls['imageReferencePicker'].show();
     }
 
     onNewGenerationStarted() {
@@ -221,8 +184,6 @@ export class CreationMenu {
         this.controls['imageReferencePicker'].hide();
         this.regenerateButton.enabled = false;
         this.isGenerationInProgress = true;
-        this.promptPickerRadioButton.enabled = false;
-        this.imagePickerRadioButton.enabled = false;
     }
 
     createMenu(parent) {
@@ -313,25 +274,6 @@ export class CreationMenu {
             this.checkInputs();
             app.log('', { 'enabled': false });
         });
-
-        this.promptPickerRadioButton = this.controls['promptPicker'].getRadioButton();
-        this.imagePickerRadioButton = this.controls['imageReferencePicker'].getRadioButton();
-
-        this.promptPickerRadioButton.onClick.connect(() => {
-            this.promptPickerRadioButton.checked = true;
-            this.imagePickerRadioButton.checked = false;
-            this.controls['promptPicker'].show();
-            this.controls['imageReferencePicker'].hide();
-            this.checkInputs();
-        })
-
-        this.imagePickerRadioButton.onClick.connect(() => {
-            this.imagePickerRadioButton.checked = true;
-            this.promptPickerRadioButton.checked = false;
-            this.controls['imageReferencePicker'].show();
-            this.controls['promptPicker'].hide();
-            this.checkInputs();
-        })
 
         this.menuLayout.addStretch(0);
 

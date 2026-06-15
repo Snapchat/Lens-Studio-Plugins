@@ -3,7 +3,7 @@ import * as Ui from "LensStudio:Ui";
 import * as Shell from 'LensStudio:Shell';
 import { ColorRole } from "LensStudio:Ui";
 import { Gallery } from "./Gallery.js";
-import { getDreamByID, listDreams } from "./api.js";
+import { getDreamByID, listDreams, favoriteDream, unfavoriteDream } from "./api.js";
 import app from "./app.js";
 export class EffectGallery {
     constructor(parent, openEffectSettingsPage, checkDreamStateById, onImportClickCallback, showLoginPageCallback, showPluginPageCallback) {
@@ -13,13 +13,14 @@ export class EffectGallery {
         this.lastRequestId = 0;
         this.nextPageToken = null;
         this.searchQuery = '';
+        this.favoritesFilterQuery = '';
         this.prefetchedItems = null;
         this.prefetchedPageToken = null;
         this.isPrefetching = false;
         this.INITIAL_PAGE_SIZE = 12;
         this.VISIBLE_PAGE_SIZE = 9;
         this.EXPAND_PAGE_SIZE = 3;
-        this.gallery = new Gallery(this.onTileClicked.bind(this), onImportClickCallback, this.updateGallery.bind(this), this.expandGallery.bind(this), this.onSearchTextChanged.bind(this));
+        this.gallery = new Gallery(this.onTileClicked.bind(this), onImportClickCallback, this.updateGallery.bind(this), this.expandGallery.bind(this), this.onSearchTextChanged.bind(this), this.onFavoriteClicked.bind(this), this.onFavoritesFilterChanged.bind(this));
         this.curWidget = this.create(parent, showLoginPageCallback, showPluginPageCallback);
         this.openEffectSettingsPage = openEffectSettingsPage;
         this.checkDreamStateById = checkDreamStateById;
@@ -166,6 +167,7 @@ export class EffectGallery {
         }
         this.lastRequestId++;
         const currentRequestId = this.lastRequestId;
+        const combinedQuery = this.searchQuery + this.favoritesFilterQuery;
         listDreams(this.INITIAL_PAGE_SIZE, (response) => {
             if (response.statusCode !== 200 || currentRequestId !== this.lastRequestId) {
                 return;
@@ -185,7 +187,7 @@ export class EffectGallery {
                     this.prefetchNextPage();
                 }
             }
-        }, this.searchQuery);
+        }, combinedQuery);
     }
     expandGallery() {
         if (this.prefetchedItems && this.prefetchedItems.length > 0) {
@@ -206,6 +208,7 @@ export class EffectGallery {
         this.isPrefetching = true;
         this.lastRequestId++;
         const currentRequestId = this.lastRequestId;
+        const combinedQuery = this.searchQuery + this.favoritesFilterQuery;
         listDreams(this.EXPAND_PAGE_SIZE, (response) => {
             if (response.statusCode !== 200 || currentRequestId !== this.lastRequestId) {
                 this.isPrefetching = false;
@@ -216,7 +219,7 @@ export class EffectGallery {
             this.processItems(body.items);
             this.isPrefetching = false;
             this.prefetchNextPage();
-        }, this.searchQuery, this.nextPageToken);
+        }, combinedQuery, this.nextPageToken);
     }
     prefetchNextPage() {
         if (!this.nextPageToken || !this.authComponent || !this.authComponent.isAuthorized) {
@@ -224,6 +227,7 @@ export class EffectGallery {
         }
         this.isPrefetching = true;
         const currentRequestId = this.lastRequestId;
+        const combinedQuery = this.searchQuery + this.favoritesFilterQuery;
         listDreams(this.EXPAND_PAGE_SIZE, (response) => {
             if (response.statusCode !== 200 || currentRequestId !== this.lastRequestId) {
                 this.isPrefetching = false;
@@ -236,7 +240,7 @@ export class EffectGallery {
             if (this.gallery.isNearBottom()) {
                 this.expandGallery();
             }
-        }, this.searchQuery, this.nextPageToken);
+        }, combinedQuery, this.nextPageToken);
     }
     onSearchTextChanged(text) {
         if (text.length > 0) {
@@ -245,6 +249,21 @@ export class EffectGallery {
         else {
             this.searchQuery = '';
         }
+        this.resetAndReload();
+    }
+    onFavoriteClicked(dreamId, isFavorite, galleryItem) {
+        const apiCall = isFavorite ? favoriteDream : unfavoriteDream;
+        apiCall(dreamId, (response) => {
+            if (response.statusCode !== 200) {
+                galleryItem.revertFavorite();
+            }
+        });
+    }
+    onFavoritesFilterChanged(isActive) {
+        this.favoritesFilterQuery = isActive ? '&filter[]=is_favorite%3Dtrue' : '';
+        this.resetAndReload();
+    }
+    resetAndReload() {
         this.gallery.reset();
         this.settings = {};
         this.settings['00'] = { "state": "DEFAULT", "prompt": "" };
@@ -257,17 +276,18 @@ export class EffectGallery {
     processItems(items) {
         const batchData = [];
         items.forEach((item) => {
+            const isFavorite = item.isFavorite === true;
             if (item.state.startsWith("PACK") && item.state !== "PACK_FAILED" && item.state !== "PACK_SUCCESS") {
-                batchData.push({ id: item.id, description: item.prompt, previewUrl: item.previewUrl, isTraining: true });
+                batchData.push({ id: item.id, description: item.prompt, previewUrl: item.previewUrl, isTraining: true, isFavorite });
             }
             else if (item.state === "PACK_SUCCESS") {
-                batchData.push({ id: item.id, description: item.prompt, previewUrl: item.previewUrl, isTrained: true });
+                batchData.push({ id: item.id, description: item.prompt, previewUrl: item.previewUrl, isTrained: true, isFavorite });
             }
             else if (item.state === "SUCCESS") {
-                batchData.push({ id: item.id, description: item.prompt, previewUrl: item.previewUrl });
+                batchData.push({ id: item.id, description: item.prompt, previewUrl: item.previewUrl, isFavorite });
             }
             else {
-                batchData.push({ id: item.id, description: item.prompt, previewUrl: item.previewUrl, inProgress: true });
+                batchData.push({ id: item.id, description: item.prompt, previewUrl: item.previewUrl, inProgress: true, isFavorite });
             }
         });
         this.gallery.addItems(batchData);
@@ -309,15 +329,10 @@ export class EffectGallery {
         this.isPrefetching = false;
     }
     updateGallery() {
-        this.gallery.reset();
-        this.settings = {};
-        this.settings['00'] = { "state": "DEFAULT", "prompt": "" };
-        this.nextPageToken = null;
         this.searchQuery = '';
-        this.prefetchedItems = null;
-        this.prefetchedPageToken = null;
-        this.isPrefetching = false;
-        this.getDreamsGallery();
+        this.favoritesFilterQuery = '';
+        this.gallery.resetFilter();
+        this.resetAndReload();
     }
     setItemTrained(id) {
         this.gallery.setItemTrained(id);

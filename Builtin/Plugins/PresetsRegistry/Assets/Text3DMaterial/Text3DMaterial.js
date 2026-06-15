@@ -7,7 +7,7 @@ const params = {
         'description': 'Default material for Text3D component with configurable cap colors, edge gradients, and blend mode',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
-    graph_path: import.meta.resolve('Resources/text_3d.ss_graph'),
+    graph_path: import.meta.resolve('Resources/text_3d.graphShader'),
     custom_defines: [
         'DROPLIST_FRONT_CAP_MODE 2',
         'DROPLIST_BACK_CAP_MODE 2',

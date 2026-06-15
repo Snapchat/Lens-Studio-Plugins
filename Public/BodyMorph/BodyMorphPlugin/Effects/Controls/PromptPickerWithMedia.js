@@ -20,6 +20,7 @@ export class PromptPicker extends Control {
     constructor(parent, label, valueImporter, valueExporter, prompt_hint, image_hint) {
         super(parent, null, valueImporter, valueExporter);
         this.connections = [];
+        this.mOnModeChanged = [];
 
         const layout = new Ui.BoxLayout();
         layout.setDirection(Ui.Direction.TopToBottom);
@@ -28,7 +29,6 @@ export class PromptPicker extends Control {
 
         const promptHeaderWidget = this['createPromptHeaderWidget'](this.widget, label, prompt_hint, image_hint);
 
-        // Tap Bar - Image / Text
         this.promptModeBar = new TabSelection(this.widget, null, null, null, ['Text', 'Image']);
 
         const promptPickerWidget = this['createMediaPickerWidget'](this.widget);
@@ -54,6 +54,8 @@ export class PromptPicker extends Control {
 
                 this.mOnValueChanged.forEach((callback) => callback(this.imagePicker.value));
             }
+
+            this.mOnModeChanged.forEach((callback) => callback(value));
         });
 
         this.imagePicker.addOnValueChanged((value) => {
@@ -75,6 +77,10 @@ export class PromptPicker extends Control {
         super.reset();
 
         this.mControl.currentText = this.defaultOption;
+    }
+
+    addOnModeChanged(callback) {
+        this.mOnModeChanged.push(callback);
     }
 
     set mode(value) {

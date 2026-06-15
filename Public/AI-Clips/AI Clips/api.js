@@ -59,6 +59,22 @@ export function deleteById(animationId, callback) {
         }
     });
 }
+export function favoriteDream(dreamId, callback) {
+    const request = new Network.HttpRequest();
+    request.url = BASE_URL + '/api/dreams/' + dreamId + ':favorite';
+    request.method = Network.HttpRequest.Method.Put;
+    Network.performAuthorizedHttpRequest(request, (response) => {
+        callback(response);
+    });
+}
+export function unfavoriteDream(dreamId, callback) {
+    const request = new Network.HttpRequest();
+    request.url = BASE_URL + '/api/dreams/' + dreamId + ':unfavorite';
+    request.method = Network.HttpRequest.Method.Put;
+    Network.performAuthorizedHttpRequest(request, (response) => {
+        callback(response);
+    });
+}
 export function downloadFile(url, callback) {
     const request = new Network.HttpRequest();
     request.url = url + "";

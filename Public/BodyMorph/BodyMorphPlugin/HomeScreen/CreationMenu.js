@@ -1,8 +1,6 @@
 import * as Ui from 'LensStudio:Ui';
 
 import { createGuidelinesWidget, createTermsWidget } from '../utils.js';
-import { createMorph } from '../api.js';
-import { buildAssetData } from '../Effects/EffectFactory.js';
 import { SettingsDescriptor } from '../Effects/SettingsDescriptor.js';
 import { PromptPicker, createPromptPicker } from '../Effects/Controls/PromptPickerWithMedia.js';
 import { ComboBox, createComboBox } from '../Effects/Controls/ComboBox.js';
@@ -10,7 +8,6 @@ import { CheckBox, createCheckBox } from '../Effects/Controls/CheckBox.js';
 import { UserNotesPicker, createUserNotesPicker } from '../Effects/Controls/UserNotesPicker.js';
 
 import app from '../../application/app.js';
-import { logEventAssetCreation } from '../../application/analytics.js';
 
 export class CreationMenu {
     constructor(onStateChanged, resetParent) {
@@ -39,55 +36,54 @@ export class CreationMenu {
 
         this.controls['intensitySettings'].value = 'Medium';
         this.controls['headlessSettings'].value = false;
+
+        if (this.generateButton) {
+            this.generateButton.visible = true;
+            this.generateButton.enabled = false;
+        }
+        if (this.refineButton) {
+            this.refineButton.visible = false;
+            this.refineButton.enabled = false;
+        }
     }
 
-    createHeadmorph(controls) {
+    generatePreview(controls) {
         this.generateButton.enabled = false;
-        app.log(`Creating new ${app.name}...`, { 'progressBar': true });
 
-        const data = buildAssetData(controls, false, null);
+        const prompt = controls['promptPicker'].value;
 
-        let status;
-        let preset = data.settings.costumeOnly ? "WITHOUT_HEAD" : "WITH_HEAD";
-        let settings;
-        let inputFormat = data.uploadUid == null ? "PROMPT_TEXT" : "PROMPT_IMAGE";
+        this.onStateChanged({
+            'screen': 'refine',
+            'uploadUid': null,
+            'uploadUrl': null,
+            'useCase': 'default',
+            'intensity': controls['intensitySettings'].value,
+            'headless': controls['headlessSettings'].value,
+            'prompt': prompt,
+        });
 
-        createMorph(data, function(response) {
-            if (response.statusCode == 201) {
-                status = "SUCCESS";
-                this.resetParent({
-                    'needsUpdate': true
-                });
-                app.log(`${app.name} is queued. ${app.name} creation is estimated to take 15-20 min, please check back later.`, { 'progressBar': true });
-            } else if (response.statusCode == 400) {
-                status = "GUIDELINES_VIOLATION";
-                this.resetParent({
-                    'needsUpdate': false
-                });
-                app.log('The result violates our community guidelines');
-            } else {
-                status = "FAILED";
-                this.resetParent({
-                    'needsUpdate': false
-                });
-                app.log('Something went wrong, please try again.');
-            }
+        this.generateButton.enabled = true;
+    }
 
-            switch(data.settings.intensity) {
-                case "low":
-                    settings = "INTENSITY_LOW"
-                    break;
-                case "med":
-                    settings = "INTENSITY_MEDIUM"
-                    break;
-                case "high":
-                    settings = "INTENSITY_HIGH";
-                    break;
-            }
+    refineImage(controls) {
+        this.refineButton.enabled = false;
 
-            logEventAssetCreation(status, preset, settings, "NEW", inputFormat);
-            this.generateButton.enabled = true;
-        }.bind(this));
+        const imageData = controls['promptPicker'].value;
+        const uploadUid = imageData.imagesData[0].uid;
+        const uploadUrl = imageData.imagesData[0].url;
+        const textReference = imageData.textReference || '';
+
+        this.onStateChanged({
+            'screen': 'refine',
+            'uploadUid': uploadUid,
+            'uploadUrl': uploadUrl,
+            'useCase': 'bodymorph',
+            'intensity': controls['intensitySettings'].value,
+            'headless': controls['headlessSettings'].value,
+            'prompt': textReference,
+        });
+
+        this.refineButton.enabled = true;
     }
 
     createHeader(parent) {
@@ -119,19 +115,31 @@ export class CreationMenu {
         footerLayout.setContentsMargins(8, 12, 8, 8);
         footerLayout.spacing = 0;
 
+        const aiIconPath = new Editor.Path(import.meta.resolve('../Resources/lens_studio_ai.svg'));
+
         this.generateButton = new Ui.PushButton(this.footer);
         this.generateButton.text = 'Generate';
         this.generateButton.enabled = false;
         this.generateButton.primary = true;
-        const editImagePath = new Editor.Path(import.meta.resolve('../Resources/lens_studio_ai.svg'));
-        this.generateButton.setIconWithMode(Editor.Icon.fromFile(editImagePath), Ui.IconMode.MonoChrome);
+        this.generateButton.setIconWithMode(Editor.Icon.fromFile(aiIconPath), Ui.IconMode.MonoChrome);
         this.connections.push(this.generateButton.onClick.connect(function() {
             this.generateButton.enabled = false;
-            this.createHeadmorph(this.controls);
+            this.generatePreview(this.controls);
+        }.bind(this)));
+
+        this.refineButton = new Ui.PushButton(this.footer);
+        this.refineButton.text = 'Refine Image';
+        this.refineButton.enabled = false;
+        this.refineButton.primary = true;
+        this.refineButton.setIconWithMode(Editor.Icon.fromFile(aiIconPath), Ui.IconMode.MonoChrome);
+        this.refineButton.visible = false;
+        this.connections.push(this.refineButton.onClick.connect(function() {
+            this.refineImage(this.controls);
         }.bind(this)));
 
         footerLayout.addStretch(0);
         footerLayout.addWidgetWithStretch(this.generateButton, 0, Ui.Alignment.AlignTop);
+        footerLayout.addWidgetWithStretch(this.refineButton, 0, Ui.Alignment.AlignTop);
         footerLayout.addStretch(0);
 
         this.footer.layout = footerLayout;
@@ -222,9 +230,14 @@ export class CreationMenu {
             if (this.controls['promptPicker'].mode == "Text") {
                 this.generateButton.enabled = (value.length > 0) && !this.stopped;
             } else if (this.controls['promptPicker'].mode == "Image") {
-                this.generateButton.enabled = (value.imagesData.length > 0) && !this.stopped;
+                this.refineButton.enabled = (value.imagesData.length > 0) && !this.stopped;
             }
             app.log('', { 'enabled': false });
+        });
+
+        this.controls['promptPicker'].addOnModeChanged((mode) => {
+            this.generateButton.visible = (mode === 'Text');
+            this.refineButton.visible = (mode === 'Image');
         });
 
         this.menuLayout.addStretch(0);

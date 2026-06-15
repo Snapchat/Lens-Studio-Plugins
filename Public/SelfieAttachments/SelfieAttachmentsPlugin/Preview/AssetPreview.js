@@ -23,6 +23,7 @@ export class AssetPreview {
             app.log('Importing Selfie Attachments asset to the project...', { 'progressBar': true });
 
             getAsset(this.asset_id, (data) => {
+                if (!app.authStatus) return;
                 if (data) {
                     let lspkgUrl = null;
 
@@ -56,6 +57,7 @@ export class AssetPreview {
         app.log('Deleting Selfie Attachments asset...', { 'progressBar': true });
 
         deleteAsset(id, (response) => {
+            if (!app.authStatus) return;
             this.deletionDialog.close();
 
             if (response.statusCode == 204) {
@@ -184,6 +186,7 @@ export class AssetPreview {
 
 
                     downloadFileFromBucket(state.staticPreviewUrl, state.asset_id + '_static_preview.webp', (preview_path) => {
+                        if (!app.authStatus) return;
                         this.staticPreviewMovie = new Ui.Movie(preview_path);
                         this.staticPreviewMovie.resize(386, 386);
                         this.staticPreviewImage.movie = this.staticPreviewMovie;
@@ -192,6 +195,7 @@ export class AssetPreview {
 
                     if (state.animatedPreviewUrl) {
                         downloadFileFromBucket(state.animatedPreviewUrl, state.asset_id + '_animated_preview.webp', (preview_path) => {
+                            if (!app.authStatus) return;
                             this.animatedPreviewMovie = new Ui.Movie(preview_path);
                             this.animatedPreviewMovie.resize(386, 386);
                             this.animatedPreviewImage.movie = this.animatedPreviewMovie;
@@ -239,7 +243,7 @@ export class AssetPreview {
 
         this.deletionDialog = gui.createDialog();
         this.deletionDialog.windowTitle = 'Delete Selfie Attachments asset';
-
+        this.deletionDialog.setModal(true);
         this.deletionDialog.resize(460, 140);
 
         const boxLayout1 = new Ui.BoxLayout();

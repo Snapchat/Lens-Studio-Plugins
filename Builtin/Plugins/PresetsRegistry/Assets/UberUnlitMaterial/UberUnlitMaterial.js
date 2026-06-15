@@ -7,7 +7,7 @@ const params = {
         'description': 'Advanced unlit material with multiple texture slots and customizable parameters for complex non-lit shading',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
-    graph_path: import.meta.resolve('Resources/uber_unlit.ss_graph'),
+    graph_path: import.meta.resolve('Resources/uber_unlit.graphShader'),
     pass_info: {
         'uv2Offset': new vec2(0.0, 0.0),
         'uv3Offset': new vec2(0.0, 0.0),

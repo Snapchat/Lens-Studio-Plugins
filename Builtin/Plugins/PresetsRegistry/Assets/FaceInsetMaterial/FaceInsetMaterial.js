@@ -7,7 +7,7 @@ const params = {
         'description': 'Extracts face section as texture (eyes, mouth, etc.) for use with FaceInset component',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
-    graph_path: import.meta.resolve('../Resources/flat.ss_graph'),
+    graph_path: import.meta.resolve('../Resources/flat.graphShader'),
     custom_defines: [
         'ENABLE_BASE_TEX'
     ],

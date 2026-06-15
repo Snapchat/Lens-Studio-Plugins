@@ -7,7 +7,7 @@ const params = {
         'description': 'Material for visualizing Location Mesh',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
-    graph_path: import.meta.resolve('Resources/location_material.ss_graph')
+    graph_path: import.meta.resolve('Resources/location_material.graphShader')
 };
 
 export const LocationMeshMaterialPreset = MaterialPresetFactory.createMaterialPreset(params);

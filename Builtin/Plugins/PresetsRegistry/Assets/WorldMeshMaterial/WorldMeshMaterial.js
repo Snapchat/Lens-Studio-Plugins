@@ -7,7 +7,7 @@ const params = {
         description: 'Material for visualizing World Mesh',
         icon: import.meta.resolve('../Resources/Material.svg')
     },
-    graph_path: import.meta.resolve('Resources/world_mesh.ss_graph'),
+    graph_path: import.meta.resolve('Resources/world_mesh.graphShader'),
 };
 
 export const WorldMeshMaterialPreset = MaterialPresetFactory.createMaterialPreset(params);

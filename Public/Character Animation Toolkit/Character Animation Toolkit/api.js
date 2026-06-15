@@ -24,7 +24,7 @@ export function getMyAnimations(callback, pageToken, filter) {
             return;
         }
         //@ts-ignore
-        if (data === null || data === void 0 ? void 0 : data.nextPageToken) {
+        if (data?.nextPageToken) {
             callback(response, true);
             //@ts-ignore
             getMyAnimations(callback, data.nextPageToken.toString(), filter);

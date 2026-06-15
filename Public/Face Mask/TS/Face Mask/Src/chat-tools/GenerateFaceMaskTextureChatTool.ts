@@ -1,6 +1,7 @@
 import { ChatTool, Result } from 'LensStudio:ChatTool';
 import { FaceMaskGenTask } from '../generator/FaceMaskGenTask';
 import { Importer } from '../importer/Importer';
+import { ErrorCode, ErrorWithCode } from '../common/ErrorWithCode';
 
 const schema = {
     displayName: "Generate Face Mask Texture",
@@ -80,8 +81,18 @@ export class GenerateFaceMaskTextureChatTool extends ChatTool {
             }
 
             const stopper = { stop: false };
-            const task = new FaceMaskGenTask(prompt, negativePrompt ?? '', seed, stopper);
+            const task = new FaceMaskGenTask(
+                prompt,
+                negativePrompt ?? '',
+                seed,
+                stopper,
+                () => !authorization.isAuthorized
+            );
             const base64ImageData = await task.run();
+            if (!authorization.isAuthorized) {
+                result.error = 'Please log into your Snapchat account in Lens Studio to use this tool. You can log in from the Menu Bar: Go to My Lenses > Login';
+                return result;
+            }
             const imageBytes = Base64.decode(base64ImageData);
 
             const importer = new Importer();
@@ -97,6 +108,15 @@ export class GenerateFaceMaskTextureChatTool extends ChatTool {
             };
             return result;
         } catch (e: any) {
+            const auth = this.pluginSystem.findInterface(Editor.IAuthorization) as Editor.IAuthorization;
+            if (!auth?.isAuthorized) {
+                result.error = 'Please log into your Snapchat account in Lens Studio to use this tool. You can log in from the Menu Bar: Go to My Lenses > Login';
+                return result;
+            }
+            if (e instanceof ErrorWithCode && e.code === ErrorCode.Cancelled) {
+                result.error = 'Generation was cancelled.';
+                return result;
+            }
             result.error = `Failed to generate face mask texture: ${e?.message ?? e}`;
             return result;
         }

@@ -15,6 +15,10 @@ export class ThreeDAssetGenerationPlugin {
         }
 
         if (state.screen) {
+            if (this._shouldDropScreenChangeWhileLoggedOut(state)) {
+                return;
+            }
+
             if (state.screen == 'preview') {
                 this.preview.updatePreview(state);
                 this.views.currentIndex = 1;
@@ -23,6 +27,31 @@ export class ThreeDAssetGenerationPlugin {
                 this.views.currentIndex = 0;
             }
         }
+    }
+
+    /**
+     * When auth has been revoked, in-flight API callbacks (update asset, create, polling)
+     * must not switch away from the login (access) UI. Logout and minimal "back" flows only
+     * use plain { screen: 'default' } or { screen, needsUpdate: false }.
+     */
+    _shouldDropScreenChangeWhileLoggedOut(state) {
+        if (app.authStatus) {
+            return false;
+        }
+        if (state.screen == 'preview') {
+            return true;
+        }
+        if (state.screen == 'default') {
+            const keys = Object.keys(state);
+            if (keys.length == 1) {
+                return false;
+            }
+            if (keys.length == 2 && state.hasOwnProperty('needsUpdate') && state.needsUpdate === false) {
+                return false;
+            }
+            return true;
+        }
+        return false;
     }
 
     onLog(text, options) {

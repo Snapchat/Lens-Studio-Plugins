@@ -87,6 +87,7 @@ export class CreationMenu {
         let inputFormat = controls["imageReferencePicker"].value.length > 0 ? "PROMPT_IMAGE" : "PROMPT_TEXT";
 
         createAsset(data, (response) => {
+            if (!app.authStatus) return;
             if (response.statusCode == 200) {
                 logEventAssetCreation("SUCCESS", "NEW", inputFormat, "GENERATE_PREVIEW");
                 const responseBody = JSON.parse(response.body.toString());

@@ -15,6 +15,6 @@
     },
     "include": [
         "src/**/*",
-        "../../shared-types/editor.d.ts"
+        "../../public-docs/public-editor.d.ts"
     ]
 }

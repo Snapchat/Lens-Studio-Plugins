@@ -148,7 +148,7 @@ const hintScheme = {
         'image_height': 86,
         'image_path': new Editor.Path(import.meta.resolve('./Resources/advanced_mode.png')),
         'title': 'Advanced Model',
-        'text': 'Good for morphs, characters, and animal transformations, while preserving identity.'
+        'text': 'High-quality results with strong prompt control and precise reference matching.'
     },
 };
 

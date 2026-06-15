@@ -13,6 +13,7 @@
     },
     "include": [
         "src/**/*",
-        "../../shared-types/**/*.d.ts"
+        "../../public-docs/**/*.d.ts",
+        "Declarations/Editor-fixup.d.ts"
     ]
 }

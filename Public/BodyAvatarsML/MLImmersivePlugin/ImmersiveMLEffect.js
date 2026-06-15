@@ -67,6 +67,7 @@ export class ImmersiveMLEffect {
         }
 
         if (state.screen == 'preview') {
+            this.homeScreen.hidePopups();
             this.preview.updatePreview(state);
             this.views.currentIndex = 1;
         } else if (state.screen == 'default') {

@@ -24,7 +24,7 @@ export class CaptureFromVideoMode {
         // widget.setMinimumHeight(552);
         const layout = this.menuTemplate.createLayout();
         //@ts-ignore
-        const selectCharacterWidget = this.selectCharacterPage.create(this.stackedWidget, () => { var _a; (_a = this.stackedWidget) === null || _a === void 0 ? void 0 : _a.currentIndex = 0; }, goToGalleryPage);
+        const selectCharacterWidget = this.selectCharacterPage.create(this.stackedWidget, () => { this.stackedWidget?.currentIndex = 0; }, goToGalleryPage);
         this.stackedWidget.addWidget(widget);
         this.stackedWidget.addWidget(selectCharacterWidget);
         this.stackedWidget.currentIndex = 0;

@@ -67,17 +67,17 @@ function deserializeGroup(file, blobs, strings) {
             break; // end of subnode
         const [key, value] = prop;
         if (key === "") { // node is array type
-            obj !== null && obj !== void 0 ? obj : (obj = []);
+            obj ??= [];
             assert(Array.isArray(obj));
             obj.push(value);
         }
         else { // node is map type
-            obj !== null && obj !== void 0 ? obj : (obj = new Map());
+            obj ??= new Map();
             assert(obj instanceof Map);
             obj.set(key, value);
         }
     }
-    obj !== null && obj !== void 0 ? obj : (obj = []); // null nodes default to empty arrays
+    obj ??= []; // null nodes default to empty arrays
     return obj;
 }
 /** read an entire model file from disk in generic structure */

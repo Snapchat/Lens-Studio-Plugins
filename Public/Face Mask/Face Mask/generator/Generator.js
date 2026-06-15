@@ -36,6 +36,7 @@ export class Generator {
                     }
                 }
                 else {
+                    this.cancel();
                     this.changeState(GeneratorState.Unauthorized);
                 }
             }
@@ -65,13 +66,25 @@ export class Generator {
         try {
             this.changeState(GeneratorState.Running);
             this.stopper.stop = false;
-            const api = new FaceMaskGenTask(params.prompt, params.negativePrompt, params.seed, this.stopper);
+            const api = new FaceMaskGenTask(params.prompt, params.negativePrompt, params.seed, this.stopper, () => !app.authStatus);
             const base64ImageData = await api.run();
+            if (!app.authStatus) {
+                this.changeState(GeneratorState.Unauthorized);
+                return;
+            }
             const imageBytes = Base64.decode(base64ImageData);
             this.retrieveTexturesFromBytes(imageBytes);
         }
         catch (error) {
+            if (!app.authStatus) {
+                this.changeState(GeneratorState.Unauthorized);
+                return;
+            }
             if (error instanceof ErrorWithCode) {
+                if (error.code === ErrorCode.Cancelled) {
+                    this.changeState(GeneratorState.Unauthorized);
+                    return;
+                }
                 this.changeState(GeneratorState.Failed, error.message);
                 if (error.code === ErrorCode.ViolatesCommunityGuidelines) {
                     app.notificationManager.showNotification(NotificationKey.ErrorViolatesCommunityGuidelines);
@@ -93,6 +106,10 @@ export class Generator {
             }
             return;
         }
+        if (!app.authStatus) {
+            this.changeState(GeneratorState.Unauthorized);
+            return;
+        }
         logEventCreateAsset(EVENT_STATUS.SUCCESS, origin, EVENT_CREATE_ASSET.INPUT_FORMAT.TEXT);
         this.changeState(GeneratorState.Success);
     }
@@ -101,7 +118,7 @@ export class Generator {
     }
     retrieveTexturesFromBytes(bytes) {
         const storage = new Storage();
-        const archivePath = storage.createFile("FaceMask.jpg", bytes);
+        const archivePath = storage.createFile("FaceMask.png", bytes);
         this.textureBytes = storage.readBytes(archivePath);
     }
     get state() {

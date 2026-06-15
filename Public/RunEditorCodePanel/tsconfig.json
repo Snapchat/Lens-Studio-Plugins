@@ -10,7 +10,11 @@
   },
   "include": [
     "src/**/*.ts",
-    "../../shared-types/**/*.d.ts"
+    "../../public-docs/**/*.d.ts"
   ],
-  "exclude": ["node_modules", "dist/**/*", "ui/**/*"]
+  "exclude": [
+    "node_modules",
+    "dist/**/*",
+    "ui/**/*"
+  ]
 }

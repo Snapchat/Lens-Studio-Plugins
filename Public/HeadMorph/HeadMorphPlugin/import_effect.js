@@ -26,6 +26,12 @@ function findOrCreateCameraObject(scene, parentObject) {
     return result;
 }
 
+function setRenderLayerRecursively(object, renderLayer) {
+    object.layer = renderLayer;
+
+    object.children.forEach((child) => setRenderLayerRecursively(child, renderLayer));
+}
+
 function findOrCreateChildWithName(rootObject, name, scene) {
     let result = null;
 
@@ -59,8 +65,7 @@ function createHeadBindingObject(model, sceneObject) {
     return headBindingObject;
 }
 
-export async function importHeadmorph(filePath, tmp) {
-
+async function importHeadmorphLsc(filePath, tmp) {
     const model = findInterface(app.pluginSystem, Editor.Model.IModel);
     const assetManager = model.project.assetManager;
     const scene = model.project.scene;
@@ -85,6 +90,39 @@ export async function importHeadmorph(filePath, tmp) {
     return new Promise((resolve) => {
         resolve();
     });
+}
+
+async function importHeadmorphLspkg(filePath, tmp) {
+    const model = findInterface(app.pluginSystem, Editor.Model.IModel);
+    const assetManager = model.project.assetManager;
+    const scene = model.project.scene;
+
+    const rootObject = findOrCreateCameraObject(scene, null);
+
+    const renderLayer = rootObject.getComponent('Camera').renderLayer;
+
+    const packageRoot = await assetManager.importExternalFileAsync(filePath, new Editor.Path('/'), Editor.Model.ResultType.Unpacked);
+    for (let i = 0; i < packageRoot.files.length; i++) {
+        if (packageRoot.files[i].primaryAsset.type === 'ObjectPrefab') {
+            const so = scene.instantiatePrefab(packageRoot.files[i].primaryAsset, rootObject);
+
+            setRenderLayerRecursively(so, renderLayer);
+
+            break;
+        }
+    }
+
+    return new Promise((resolve) => {
+        resolve();
+    });
+}
+
+export async function importHeadmorph(filePath, tmp) {
+    const ext = (filePath.extension || '').toLowerCase();
+    if (ext === 'lspkg') {
+        return importHeadmorphLspkg(filePath, tmp);
+    }
+    return importHeadmorphLsc(filePath, tmp);
 }
 
 function findInterface(pluginSystem, interfaceID) {

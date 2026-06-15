@@ -7,7 +7,7 @@ const params = {
         'description': 'PBR-based material for glTF models with transmission support',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
-    graph_path: import.meta.resolve('Resources/gltf.ss_graph'),
+    graph_path: import.meta.resolve('Resources/gltf.graphShader'),
     custom_defines: [
         'ENABLE_GLTF_LIGHTING',
         'ENABLE_TRANSMISSION'

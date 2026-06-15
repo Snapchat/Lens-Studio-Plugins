@@ -1,7 +1,7 @@
 export function buildAssetData(controls) {
     const request = {
         'prompt': null,
-        'seed': 0,
+        'seed': 2147483647,
         'uploadUid': null
     };
 

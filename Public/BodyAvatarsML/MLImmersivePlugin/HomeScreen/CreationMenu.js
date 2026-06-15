@@ -32,10 +32,12 @@ export class CreationMenu {
 
     stop() {
         this.stopped = true;
+        if (this.popup) this.popup.visible = false;
         this.reset();
     }
 
     reset() {
+        if (this.popup) this.popup.visible = false;
         this.controls['imageReferencePicker'].value = [];
         this.controls['humanoidAnatomy'].value = false;
         this.controls['faceSwap'].value = false;
@@ -43,6 +45,7 @@ export class CreationMenu {
 
     generateEffect(controls) {
         this.generateButton.enabled = false;
+        this.popup.visible = false;
         app.log('Creating new effect...', { 'progressBar': true });
 
         let effectData = buildEffectData(controls);
@@ -63,14 +66,39 @@ export class CreationMenu {
                         });
 
                         app.log(`${app.name} is queued. ${app.name} creation is estimated to take 5 minutes, please check back later.`, {'progressBar': true});
+                    } else if (postProcessingResponse.statusCode == 400) {
+                        try {
+                            const errorBody = JSON.parse(postProcessingResponse.body.toString());
+                            if (errorBody.detail && errorBody.detail.toLowerCase().includes('limit')) {
+                                logEventAssetCreation("RATE_LIMITED", "NEW", inputFormat);
+                                this.showLimitReachedPopup();
+                            } else {
+                                logEventAssetCreation("GUIDELINES_VIOLATION", "NEW", inputFormat);
+                                this.showGuidelinesPopup();
+                            }
+                        } catch (e) {
+                            logEventAssetCreation("FAILED", "NEW", inputFormat);
+                            app.log('Something went wrong during post-processing creation, please try again.');
+                        }
                     } else {
                         logEventAssetCreation("FAILED", "NEW", inputFormat);
                         app.log('Something went wrong during post-processing creation, please try again.');
                     }
                 });
             } else if (effectResponse.statusCode == 400) {
-                logEventAssetCreation("GUIDELINES_VIOLATION", "NEW", inputFormat);
-                app.log('The result violates our community guidelines');
+                try {
+                    const errorBody = JSON.parse(effectResponse.body.toString());
+                    if (errorBody.detail && errorBody.detail.toLowerCase().includes('limit')) {
+                        logEventAssetCreation("RATE_LIMITED", "NEW", inputFormat);
+                        this.showLimitReachedPopup();
+                    } else {
+                        logEventAssetCreation("GUIDELINES_VIOLATION", "NEW", inputFormat);
+                        this.showGuidelinesPopup();
+                    }
+                } catch (e) {
+                    logEventAssetCreation("GUIDELINES_VIOLATION", "NEW", inputFormat);
+                    this.showGuidelinesPopup();
+                }
             } else {
                 logEventAssetCreation("FAILED", "NEW", inputFormat);
                 app.log(`Something went wrong during ${app.name} creation, please try again.`);
@@ -285,6 +313,61 @@ export class CreationMenu {
         this.layout.spacing = 0;
         this.widget.layout = this.layout;
 
+        this.createPopup(app.mainWidget);
+
         return this.widget;
+    }
+
+    createPopup(widget) {
+        this.popup = new Ui.CalloutFrame(widget);
+        this.popup.setForegroundColor(this.createColor(234, 85, 99, 255));
+        this.popup.setBackgroundColor(this.createColor(234, 85, 99, 255));
+
+        const popupLayout = new Ui.BoxLayout();
+        this.popup.layout = popupLayout;
+        popupLayout.setContentsMargins(8, 0, 8, 0);
+
+        const infoImage = new Ui.ImageView(this.popup);
+        infoImage.scaledContents = true;
+        infoImage.pixmap = new Ui.Pixmap(import.meta.resolve('../Resources/warning.svg'));
+        infoImage.setFixedWidth(16);
+        infoImage.setFixedHeight(16);
+
+        popupLayout.addWidgetWithStretch(infoImage, 0, Ui.Alignment.AlignLeft | Ui.Alignment.AlignCenter);
+
+        this.popupLabel = new Ui.Label(this.popup);
+        this.popupLabel.foregroundRole = Ui.ColorRole.BrightText;
+
+        this.popup.visible = false;
+        this.popup.setFixedHeight(32);
+
+        popupLayout.addWidgetWithStretch(this.popupLabel, 1, Ui.Alignment.AlignLeft | Ui.Alignment.AlignCenter);
+    }
+
+    showLimitReachedPopup() {
+        app.log('', { 'enabled': false });
+        this.popupLabel.text = "Limit reached - A maximum of 5 effects can be generated at once";
+        this.popup.setFixedWidth(368);
+        this.popup.move(216, 4);
+        this.popup.visible = true;
+        this.popup.raise();
+    }
+
+    showGuidelinesPopup() {
+        app.log('', { 'enabled': false });
+        this.popupLabel.text = "Prompt does not comply with community guidelines";
+        this.popup.setFixedWidth(340);
+        this.popup.move(216, 4);
+        this.popup.visible = true;
+        this.popup.raise();
+    }
+
+    createColor(r, g, b, a) {
+        const color = new Ui.Color();
+        color.red = r;
+        color.green = g;
+        color.blue = b;
+        color.alpha = a;
+        return color;
     }
 };

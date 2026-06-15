@@ -7,7 +7,7 @@ const params = {
         'description': 'PostEffectVisual material smoothing and softening rendered image',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
-    graph_path: import.meta.resolve('Resources/smoothing.ss_graph'),
+    graph_path: import.meta.resolve('Resources/smoothing.graphShader'),
     pass_info: {
         'depthTest': false,
         'depthWrite': false,

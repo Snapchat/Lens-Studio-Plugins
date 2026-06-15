@@ -7,7 +7,7 @@ const params = {
         'description': 'Physically Based Rendering material. This version has baseTex, baseColor, metallic, roughness properties',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
-    graph_path: import.meta.resolve('Resources/simple_pbr.ss_graph'),
+    graph_path: import.meta.resolve('Resources/simple_pbr.graphShader'),
     pass_info: {
         'metallic': 0.0,
         'roughness': 0.0,

@@ -121,3 +121,29 @@ export function createAttachment(data, contentType, filename, callback) {
         callback(response);
     });
 }
+
+export function generateUpload(prompt, callback) {
+    const request = new Network.HttpRequest();
+    request.url = BASE_URL + '/api/uploads:generate';
+    request.method = Network.HttpRequest.Method.Post;
+    request.body = JSON.stringify({ prompt, use_case: 'bodymorph' });
+    request.contentType = 'application/json';
+
+    // response.body is the same as in createAttachment: { uid: string, url: string }
+    Network.performAuthorizedHttpRequest(request, function(response) {
+        callback(response);
+    });
+}
+
+export function updateUpload(prompt, source_upload_uid, callback, use_case = 'default') {
+    const request = new Network.HttpRequest();
+    request.url = BASE_URL + '/api/uploads:generate';
+    request.method = Network.HttpRequest.Method.Post;
+    request.body = JSON.stringify({ prompt, source_upload_uid, use_case });
+    request.contentType = 'application/json';
+
+    // response.body is the same as in createAttachment: { uid: string, url: string }
+    Network.performAuthorizedHttpRequest(request, function(response) {
+        callback(response);
+    });
+}

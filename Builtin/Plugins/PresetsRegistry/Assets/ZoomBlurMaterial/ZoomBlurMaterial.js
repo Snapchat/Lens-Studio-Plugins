@@ -7,7 +7,7 @@ const params = {
         icon: import.meta.resolve('../Resources/Material.svg'),
         'description': 'PostEffectVisual material applying radial zoom blur effect',
     },
-    graph_path: import.meta.resolve('Resources/zoom_blur.ss_graph'),
+    graph_path: import.meta.resolve('Resources/zoom_blur.graphShader'),
     pass_info: {
         depthTest: false,
         depthWrite: false,

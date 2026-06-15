@@ -93,6 +93,8 @@ export class Generator {
     changeState(state, payload) {
         if (state === GeneratorState.Failed) {
             app.log("Generation has been failed. Please, try again.");
+        } else if (state === GeneratorState.Running || state === GeneratorState.Success) {
+            app.log("", { type: 'logger', enabled: false });
         }
 
         this.mState = state;
@@ -101,9 +103,20 @@ export class Generator {
         this.stateChanged.emit(this.mState, payload);
     }
 
+    clearGenerationData() {
+        this.garmentBytes = null;
+        this.textureBytes = null;
+        this.maskBytes = null;
+    }
+
+    isGenerationResultStale() {
+        return !app.authStatus || this.mState !== GeneratorState.Running;
+    }
+
     async generate(params) {
         try {
             this.changeState(GeneratorState.Running);
+            this.clearGenerationData();
 
             const seed = getRandomInt(1, Math.pow(2, 31));
 
@@ -113,10 +126,25 @@ export class Generator {
                 params.garmentType
             );
 
+            if (this.isGenerationResultStale()) {
+                this.clearGenerationData();
+                return;
+            }
+
             this.retreiveTexturesFromBytes(this.garmentBytes);
 
         } catch (error) {
+            this.clearGenerationData();
+            if (!app.authStatus) {
+                this.changeState(GeneratorState.Unauthorized);
+                return;
+            }
             this.changeState(GeneratorState.Failed, error);
+            return;
+        }
+
+        if (this.isGenerationResultStale()) {
+            this.clearGenerationData();
             return;
         }
 

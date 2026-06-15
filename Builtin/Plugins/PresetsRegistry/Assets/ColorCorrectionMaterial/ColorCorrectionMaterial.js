@@ -8,7 +8,7 @@ function createColorCorrection(tex){
             'description': 'Applies a LUT (Look Up Table) texture to the screen',
             'icon': import.meta.resolve('../Resources/Material.svg')
         },
-        graph_path: import.meta.resolve('Resources/color_correction.ss_graph'),
+        graph_path: import.meta.resolve('Resources/color_correction.graphShader'),
         pass_info: {
             'depthTest': false,
             'depthWrite': false,

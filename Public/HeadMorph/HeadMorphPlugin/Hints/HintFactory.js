@@ -9,7 +9,7 @@ export const HintID = {
 const hintScheme = {
     [HintID.prompt]: {
         'title': 'Prompt',
-        'text': 'Describe the effect you want to generate.'
+        'text': 'Describe the effect you want to generate, then pick your favorite from the image previews. You can add an image reference below to guide the look.'
     },
     [HintID.seed]: {
         'title': 'Seed',
@@ -17,7 +17,7 @@ const hintScheme = {
     },
     [HintID.image_reference]: {
         'title': 'Image Reference',
-        'text': 'Add an image reference to guide the output.'
+        'text': 'Optional image reference to guide the output.'
     }
 };
 

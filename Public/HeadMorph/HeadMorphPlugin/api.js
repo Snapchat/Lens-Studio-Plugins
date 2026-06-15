@@ -120,7 +120,7 @@ export function deleteAsset(id, callback) {
 
 export function createAttachment(data, contentType, filename, callback) {
     const request = new Network.HttpRequest();
-    request.url = 'https://ml.snap.com/api/uploads';
+    request.url = base_url.replace('api/headmorphs', 'api/uploads');
     request.method = Network.HttpRequest.Method.Post;
 
     const headers = {

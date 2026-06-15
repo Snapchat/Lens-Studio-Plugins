@@ -18,7 +18,7 @@ export class OrganizeFolderStructureService extends CoreService {
     }
 
     createAssetAction(context, id, caption, isFlat) {
-        if(!context.isOfType("AssetContext"))
+        if(!context.isOfType("AssetContext") || context.isDetailedView)
         {
             return new Editor.ContextAction();
         }

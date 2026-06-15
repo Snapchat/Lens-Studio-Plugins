@@ -1,0 +1,275 @@
+SchemaVersion: 1
+Nodes:
+  ChildNodes:
+    Node0:
+      DependencyIndex: 0
+      LevelID: 6
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        DepthMap:
+          Variable: false
+        ExtraOutputs:
+          Variable: false
+        Group:
+          String: ""
+        PixelSize:
+          IOType: 1
+          Variable: [0.0, 0.0]
+        ScriptName:
+          String: screenTexture
+        SortIndex:
+          Variable: 0
+        Texture:
+          ClassType2: TEXTURE_OBJECT_2D
+          IOType: 1
+        TextureSize:
+          IOType: 1
+          Variable: [0.0, 0.0]
+        Title:
+          String: Screen Texture
+        Tooltip:
+          String: ""
+      PositionX: -26
+      PositionY: -354
+      Selected: true
+      TemplateID: nodes_inputs_parameters_texture2d_object
+      Title1: Texture 2D Object Parameter
+      Title2: Screen Texture
+    Node1:
+      DependencyIndex: 1
+      LevelID: 186
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 5
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [0.5, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: true
+        EnableMin:
+          Variable: true
+        Group:
+          String: ""
+        Max:
+          Variable: 20.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: offset
+        SortIndex:
+          Variable: 0
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Offset
+        Tooltip:
+          String: ""
+      PositionX: 21
+      PositionY: -201
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Offset
+    Node2:
+      DependencyIndex: 2
+      LevelID: 5
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Code:
+          ClassType1: TEXT
+          String: |-
+            input_texture_2d ScreenTexture;
+            input_float PixelOffset;
+            output_vec4 Output; 
+            
+            void main()
+            {
+            	float lRadiusSquare = 9.0;
+            	vec3 lColor[4];
+                vec3 lColorSquare[4];
+            	vec2 uv = system.getSurfaceUVCoord0();
+                vec2 pixelSize = ScreenTexture.pixelSize();
+            // mul 5.0 for keep the mapping from legacy to graph looks the same.
+            	vec2 screenSize = pixelSize * PixelOffset * 5.0;
+            	
+                for(int lIndex = 0; lIndex < 4; lIndex++)
+                {
+                    lColor[lIndex] = vec3(0.0);
+                    lColorSquare[lIndex] = vec3(0.0);
+                }
+            
+            	for(int j = -2; j <= 0; j++)
+                {
+            		for(int i = -2; i <= 0; i++)
+                    {
+            			vec3 lTexColor = ScreenTexture.sample(uv + vec2(float(i), float(j)) * screenSize).rgb;
+            			lColor[0] += lTexColor;
+            			lColorSquare[0] += lTexColor * lTexColor;
+            		}
+            	}
+            
+            	for(int j = -2; j <= 0; j++)
+                {
+            		for(int i = 0; i <= 2; i++)
+                    {
+            			vec3 lTexColor = ScreenTexture.sample(uv + vec2(float(i), float(j)) * screenSize).rgb;
+            			lColor[1] += lTexColor;
+            			lColorSquare[1] += lTexColor * lTexColor;
+            		}
+            	}
+            
+            	for(int j = 0; j <= 2; j++)
+                {
+            		for(int i = 0; i <= 2; i++)
+                    {
+            			vec3 lTexColor = ScreenTexture.sample(uv + vec2(float(i), float(j)) * screenSize).rgb;
+            			lColor[2] += lTexColor;
+            			lColorSquare[2] += lTexColor * lTexColor;
+            		}
+            	}
+            
+            	for(int j = 0; j <= 2; j++)
+                {
+            		for(int i = -2; i <= 0; i++)
+                    {
+            			vec3 lTexColor = ScreenTexture.sample(uv + vec2(float(i), float(j)) * screenSize).rgb;
+            			lColor[3] += lTexColor;
+            			lColorSquare[3] += lTexColor * lTexColor;
+            		}
+            	}
+            
+            	vec4 finCol = vec4(0.0);
+                float lMinSigma = 4.71828182846;
+                float alphaMask = ScreenTexture.sample(uv).a;
+            	for(int i = 0; i < 4; i++)
+                {
+            		lColor[i] /= lRadiusSquare;
+                    lColorSquare[i] = abs(lColorSquare[i] / lRadiusSquare - lColor[i] * lColor[i]);
+                    float lSigma = lColorSquare[i].r + lColorSquare[i].g + lColorSquare[i].b;
+                    float flag = step(lSigma, lMinSigma);
+                    lMinSigma = mix(lMinSigma, lSigma, flag);
+                    finCol = vec4(mix(finCol.rgb, lColor[i], flag), 1.0);	 
+                }
+            
+            	Output = finCol;
+            } 
+        Description:
+          ClassType1: TEXT
+          String: ""
+        Examples:
+          ItemIndex: 0
+          ItemList: "Custom : Input/Output/Global Types : Extra Functions : Procedural Execution : Lighting Loop : System Built-In Values/Functions"
+        ID:
+          Variable: 5
+        Locked:
+          Variable: false
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        PixelOffset:
+          Connection0:
+            NodeLevelID: 186
+            PortID: Output
+          Variable: 0.0
+        ScreenTexture:
+          ClassType2: TEXTURE_OBJECT_2D
+          Connection0:
+            NodeLevelID: 6
+            PortID: Texture
+        Stage:
+          ItemIndex: 1
+          ItemList: "Vertex : Pixel"
+        Title:
+          String: Oil Paint
+        ngs_Height:
+          Variable: 800
+        ngs_Version:
+          String: "1.10"
+      PositionX: 261
+      PositionY: -322
+      TemplateID: node_util_custom
+      TemplateVersionMinor: 1
+      Title1: Oil Paint
+    Node3:
+      CommentSizeX: 0
+      CommentSizeY: 0
+      DependencyIndex: 3
+      LevelID: 4
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        CustomRays:
+          Variable: false
+        Depth:
+          Variable: 1.0
+        DepthMode:
+          ItemIndex: 0
+          ItemList: |2-
+            		Non-Linear - Normalized [0 to 1] ) :		Linear - Normalized [-1 to 1] :		View Space - Non-Normalized [-near to -far]	
+        DontFreezeSpec:
+          Variable: false
+        FinalColor:
+          ClassType1: COLOR
+          Connection0:
+            NodeLevelID: 5
+            PortID: Output
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        FinalColor1:
+          ClassType1: COLOR
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        FinalColor2:
+          ClassType1: COLOR
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        FinalColor3:
+          ClassType1: COLOR
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        Negative:
+          Variable: false
+        RayDirection:
+          Variable: [0.0, 1.0, 0.0]
+        RayOrigin:
+          Variable: [0.0, 0.0, 0.0]
+        Targets:
+          ItemIndex: 0
+          ItemList: "1 : 2 : 3 : 4"
+        Type:
+          ItemIndex: 0
+          ItemList: "3D : Post Effect : Hair"
+        WorldNormal:
+          Variable: [0.0, 1.0, 0.0]
+        WorldPosition:
+          Variable: [0.0, 0.0, 0.0]
+        WorldTangent:
+          Variable: [0.0, 0.0, 1.0]
+        WriteDepth:
+          Variable: false
+      PositionX: 482
+      PositionY: -321
+      TemplateID: nodes_main_graph
+      Title1: Shader
+      Title2: 3D
+  IsSubGraph0: true
+  IsSubGraph1: true
+  IsSubGraph2: true
+  IsSubGraph3: true
+  LevelID: 0
+  NodeType: 3
+  PositionX: 0
+  PositionY: 0
+  TemplateID: nodes_main_subgraph
+  Title1: ""
+  ViewOffsetX0: -165
+  ViewOffsetX1: -315
+  ViewOffsetX2: -315
+  ViewOffsetX3: -315
+  ViewOffsetY0: 254
+  ViewOffsetY1: 241
+  ViewOffsetY2: 241
+  ViewOffsetY3: 241
+SystemID: dev.snap.shaders

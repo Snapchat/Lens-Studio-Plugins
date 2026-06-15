@@ -7,7 +7,7 @@ const params = {
         'description': 'Metallic gold-colored material with configurable base color, metallic, and roughness properties',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
-    graph_path: import.meta.resolve('Resources/uber_spec.ss_graph'),
+    graph_path: import.meta.resolve('Resources/uber_spec.graphShader'),
     pass_info: {
         'baseColor': new vec4(1.0, 0.86, 0.55, 1.0),
         'uv2Offset': new vec2(0.0, 0.0),

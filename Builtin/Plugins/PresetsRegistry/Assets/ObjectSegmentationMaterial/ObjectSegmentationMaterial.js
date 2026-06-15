@@ -7,7 +7,7 @@ const params = {
         'description': 'Segments objects using tracking texture with configurable radius and softness (defaults to hand segmentation)',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
-    graph_path: import.meta.resolve('Resources/object_seg.ss_graph'),
+    graph_path: import.meta.resolve('Resources/object_seg.graphShader'),
     custom_defines: [
         'ENABLE_ADVANCED'
     ],

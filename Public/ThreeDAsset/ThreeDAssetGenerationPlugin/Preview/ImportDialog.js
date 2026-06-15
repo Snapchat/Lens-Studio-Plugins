@@ -78,6 +78,7 @@ export class ImportDialog {
         this.importDialog = gui.createDialog();
         this.importDialog.windowTitle = 'Import Asset to Project';
         this.importDialog.resize(460, 140);
+        this.importDialog.setModal(true);
 
         const layout = new Ui.BoxLayout();
         layout.setDirection(Ui.Direction.TopToBottom);

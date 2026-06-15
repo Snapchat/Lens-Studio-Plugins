@@ -29,6 +29,7 @@ export class Preview {
     }
 
     reset() {
+        this.previewMenu.invalidateInFlightModify();
         this.assetPreview.reset(false);
         this.draftMeshPreview.reset();
     }

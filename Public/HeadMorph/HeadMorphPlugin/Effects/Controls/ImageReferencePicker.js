@@ -59,9 +59,9 @@ export class ImageReferencePicker extends Control {
         const promptHeaderLayout = new Ui.BoxLayout();
         promptHeaderLayout.setDirection(Ui.Direction.LeftToRight);
 
-        this.radioButton = new Ui.RadioButton(promptHeaderWidget);
-        this.radioButton.text = label;
-        promptHeaderLayout.addWidget(this.radioButton);
+        const promptLabel = new Ui.Label(promptHeaderWidget);
+        promptLabel.text = label;
+        promptHeaderLayout.addWidget(promptLabel);
 
         if (hint) {
             const infoIconImage = new Ui.Pixmap(new Editor.Path(import.meta.resolve('../../Resources/info_icon.svg')));
@@ -99,10 +99,6 @@ export class ImageReferencePicker extends Control {
         promptHeaderWidget.layout = promptHeaderLayout;
 
         return promptHeaderWidget;
-    }
-
-    getRadioButton() {
-        return this.radioButton;
     }
 
     show() {

@@ -7,7 +7,7 @@ const params = {
         'description': 'Default material for Body Mesh',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
-    graph_path: import.meta.resolve('Resources/body_mesh.ss_graph'),
+    graph_path: import.meta.resolve('Resources/body_mesh.graphShader'),
     pass_info: {
         'metallic': 0.0,
         'roughness': 0.0,

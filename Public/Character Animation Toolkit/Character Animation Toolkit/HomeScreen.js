@@ -84,8 +84,7 @@ export class HomeScreen {
         loginButton.enabled = true;
         loginButton.move(367, 332);
         loginButton.onClick.connect(() => {
-            var _a;
-            (_a = this.authComponent) === null || _a === void 0 ? void 0 : _a.authorize();
+            this.authComponent?.authorize();
         });
         this.loginScreen.visible = false;
     }

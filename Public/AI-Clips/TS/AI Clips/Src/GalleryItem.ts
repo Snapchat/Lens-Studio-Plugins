@@ -19,10 +19,15 @@ export class GalleryItem {
     private description: string;
     private importButton: Ui.PushButton;
     private importOverlay: Ui.ImageView;
+    private favoriteButton: Ui.ImageView;
+    private favoriteTruePixmap: Ui.Pixmap;
+    private favoriteFalsePixmap: Ui.Pixmap;
+    private _isFavorite: boolean = false;
     private connections: Array<any> = [];
     private curState: string = "RUNNING";
     private onClickCallback: Function = () => {};
     private onImportClickCallback: Function = () => {};
+    private onFavoriteClickCallback: Function = () => {};
 
     constructor(parent: Ui.Widget, id: string) {
         this.id = id;
@@ -93,6 +98,7 @@ export class GalleryItem {
                     this.importButton.setFixedWidth(32);
                 }
             }
+            this.favoriteButton.visible = hovered || this._isFavorite;
         }));
 
         [this.frame, this.border, this.movieView].forEach((item) => {
@@ -139,6 +145,25 @@ export class GalleryItem {
                     this.importButton.enabled = true;
                 });
             }
+        }));
+
+        this.favoriteTruePixmap = new Ui.Pixmap(import.meta.resolve('./Resources/favorite_true.svg'));
+        this.favoriteFalsePixmap = new Ui.Pixmap(import.meta.resolve('./Resources/favorite_false.svg'));
+
+        const favoriteIconSize = 16;
+        const favoriteIconMargin = 8;
+        this.favoriteButton = new Ui.ImageView(this.frame);
+        this.favoriteButton.setFixedWidth(favoriteIconSize);
+        this.favoriteButton.setFixedHeight(favoriteIconSize);
+        this.favoriteButton.scaledContents = true;
+        this.favoriteButton.move(this.tileWidth - favoriteIconMargin - favoriteIconSize, favoriteIconMargin);
+        this.favoriteButton.pixmap = this.favoriteFalsePixmap;
+        this.favoriteButton.visible = false;
+
+        this.connections.push(this.favoriteButton.onClick.connect(() => {
+            this._isFavorite = !this._isFavorite;
+            this.favoriteButton.pixmap = this._isFavorite ? this.favoriteTruePixmap : this.favoriteFalsePixmap;
+            this.onFavoriteClickCallback(this.id, this._isFavorite);
         }));
     }
 
@@ -189,6 +214,22 @@ export class GalleryItem {
 
     setOnImportClickCallback(callback: Function) {
         this.onImportClickCallback = callback;
+    }
+
+    setOnFavoriteClickCallback(callback: Function) {
+        this.onFavoriteClickCallback = callback;
+    }
+
+    setFavorite(isFavorite: boolean) {
+        this._isFavorite = isFavorite;
+        this.favoriteButton.pixmap = isFavorite ? this.favoriteTruePixmap : this.favoriteFalsePixmap;
+        this.favoriteButton.visible = isFavorite;
+    }
+
+    revertFavorite() {
+        this._isFavorite = !this._isFavorite;
+        this.favoriteButton.pixmap = this._isFavorite ? this.favoriteTruePixmap : this.favoriteFalsePixmap;
+        this.favoriteButton.visible = this._isFavorite;
     }
 
     enableLoading() {

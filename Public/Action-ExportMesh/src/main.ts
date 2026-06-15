@@ -1,10 +1,10 @@
-import GuiService from "LensStudio:GuiService"
+import {GuiService} from "LensStudio:GuiService"
 import * as Ui from "LensStudio:Ui"
 import { isAssetContext, isFileMesh } from "./guards.js"
 import { convertMeshFile } from "./mesh.js"
 
 export class AssetMenuItem extends GuiService {
-    static override descriptor() {
+    static descriptor() {
         return {
             id: "Com.Snap.ExportMesh.Gltf",
             name: "Export Mesh to GLB",
@@ -34,7 +34,7 @@ export class AssetMenuItem extends GuiService {
         console.info(`Exported mesh ${selection.asset.name} to ${outputPath}`)
     }
 
-    start() {
+    override start() {
         const registry = this.pluginSystem.findInterface(Editor.IContextActionRegistry)
         this.#guards.push(registry.registerAction((context) => {
             const action = new Editor.ContextAction()
@@ -54,7 +54,7 @@ export class AssetMenuItem extends GuiService {
         }))
     }
 
-    stop() {
+    override stop() {
         this.#guards.length = 0
     }
 

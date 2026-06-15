@@ -85,9 +85,8 @@ export class Widget {
         return this.__widget__.isNull;
     }
     set layout(layout) {
-        var _a;
         this.__layout__ = layout;
-        this.__widget__.layout = (_a = this.__layout__) === null || _a === void 0 ? void 0 : _a.toLayout();
+        this.__widget__.layout = this.__layout__?.toLayout();
     }
     get layout() {
         return this.__layout__;

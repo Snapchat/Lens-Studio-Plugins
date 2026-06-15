@@ -57,7 +57,9 @@ export class EffectGallery {
         this.authComponent = app.pluginSystem?.findInterface(Editor.IAuthorization) as Editor.IAuthorization;
 
         this.authComponent.onAuthorizationChange.connect((authStatus) => {
-            if (!this.stackedWidget || !this.stackedWidget.visible) {
+            // Do not check stackedWidget.visible: when the home screen shows the login
+            // page, this gallery is under a hidden parent, so the handler would never run.
+            if (!this.stackedWidget) {
                 return;
             }
             if (authStatus) {

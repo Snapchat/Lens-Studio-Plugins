@@ -8,10 +8,8 @@
     "noImplicitAny": false
   },
   "include": [
-    "../shared-types/**/*.d.ts",
-    "**.js",
-    "**/**.js",
-    "../shared-types/**/*.d.ts"
+    "**/*.js",
+    "../public-docs/**/*.d.ts"
   ]
 
 }

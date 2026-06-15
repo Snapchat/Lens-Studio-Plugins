@@ -74,15 +74,21 @@ export class CustomLocationObjectPreset extends Preset {
 
         const history = model.project.history;
         let rootLocatedAtObject = null;
-        history.executeAsGroup('Set Custom Location', () => {
-            // add custom location asset, location mesh and vertexColor material
-            const locationAsset = assetManager.createNativeAsset('LocationAsset', 'Custom Location Asset [Input ID]', new Editor.Path(''));
+        let locationAsset = null;
+        let locationMesh = null;
+
+        // Two groups so native assets are not "created + edited" in one change batch. This will make sure that assets will be saved properly.
+        history.executeAsGroup('Create Custom Location assets', () => {
+            locationAsset = assetManager.createNativeAsset('LocationAsset', 'Custom Location Asset [Input ID]', new Editor.Path(''));
+            locationMesh = assetManager.createNativeAsset('LocationMesh', 'Custom Location Mesh', new Editor.Path(''));
+        });
+
+        history.executeAsGroup('Configure Custom Location', () => {
             locationAsset.locationType = Editor.Assets.LocationType.Custom;
             // Add a default location ID so that the preset doesn't produce errors when first added
             const locationId = "ZDB3WPGEL6BA";
             console.log(`Setting Custom Location ID to: ${locationId} by default. Please update to your own custom location ID.`);
             locationAsset.locationId = locationId;
-            const locationMesh = assetManager.createNativeAsset('LocationMesh', 'Custom Location Mesh', new Editor.Path(''));
             locationMesh.location = locationAsset;
 
             // add locatedAt

@@ -7,7 +7,7 @@ const params = {
         'description': 'PostEffectVisual material distorting screen with configurable flow texture, speed, intensity, and UV scale',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
-    graph_path: import.meta.resolve('Resources/distortion.ss_graph'),
+    graph_path: import.meta.resolve('Resources/distortion.graphShader'),
     custom_defines: [
         'ENABLE_SPEED_OPTIONS'
     ],

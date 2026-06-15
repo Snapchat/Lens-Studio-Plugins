@@ -1,4 +1,4 @@
-import { PanelPlugin } from 'LensStudio:PanelPlugin'
+import { PanelPlugin, Descriptor } from 'LensStudio:PanelPlugin'
 import * as Ui from 'LensStudio:Ui'
 import FigmaFileAgent from './services/FigmaFileAgent.js'
 import NodeMaterializer from './processors/NodeMaterializer.js'
@@ -53,8 +53,8 @@ export class FigmaImporter extends PanelPlugin {
         }
     }
 
-    constructor(pluginSystem: Editor.PluginSystem) {
-        super(pluginSystem)
+    constructor(pluginSystem: Editor.PluginSystem, descriptor: Descriptor) {
+        super(pluginSystem, descriptor)
 
         const model = pluginSystem.findInterface(Editor.Model.IModel) as Editor.Model.IModel
         const assetManager = model.project.assetManager

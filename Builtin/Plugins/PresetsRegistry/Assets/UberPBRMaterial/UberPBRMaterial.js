@@ -7,7 +7,7 @@ const params = {
         'description': 'Physically Based Rendering material with comprehensive set of configurable properties',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
-    graph_path: import.meta.resolve('Resources/uber_pbr.ss_graph'),
+    graph_path: import.meta.resolve('Resources/uber_pbr.graphShader'),
     pass_info: {
         'metallic': 0.0,
         'roughness': 0.0,

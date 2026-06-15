@@ -1,0 +1,5152 @@
+SchemaVersion: 1
+Nodes:
+  ChildNodes:
+    Node0:
+      DependencyIndex: 0
+      LevelID: 16
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        CreateGroup:
+          Variable: false
+        Group:
+          String: ""
+        OptimizeOnExport:
+          Variable: false
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: ENABLE_GLTF_LIGHTING
+        SortIndex:
+          Variable: 1
+        SpecifySpecConst:
+          Variable: true
+        Static:
+          Variable: true
+        Tooltip:
+          String: Enable Lighting.
+        UniqueID:
+          String: Enable Lighting
+      PositionX: 6120
+      PositionY: 5180
+      TemplateID: nodes_inputs_parameters_bool
+      Title1: Bool Parameter
+      Title2: Enable Lighting
+    Node1:
+      DependencyIndex: 1
+      LevelID: 18
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 3
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [0.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: true
+        EnableMin:
+          Variable: true
+        Group:
+          String: Metallic-Roughness
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: emissiveFactor
+        SortIndex:
+          Variable: 20
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Emissive Factor
+        Tooltip:
+          String: "The factors for the emissive color of the material.  1 means high intensity, 0 means no light being emitted by the material.  Multiplies the Emissive Texture if enabled."
+      PositionX: 2380
+      PositionY: 2829
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Emissive Factor
+    Node10:
+      DependencyIndex: 10
+      LevelID: 243
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 5
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: true
+        EnableMin:
+          Variable: true
+        Group:
+          String: Metallic-Roughness
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: roughnessFactor
+        SortIndex:
+          Variable: 51
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Roughness
+        Tooltip:
+          String: "1 means completely rough (diffuse), 0 means perfectly smooth and shiny.  Multiplies the roughness channel of the Material Params texture if enabled.  If your roughness is 1 and your metallic is 0, it's more efficient to disable Specular alltogether."
+      PositionX: 2381
+      PositionY: 4197
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Roughness
+    Node100:
+      CommentSizeX: 357
+      CommentSizeY: 786
+      DependencyIndex: 100
+      LevelID: 248
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Color:
+          ClassType1: COLOR
+          Variable: [0.4000000059604645, 0.699999988079071, 1.0, 0.10000000149011612]
+        Comment:
+          String: Material Parameters
+        NewComment:
+          ClassType1: TEXT
+          String: Material Parameters
+        NewToolTip:
+          ClassType1: TEXT
+          String: ""
+        Tooltip:
+          String: ""
+        Upgraded:
+          Variable: true
+      PositionX: 2253
+      PositionY: 4050
+      TemplateID: node_util_comment
+      Title1: ""
+    Node101:
+      CommentSizeX: 393
+      CommentSizeY: 492
+      DependencyIndex: 101
+      LevelID: 285
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Color:
+          ClassType1: COLOR
+          Variable: [0.4000000059604645, 0.699999988079071, 1.0, 0.10000000149011612]
+        Comment:
+          String: Group Comment
+        NewComment:
+          ClassType1: TEXT
+          String: Final Mix
+        NewToolTip:
+          ClassType1: TEXT
+          String: ""
+        Tooltip:
+          String: ""
+        Upgraded:
+          Variable: true
+      PositionX: 5320
+      PositionY: 5220
+      TemplateID: node_util_comment
+      Title1: ""
+    Node102:
+      DependencyIndex: 102
+      LevelID: 24
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        ArrowBottom:
+          Variable: false
+        ArrowLeft:
+          Variable: false
+        ArrowRight:
+          Variable: true
+        ArrowTop:
+          Variable: false
+        BackgroundColor:
+          ClassType1: COLOR
+          Variable: [0.8999999761581421, 0.8999999761581421, 0.30000001192092896, 1.0]
+        Text:
+          ClassType1: TEXT
+          String: "R -  Metallic,  G - Roughness,  B - Occlusion."
+        TextColor:
+          ClassType1: COLOR
+          Variable: [0.0, 0.0, 0.0, 1.0]
+        TextSize:
+          ItemIndex: 1
+          ItemList: "Medium : Large"
+      PositionX: 1890
+      PositionY: 4610
+      TemplateID: node_util_sticky
+      Title1: ""
+    Node103:
+      DependencyIndex: 103
+      LevelID: 38
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        ArrowBottom:
+          Variable: true
+        ArrowLeft:
+          Variable: false
+        ArrowRight:
+          Variable: false
+        ArrowTop:
+          Variable: false
+        BackgroundColor:
+          ClassType1: COLOR
+          Variable: [0.8999999761581421, 0.8999999761581421, 0.30000001192092896, 1.0]
+        Text:
+          ClassType1: TEXT
+          String: sRGB
+        TextColor:
+          ClassType1: COLOR
+          Variable: [0.0, 0.0, 0.0, 1.0]
+        TextSize:
+          ItemIndex: 1
+          ItemList: "Medium : Large"
+      PositionX: 5550
+      PositionY: 5280
+      TemplateID: node_util_sticky
+      Title1: ""
+    Node104:
+      DependencyIndex: 104
+      LevelID: 0
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        ArrowBottom:
+          Variable: true
+        ArrowLeft:
+          Variable: false
+        ArrowRight:
+          Variable: false
+        ArrowTop:
+          Variable: false
+        BackgroundColor:
+          ClassType1: COLOR
+          Variable: [0.8999999761581421, 0.8999999761581421, 0.30000001192092896, 1.0]
+        Text:
+          ClassType1: TEXT
+          String: |-
+            Base Color - sRGB
+            Normal - Linear
+            Emissive -sRGB
+            Metallic - Linear
+            Roughness - Linear
+            AO - Linear
+            Background - Linear
+            SheenOut - Linear
+            Clearcoat Base - Linear
+            Clearcoat Normal - Linear
+            Clearcoat Roughness - Linear
+        TextColor:
+          ClassType1: COLOR
+          Variable: [0.0, 0.0, 0.0, 1.0]
+        TextSize:
+          ItemIndex: 1
+          ItemList: "Medium : Large"
+      PositionX: 3900
+      PositionY: 5098
+      TemplateID: node_util_sticky
+      Title1: ""
+    Node105:
+      CommentSizeX: 425
+      CommentSizeY: 439
+      DependencyIndex: 105
+      LevelID: 1
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Color:
+          ClassType1: COLOR
+          Variable: [0.4000000059604645, 0.699999988079071, 1.0, 0.10000000149011612]
+        Comment:
+          String: Group Comment
+        NewComment:
+          ClassType1: TEXT
+          String: Main PBR
+        NewToolTip:
+          ClassType1: TEXT
+          String: ""
+        Tooltip:
+          String: ""
+        Upgraded:
+          Variable: true
+      PositionX: 4730
+      PositionY: 4980
+      TemplateID: node_util_comment
+      Title1: ""
+    Node106:
+      CommentSizeX: 212
+      CommentSizeY: 132
+      DependencyIndex: 106
+      LevelID: 23
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Color:
+          ClassType1: COLOR
+          Variable: [1.0, 1.0, 0.4000000059604645, 0.10000763088464737]
+        Comment:
+          String: Group Comment
+        NewComment:
+          ClassType1: TEXT
+          String: Enable Lighting
+        NewToolTip:
+          ClassType1: TEXT
+          String: ""
+        Tooltip:
+          String: ""
+        Upgraded:
+          Variable: true
+      PositionX: 6090
+      PositionY: 5150
+      TemplateID: node_util_comment
+      Title1: ""
+    Node107:
+      DependencyIndex: 107
+      LevelID: 12
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        ArrowBottom:
+          Variable: true
+        ArrowLeft:
+          Variable: true
+        ArrowRight:
+          Variable: true
+        ArrowTop:
+          Variable: true
+        BackgroundColor:
+          ClassType1: COLOR
+          Variable: [1.0, 0.5781033039093018, 0.0, 1.0]
+        Text:
+          ClassType1: TEXT
+          String: Version 1.3.0
+        TextColor:
+          ClassType1: COLOR
+          Variable: [0.0, 0.0, 0.0, 1.0]
+        TextSize:
+          ItemIndex: 0
+          ItemList: "Medium : Large"
+      PositionX: 6890
+      PositionY: 5240
+      TemplateID: node_util_sticky
+      Title1: ""
+    Node108:
+      CommentSizeX: 490
+      CommentSizeY: 2118
+      DependencyIndex: 108
+      LevelID: 34
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Color:
+          ClassType1: COLOR
+          Variable: [0.4000000059604645, 0.699999988079071, 1.0, 0.10000000149011612]
+        Comment:
+          String: Group Comment
+        NewComment:
+          ClassType1: TEXT
+          String: |-
+            Metallic-Roughness
+            Transmission
+            Sheen
+            Clearcoat
+            Texture Transform
+        NewToolTip:
+          ClassType1: TEXT
+          String: ""
+        Tooltip:
+          String: ""
+        Upgraded:
+          Variable: true
+      PositionX: 3670
+      PositionY: 5050
+      TemplateID: node_util_comment
+      Title1: ""
+    Node109:
+      CommentSizeX: 341
+      CommentSizeY: 1077
+      DependencyIndex: 109
+      LevelID: 22
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Color:
+          ClassType1: COLOR
+          Variable: [0.4000000059604645, 0.699999988079071, 1.0, 0.10000000149011612]
+        Comment:
+          String: Material Parameters
+        NewComment:
+          ClassType1: TEXT
+          String: Sheen
+        NewToolTip:
+          ClassType1: TEXT
+          String: ""
+        Tooltip:
+          String: ""
+        Upgraded:
+          Variable: true
+      PositionX: 2262
+      PositionY: 5770
+      TemplateID: node_util_comment
+      Title1: ""
+    Node11:
+      DependencyIndex: 11
+      LevelID: 89
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        CreateGroup:
+          Variable: true
+        Group:
+          String: Metallic-Roughness
+        OptimizeOnExport:
+          Variable: false
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: METALLIC_ROUGHNESS_TEX_SWIZZLE_RB
+        SortIndex:
+          Variable: 52
+        SpecifySpecConst:
+          Variable: true
+        Static:
+          Variable: true
+        Tooltip:
+          String: "If enabled, the Metallic-Roughness Red and Blue channel will be swapped"
+        UniqueID:
+          String: Metallic-Roughness Swizzle RB
+      PositionX: 2291
+      PositionY: 4293
+      TemplateID: nodes_inputs_parameters_bool
+      Title1: Bool Parameter
+      Title2: Metallic-Roughness Swizzle RB
+    Node110:
+      CommentSizeX: 333
+      CommentSizeY: 723
+      DependencyIndex: 110
+      LevelID: 21
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Color:
+          ClassType1: COLOR
+          Variable: [0.4000000059604645, 0.699999988079071, 1.0, 0.10000000149011612]
+        Comment:
+          String: Material Parameters
+        NewComment:
+          ClassType1: TEXT
+          String: Transmission
+        NewToolTip:
+          ClassType1: TEXT
+          String: ""
+        Tooltip:
+          String: ""
+        Upgraded:
+          Variable: true
+      PositionX: 2260
+      PositionY: 4930
+      TemplateID: node_util_comment
+      Title1: ""
+    Node111:
+      CommentSizeX: 333
+      CommentSizeY: 1377
+      DependencyIndex: 111
+      LevelID: 2
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Color:
+          ClassType1: COLOR
+          Variable: [0.4000000059604645, 0.699999988079071, 1.0, 0.10000000149011612]
+        Comment:
+          String: Material Parameters
+        NewComment:
+          ClassType1: TEXT
+          String: Clearcoat
+        NewToolTip:
+          ClassType1: TEXT
+          String: ""
+        Tooltip:
+          String: ""
+        Upgraded:
+          Variable: true
+      PositionX: 2280
+      PositionY: 7000
+      TemplateID: node_util_comment
+      Title1: ""
+    Node112:
+      CommentSizeX: 385
+      CommentSizeY: 362
+      DependencyIndex: 112
+      LevelID: 15
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Color:
+          ClassType1: COLOR
+          Variable: [0.4000000059604645, 0.699999988079071, 1.0, 0.10000000149011612]
+        Comment:
+          String: Material Parameters
+        NewComment:
+          ClassType1: TEXT
+          String: Clearcoat
+        NewToolTip:
+          ClassType1: TEXT
+          String: ""
+        Tooltip:
+          String: ""
+        Upgraded:
+          Variable: true
+      PositionX: 4760
+      PositionY: 5790
+      TemplateID: node_util_comment
+      Title1: ""
+    Node113:
+      CommentSizeX: 371
+      CommentSizeY: 387
+      DependencyIndex: 113
+      LevelID: 61
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Color:
+          ClassType1: COLOR
+          Variable: [0.4000000059604645, 0.699999988079071, 1.0, 0.10000000149011612]
+        Comment:
+          String: Group Comment
+        NewComment:
+          ClassType1: TEXT
+          String: Unlit
+        NewToolTip:
+          ClassType1: TEXT
+          String: ""
+        Tooltip:
+          String: ""
+        Upgraded:
+          Variable: true
+      PositionX: 2550
+      PositionY: 8600
+      TemplateID: node_util_comment
+      Title1: ""
+    Node114:
+      CommentSizeX: 309
+      CommentSizeY: 4555
+      DependencyIndex: 114
+      LevelID: 79
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Color:
+          ClassType1: COLOR
+          Variable: [0.4000000059604645, 0.699999988079071, 1.0, 0.10000000149011612]
+        Comment:
+          String: Group Comment
+        NewComment:
+          ClassType1: TEXT
+          String: Texture Transform
+        NewToolTip:
+          ClassType1: TEXT
+          String: ""
+        Tooltip:
+          String: ""
+        Upgraded:
+          Variable: true
+      PositionX: 2330
+      PositionY: 9440
+      TemplateID: node_util_comment
+      Title1: ""
+    Node12:
+      DependencyIndex: 12
+      LevelID: 6
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        CreateGroup:
+          Variable: true
+        Group:
+          String: Metallic-Roughness
+        OptimizeOnExport:
+          Variable: false
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: ENABLE_METALLIC_ROUGHNESS_TEX
+        SortIndex:
+          Variable: 54
+        SpecifySpecConst:
+          Variable: true
+        Static:
+          Variable: true
+        Tooltip:
+          String: "If enabled, it multiplies each channel with the Metallic, Roughness and Occlusion factor."
+        UniqueID:
+          String: Metallic-Roughness Texture
+      PositionX: 2315
+      PositionY: 4397
+      TemplateID: nodes_inputs_parameters_bool
+      Title1: Bool Parameter
+      Title2: Metallic-Roughness Texture
+    Node13:
+      DependencyIndex: 13
+      LevelID: 20
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 5
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: true
+        EnableMin:
+          Variable: true
+        Group:
+          String: Metallic-Roughness.Metallic-Roughness Texture
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: occlusionTextureStrength
+        SortIndex:
+          Variable: 53
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Occlusion Strength
+        Tooltip:
+          String: "1 means full indirect lighting, 0 means no indirect lighting. Multiplies the occlusion channel of the Material Params texture if enabled."
+      PositionX: 2354
+      PositionY: 4498
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Occlusion Strength
+    Node14:
+      DependencyIndex: 14
+      LevelID: 220
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        DepthMap:
+          Variable: false
+        ExtraOutputs:
+          Variable: false
+        Group:
+          String: Metallic-Roughness.Metallic-Roughness Texture
+        PixelSize:
+          IOType: 1
+          Variable: [0.0, 0.0]
+        ScriptName:
+          String: metallicRoughnessTexture
+        SortIndex:
+          Variable: 55
+        Texture:
+          ClassType2: TEXTURE_OBJECT_2D
+          IOType: 1
+        TextureSize:
+          IOType: 1
+          Variable: [0.0, 0.0]
+        Title:
+          String: Texture
+        Tooltip:
+          String: "Material params texture should have: R - metalness,  G - roughness,  B - ambient occlusion."
+      PositionX: 2290
+      PositionY: 4606
+      TemplateID: nodes_inputs_parameters_texture2d_object
+      Title1: Texture 2D Object Parameter
+      Title2: Texture
+    Node15:
+      DependencyIndex: 15
+      LevelID: 11
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Group:
+          String: Metallic-Roughness.Metallic-Roughness Texture
+        ItemCount:
+          Variable: 2
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: NODE_11_DROPLIST_ITEM
+        SortIndex:
+          Variable: 56
+        SpecifySpecConst:
+          Variable: false
+        Title:
+          String: Texture UV
+        Title0:
+          String: Mesh UV 0
+        Title1:
+          String: Mesh UV 1
+        Tooltip:
+          String: Specifies the UV set used.
+      PositionX: 2330
+      PositionY: 4720
+      TemplateID: nodes_inputs_parameters_droplist
+      Title1: DropList Parameter
+      Title2: Texture UV
+    Node16:
+      DependencyIndex: 16
+      LevelID: 410
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        CreateGroup:
+          Variable: true
+        Group:
+          String: ""
+        OptimizeOnExport:
+          Variable: false
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: ENABLE_TRANSMISSION
+        SortIndex:
+          Variable: 100
+        SpecifySpecConst:
+          Variable: true
+        Static:
+          Variable: true
+        Tooltip:
+          String: Enables transmission for simulating optical transparency on thin materials
+        UniqueID:
+          String: Transmission
+      PositionX: 2390
+      PositionY: 4980
+      TemplateID: nodes_inputs_parameters_bool
+      Title1: Bool Parameter
+      Title2: Transmission
+    Node17:
+      DependencyIndex: 17
+      LevelID: 360
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 5
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [0.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: true
+        EnableMin:
+          Variable: true
+        Group:
+          String: Transmission
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: transmissionFactor
+        SortIndex:
+          Variable: 102
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Factor
+        Tooltip:
+          String: "1 means fully transmitted through, 0 means none.  Multiplies the Transmission Texture if enabled."
+      PositionX: 2390
+      PositionY: 5090
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Factor
+    Node18:
+      DependencyIndex: 18
+      LevelID: 441
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        CreateGroup:
+          Variable: true
+        Group:
+          String: Transmission
+        OptimizeOnExport:
+          Variable: false
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: ENABLE_TRANSMISSION_TEX
+        SortIndex:
+          Variable: 103
+        SpecifySpecConst:
+          Variable: true
+        Static:
+          Variable: true
+        Tooltip:
+          String: Enables transmission texture.
+        UniqueID:
+          String: Transmission Texture
+      PositionX: 2360
+      PositionY: 5200
+      TemplateID: nodes_inputs_parameters_bool
+      Title1: Bool Parameter
+      Title2: Transmission Texture
+    Node19:
+      DependencyIndex: 19
+      LevelID: 440
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        DepthMap:
+          Variable: false
+        ExtraOutputs:
+          Variable: false
+        Group:
+          String: Transmission.Transmission Texture
+        PixelSize:
+          IOType: 1
+          Variable: [0.0, 0.0]
+        ScriptName:
+          String: transmissionTexture
+        SortIndex:
+          Variable: 104
+        Texture:
+          ClassType2: TEXTURE_OBJECT_2D
+          IOType: 1
+        TextureSize:
+          IOType: 1
+          Variable: [0.0, 0.0]
+        Title:
+          String: Texture
+        Tooltip:
+          String: Transmission value from R channel.
+      PositionX: 2320
+      PositionY: 5310
+      TemplateID: nodes_inputs_parameters_texture2d_object
+      Title1: Texture 2D Object Parameter
+      Title2: Texture
+    Node2:
+      DependencyIndex: 2
+      LevelID: 223
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        CreateGroup:
+          Variable: true
+        Group:
+          String: Metallic-Roughness
+        OptimizeOnExport:
+          Variable: false
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: ENABLE_EMISSIVE
+        SortIndex:
+          Variable: 21
+        SpecifySpecConst:
+          Variable: true
+        Static:
+          Variable: true
+        Tooltip:
+          String: Enables the emissive texture.
+        UniqueID:
+          String: Emissive Texture
+      PositionX: 2370
+      PositionY: 2929
+      TemplateID: nodes_inputs_parameters_bool
+      Title1: Bool Parameter
+      Title2: Emissive Texture
+    Node20:
+      DependencyIndex: 20
+      LevelID: 30
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Group:
+          String: Transmission.Transmission Texture
+        ItemCount:
+          Variable: 2
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: Tweak_N30
+        SortIndex:
+          Variable: 105
+        SpecifySpecConst:
+          Variable: false
+        Title:
+          String: Texture UV
+        Title0:
+          String: Mesh UV 0
+        Title1:
+          String: Mesh UV 1
+        Tooltip:
+          String: Specifies the UV set used.
+      PositionX: 2370
+      PositionY: 5420
+      TemplateID: nodes_inputs_parameters_droplist
+      Title1: DropList Parameter
+      Title2: Texture UV
+    Node21:
+      DependencyIndex: 21
+      LevelID: 210
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        DepthMap:
+          Variable: false
+        ExtraOutputs:
+          Variable: false
+        Group:
+          String: Transmission
+        PixelSize:
+          IOType: 1
+          Variable: [0.0, 0.0]
+        ScriptName:
+          String: screenTexture
+        SortIndex:
+          Variable: 101
+        Texture:
+          ClassType2: TEXTURE_OBJECT_2D
+          IOType: 1
+        TextureSize:
+          IOType: 1
+          Variable: [0.0, 0.0]
+        Title:
+          String: Screen Texture
+        Tooltip:
+          String: "Texture for sampling the background.\\n\\nWARNING:\\na Screen Texture *must* be assigned here for Transmission to work!"
+      PositionX: 2320
+      PositionY: 5530
+      TemplateID: nodes_inputs_parameters_texture2d_object
+      Title1: Texture 2D Object Parameter
+      Title2: Screen Texture
+    Node22:
+      DependencyIndex: 22
+      LevelID: 33
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        CreateGroup:
+          Variable: true
+        Group:
+          String: ""
+        OptimizeOnExport:
+          Variable: false
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: ENABLE_SHEEN
+        SortIndex:
+          Variable: 200
+        SpecifySpecConst:
+          Variable: true
+        Static:
+          Variable: true
+        Tooltip:
+          String: Enable Sheen on top of glTF to represent cloth and fabric materials.
+        UniqueID:
+          String: Sheen
+      PositionX: 2360
+      PositionY: 5810
+      TemplateID: nodes_inputs_parameters_bool
+      Title1: Bool Parameter
+      Title2: Sheen
+    Node23:
+      DependencyIndex: 23
+      LevelID: 45
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 1
+          ItemList: "rgba : rgb"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        Group:
+          String: Sheen
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: sheenColorFactor
+        SortIndex:
+          Variable: 201
+        Tooltip:
+          String: "The factors for the Sheen Color, multiplies the Sheen Color Texture if enabled."
+        UniqueID:
+          String: Color
+      PositionX: 2350
+      PositionY: 5920
+      TemplateID: nodes_inputs_parameters_color
+      Title1: Color Parameter
+      Title2: Color
+    Node24:
+      DependencyIndex: 24
+      LevelID: 41
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        CreateGroup:
+          Variable: true
+        Group:
+          String: Sheen
+        OptimizeOnExport:
+          Variable: false
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: ENABLE_SHEEN_COLOR_TEX
+        SortIndex:
+          Variable: 202
+        SpecifySpecConst:
+          Variable: true
+        Static:
+          Variable: true
+        Tooltip:
+          String: Enable Sheen Color Texture.
+        UniqueID:
+          String: Color Texture
+      PositionX: 2360
+      PositionY: 6040
+      TemplateID: nodes_inputs_parameters_bool
+      Title1: Bool Parameter
+      Title2: Color Texture
+    Node25:
+      DependencyIndex: 25
+      LevelID: 39
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        DepthMap:
+          Variable: false
+        ExtraOutputs:
+          Variable: false
+        Group:
+          String: Sheen.Color Texture
+        PixelSize:
+          IOType: 1
+          Variable: [0.0, 0.0]
+        ScriptName:
+          String: sheenColorTexture
+        SortIndex:
+          Variable: 203
+        Texture:
+          ClassType2: TEXTURE_OBJECT_2D
+          IOType: 1
+        TextureSize:
+          IOType: 1
+          Variable: [0.0, 0.0]
+        Title:
+          String: Texture
+        Tooltip:
+          String: Sheen Color Texture.
+      PositionX: 2290
+      PositionY: 6144
+      TemplateID: nodes_inputs_parameters_texture2d_object
+      Title1: Texture 2D Object Parameter
+      Title2: Texture
+    Node26:
+      DependencyIndex: 26
+      LevelID: 32
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Group:
+          String: Sheen.Color Texture
+        ItemCount:
+          Variable: 2
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: Tweak_N32
+        SortIndex:
+          Variable: 204
+        SpecifySpecConst:
+          Variable: false
+        Title:
+          String: Texture UV
+        Title0:
+          String: Mesh UV 0
+        Title1:
+          String: Mesh UV 1
+        Tooltip:
+          String: Specifies the UV set used.
+      PositionX: 2340
+      PositionY: 6260
+      TemplateID: nodes_inputs_parameters_droplist
+      Title1: DropList Parameter
+      Title2: Texture UV
+    Node27:
+      DependencyIndex: 27
+      LevelID: 27
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 5
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: true
+        EnableMin:
+          Variable: true
+        Group:
+          String: Sheen
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: sheenRoughnessFactor
+        SortIndex:
+          Variable: 205
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Roughness Factor
+        Tooltip:
+          String: |
+            0 means sharp specular, 1 means smooth specular.  Multiplies the Sheen Roughness texture if enabled.  The sheen roughness is independent from the material parameter roughness.
+
+      PositionX: 2350
+      PositionY: 6390
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Roughness Factor
+    Node28:
+      DependencyIndex: 28
+      LevelID: 42
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        CreateGroup:
+          Variable: true
+        Group:
+          String: Sheen
+        OptimizeOnExport:
+          Variable: false
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: ENABLE_SHEEN_ROUGHNESS_TEX
+        SortIndex:
+          Variable: 206
+        SpecifySpecConst:
+          Variable: true
+        Static:
+          Variable: true
+        Tooltip:
+          String: Enable Sheen Roughness Texture.
+        UniqueID:
+          String: Roughness Texture
+      PositionX: 2350
+      PositionY: 6494
+      TemplateID: nodes_inputs_parameters_bool
+      Title1: Bool Parameter
+      Title2: Roughness Texture
+    Node29:
+      DependencyIndex: 29
+      LevelID: 25
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        DepthMap:
+          Variable: false
+        ExtraOutputs:
+          Variable: false
+        Group:
+          String: Sheen.Roughness Texture
+        PixelSize:
+          IOType: 1
+          Variable: [0.0, 0.0]
+        ScriptName:
+          String: sheenRoughnessTexture
+        SortIndex:
+          Variable: 207
+        Texture:
+          ClassType2: TEXTURE_OBJECT_2D
+          IOType: 1
+        TextureSize:
+          IOType: 1
+          Variable: [0.0, 0.0]
+        Title:
+          String: Texture
+        Tooltip:
+          String: Sheen Roughness Texture value from alpha channel.
+      PositionX: 2300
+      PositionY: 6604
+      TemplateID: nodes_inputs_parameters_texture2d_object
+      Title1: Texture 2D Object Parameter
+      Title2: Texture
+    Node3:
+      DependencyIndex: 3
+      LevelID: 75
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        DepthMap:
+          Variable: false
+        ExtraOutputs:
+          Variable: false
+        Group:
+          String: Metallic-Roughness.Emissive Texture
+        PixelSize:
+          IOType: 1
+          Variable: [0.0, 0.0]
+        ScriptName:
+          String: emissiveTexture
+        SortIndex:
+          Variable: 22
+        Texture:
+          ClassType2: TEXTURE_OBJECT_2D
+          IOType: 1
+        TextureSize:
+          IOType: 1
+          Variable: [0.0, 0.0]
+        Title:
+          String: Texture
+        Tooltip:
+          String: Emissive Texture.
+      PositionX: 2299
+      PositionY: 3031
+      TemplateID: nodes_inputs_parameters_texture2d_object
+      Title1: Texture 2D Object Parameter
+      Title2: Texture
+    Node30:
+      DependencyIndex: 30
+      LevelID: 37
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Group:
+          String: Sheen.Roughness Texture
+        ItemCount:
+          Variable: 2
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: Tweak_N37
+        SortIndex:
+          Variable: 208
+        SpecifySpecConst:
+          Variable: false
+        Title:
+          String: Texture UV
+        Title0:
+          String: Mesh UV 0
+        Title1:
+          String: Mesh UV 1
+        Tooltip:
+          String: Specifies the UV set used.
+      PositionX: 2350
+      PositionY: 6720
+      TemplateID: nodes_inputs_parameters_droplist
+      Title1: DropList Parameter
+      Title2: Texture UV
+    Node31:
+      DependencyIndex: 31
+      LevelID: 411
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        CreateGroup:
+          Variable: true
+        Group:
+          String: ""
+        OptimizeOnExport:
+          Variable: false
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: ENABLE_CLEARCOAT
+        SortIndex:
+          Variable: 300
+        SpecifySpecConst:
+          Variable: true
+        Static:
+          Variable: true
+        Tooltip:
+          String: Enables a clear coating that layers on top of the base material.
+        UniqueID:
+          String: Clear Coat
+      PositionX: 2370
+      PositionY: 7060
+      TemplateID: nodes_inputs_parameters_bool
+      Title1: Bool Parameter
+      Title2: Clear Coat
+    Node32:
+      DependencyIndex: 32
+      LevelID: 198
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 5
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [0.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: true
+        EnableMin:
+          Variable: true
+        Group:
+          String: Clear Coat
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: clearcoatFactor
+        SortIndex:
+          Variable: 301
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Factor
+        Tooltip:
+          String: "1 means fully coated, 0 means no clear coat.  Multiplies the Clear Coat Texture if enabled."
+      PositionX: 2370
+      PositionY: 7180
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Factor
+    Node33:
+      DependencyIndex: 33
+      LevelID: 197
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        CreateGroup:
+          Variable: true
+        Group:
+          String: Clear Coat
+        OptimizeOnExport:
+          Variable: false
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: ENABLE_CLEARCOAT_TEX
+        SortIndex:
+          Variable: 302
+        SpecifySpecConst:
+          Variable: true
+        Static:
+          Variable: true
+        Tooltip:
+          String: Enables clear coat intensity texture.
+        UniqueID:
+          String: Clear Coat Texture
+      PositionX: 2360
+      PositionY: 7280
+      TemplateID: nodes_inputs_parameters_bool
+      Title1: Bool Parameter
+      Title2: Clear Coat Texture
+    Node34:
+      DependencyIndex: 34
+      LevelID: 252
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        DepthMap:
+          Variable: false
+        ExtraOutputs:
+          Variable: false
+        Group:
+          String: Clear Coat.Clear Coat Texture
+        PixelSize:
+          IOType: 1
+          Variable: [0.0, 0.0]
+        ScriptName:
+          String: clearcoatTexture
+        SortIndex:
+          Variable: 303
+        Texture:
+          ClassType2: TEXTURE_OBJECT_2D
+          IOType: 1
+        TextureSize:
+          IOType: 1
+          Variable: [0.0, 0.0]
+        Title:
+          String: Texture
+        Tooltip:
+          String: R channel controls the clear coat intensity.
+      PositionX: 2300
+      PositionY: 7380
+      TemplateID: nodes_inputs_parameters_texture2d_object
+      Title1: Texture 2D Object Parameter
+      Title2: Texture
+    Node35:
+      DependencyIndex: 35
+      LevelID: 44
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Group:
+          String: Clear Coat.Clear Coat Texture
+        ItemCount:
+          Variable: 2
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: Tweak_N44
+        SortIndex:
+          Variable: 304
+        SpecifySpecConst:
+          Variable: false
+        Title:
+          String: Texture UV
+        Title0:
+          String: Mesh UV 0
+        Title1:
+          String: Mesh UV 1
+        Tooltip:
+          String: Specifies the UV set used.
+      PositionX: 2350
+      PositionY: 7490
+      TemplateID: nodes_inputs_parameters_droplist
+      Title1: DropList Parameter
+      Title2: Texture UV
+    Node36:
+      DependencyIndex: 36
+      LevelID: 353
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 5
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [0.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: true
+        EnableMin:
+          Variable: true
+        Group:
+          String: Clear Coat
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: clearcoatRoughnessFactor
+        SortIndex:
+          Variable: 305
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Roughness Factor
+        Tooltip:
+          String: "1 means completely rough (diffuse), 0 means perfectly smooth and shiny.  Multiplies the Roughness texture if enabled."
+      PositionX: 2360
+      PositionY: 7610
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Roughness Factor
+    Node37:
+      DependencyIndex: 37
+      LevelID: 350
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        CreateGroup:
+          Variable: true
+        Group:
+          String: Clear Coat
+        OptimizeOnExport:
+          Variable: false
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: ENABLE_CLEARCOAT_ROUGHNESS_TEX
+        SortIndex:
+          Variable: 306
+        SpecifySpecConst:
+          Variable: true
+        Static:
+          Variable: true
+        Tooltip:
+          String: Enables clear coat roughness texture.
+        UniqueID:
+          String: Roughness Texture
+      PositionX: 2360
+      PositionY: 7720
+      TemplateID: nodes_inputs_parameters_bool
+      Title1: Bool Parameter
+      Title2: Roughness Texture
+    Node38:
+      DependencyIndex: 38
+      LevelID: 351
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        DepthMap:
+          Variable: false
+        ExtraOutputs:
+          Variable: false
+        Group:
+          String: Clear Coat.Roughness Texture
+        PixelSize:
+          IOType: 1
+          Variable: [0.0, 0.0]
+        ScriptName:
+          String: clearcoatRoughnessTexture
+        SortIndex:
+          Variable: 307
+        Texture:
+          ClassType2: TEXTURE_OBJECT_2D
+          IOType: 1
+        TextureSize:
+          IOType: 1
+          Variable: [0.0, 0.0]
+        Title:
+          String: Texture
+        Tooltip:
+          String: ""
+      PositionX: 2306
+      PositionY: 7828
+      TemplateID: nodes_inputs_parameters_texture2d_object
+      Title1: Texture 2D Object Parameter
+      Title2: Texture
+    Node39:
+      DependencyIndex: 39
+      LevelID: 60
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Group:
+          String: Clear Coat.Roughness Texture
+        ItemCount:
+          Variable: 2
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: Tweak_N60
+        SortIndex:
+          Variable: 308
+        SpecifySpecConst:
+          Variable: false
+        Title:
+          String: Texture UV
+        Title0:
+          String: Mesh UV 0
+        Title1:
+          String: Mesh UV 1
+        Tooltip:
+          String: Specifies the UV set used.
+      PositionX: 2360
+      PositionY: 7940
+      TemplateID: nodes_inputs_parameters_droplist
+      Title1: DropList Parameter
+      Title2: Texture UV
+    Node4:
+      DependencyIndex: 4
+      LevelID: 10
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Group:
+          String: Metallic-Roughness.Emissive Texture
+        ItemCount:
+          Variable: 2
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: NODE_10_DROPLIST_ITEM
+        SortIndex:
+          Variable: 23
+        SpecifySpecConst:
+          Variable: false
+        Title:
+          String: Texture UV
+        Title0:
+          String: Mesh UV 0
+        Title1:
+          String: Mesh UV 1
+        Tooltip:
+          String: Specifies the UV set used.
+      PositionX: 2350
+      PositionY: 3150
+      TemplateID: nodes_inputs_parameters_droplist
+      Title1: DropList Parameter
+      Title2: Texture UV
+    Node40:
+      DependencyIndex: 40
+      LevelID: 389
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        CreateGroup:
+          Variable: true
+        Group:
+          String: Clear Coat
+        OptimizeOnExport:
+          Variable: false
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: ENABLE_CLEARCOAT_NORMAL_TEX
+        SortIndex:
+          Variable: 309
+        SpecifySpecConst:
+          Variable: true
+        Static:
+          Variable: true
+        Tooltip:
+          String: Enables the clear coat normal map texture.
+        UniqueID:
+          String: Normal
+      PositionX: 2380
+      PositionY: 8050
+      TemplateID: nodes_inputs_parameters_bool
+      Title1: Bool Parameter
+      Title2: Normal
+    Node41:
+      DependencyIndex: 41
+      LevelID: 390
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        DepthMap:
+          Variable: false
+        ExtraOutputs:
+          Variable: false
+        Group:
+          String: Clear Coat.Normal
+        PixelSize:
+          IOType: 1
+          Variable: [0.0, 0.0]
+        ScriptName:
+          String: clearcoatNormalTexture
+        SortIndex:
+          Variable: 310
+        Texture:
+          ClassType2: TEXTURE_OBJECT_2D
+          IOType: 1
+        TextureSize:
+          IOType: 1
+          Variable: [0.0, 0.0]
+        Title:
+          String: Texture
+        Tooltip:
+          String: ""
+      PositionX: 2310
+      PositionY: 8150
+      TemplateID: nodes_inputs_parameters_texture2d_object
+      Title1: Texture 2D Object Parameter
+      Title2: Texture
+    Node42:
+      DependencyIndex: 42
+      LevelID: 47
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Group:
+          String: Clear Coat.Normal
+        ItemCount:
+          Variable: 2
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: Tweak_N47
+        SortIndex:
+          Variable: 311
+        SpecifySpecConst:
+          Variable: false
+        Title:
+          String: Texture UV
+        Title0:
+          String: Mesh UV 0
+        Title1:
+          String: Mesh UV 1
+        Tooltip:
+          String: Specifies the UV set used.
+      PositionX: 2360
+      PositionY: 8250
+      TemplateID: nodes_inputs_parameters_droplist
+      Title1: DropList Parameter
+      Title2: Texture UV
+    Node43:
+      DependencyIndex: 43
+      LevelID: 40
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        CreateGroup:
+          Variable: false
+        Group:
+          String: ""
+        OptimizeOnExport:
+          Variable: false
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: ENABLE_VERTEX_COLOR_BASE
+        SortIndex:
+          Variable: 0
+        SpecifySpecConst:
+          Variable: true
+        Static:
+          Variable: true
+        Tooltip:
+          String: "When enabled, vertex color acts as an linear multiplier to Albedo."
+        UniqueID:
+          String: Enable Vertex Color
+      PositionX: 2140
+      PositionY: 8610
+      TemplateID: nodes_inputs_parameters_bool
+      Title1: Bool Parameter
+      Title2: Enable Vertex Color
+    Node44:
+      DependencyIndex: 44
+      LevelID: 121
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        CreateGroup:
+          Variable: true
+        Group:
+          String: Metallic-Roughness
+        OptimizeOnExport:
+          Variable: false
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: ENABLE_BASE_TEX
+        SortIndex:
+          Variable: 2
+        SpecifySpecConst:
+          Variable: true
+        Static:
+          Variable: true
+        Tooltip:
+          String: "Most materials use a base texture (albedo), but disabling it means the base texture will be considered white, and 'Base Color' will solely control the color."
+        UniqueID:
+          String: Base Texture
+      PositionX: 2160
+      PositionY: 8730
+      TemplateID: nodes_inputs_parameters_bool
+      Title1: Bool Parameter
+      Title2: Base Texture
+    Node45:
+      DependencyIndex: 45
+      LevelID: 28
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        DepthMap:
+          Variable: false
+        ExtraOutputs:
+          Variable: false
+        Group:
+          String: Metallic-Roughness.Base Texture
+        PixelSize:
+          IOType: 1
+          Variable: [0.0, 0.0]
+        ScriptName:
+          String: baseColorTexture
+        SortIndex:
+          Variable: 3
+        Texture:
+          ClassType2: TEXTURE_OBJECT_2D
+          IOType: 1
+        TextureSize:
+          IOType: 1
+          Variable: [0.0, 0.0]
+        Title:
+          String: Texture
+        Tooltip:
+          String: Base Color Texture.
+      PositionX: 2090
+      PositionY: 8840
+      TemplateID: nodes_inputs_parameters_texture2d_object
+      Title1: Texture 2D Object Parameter
+      Title2: Texture
+    Node46:
+      DependencyIndex: 46
+      LevelID: 7
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Group:
+          String: Metallic-Roughness.Base Texture
+        ItemCount:
+          Variable: 2
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: NODE_7_DROPLIST_ITEM
+        SortIndex:
+          Variable: 4
+        SpecifySpecConst:
+          Variable: false
+        Title:
+          String: Texture UV
+        Title0:
+          String: Mesh UV 0
+        Title1:
+          String: Mesh UV 1
+        Tooltip:
+          String: Specifies the UV set used.
+      PositionX: 2137
+      PositionY: 8943
+      TemplateID: nodes_inputs_parameters_droplist
+      Title1: DropList Parameter
+      Title2: Texture UV
+    Node47:
+      DependencyIndex: 47
+      LevelID: 5
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 0
+          ItemList: "rgba : rgb"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        Group:
+          String: Metallic-Roughness
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: baseColorFactor
+        SortIndex:
+          Variable: 1
+        Tooltip:
+          String: |
+            Specifies the base color (albedo) of the material if the 'Base Texture' is disabled.  Multiplied with the 'Base Texture' otherwise.
+
+        UniqueID:
+          String: Base Color
+      PositionX: 2160
+      PositionY: 9055
+      TemplateID: nodes_inputs_parameters_color
+      Title1: Color Parameter
+      Title2: Base Color
+    Node48:
+      DependencyIndex: 48
+      LevelID: 48
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        CreateGroup:
+          Variable: true
+        Group:
+          String: ""
+        OptimizeOnExport:
+          Variable: false
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: ENABLE_TEXTURE_TRANSFORM
+        SortIndex:
+          Variable: 900
+        SpecifySpecConst:
+          Variable: true
+        Static:
+          Variable: true
+        Tooltip:
+          String: Enable Texture Transform.
+        UniqueID:
+          String: Texture Transform
+      PositionX: 2421
+      PositionY: 9489
+      TemplateID: nodes_inputs_parameters_bool
+      Title1: Bool Parameter
+      Title2: Texture Transform
+    Node49:
+      DependencyIndex: 49
+      LevelID: 88
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        CreateGroup:
+          Variable: true
+        Group:
+          String: Texture Transform
+        OptimizeOnExport:
+          Variable: false
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: ENABLE_BASE_TEXTURE_TRANSFORM
+        SortIndex:
+          Variable: 910
+        SpecifySpecConst:
+          Variable: true
+        Static:
+          Variable: true
+        Tooltip:
+          String: Enable Base Texture Transform.
+        UniqueID:
+          String: Base Texture
+      PositionX: 2431
+      PositionY: 9639
+      TemplateID: nodes_inputs_parameters_bool
+      Title1: Bool Parameter
+      Title2: Base Texture
+    Node5:
+      DependencyIndex: 5
+      LevelID: 354
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        CreateGroup:
+          Variable: true
+        Group:
+          String: Metallic-Roughness
+        OptimizeOnExport:
+          Variable: false
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: ENABLE_NORMALMAP
+        SortIndex:
+          Variable: 30
+        SpecifySpecConst:
+          Variable: true
+        Static:
+          Variable: true
+        Tooltip:
+          String: "Enables the normal map texture and normal mapping. When this is disabled, the per pixel normal is solely determined by the interpolated vertex normals."
+        UniqueID:
+          String: Normal Map
+      PositionX: 2360
+      PositionY: 3430
+      TemplateID: nodes_inputs_parameters_bool
+      Title1: Bool Parameter
+      Title2: Normal Map
+    Node50:
+      DependencyIndex: 50
+      LevelID: 46
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 4
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: false
+        EnableMin:
+          Variable: false
+        Group:
+          String: Texture Transform.Base Texture
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: baseColorTexture_offset
+        SortIndex:
+          Variable: 910
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Offset
+        Tooltip:
+          String: Base Texture offset transform.
+      PositionX: 2431
+      PositionY: 9739
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Offset
+    Node51:
+      DependencyIndex: 51
+      LevelID: 49
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 4
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: false
+        EnableMin:
+          Variable: false
+        Group:
+          String: Texture Transform.Base Texture
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: baseColorTexture_scale
+        SortIndex:
+          Variable: 911
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Scale
+        Tooltip:
+          String: Base Texture size transform.
+      PositionX: 2433
+      PositionY: 9828
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Scale
+    Node52:
+      DependencyIndex: 52
+      LevelID: 50
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 5
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: false
+        EnableMin:
+          Variable: false
+        Group:
+          String: Texture Transform.Base Texture
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: baseColorTexture_rotation
+        SortIndex:
+          Variable: 912
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Rotation
+        Tooltip:
+          String: "Base Texture rotation transform, values are in degrees."
+      PositionX: 2431
+      PositionY: 9919
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Rotation
+    Node53:
+      DependencyIndex: 53
+      LevelID: 35
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        BaseColor:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0]
+        BaseColorFactor:
+          ClassType1: COLOR
+          Connection0:
+            NodeLevelID: 5
+            PortID: Output
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        BaseColorTextureCoord:
+          Connection0:
+            NodeLevelID: 7
+            PortID: Output
+          Variable: 0.0
+        BaseTexture:
+          ClassType2: TEXTURE_OBJECT_2D
+          Connection0:
+            NodeLevelID: 28
+            PortID: Texture
+        BaseTextureOffset:
+          Connection0:
+            NodeLevelID: 46
+            PortID: Output
+          Variable: [0.0, 0.0]
+        BaseTextureRotation:
+          Connection0:
+            NodeLevelID: 50
+            PortID: Output
+          Variable: 0.0
+        BaseTextureScale:
+          Connection0:
+            NodeLevelID: 49
+            PortID: Output
+          Variable: [0.0, 0.0]
+        BaseTextureTransform:
+          Connection0:
+            NodeLevelID: 88
+            PortID: Output
+          Variable: 0.0
+        Code:
+          ClassType1: TEXT
+          String: |-
+            input_bool EnableVertexColor;
+            input_bool EnableBaseTexture;
+            input_texture_2d BaseTexture;
+            input_int BaseColorTextureCoord;
+            input_color4 BaseColorFactor;
+            
+            input_bool EnableTextureTransform;
+            input_bool BaseTextureTransform;
+            input_vec2 BaseTextureOffset;
+            input_vec2 BaseTextureScale;
+            input_float BaseTextureRotation;
+            
+            output_vec3 BaseColor;
+            output_float Opacity;
+            output_vec4 UnlitColor;
+            
+            vec2 uvTransform(vec2 uvIn, vec2 offset, vec2 scale, float rotation) {
+                mat3 translationM =  mat3(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, offset.x, offset.y, 1.0);
+                mat3 rotationM = mat3(   cos(rotation),  sin(rotation),  0.0,
+                                        -sin(rotation), cos(rotation),  0.0,
+                                        0.0,            0.0,            1.0);
+                mat3 scaleM = mat3(scale.x, 0.0, 0.0, 0.0, scale.y, 0.0, 0.0, 0.0, 1.0);
+                mat3 matrix = translationM * rotationM * scaleM;
+                return (matrix * vec3(uvIn, 1.0)).xy;
+            }
+            
+            vec2 getUV(int pickUV){
+                vec2 uv = system.getSurfaceUVCoord0();
+                if (pickUV == 0) uv = system.getSurfaceUVCoord0();
+                if (pickUV == 1) uv = system.getSurfaceUVCoord1();
+                return uv;
+            }
+            
+            void main()
+            {    
+            
+                vec4 col = BaseColorFactor;
+                if (EnableBaseTexture) {
+                    vec2 baseUV = getUV(BaseColorTextureCoord);
+                    if (EnableTextureTransform && BaseTextureTransform) {
+                        baseUV = uvTransform(baseUV, BaseTextureOffset, BaseTextureScale, BaseTextureRotation);
+                    }
+                    col *= system.srgbToLinear(BaseTexture.sample(baseUV));
+                }
+                if (EnableVertexColor) {
+                    col *= system.getSurfaceColor();
+                }
+                BaseColor = col.rgb;    //linear
+                Opacity = col.a;        //linear
+            	UnlitColor = system.linearToSrgb(col);
+            }
+        CustomCodeNodeAsset:
+          ClassType1: REFUID
+          String: ""
+        Description:
+          ClassType1: TEXT
+          String: Process material parameters for unlit shading.
+        EnableBaseTexture:
+          Connection0:
+            NodeLevelID: 121
+            PortID: Output
+          Variable: 0.0
+        EnableTextureTransform:
+          Connection0:
+            NodeLevelID: 48
+            PortID: Output
+          Variable: 0.0
+        EnableVertexColor:
+          Connection0:
+            NodeLevelID: 40
+            PortID: Output
+          Variable: 0.0
+        Examples:
+          ItemIndex: 0
+          ItemList: "Custom : Input/Output/Global Types : Extra Functions : Procedural Execution : Lighting Loop : System Built-In Values/Functions"
+        ID:
+          Variable: 35
+        Locked:
+          Variable: false
+        Opacity:
+          IOType: 1
+          Variable: 0.0
+        Stage:
+          ItemIndex: 1
+          ItemList: "Vertex : Pixel"
+        Title:
+          String: Unlit
+        UnlitColor:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        UseExternalFile:
+          Variable: false
+        ngs_Height:
+          Variable: 400
+        ngs_Version:
+          String: 0.1.0
+      PositionX: 2640
+      PositionY: 8650
+      TemplateID: node_util_custom
+      TemplateVersionMinor: 1
+      Title1: Unlit
+    Node54:
+      DependencyIndex: 54
+      LevelID: 87
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        CreateGroup:
+          Variable: true
+        Group:
+          String: Texture Transform
+        OptimizeOnExport:
+          Variable: false
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: ENABLE_EMISSIVE_TEXTURE_TRANSFORM
+        SortIndex:
+          Variable: 920
+        SpecifySpecConst:
+          Variable: true
+        Static:
+          Variable: true
+        Tooltip:
+          String: Enable Emissive Texture Transform.
+        UniqueID:
+          String: Emissive Texture
+      PositionX: 2421
+      PositionY: 10059
+      TemplateID: nodes_inputs_parameters_bool
+      Title1: Bool Parameter
+      Title2: Emissive Texture
+    Node55:
+      DependencyIndex: 55
+      LevelID: 54
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 4
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: false
+        EnableMin:
+          Variable: false
+        Group:
+          String: Texture Transform.Emissive Texture
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: emissiveTexture_offset
+        SortIndex:
+          Variable: 920
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Offset
+        Tooltip:
+          String: Emissive Texture offset transform.
+      PositionX: 2431
+      PositionY: 10169
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Offset
+    Node56:
+      DependencyIndex: 56
+      LevelID: 55
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 4
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: false
+        EnableMin:
+          Variable: false
+        Group:
+          String: Texture Transform.Emissive Texture
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: emissiveTexture_scale
+        SortIndex:
+          Variable: 921
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Scale
+        Tooltip:
+          String: Emissive Texture scale transform.
+      PositionX: 2431
+      PositionY: 10269
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Scale
+    Node57:
+      DependencyIndex: 57
+      LevelID: 56
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 5
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: false
+        EnableMin:
+          Variable: false
+        Group:
+          String: Texture Transform.Emissive Texture
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: emissiveTexture_rotation
+        SortIndex:
+          Variable: 922
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Rotation
+        Tooltip:
+          String: "Emissive Texture rotation transform, values are in degrees."
+      PositionX: 2431
+      PositionY: 10359
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Rotation
+    Node58:
+      DependencyIndex: 58
+      LevelID: 86
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        CreateGroup:
+          Variable: true
+        Group:
+          String: Texture Transform
+        OptimizeOnExport:
+          Variable: false
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: ENABLE_NORMAL_TEXTURE_TRANSFORM
+        SortIndex:
+          Variable: 930
+        SpecifySpecConst:
+          Variable: true
+        Static:
+          Variable: true
+        Tooltip:
+          String: Enable Normal Texture Transform.
+        UniqueID:
+          String: Normal Texture
+      PositionX: 2431
+      PositionY: 10499
+      TemplateID: nodes_inputs_parameters_bool
+      Title1: Bool Parameter
+      Title2: Normal Texture
+    Node59:
+      DependencyIndex: 59
+      LevelID: 51
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 4
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: false
+        EnableMin:
+          Variable: false
+        Group:
+          String: Texture Transform.Normal Texture
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: normalTexture_offset
+        SortIndex:
+          Variable: 930
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Offset
+        Tooltip:
+          String: Normal Texture offset transform.
+      PositionX: 2431
+      PositionY: 10599
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Offset
+    Node6:
+      DependencyIndex: 6
+      LevelID: 9
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 5
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: true
+        EnableMin:
+          Variable: true
+        Group:
+          String: Metallic-Roughness.Normal Map
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: normalTextureScale
+        SortIndex:
+          Variable: 31
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Scale
+        Tooltip:
+          String: "This parameter applied to each normal vector of the 'Normal Map'."
+      PositionX: 2360
+      PositionY: 3550
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Scale
+    Node60:
+      DependencyIndex: 60
+      LevelID: 52
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 4
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: false
+        EnableMin:
+          Variable: false
+        Group:
+          String: Texture Transform.Normal Texture
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: normalTexture_scale
+        SortIndex:
+          Variable: 931
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Scale
+        Tooltip:
+          String: Normal Texture scale transform.
+      PositionX: 2431
+      PositionY: 10689
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Scale
+    Node61:
+      DependencyIndex: 61
+      LevelID: 53
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 5
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: false
+        EnableMin:
+          Variable: false
+        Group:
+          String: Texture Transform.Normal Texture
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: normalTexture_rotation
+        SortIndex:
+          Variable: 932
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Rotation
+        Tooltip:
+          String: "Normal Texture rotation transform, values are in degrees."
+      PositionX: 2431
+      PositionY: 10779
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Rotation
+    Node62:
+      DependencyIndex: 62
+      LevelID: 85
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        CreateGroup:
+          Variable: true
+        Group:
+          String: Texture Transform
+        OptimizeOnExport:
+          Variable: false
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: ENABLE_METALLIC_ROUGHNESS_TEXTURE_TRANSFORM
+        SortIndex:
+          Variable: 940
+        SpecifySpecConst:
+          Variable: true
+        Static:
+          Variable: true
+        Tooltip:
+          String: Enable Metallic Roughness Texture Transform.
+        UniqueID:
+          String: Metallic Roughness Texture
+      PositionX: 2371
+      PositionY: 10919
+      TemplateID: nodes_inputs_parameters_bool
+      Title1: Bool Parameter
+      Title2: Metallic Roughness Texture
+    Node63:
+      DependencyIndex: 63
+      LevelID: 57
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 4
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: false
+        EnableMin:
+          Variable: false
+        Group:
+          String: Texture Transform.Metallic Roughness Texture
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: metallicRoughnessTexture_offset
+        SortIndex:
+          Variable: 940
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Offset
+        Tooltip:
+          String: Metallic Roughness Texture offset transform.
+      PositionX: 2431
+      PositionY: 11019
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Offset
+    Node64:
+      DependencyIndex: 64
+      LevelID: 58
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 4
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: false
+        EnableMin:
+          Variable: false
+        Group:
+          String: Texture Transform.Metallic Roughness Texture
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: metallicRoughnessTexture_scale
+        SortIndex:
+          Variable: 941
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Scale
+        Tooltip:
+          String: Metallic Roughness Texture scale transform.
+      PositionX: 2431
+      PositionY: 11109
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Scale
+    Node65:
+      DependencyIndex: 65
+      LevelID: 59
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 5
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: false
+        EnableMin:
+          Variable: false
+        Group:
+          String: Texture Transform.Metallic Roughness Texture
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: metallicRoughnessTexture_rotation
+        SortIndex:
+          Variable: 942
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Rotation
+        Tooltip:
+          String: "Metallic Roughness Texture rotation transform, values are in degrees."
+      PositionX: 2431
+      PositionY: 11199
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Rotation
+    Node66:
+      DependencyIndex: 66
+      LevelID: 84
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        CreateGroup:
+          Variable: true
+        Group:
+          String: Texture Transform
+        OptimizeOnExport:
+          Variable: false
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: ENABLE_TRANSMISSION_TEXTURE_TRANSFORM
+        SortIndex:
+          Variable: 950
+        SpecifySpecConst:
+          Variable: true
+        Static:
+          Variable: true
+        Tooltip:
+          String: Enable Transmission Texture Transform.
+        UniqueID:
+          String: Transmission Texture
+      PositionX: 2401
+      PositionY: 11339
+      TemplateID: nodes_inputs_parameters_bool
+      Title1: Bool Parameter
+      Title2: Transmission Texture
+    Node67:
+      DependencyIndex: 67
+      LevelID: 19
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 4
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: false
+        EnableMin:
+          Variable: false
+        Group:
+          String: Texture Transform.Transmission Texture
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: transmissionTexture_offset
+        SortIndex:
+          Variable: 950
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Offset
+        Tooltip:
+          String: Transmission Texture offset transform.
+      PositionX: 2431
+      PositionY: 11439
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Offset
+    Node68:
+      DependencyIndex: 68
+      LevelID: 26
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 4
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: false
+        EnableMin:
+          Variable: false
+        Group:
+          String: Texture Transform.Transmission Texture
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: transmissionTexture_scale
+        SortIndex:
+          Variable: 951
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Scale
+        Tooltip:
+          String: Transmission Texture scale transform.
+      PositionX: 2431
+      PositionY: 11539
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Scale
+    Node69:
+      DependencyIndex: 69
+      LevelID: 29
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 5
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: false
+        EnableMin:
+          Variable: false
+        Group:
+          String: Texture Transform.Transmission Texture
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: transmissionTexture_rotation
+        SortIndex:
+          Variable: 952
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Rotation
+        Tooltip:
+          String: "Transmission Texture rotation transform, values are in degrees."
+      PositionX: 2431
+      PositionY: 11629
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Rotation
+    Node7:
+      DependencyIndex: 7
+      LevelID: 180
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        DepthMap:
+          Variable: false
+        ExtraOutputs:
+          Variable: false
+        Group:
+          String: Metallic-Roughness.Normal Map
+        PixelSize:
+          IOType: 1
+          Variable: [0.0, 0.0]
+        ScriptName:
+          String: normalTexture
+        SortIndex:
+          Variable: 32
+        Texture:
+          ClassType2: TEXTURE_OBJECT_2D
+          IOType: 1
+        TextureSize:
+          IOType: 1
+          Variable: [0.0, 0.0]
+        Title:
+          String: Texture
+        Tooltip:
+          String: Enables metallic roughness normal map.
+      PositionX: 2310
+      PositionY: 3707
+      TemplateID: nodes_inputs_parameters_texture2d_object
+      Title1: Texture 2D Object Parameter
+      Title2: Texture
+    Node70:
+      DependencyIndex: 70
+      LevelID: 83
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        CreateGroup:
+          Variable: true
+        Group:
+          String: Texture Transform
+        OptimizeOnExport:
+          Variable: false
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: ENABLE_SHEEN_COLOR_TEXTURE_TRANSFORM
+        SortIndex:
+          Variable: 960
+        SpecifySpecConst:
+          Variable: true
+        Static:
+          Variable: true
+        Tooltip:
+          String: Enable Sheen Color Texture Transform.
+        UniqueID:
+          String: Sheen Color Texture
+      PositionX: 2411
+      PositionY: 11769
+      TemplateID: nodes_inputs_parameters_bool
+      Title1: Bool Parameter
+      Title2: Sheen Color Texture
+    Node71:
+      DependencyIndex: 71
+      LevelID: 63
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 4
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: false
+        EnableMin:
+          Variable: false
+        Group:
+          String: Texture Transform.Sheen Color Texture
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: sheenColorTexture_offset
+        SortIndex:
+          Variable: 960
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Offset
+        Tooltip:
+          String: Sheen Color Texture offset transform.
+      PositionX: 2431
+      PositionY: 11869
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Offset
+    Node72:
+      DependencyIndex: 72
+      LevelID: 64
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 4
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: false
+        EnableMin:
+          Variable: false
+        Group:
+          String: Texture Transform.Sheen Color Texture
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: sheenColorTexture_scale
+        SortIndex:
+          Variable: 961
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Scale
+        Tooltip:
+          String: Sheen Color Texture scale transform.
+      PositionX: 2431
+      PositionY: 11969
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Scale
+    Node73:
+      DependencyIndex: 73
+      LevelID: 65
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 5
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: false
+        EnableMin:
+          Variable: false
+        Group:
+          String: Texture Transform.Sheen Color Texture
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: sheenColorTexture_rotation
+        SortIndex:
+          Variable: 962
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Rotation
+        Tooltip:
+          String: "Sheen Color Texture rotation transform, values are in degrees."
+      PositionX: 2431
+      PositionY: 12059
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Rotation
+    Node74:
+      DependencyIndex: 74
+      LevelID: 82
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        CreateGroup:
+          Variable: true
+        Group:
+          String: Texture Transform
+        OptimizeOnExport:
+          Variable: false
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: ENABLE_SHEEN_ROUGHNESS_TEXTURE_TRANSFORM
+        SortIndex:
+          Variable: 970
+        SpecifySpecConst:
+          Variable: true
+        Static:
+          Variable: true
+        Tooltip:
+          String: Enable Sheen Roughness Texture Transform.
+        UniqueID:
+          String: Sheen Roughness Texture
+      PositionX: 2371
+      PositionY: 12199
+      TemplateID: nodes_inputs_parameters_bool
+      Title1: Bool Parameter
+      Title2: Sheen Roughness Texture
+    Node75:
+      DependencyIndex: 75
+      LevelID: 66
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 4
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: false
+        EnableMin:
+          Variable: false
+        Group:
+          String: Texture Transform.Sheen Roughness Texture
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: sheenRoughnessTexture_offset
+        SortIndex:
+          Variable: 970
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Offset
+        Tooltip:
+          String: Sheen Roughness Texture offset transform.
+      PositionX: 2431
+      PositionY: 12299
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Offset
+    Node76:
+      DependencyIndex: 76
+      LevelID: 67
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 4
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: false
+        EnableMin:
+          Variable: false
+        Group:
+          String: Texture Transform.Sheen Roughness Texture
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: sheenRoughnessTexture_scale
+        SortIndex:
+          Variable: 971
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Scale
+        Tooltip:
+          String: Sheen Roughness Texture scale transform.
+      PositionX: 2431
+      PositionY: 12399
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Scale
+    Node77:
+      DependencyIndex: 77
+      LevelID: 68
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 5
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: false
+        EnableMin:
+          Variable: false
+        Group:
+          String: Texture Transform.Sheen Roughness Texture
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: sheenRoughnessTexture_rotation
+        SortIndex:
+          Variable: 972
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Rotation
+        Tooltip:
+          String: "Sheen Roughness Texture rotation transform, values are in degrees."
+      PositionX: 2431
+      PositionY: 12489
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Rotation
+    Node78:
+      DependencyIndex: 78
+      LevelID: 81
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        CreateGroup:
+          Variable: true
+        Group:
+          String: Texture Transform
+        OptimizeOnExport:
+          Variable: false
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: ENABLE_CLEARCOAT_TEXTURE_TRANSFORM
+        SortIndex:
+          Variable: 980
+        SpecifySpecConst:
+          Variable: true
+        Static:
+          Variable: true
+        Tooltip:
+          String: Enable Clearcoat Texture Transform.
+        UniqueID:
+          String: Clearcoat Texture
+      PositionX: 2421
+      PositionY: 12639
+      TemplateID: nodes_inputs_parameters_bool
+      Title1: Bool Parameter
+      Title2: Clearcoat Texture
+    Node79:
+      DependencyIndex: 79
+      LevelID: 69
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 4
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: false
+        EnableMin:
+          Variable: false
+        Group:
+          String: Texture Transform.Clearcoat Texture
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: clearcoatTexture_offset
+        SortIndex:
+          Variable: 980
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Offset
+        Tooltip:
+          String: Clearcoat Texture offset transform.
+      PositionX: 2432
+      PositionY: 12739
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Offset
+    Node8:
+      DependencyIndex: 8
+      LevelID: 8
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Group:
+          String: Metallic-Roughness.Normal Map
+        ItemCount:
+          Variable: 2
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: NODE_8_DROPLIST_ITEM
+        SortIndex:
+          Variable: 33
+        SpecifySpecConst:
+          Variable: false
+        Title:
+          String: Texture UV
+        Title0:
+          String: Mesh UV 0
+        Title1:
+          String: Mesh UV 1
+        Tooltip:
+          String: Specifies the UV set used.
+      PositionX: 2360
+      PositionY: 3817
+      TemplateID: nodes_inputs_parameters_droplist
+      Title1: DropList Parameter
+      Title2: Texture UV
+    Node80:
+      DependencyIndex: 80
+      LevelID: 70
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 4
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: false
+        EnableMin:
+          Variable: false
+        Group:
+          String: Texture Transform.Clearcoat Texture
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: clearcoatTexture_scale
+        SortIndex:
+          Variable: 981
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Scale
+        Tooltip:
+          String: Clearcoat Texture scale transform.
+      PositionX: 2431
+      PositionY: 12839
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Scale
+    Node81:
+      DependencyIndex: 81
+      LevelID: 71
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 5
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: false
+        EnableMin:
+          Variable: false
+        Group:
+          String: Texture Transform.Clearcoat Texture
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: clearcoatTexture_rotation
+        SortIndex:
+          Variable: 982
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Rotation
+        Tooltip:
+          String: "Clearcoat Texture rotation transform, values are in degrees."
+      PositionX: 2431
+      PositionY: 12929
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Rotation
+    Node82:
+      DependencyIndex: 82
+      LevelID: 80
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        CreateGroup:
+          Variable: true
+        Group:
+          String: Texture Transform
+        OptimizeOnExport:
+          Variable: false
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: ENABLE_CLEARCOAT_NORMAL_TEXTURE_TRANSFORM
+        SortIndex:
+          Variable: 990
+        SpecifySpecConst:
+          Variable: true
+        Static:
+          Variable: true
+        Tooltip:
+          String: Enable Clearcoat Normal Texture Transform.
+        UniqueID:
+          String: Clearcoat Normal Texture
+      PositionX: 2381
+      PositionY: 13089
+      TemplateID: nodes_inputs_parameters_bool
+      Title1: Bool Parameter
+      Title2: Clearcoat Normal Texture
+    Node83:
+      DependencyIndex: 83
+      LevelID: 76
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 4
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: false
+        EnableMin:
+          Variable: false
+        Group:
+          String: Texture Transform.Clearcoat Normal Texture
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: clearcoatNormalTexture_offset
+        SortIndex:
+          Variable: 990
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Offset
+        Tooltip:
+          String: Clearcoat Normal Texture offset transform.
+      PositionX: 2431
+      PositionY: 13189
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Offset
+    Node84:
+      DependencyIndex: 84
+      LevelID: 77
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 4
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: false
+        EnableMin:
+          Variable: false
+        Group:
+          String: Texture Transform.Clearcoat Normal Texture
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: clearcoatNormalTexture_scale
+        SortIndex:
+          Variable: 991
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Scale
+        Tooltip:
+          String: Clearcoat Noraml Texture scale transform.
+      PositionX: 2431
+      PositionY: 13299
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Scale
+    Node85:
+      DependencyIndex: 85
+      LevelID: 78
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 5
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: false
+        EnableMin:
+          Variable: false
+        Group:
+          String: Texture Transform.Clearcoat Normal Texture
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: clearcoatNormalTexture_rotation
+        SortIndex:
+          Variable: 992
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Rotation
+        Tooltip:
+          String: "Clearcoat Normal Texture rotation transform, values are in degrees."
+      PositionX: 2431
+      PositionY: 13399
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Rotation
+    Node86:
+      DependencyIndex: 86
+      LevelID: 13
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        CreateGroup:
+          Variable: true
+        Group:
+          String: Texture Transform
+        OptimizeOnExport:
+          Variable: false
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: ENABLE_CLEARCOAT_ROUGHNESS_TEXTURE_TRANSFORM
+        SortIndex:
+          Variable: 1000
+        SpecifySpecConst:
+          Variable: true
+        Static:
+          Variable: true
+        Tooltip:
+          String: Enable Clearcoat Roughness Texture Transform.
+        UniqueID:
+          String: Clearcoat Roughness Texture
+      PositionX: 2361
+      PositionY: 13569
+      TemplateID: nodes_inputs_parameters_bool
+      Title1: Bool Parameter
+      Title2: Clearcoat Roughness Texture
+    Node87:
+      DependencyIndex: 87
+      LevelID: 72
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 4
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: false
+        EnableMin:
+          Variable: false
+        Group:
+          String: Texture Transform.Clearcoat Roughness Texture
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: clearcoatRoughnessTexture_offset
+        SortIndex:
+          Variable: 1000
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Offset
+        Tooltip:
+          String: Clearcoat Roughness Texture offset transform.
+      PositionX: 2431
+      PositionY: 13669
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Offset
+    Node88:
+      DependencyIndex: 88
+      LevelID: 73
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 4
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: false
+        EnableMin:
+          Variable: false
+        Group:
+          String: Texture Transform.Clearcoat Roughness Texture
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: clearcoatRoughnessTexture_scale
+        SortIndex:
+          Variable: 1001
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Scale
+        Tooltip:
+          String: Clearcoat Roughness Texture scale transform.
+      PositionX: 2431
+      PositionY: 13769
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Scale
+    Node89:
+      DependencyIndex: 89
+      LevelID: 74
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 5
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: false
+        EnableMin:
+          Variable: false
+        Group:
+          String: Texture Transform.Clearcoat Roughness Texture
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: clearcoatRoughnessTexture_rotation
+        SortIndex:
+          Variable: 1002
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Rotation
+        Tooltip:
+          String: "Clearcoat Roughness Texture rotation transform, values are in degrees."
+      PositionX: 2431
+      PositionY: 13859
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Rotation
+    Node9:
+      DependencyIndex: 9
+      LevelID: 242
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 5
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: true
+        EnableMin:
+          Variable: true
+        Group:
+          String: Metallic-Roughness
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: metallicFactor
+        SortIndex:
+          Variable: 50
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Metallic
+        Tooltip:
+          String: "1 means metal, 0 means non-metal (dielectric). Multiplies the metallic channel of the Material Params texture if enabled."
+      PositionX: 2380
+      PositionY: 4100
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Metallic
+    Node90:
+      DependencyIndex: 90
+      LevelID: 3
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Background:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0]
+        BaseColor:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0]
+        BaseColorIn:
+          Connection0:
+            NodeLevelID: 35
+            PortID: BaseColor
+          Variable: [0.0, 0.0, 0.0]
+        ClearcoatBase:
+          IOType: 1
+          Variable: 0.0
+        ClearcoatEnable:
+          Connection0:
+            NodeLevelID: 411
+            PortID: Output
+          Variable: 0.0
+        ClearcoatFactor:
+          Connection0:
+            NodeLevelID: 198
+            PortID: Output
+          Variable: 0.0
+        ClearcoatNormal:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0]
+        ClearcoatNormalMap:
+          ClassType2: TEXTURE_OBJECT_2D
+          Connection0:
+            NodeLevelID: 390
+            PortID: Texture
+        ClearcoatNormalMapCoord:
+          Connection0:
+            NodeLevelID: 47
+            PortID: Output
+          Variable: 0.0
+        ClearcoatNormalTextureOffset:
+          Connection0:
+            NodeLevelID: 76
+            PortID: Output
+          Variable: [0.0, 0.0]
+        ClearcoatNormalTextureRotation:
+          Connection0:
+            NodeLevelID: 78
+            PortID: Output
+          Variable: 0.0
+        ClearcoatNormalTextureScale:
+          Connection0:
+            NodeLevelID: 77
+            PortID: Output
+          Variable: [0.0, 0.0]
+        ClearcoatNormalTextureTransform:
+          Connection0:
+            NodeLevelID: 80
+            PortID: Output
+          Variable: 0.0
+        ClearcoatRoughness:
+          IOType: 1
+          Variable: 0.0
+        ClearcoatRoughnessFactor:
+          Connection0:
+            NodeLevelID: 353
+            PortID: Output
+          Variable: 0.0
+        ClearcoatRoughnessTexture:
+          ClassType2: TEXTURE_OBJECT_2D
+          Connection0:
+            NodeLevelID: 351
+            PortID: Texture
+        ClearcoatRoughnessTextureCoord:
+          Connection0:
+            NodeLevelID: 60
+            PortID: Output
+          Variable: 0.0
+        ClearcoatRoughnessTextureOffset:
+          Connection0:
+            NodeLevelID: 72
+            PortID: Output
+          Variable: [0.0, 0.0]
+        ClearcoatRoughnessTextureRotation:
+          Connection0:
+            NodeLevelID: 74
+            PortID: Output
+          Variable: 0.0
+        ClearcoatRoughnessTextureScale:
+          Connection0:
+            NodeLevelID: 73
+            PortID: Output
+          Variable: [0.0, 0.0]
+        ClearcoatRoughnessTextureTransform:
+          Connection0:
+            NodeLevelID: 13
+            PortID: Output
+          Variable: 0.0
+        ClearcoatTexture:
+          ClassType2: TEXTURE_OBJECT_2D
+          Connection0:
+            NodeLevelID: 252
+            PortID: Texture
+        ClearcoatTextureCoord:
+          Connection0:
+            NodeLevelID: 44
+            PortID: Output
+          Variable: 0.0
+        ClearcoatTextureOffset:
+          Connection0:
+            NodeLevelID: 69
+            PortID: Output
+          Variable: [0.0, 0.0]
+        ClearcoatTextureRotation:
+          Connection0:
+            NodeLevelID: 71
+            PortID: Output
+          Variable: 0.0
+        ClearcoatTextureScale:
+          Connection0:
+            NodeLevelID: 70
+            PortID: Output
+          Variable: [0.0, 0.0]
+        ClearcoatTextureTransform:
+          Connection0:
+            NodeLevelID: 81
+            PortID: Output
+          Variable: 0.0
+        Code:
+          ClassType1: TEXT
+          String: |
+            input_float DebugSheenEnvLightMult;
+            input_float DebugSheenPunctualLightMult;
+            
+            input_vec3 EmissiveColor;
+            input_bool EnableEmissiveTexture;
+            input_texture_2d EmissiveTexture;
+            input_int EmissiveTextureCoord;
+            
+            input_bool EnableNormalTexture;
+            input_float NormalScale;
+            input_texture_2d NormalTexture;
+            input_int NormalTextureCoord;
+            
+            input_float MetallicValue;
+            input_float RoughnessValue;
+            input_bool MetallicRoughnessTexSwizzleRB;
+            input_bool EnableMetallicRoughnessTexture;
+            input_float OcclusionStrength;
+            input_texture_2d MaterialParamsTexture;
+            input_int MaterialParamsTextureCoord;
+            
+            input_bool TransmissionEnable;
+            input_float TransmissionFactor;
+            input_bool EnableTransmissionTexture;
+            input_texture_2d TransmissionTexture;
+            input_int TransmissionTextureCoord;
+            input_texture_2d ScreenTexture;
+            
+            input_bool SheenEnable;
+            input_vec3 SheenColorFactor;
+            input_bool EnableSheenTexture;
+            input_texture_2d SheenColorTexture;
+            input_int SheenColorTextureCoord;
+            input_float SheenRoughnessFactor;
+            input_bool EnableSheenRoughnessTexture;
+            input_texture_2d SheenRoughnessTexture;
+            input_int SheenRoughnessTextureCoord;
+            
+            input_bool ClearcoatEnable;
+            input_float ClearcoatFactor;
+            input_bool EnableClearcoatTexture;
+            input_texture_2d ClearcoatTexture;
+            input_int ClearcoatTextureCoord;
+            input_float ClearcoatRoughnessFactor;
+            input_bool EnableClearCoatRoughnessTexture;
+            input_texture_2d ClearcoatRoughnessTexture;
+            input_int ClearcoatRoughnessTextureCoord;
+            input_bool EnableClearCoatNormalTexture;
+            input_texture_2d ClearcoatNormalMap;
+            input_int ClearcoatNormalMapCoord;
+            
+            input_vec3 BaseColorIn;
+            input_float OpacityIn;
+            
+            input_bool EnableTextureTransform;
+            
+            input_bool EmissiveTextureTransform;
+            input_vec2 EmissiveTextureOffset;
+            input_vec2 EmissiveTextureScale;
+            input_float EmissiveTextureRotation;
+            
+            input_bool NormalTextureTransform;
+            input_vec2 NormalTextureOffset;
+            input_vec2 NormalTextureScale;
+            input_float NormalTextureRotation;
+            
+            input_bool MaterialParamsTextureTransform;
+            input_vec2 MaterialParamsTextureOffset;
+            input_vec2 MaterialParamsTextureScale;
+            input_float MaterialParamsTextureRotation;
+            
+            input_bool TransmissionTextureTransform;
+            input_vec2 TransmissionTextureOffset;
+            input_vec2 TransmissionTextureScale;
+            input_float TransmissionTextureRotation;
+            
+            input_bool SheenColorTextureTransform;
+            input_vec2 SheenColorTextureOffset;
+            input_vec2 SheenColorTextureScale;
+            input_float SheenColorTextureRotation;
+            input_bool SheenRoughnessTextureTransform;
+            input_vec2 SheenRoughnessTextureOffset;
+            input_vec2 SheenRoughnessTextureScale;
+            input_float SheenRoughnessTextureRotation;
+            
+            input_bool ClearcoatTextureTransform;
+            input_vec2 ClearcoatTextureOffset;
+            input_vec2 ClearcoatTextureScale;
+            input_float ClearcoatTextureRotation;
+            input_bool ClearcoatNormalTextureTransform;
+            input_vec2 ClearcoatNormalTextureOffset;
+            input_vec2 ClearcoatNormalTextureScale;
+            input_float ClearcoatNormalTextureRotation;
+            input_bool ClearcoatRoughnessTextureTransform;
+            input_vec2 ClearcoatRoughnessTextureOffset;
+            input_vec2 ClearcoatRoughnessTextureScale;
+            input_float ClearcoatRoughnessTextureRotation;
+            
+            output_vec3 BaseColor;
+            output_float Opacity;
+            output_vec3 Normal;
+            output_vec3 Emissive;
+            output_float Metallic;
+            output_float Roughness;
+            output_vec4 Occlusion;
+            output_vec3 Background;
+            output_vec4 SheenOut;
+            output_float ClearcoatBase;
+            output_vec3 ClearcoatNormal;
+            output_float ClearcoatRoughness;
+            
+            // utils
+            float clampedDot(vec3 a, vec3 b) { return clamp(dot(a, b), 0.0, 1.0); }
+            float max3(vec3 v) { return max(max (v.x, v.y), v.z); }
+            
+            // texture transform
+            vec2 uvTransform(vec2 uvIn, vec2 offset, vec2 scale, float rotation);
+            vec2 getUV(int pickUV);
+            
+            // metallic-roughness
+            void addEmissiveTexture(inout vec3 emissiveColor);
+            void addNormalTexture(inout vec3 normal);
+            void addMaterialParamsTexture(inout float metallic, inout float roughness, inout vec4 occlusion);
+            
+            // Transmission
+            void addTransmission(inout vec3 baseColor, inout vec3 emissive, float metallic);
+            
+            // Sheen
+            float charlieV(float NdotV, float NdotL);
+            float charlieD(float roughness, float NdotH);
+            float albedoScale(vec3 sheenColor);
+            vec3 getSheenIBL(float NdotV, vec3 reflection, float sheenRoughness, vec3 sheenColor);
+            vec3 getSheenPunctual(vec3 sheenColor, vec3 N, vec3 V, float NdotV, float alphaG);
+            void addSheen(vec3 computedNormal, vec4 occlusion);
+            
+            // Clearcoat
+            void addClearcoat();
+            
+            //-----------------------------------------------------------------------
+            // Main
+            //-----------------------------------------------------------------------
+            void main()
+            {
+                BaseColor = BaseColorIn;
+                Opacity = OpacityIn;
+            
+                Emissive = EmissiveColor;
+                if (EnableEmissiveTexture) {
+                    addEmissiveTexture(Emissive);
+                }
+            
+                Normal = normalize(system.getSurfaceNormal());
+                if (EnableNormalTexture) {
+                    addNormalTexture(Normal);
+                }
+            
+                Metallic = MetallicValue;
+                Roughness = RoughnessValue;
+                Occlusion = vec4(vec3(1.0), 0.0);  //(vec3(AO), occlusion strength)
+                if (EnableMetallicRoughnessTexture) {
+                    addMaterialParamsTexture(Metallic, Roughness, Occlusion);
+                }
+            
+                // Transmission modifies base color and emission
+                if(TransmissionEnable) {
+                    addTransmission(BaseColor, Emissive, Metallic);
+                }
+            
+                // Output base color, opacity, and emission in sRGB to pass into PBR node
+                BaseColor = system.linearToSrgb(BaseColor);
+                Opacity = system.linearToSrgb(Opacity);
+                Emissive = system.linearToSrgb(Emissive);
+            
+                if (SheenEnable) {
+                    addSheen(Normal, Occlusion);
+                }
+            
+                if (ClearcoatEnable) {      
+                    addClearcoat();
+                }
+            }
+            
+            
+            //-----------------------------------------------------------------------
+            // Texture transform
+            //-----------------------------------------------------------------------
+            vec2 uvTransform(vec2 uvIn, vec2 offset, vec2 scale, float rotationAngle) 
+            {
+                float rotationRadians = radians(rotationAngle);
+                mat3 translationM =  mat3(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, offset.x, offset.y, 1.0);
+                mat3 rotationM = mat3(   cos(rotationRadians),  sin(rotationRadians),  0.0,
+                                        -sin(rotationRadians), cos(rotationRadians),  0.0,
+                                        0.0,            0.0,            1.0);
+                mat3 scaleM = mat3(scale.x, 0.0, 0.0, 0.0, scale.y, 0.0, 0.0, 0.0, 1.0);
+                mat3 matrix = translationM * rotationM * scaleM;
+                return (matrix * vec3(uvIn, 1.0)).xy;
+            }
+            
+            vec2 getUV(int pickUV)
+            {
+                vec2 uv = system.getSurfaceUVCoord0();
+                if (pickUV == 0) uv = system.getSurfaceUVCoord0();
+                if (pickUV == 1) uv = system.getSurfaceUVCoord1();
+                return uv;
+            }
+            
+            //-----------------------------------------------------------------------
+            // Emissive
+            //-----------------------------------------------------------------------
+            void addEmissiveTexture(inout vec3 emissiveColor) 
+            {
+                vec2 emissiveUV = getUV(EmissiveTextureCoord);
+                if (EnableTextureTransform && EmissiveTextureTransform) {
+                    emissiveUV = uvTransform(emissiveUV, EmissiveTextureOffset, EmissiveTextureScale, EmissiveTextureRotation);
+                }
+                emissiveColor = system.srgbToLinear(EmissiveTexture.sample(emissiveUV).rgb) * system.srgbToLinear(emissiveColor);
+            }
+            
+            
+            //-----------------------------------------------------------------------
+            // Normal
+            //-----------------------------------------------------------------------
+            void addNormalTexture(inout vec3 normal)
+            {
+                vec2 normalUV = getUV(NormalTextureCoord);
+                if (EnableTextureTransform && NormalTextureTransform) {
+                    normalUV = uvTransform(normalUV, NormalTextureOffset, NormalTextureScale, NormalTextureRotation);
+                }
+                vec3 normalTex = NormalTexture.sample(normalUV).rgb * (255.0 / 128.0) - 1.0; // maps RGB 128 to 0.
+                normalTex = mix(vec3(0.0, 0.0, 1.0), normalTex, NormalScale);
+                vec3 T = system.getSurfaceTangent();
+                vec3 B = system.getSurfaceBitangent();
+                mat3 TBN = mat3(T, B, normal);
+                normal = normalize(TBN * normalTex);
+            }
+            
+            //-----------------------------------------------------------------------
+            // Metallic-roughness-occlusion
+            //-----------------------------------------------------------------------
+            void addMaterialParamsTexture(inout float metallic, inout float roughness, inout vec4 occlusion)
+            {
+                vec2 materialParamsUV = getUV(MaterialParamsTextureCoord);
+                if (EnableTextureTransform && MaterialParamsTextureTransform) {
+                    materialParamsUV = uvTransform(materialParamsUV, MaterialParamsTextureOffset, MaterialParamsTextureScale, MaterialParamsTextureRotation);
+                }
+                vec3 materialParams = MaterialParamsTexture.sample(materialParamsUV).rgb;
+                if (MetallicRoughnessTexSwizzleRB) {
+                    materialParams.rgb = materialParams.bgr;
+                }    
+            
+                metallic *= materialParams.r;
+                roughness *= materialParams.g;
+            
+                // occlusion strength scales how much AO is applied
+                occlusion.a = OcclusionStrength;
+                occlusion.rgb = vec3(1.0 + occlusion.a * (materialParams.b - 1.0));
+            }
+            
+            //-----------------------------------------------------------------------
+            // Metallic-roughness-occlusion
+            //-----------------------------------------------------------------------
+            void addTransmission(inout vec3 baseColor, inout vec3 emissive, float metallic)
+            {
+                // output screen texture sample for use later in final mix
+                Background = system.srgbToLinear(ScreenTexture.sample(system.getScreenUVCoord()).rgb);
+            
+                float transmissionValue = 1.0;
+                if(EnableTransmissionTexture) { 
+                    vec2 transmissionUV = getUV(TransmissionTextureCoord);
+                    if (EnableTextureTransform && TransmissionTextureTransform) { 
+                        transmissionUV = uvTransform(transmissionUV, TransmissionTextureOffset, TransmissionTextureScale, TransmissionTextureRotation);
+                    }
+                    transmissionValue = TransmissionTexture.sample(transmissionUV).r;
+                }
+                transmissionValue *= TransmissionFactor;
+                
+                // attenuate base color
+                vec3 transmissionBaseColor = baseColor;
+                baseColor = mix(transmissionBaseColor, vec3(0.0), transmissionValue);
+                baseColor = mix(baseColor, transmissionBaseColor, metallic);
+                
+                // mix background into emissive
+                vec3 baseEmission = emissive;
+                emissive = mix(vec3(0.0), transmissionBaseColor.rgb, transmissionValue) * Background;
+                emissive = mix(emissive, vec3(0.0), metallic) + baseEmission;
+            }
+            
+            
+            //-----------------------------------------------------------------------
+            // Sheen
+            //-----------------------------------------------------------------------
+            float charlieV(float NdotV, float NdotL) 
+            {
+                return 1.0 / (4.0 * (NdotL + NdotV - NdotL * NdotV));
+            }
+            
+            float charlieD(float roughness, float NdotH)
+            {
+                float invR  = 1.0 / roughness;
+                float cos2h = NdotH * NdotH;
+                float sin2h = 1.0 - cos2h;
+                return (2.0 + invR) * pow(sin2h, invR * 0.5) / (2.0 * system.pi());
+            }
+            
+            vec3 getSheenIBL(float NdotV, vec3 reflection, float sheenRoughness, vec3 sheenColor)
+            {
+                // for sheen we start with the rougher mip
+                const float envMipMax = 5.0;
+                float lod = sheenRoughness * float(envMipMax - 1.0);
+                lod = system.remap(lod, 0.0, envMipMax, 3.0, envMipMax);
+            
+                // Avoid using a LUT and approximate the values analytically
+                float alphaG = sheenRoughness*sheenRoughness;
+                float a = sheenRoughness < 0.25 ? -339.2 * alphaG + 161.4 * sheenRoughness - 25.9 : -8.48 * alphaG + 14.3 * sheenRoughness - 9.95;
+                float b = sheenRoughness < 0.25 ? 44.0 * alphaG - 23.7 * sheenRoughness + 3.26 : 1.97 * alphaG - 3.27 * sheenRoughness + 0.72;
+                float DG = exp( a * NdotV + b ) + ( sheenRoughness < 0.25 ? 0.0 : 0.1 * ( sheenRoughness - 0.25 ) );
+                DG = clamp(DG * system.pi(), 0.0, 1.0);
+            
+            	vec3 sheenLight = system.sampleSpecularEnvironment(reflection, lod);
+            	// sheenLight *= DebugSheenEnvLightMult;  //TODO: remove this later
+            
+                return sheenLight * sheenColor * DG;
+            }
+            
+            float albedoScale(vec3 sheenColor) 
+            {
+                return 1.0 - max3(sheenColor) * 0.157;
+            }
+            
+            vec3 getSheenPunctual(vec3 sheenColor, vec3 N, vec3 V, float NdotV, float alphaG) 
+            {
+                vec3 sheenPunctual = vec3(0.0);
+                const float punctualLightMult = 3.14159;  //scales the light to match PBR
+            
+                if ( system.getDirectionalLightCount() > 0 ) {
+                    for ( int i = 0; i < system.getDirectionalLightCount(); i++ )
+                    {
+                        vec3 lightColor = system.getDirectionalLightColor(i);
+                        float lightIntensity = system.getDirectionalLightIntensity(i);
+                        lightColor *= lightIntensity;
+                        lightColor *= punctualLightMult;
+                        // lightColor *= DebugSheenPunctualLightMult;  //TODO: remove this later
+            
+                        vec3 L = normalize(-system.getDirectionalLightDirection(i));
+                        vec3 H = normalize(L + V);
+                        float NdotH = clampedDot(N, H);
+                        float NdotL = clampedDot(N, L);
+            
+                        float sheenDistribution = charlieD(alphaG, NdotH);
+                        float sheenVisibility = charlieV(NdotV, NdotL);
+                        sheenPunctual += lightColor * sheenColor * sheenDistribution * sheenVisibility * NdotL;
+                    }
+                }
+                if ( system.getPointLightCount() > 0 ) {
+                    for ( int i = 0; i < system.getPointLightCount(); i++ )
+                    {
+                        vec3 lightColor = system.getPointLightColor(i);
+                        float lightIntensity = system.getPointLightIntensity(i);
+                        lightColor *= lightIntensity;
+                        lightColor *= punctualLightMult;
+                        // lightColor *= DebugSheenPunctualLightMult;  //TODO: remove this later
+            
+                        vec3 lightPosition = system.getPointLightPosition(i);
+                        vec3 L = normalize(lightPosition - system.getSurfacePosition());
+                        vec3 H = normalize(L + V);
+                        float NdotH = clampedDot(N, H);
+                        float NdotL = clampedDot(N, L);
+            
+                        float sheenDistribution = charlieD(alphaG, NdotH);
+                        float sheenVisibility = charlieV(NdotV, NdotL);
+                        sheenPunctual += lightColor * sheenColor * sheenDistribution * sheenVisibility * NdotL;
+                    }
+                }
+                if ( system.getAmbientLightCount() > 0 ) {
+                    for ( int i = 0; i < system.getAmbientLightCount(); i++ )
+                    {
+                        vec3  lightColor     = system.getAmbientLightColor(i);
+                        float lightIntensity = system.getAmbientLightIntensity(i);
+                        lightColor *= lightIntensity;
+                        lightColor /= punctualLightMult;
+                        // lightColor *= DebugSheenPunctualLightMult;  //TODO: remove this later
+            
+                        sheenPunctual += lightColor * sheenColor;
+                    }
+                }
+                return sheenPunctual;
+            }
+            
+            void addSheen(vec3 computedNormal, vec4 occlusion) 
+            {
+                vec3 sheenColor = SheenColorFactor;
+                float sheenRoughness = SheenRoughnessFactor;
+            
+                if (EnableSheenTexture) {
+                    vec2 sheenUV = getUV(SheenColorTextureCoord);
+                    if (EnableTextureTransform && SheenColorTextureTransform) { 
+                        sheenUV = uvTransform(sheenUV, SheenColorTextureOffset, SheenColorTextureScale, SheenColorTextureRotation);
+                    }
+                    sheenColor *= system.srgbToLinear(SheenColorTexture.sample(sheenUV).rgb);
+                }
+            
+                if (EnableSheenRoughnessTexture) {
+                    vec2 sheenRoughnessUV = getUV(SheenRoughnessTextureCoord);
+                    if (EnableTextureTransform && SheenRoughnessTextureTransform) { 
+                        sheenRoughnessUV = uvTransform(sheenRoughnessUV, SheenRoughnessTextureOffset, SheenRoughnessTextureScale, SheenRoughnessTextureRotation);
+                    }
+                    sheenRoughness *= system.srgbToLinear(SheenRoughnessTexture.sample(sheenRoughnessUV).a);
+                }
+                
+                // Initialize variables
+                sheenRoughness = max(sheenRoughness, 0.0001);
+                SheenOut = vec4(0.0);  //(SheenColor.rgb, AlbedoScaling)
+                vec3 N = computedNormal;
+                vec3 V = system.getViewVector();
+                float NdotV = max(clampedDot(N, V), 0.0001);
+                float alphaG = sheenRoughness * sheenRoughness;
+            
+                // Env light
+                vec3 reflectionVector = normalize(reflect(-V, N));
+                SheenOut.rgb += getSheenIBL(NdotV, reflectionVector, sheenRoughness, sheenColor);
+                SheenOut.rgb = mix(SheenOut.rgb, SheenOut.rgb * occlusion.rgb, occlusion.a); // Apply AO
+            
+                // Punctual lights
+                SheenOut.rgb += getSheenPunctual(sheenColor, N, V, NdotV, alphaG);
+            
+                // Layering
+                SheenOut.a = albedoScale(sheenColor);    
+            }
+            
+            
+            //-----------------------------------------------------------------------
+            // Clearcoat
+            //-----------------------------------------------------------------------
+            void addClearcoat() 
+            {
+                ClearcoatBase = 1.0;
+                ClearcoatRoughness = 1.0;
+                ClearcoatNormal = vec3(0.0, 0.0, 1.0);       
+            
+                // Base
+                if(EnableClearcoatTexture){
+                    vec2 clearcoatUV = getUV(ClearcoatTextureCoord);
+                    if (EnableTextureTransform && ClearcoatTextureTransform) { 
+                        clearcoatUV = uvTransform(clearcoatUV, ClearcoatTextureOffset, ClearcoatTextureScale, ClearcoatTextureRotation);
+                    }            
+                    ClearcoatBase = system.srgbToLinear(ClearcoatTexture.sample(clearcoatUV).r);
+                }
+                ClearcoatBase *= ClearcoatFactor;
+            
+                // Roughness      
+                if(EnableClearCoatRoughnessTexture){
+                    vec2 clearcoatRoughnessUV = getUV(ClearcoatRoughnessTextureCoord);
+                    if (EnableTextureTransform && ClearcoatRoughnessTextureTransform) { 
+                        clearcoatRoughnessUV = uvTransform(clearcoatRoughnessUV, ClearcoatRoughnessTextureOffset, ClearcoatRoughnessTextureScale, ClearcoatRoughnessTextureRotation);
+                    }                        
+                    ClearcoatRoughness = system.srgbToLinear(ClearcoatRoughnessTexture.sample(clearcoatRoughnessUV).g);
+                }
+                ClearcoatRoughness *= ClearcoatRoughnessFactor;            
+            
+                // Normal
+                if(EnableClearCoatNormalTexture){
+                    vec2 clearcoatNormalUV = getUV(ClearcoatNormalMapCoord);
+                    if (EnableTextureTransform && ClearcoatNormalTextureTransform) { 
+                        clearcoatNormalUV = uvTransform(clearcoatNormalUV, ClearcoatNormalTextureOffset, ClearcoatNormalTextureScale, ClearcoatNormalTextureRotation);
+                    }
+                    ClearcoatNormal = ClearcoatNormalMap.sample(clearcoatNormalUV).rgb;
+                    ClearcoatNormal *= (255.0/128.0) - 1.0;
+                }
+            }
+
+        CustomCodeNodeAsset:
+          ClassType1: REFUID
+          String: ""
+        DebugSheenEnvLightMult:
+          Variable: 1.0
+        DebugSheenPunctualLightMult:
+          Variable: 1.0
+        Description:
+          ClassType1: TEXT
+          String: |
+            Process material parameters according to glTF spec. Also compute the sheen factor.
+            
+            // VERSION NOTES:
+            // 1.3.0 - Replaced view vector with system.getViewVector() to allow correct view direction
+            //            vector calculation from custom code node when used with raytracing. If the user
+            //            calculates it manually (camera - surface_position), it will not look as you expect in
+            //            the reflection - because the user shader is explicitly using the camera position.
+
+        Emissive:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0]
+        EmissiveColor:
+          Connection0:
+            NodeLevelID: 18
+            PortID: Output
+          Variable: [0.0, 0.0, 0.0]
+        EmissiveTexture:
+          ClassType2: TEXTURE_OBJECT_2D
+          Connection0:
+            NodeLevelID: 75
+            PortID: Texture
+        EmissiveTextureCoord:
+          Connection0:
+            NodeLevelID: 10
+            PortID: Output
+          Variable: 0.0
+        EmissiveTextureOffset:
+          Connection0:
+            NodeLevelID: 54
+            PortID: Output
+          Variable: [0.0, 0.0]
+        EmissiveTextureRotation:
+          Connection0:
+            NodeLevelID: 56
+            PortID: Output
+          Variable: 0.0
+        EmissiveTextureScale:
+          Connection0:
+            NodeLevelID: 55
+            PortID: Output
+          Variable: [0.0, 0.0]
+        EmissiveTextureTransform:
+          Connection0:
+            NodeLevelID: 87
+            PortID: Output
+          Variable: 0.0
+        EnableClearCoatNormalTexture:
+          Connection0:
+            NodeLevelID: 389
+            PortID: Output
+          Variable: 0.0
+        EnableClearCoatRoughnessTexture:
+          Connection0:
+            NodeLevelID: 350
+            PortID: Output
+          Variable: 0.0
+        EnableClearcoatTexture:
+          Connection0:
+            NodeLevelID: 197
+            PortID: Output
+          Variable: 0.0
+        EnableEmissiveTexture:
+          Connection0:
+            NodeLevelID: 223
+            PortID: Output
+          Variable: 0.0
+        EnableMetallicRoughnessTexture:
+          Connection0:
+            NodeLevelID: 6
+            PortID: Output
+          Variable: 0.0
+        EnableNormalTexture:
+          Connection0:
+            NodeLevelID: 354
+            PortID: Output
+          Variable: 0.0
+        EnableSheenRoughnessTexture:
+          Connection0:
+            NodeLevelID: 42
+            PortID: Output
+          Variable: 0.0
+        EnableSheenTexture:
+          Connection0:
+            NodeLevelID: 41
+            PortID: Output
+          Variable: 0.0
+        EnableTextureTransform:
+          Connection0:
+            NodeLevelID: 48
+            PortID: Output
+          Variable: 0.0
+        EnableTransmissionTexture:
+          Connection0:
+            NodeLevelID: 441
+            PortID: Output
+          Variable: 0.0
+        Examples:
+          ItemIndex: 0
+          ItemList: "Custom : Input/Output/Global Types : Extra Functions : Procedural Execution : Lighting Loop : System Built-In Values/Functions"
+        ID:
+          Variable: 3
+        Locked:
+          Variable: false
+        MaterialParamsTexture:
+          ClassType2: TEXTURE_OBJECT_2D
+          Connection0:
+            NodeLevelID: 220
+            PortID: Texture
+        MaterialParamsTextureCoord:
+          Connection0:
+            NodeLevelID: 11
+            PortID: Output
+          Variable: 0.0
+        MaterialParamsTextureOffset:
+          Connection0:
+            NodeLevelID: 57
+            PortID: Output
+          Variable: [0.0, 0.0]
+        MaterialParamsTextureRotation:
+          Connection0:
+            NodeLevelID: 59
+            PortID: Output
+          Variable: 0.0
+        MaterialParamsTextureScale:
+          Connection0:
+            NodeLevelID: 58
+            PortID: Output
+          Variable: [0.0, 0.0]
+        MaterialParamsTextureTransform:
+          Connection0:
+            NodeLevelID: 85
+            PortID: Output
+          Variable: 0.0
+        Metallic:
+          IOType: 1
+          Variable: 0.0
+        MetallicRoughnessTexSwizzleRB:
+          Connection0:
+            NodeLevelID: 89
+            PortID: Output
+          Variable: 0.0
+        MetallicValue:
+          Connection0:
+            NodeLevelID: 242
+            PortID: Output
+          Variable: 0.0
+        Normal:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0]
+        NormalScale:
+          Connection0:
+            NodeLevelID: 9
+            PortID: Output
+          Variable: 0.0
+        NormalTexture:
+          ClassType2: TEXTURE_OBJECT_2D
+          Connection0:
+            NodeLevelID: 180
+            PortID: Texture
+        NormalTextureCoord:
+          Connection0:
+            NodeLevelID: 8
+            PortID: Output
+          Variable: 0.0
+        NormalTextureOffset:
+          Connection0:
+            NodeLevelID: 51
+            PortID: Output
+          Variable: [0.0, 0.0]
+        NormalTextureRotation:
+          Connection0:
+            NodeLevelID: 53
+            PortID: Output
+          Variable: 0.0
+        NormalTextureScale:
+          Connection0:
+            NodeLevelID: 52
+            PortID: Output
+          Variable: [0.0, 0.0]
+        NormalTextureTransform:
+          Connection0:
+            NodeLevelID: 86
+            PortID: Output
+          Variable: 0.0
+        Occlusion:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        OcclusionStrength:
+          Connection0:
+            NodeLevelID: 20
+            PortID: Output
+          Variable: 0.0
+        Opacity:
+          IOType: 1
+          Variable: 0.0
+        OpacityIn:
+          Connection0:
+            NodeLevelID: 35
+            PortID: Opacity
+          Variable: 0.0
+        Roughness:
+          IOType: 1
+          Variable: 0.0
+        RoughnessValue:
+          Connection0:
+            NodeLevelID: 243
+            PortID: Output
+          Variable: 0.0
+        ScreenTexture:
+          ClassType2: TEXTURE_OBJECT_2D
+          Connection0:
+            NodeLevelID: 210
+            PortID: Texture
+        SheenColorFactor:
+          Connection0:
+            NodeLevelID: 45
+            PortID: Output
+          Variable: [0.0, 0.0, 0.0]
+        SheenColorTexture:
+          ClassType2: TEXTURE_OBJECT_2D
+          Connection0:
+            NodeLevelID: 39
+            PortID: Texture
+        SheenColorTextureCoord:
+          Connection0:
+            NodeLevelID: 32
+            PortID: Output
+          Variable: 0.0
+        SheenColorTextureOffset:
+          Connection0:
+            NodeLevelID: 63
+            PortID: Output
+          Variable: [0.0, 0.0]
+        SheenColorTextureRotation:
+          Connection0:
+            NodeLevelID: 65
+            PortID: Output
+          Variable: 0.0
+        SheenColorTextureScale:
+          Connection0:
+            NodeLevelID: 64
+            PortID: Output
+          Variable: [0.0, 0.0]
+        SheenColorTextureTransform:
+          Connection0:
+            NodeLevelID: 83
+            PortID: Output
+          Variable: 0.0
+        SheenEnable:
+          Connection0:
+            NodeLevelID: 33
+            PortID: Output
+          Variable: 0.0
+        SheenOut:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        SheenRoughnessFactor:
+          Connection0:
+            NodeLevelID: 27
+            PortID: Output
+          Variable: 0.0
+        SheenRoughnessTexture:
+          ClassType2: TEXTURE_OBJECT_2D
+          Connection0:
+            NodeLevelID: 25
+            PortID: Texture
+        SheenRoughnessTextureCoord:
+          Connection0:
+            NodeLevelID: 37
+            PortID: Output
+          Variable: 0.0
+        SheenRoughnessTextureOffset:
+          Connection0:
+            NodeLevelID: 66
+            PortID: Output
+          Variable: [0.0, 0.0]
+        SheenRoughnessTextureRotation:
+          Connection0:
+            NodeLevelID: 68
+            PortID: Output
+          Variable: 0.0
+        SheenRoughnessTextureScale:
+          Connection0:
+            NodeLevelID: 67
+            PortID: Output
+          Variable: [0.0, 0.0]
+        SheenRoughnessTextureTransform:
+          Connection0:
+            NodeLevelID: 82
+            PortID: Output
+          Variable: 0.0
+        Stage:
+          ItemIndex: 1
+          ItemList: "Vertex : Pixel"
+        Title:
+          String: METALLIC-ROUGHNESS
+        TransmissionEnable:
+          Connection0:
+            NodeLevelID: 410
+            PortID: Output
+          Variable: 0.0
+        TransmissionFactor:
+          Connection0:
+            NodeLevelID: 360
+            PortID: Output
+          Variable: 0.0
+        TransmissionTexture:
+          ClassType2: TEXTURE_OBJECT_2D
+          Connection0:
+            NodeLevelID: 440
+            PortID: Texture
+        TransmissionTextureCoord:
+          Connection0:
+            NodeLevelID: 30
+            PortID: Output
+          Variable: 0.0
+        TransmissionTextureOffset:
+          Connection0:
+            NodeLevelID: 19
+            PortID: Output
+          Variable: [0.0, 0.0]
+        TransmissionTextureRotation:
+          Connection0:
+            NodeLevelID: 29
+            PortID: Output
+          Variable: 0.0
+        TransmissionTextureScale:
+          Connection0:
+            NodeLevelID: 26
+            PortID: Output
+          Variable: [0.0, 0.0]
+        TransmissionTextureTransform:
+          Connection0:
+            NodeLevelID: 84
+            PortID: Output
+          Variable: 0.0
+        UseExternalFile:
+          Variable: false
+        ngs_Height:
+          Variable: 1000
+        ngs_Version:
+          String: 1.3.0
+      PositionX: 3800
+      PositionY: 5350
+      TemplateID: node_util_custom
+      TemplateVersionMinor: 1
+      Title1: METALLIC-ROUGHNESS
+    Node91:
+      DependencyIndex: 91
+      LevelID: 36
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        AO:
+          ClassType1: COLOR
+          Connection0:
+            NodeLevelID: 3
+            PortID: Occlusion
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        Albedo:
+          ClassType1: COLOR
+          Connection0:
+            NodeLevelID: 3
+            PortID: BaseColor
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        BitmojiShading:
+          Variable: false
+        Emissive:
+          ClassType1: COLOR
+          Connection0:
+            NodeLevelID: 3
+            PortID: Emissive
+          Variable: [0.0, 0.0, 0.0, 1.0]
+        Metallic:
+          Connection0:
+            NodeLevelID: 3
+            PortID: Metallic
+          Variable: 0.0
+        Mode:
+          ItemIndex: 0
+          ItemList: "Diffuse and Specular : Diffuse Only : Specular Only"
+        Normal:
+          ClassType1: COLOR
+          Connection0:
+            NodeLevelID: 3
+            PortID: Normal
+          Variable: [0.0, 0.0, 1.0, 1.0]
+        NormalSpace:
+          ItemIndex: 1
+          ItemList: "Tangent : World"
+        Opacity:
+          Connection0:
+            NodeLevelID: 3
+            PortID: Opacity
+          Variable: 1.0
+        Output:
+          ClassType1: COLOR
+          IOType: 1
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        Roughness:
+          Connection0:
+            NodeLevelID: 3
+            PortID: Roughness
+          Variable: 0.0
+        SpecularAO:
+          ClassType1: COLOR
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        ToneMapping:
+          Variable: true
+      PositionX: 4853
+      PositionY: 5092
+      TemplateID: nodes_main_material_brdf
+      Title1: PBR ( Lighting )
+      Title2: Diffuse and Specular
+    Node92:
+      DependencyIndex: 92
+      LevelID: 405
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        AO:
+          ClassType1: COLOR
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        Albedo:
+          ClassType1: COLOR
+          Variable: [0.0, 0.0, 0.0, 1.0]
+        BitmojiShading:
+          Variable: false
+        Emissive:
+          ClassType1: COLOR
+          Variable: [0.0, 0.0, 0.0, 1.0]
+        Metallic:
+          Variable: 0.0
+        Mode:
+          ItemIndex: 2
+          ItemList: "Diffuse and Specular : Diffuse Only : Specular Only"
+        Normal:
+          ClassType1: COLOR
+          Connection0:
+            NodeLevelID: 3
+            PortID: ClearcoatNormal
+          Variable: [0.0, 0.0, 0.0, 1.0]
+        NormalSpace:
+          ItemIndex: 0
+          ItemList: "Tangent : World"
+        Opacity:
+          Variable: 1.0
+        Output:
+          ClassType1: COLOR
+          IOType: 1
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        Roughness:
+          Connection0:
+            NodeLevelID: 3
+            PortID: ClearcoatRoughness
+          Variable: 0.0
+        SpecularAO:
+          ClassType1: COLOR
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        ToneMapping:
+          Variable: true
+      PositionX: 4860
+      PositionY: 5860
+      TemplateID: nodes_main_material_brdf
+      Title1: PBR ( Lighting )
+      Title2: Specular Only
+    Node93:
+      DependencyIndex: 93
+      LevelID: 31
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Background:
+          Connection0:
+            NodeLevelID: 3
+            PortID: Background
+          Variable: [1.0, 1.0, 1.0]
+        ClearcoatBase:
+          Connection0:
+            NodeLevelID: 3
+            PortID: ClearcoatBase
+          Variable: 0.0
+        ClearcoatColor:
+          Connection0:
+            NodeLevelID: 405
+            PortID: Output
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        Code:
+          ClassType1: TEXT
+          String: |-
+            input_vec4 PbrIn;
+            
+            input_bool EnableTransmission;
+            input_float Opacity;
+            input_vec3 Background;
+            
+            input_bool EnableSheen;
+            input_vec4 SheenColor;
+            
+            input_bool EnableClearcoat;
+            input_float ClearcoatBase;
+            input_vec4 ClearcoatColor;
+            
+            output_vec4 Result;
+            
+            void main()
+            {
+                Result = PbrIn;
+            
+                if(EnableSheen || EnableTransmission || EnableClearcoat) {
+                    Result = system.srgbToLinear( Result );
+            
+            		// Sheen
+                    if(EnableSheen) {
+                        float albedoScaling = SheenColor.a;
+                        Result.rgb = (Result.rgb * albedoScaling) + SheenColor.rgb;
+                    }
+            
+                    if(EnableTransmission) {
+                        Result = mix(vec4(Background, 1.0), Result, system.srgbToLinear(Opacity));
+                        Result.a = 1.0;
+                    }
+                    
+                    if(EnableClearcoat) {
+                        vec4 clearcoatFinal = ClearcoatBase * system.srgbToLinear(ClearcoatColor);
+                        Result.rgb += clearcoatFinal.rgb;
+                    }
+            
+                    Result = system.linearToSrgb(Result);
+                }
+            
+            }
+        CustomCodeNodeAsset:
+          ClassType1: REFUID
+          String: ""
+        Description:
+          ClassType1: TEXT
+          String: Apply blend for transmission and add sheen and clearcoat.
+        EnableClearcoat:
+          Connection0:
+            NodeLevelID: 411
+            PortID: Output
+          Wireless: true
+          Variable: 0.0
+        EnableSheen:
+          Connection0:
+            NodeLevelID: 33
+            PortID: Output
+          Wireless: true
+          Variable: 0.0
+        EnableTransmission:
+          Connection0:
+            NodeLevelID: 410
+            PortID: Output
+          Wireless: true
+          Variable: 0.0
+        Examples:
+          ItemIndex: 0
+          ItemList: "Custom : Input/Output/Global Types : Extra Functions : Procedural Execution : Lighting Loop : System Built-In Values/Functions"
+        ID:
+          Variable: 31
+        Locked:
+          Variable: false
+        Opacity:
+          Connection0:
+            NodeLevelID: 3
+            PortID: Opacity
+          Variable: 0.0
+        PbrIn:
+          Connection0:
+            NodeLevelID: 36
+            PortID: Output
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        Result:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        SheenColor:
+          Connection0:
+            NodeLevelID: 3
+            PortID: SheenOut
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        Stage:
+          ItemIndex: 1
+          ItemList: "Vertex : Pixel"
+        Title:
+          String: FINAL OPACITY
+        UseExternalFile:
+          Variable: false
+        ngs_Height:
+          Variable: 400
+        ngs_Version:
+          String: 1.0.0
+      PositionX: 5450
+      PositionY: 5370
+      TemplateID: node_util_custom
+      TemplateVersionMinor: 1
+      Title1: FINAL OPACITY
+    Node94:
+      DependencyIndex: 94
+      LevelID: 14
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Input0:
+          Connection0:
+            NodeLevelID: 35
+            PortID: UnlitColor
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+      PositionX: 6208
+      PositionY: 8722
+      RedirectClassTypeA1: FLOAT
+      RedirectClassTypeB1: FLOAT
+      TemplateID: nodes_math_passthrough
+      Title1: Passthrough
+    Node95:
+      DependencyIndex: 95
+      LevelID: 17
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Input0:
+          Connection0:
+            NodeLevelID: 16
+            PortID: Output
+          Variable: 1.0
+        Input1:
+          Connection0:
+            NodeLevelID: 31
+            PortID: Result
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        Input2:
+          Connection0:
+            NodeLevelID: 14
+            PortID: Output
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        Type1:
+          ItemIndex: 0
+          ItemList: "auto : xyzw : rgba : xyz : rgb : xy : x"
+        Type2:
+          ItemIndex: 0
+          ItemList: "auto : xyzw : rgba : xyz : rgb : xy : x"
+      PositionX: 6370
+      PositionY: 5330
+      TemplateID: nodes_math_conditional
+      Title1: Conditional
+    Node96:
+      CommentSizeX: 0
+      CommentSizeY: 0
+      DependencyIndex: 96
+      LevelID: 4
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Depth:
+          Variable: 1.0
+        DepthMode:
+          ItemIndex: 0
+          ItemList: |2-
+            		Non-Linear - Normalized [0 to 1] ) :		Linear - Normalized [-1 to 1] :		View Space - Non-Normalized [-near to -far]	
+        DontFreezeSpec:
+          Variable: false
+        FinalColor:
+          ClassType1: COLOR
+          Connection0:
+            NodeLevelID: 17
+            PortID: Output
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        FinalColor1:
+          ClassType1: COLOR
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        FinalColor2:
+          ClassType1: COLOR
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        FinalColor3:
+          ClassType1: COLOR
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        GSplatPointSize:
+          Variable: 0.0
+        GSplatRotation:
+          Variable: [0.0, 0.0, 0.0, 1.0]
+        GSplatScale:
+          Variable: [0.0, 0.0, 0.0]
+        Motion Vector Pass:
+          ItemIndex: 0
+          ItemList: "Write Velocity and Depth : Discard Velocity but Write Depth : Discard Velocity and Depth"
+        Negative:
+          Variable: false
+        PrevWorldPosition:
+          Variable: [0.0, 0.0, 0.0]
+        RayDirection:
+          Variable: [0.0, 1.0, 0.0]
+        RayOrigin:
+          Variable: [0.0, 0.0, 0.0]
+        ShowPrevPos:
+          Variable: false
+        Targets:
+          ItemIndex: 0
+          ItemList: "1 : 2 : 3 : 4"
+        Type:
+          ItemIndex: 0
+          ItemList: "3D : Post Effect : Hair : Gaussian Splatting"
+        WorldNormal:
+          Variable: [0.0, 1.0, 0.0]
+        WorldPosition:
+          Variable: [0.0, 0.0, 0.0]
+        WorldTangent:
+          Variable: [0.0, 0.0, 1.0]
+        WriteDepth:
+          Variable: false
+      PositionX: 6810
+      PositionY: 5330
+      TemplateID: nodes_main_graph
+      Title1: Shader
+      Title2: 3D
+    Node97:
+      CommentSizeX: 352
+      CommentSizeY: 554
+      DependencyIndex: 97
+      LevelID: 202
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Color:
+          ClassType1: COLOR
+          Variable: [0.4000000059604645, 0.699999988079071, 1.0, 0.10000000149011612]
+        Comment:
+          String: Normals
+        NewComment:
+          ClassType1: TEXT
+          String: Normals
+        NewToolTip:
+          ClassType1: TEXT
+          String: ""
+        Tooltip:
+          String: ""
+        Upgraded:
+          Variable: true
+      PositionX: 2258
+      PositionY: 3385
+      TemplateID: node_util_comment
+      Title1: ""
+    Node98:
+      CommentSizeX: 318
+      CommentSizeY: 512
+      DependencyIndex: 98
+      LevelID: 301
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Color:
+          ClassType1: COLOR
+          Variable: [0.4000000059604645, 0.699999988079071, 1.0, 0.10000000149011612]
+        Comment:
+          String: Emissive
+        NewComment:
+          ClassType1: TEXT
+          String: Emissive
+        NewToolTip:
+          ClassType1: TEXT
+          String: ""
+        Tooltip:
+          String: ""
+        Upgraded:
+          Variable: true
+      PositionX: 2270
+      PositionY: 2760
+      TemplateID: node_util_comment
+      Title1: ""
+    Node99:
+      CommentSizeX: 353
+      CommentSizeY: 640
+      DependencyIndex: 99
+      LevelID: 149
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Color:
+          ClassType1: COLOR
+          Variable: [0.4000000059604645, 0.699999988079071, 1.0, 0.10000000149011612]
+        Comment:
+          String: Albedo
+        NewComment:
+          ClassType1: TEXT
+          String: Albedo
+        NewToolTip:
+          ClassType1: TEXT
+          String: ""
+        Tooltip:
+          String: ""
+        Upgraded:
+          Variable: true
+      PositionX: 2043
+      PositionY: 8550
+      TemplateID: node_util_comment
+      Title1: ""
+  IsSubGraph0: true
+  IsSubGraph1: true
+  IsSubGraph2: true
+  IsSubGraph3: true
+  LevelID: 0
+  NodeType: 3
+  PositionX: 0
+  PositionY: 0
+  TemplateID: nodes_main_subgraph
+  Title1: ""
+SystemID: dev.snap.shaders

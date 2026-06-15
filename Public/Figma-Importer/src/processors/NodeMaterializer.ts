@@ -222,7 +222,7 @@ class NodeProcessor {
         newSceneObject.name = name
 
         const screenTransform = newSceneObject.addComponent('ScreenTransform') as Editor.Components.ScreenTransform
-        newSceneObject.layer = newSceneObject.getParent().layer
+        newSceneObject.layers = newSceneObject.getParent().layers
 
         return screenTransform
     }

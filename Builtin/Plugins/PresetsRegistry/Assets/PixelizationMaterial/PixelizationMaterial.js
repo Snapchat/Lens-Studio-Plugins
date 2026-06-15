@@ -7,7 +7,7 @@ const params = {
         'description': 'PostEffectVisual material pixelating screen with tunable pixel size',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
-    graph_path: import.meta.resolve('Resources/Pixelization.ss_graph'),
+    graph_path: import.meta.resolve('Resources/pixelization.graphShader'),
     pass_info: {
         'depthTest': false,
         'depthWrite': false,

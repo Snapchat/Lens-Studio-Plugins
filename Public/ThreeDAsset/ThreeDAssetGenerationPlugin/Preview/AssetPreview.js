@@ -122,6 +122,10 @@ export class AssetPreview {
     }
 
     loadInteractivePreview() {
+        if (!app.authStatus) {
+            return;
+        }
+
         const loadingOptions = {
             lens: import.meta.resolve("./Resources/interactive_preview_lbe.zip"),
             input: this.interactive_preview_input,
@@ -130,7 +134,7 @@ export class AssetPreview {
         };
 
         if (this.interactivePreview.isLoaded) {
-            this.interactivePreview.reload(loadingOptions);
+            this.interactivePreview.reload();
         } else {
             this.interactivePreview.load(loadingOptions);
         }
@@ -274,7 +278,7 @@ export class AssetPreview {
 
         this.deletionDialog = gui.createDialog();
         this.deletionDialog.windowTitle = 'Delete 3D Asset';
-
+        this.deletionDialog.setModal(true);
         this.deletionDialog.resize(460, 140);
 
         const boxLayout1 = new Ui.BoxLayout();

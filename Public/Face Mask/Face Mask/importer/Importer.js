@@ -20,7 +20,7 @@ export class Importer {
         if (!textureName) {
             textureName = "Face Mask";
         }
-        const textureFileName = textureName + ".jpg";
+        const textureFileName = textureName + ".png";
         const texturePath = app.storage.createFile(textureFileName, textureBytes);
         // Import texture temporarily into the lspkg so the material can reference it
         const tempTexture = assetManager.importExternalFile(texturePath, new Editor.Model.SourcePath(new Editor.Path(""), Editor.Model.SourceRootDirectory.Assets), Editor.Model.ResultType.Auto);
@@ -42,7 +42,7 @@ export class Importer {
         // Export the package to temp folder and re-import it unpacked to Assets
         const actionManager = pluginSystem.findInterface(Editor.IPackageActions);
         const exportOptions = new Editor.Model.ExportOptions();
-        const exportPath = new Editor.Path(this.tempDir.path + `/${textureName}.lspkg`);
+        const exportPath = this.tempDir.path.appended(new Editor.Path(`${textureName}.lspkg`));
         exportOptions.packagePolicy = Editor.Assets.PackagePolicy.CanBeUnpacked;
         actionManager.exportPackage(nativePackageDescriptorFile, exportPath, exportOptions);
         let unpackedFaceMaskPackage = assetManager.importExternalFile(exportPath, new Editor.Model.SourcePath(new Editor.Path("Generated Face Masks"), Editor.Model.SourceRootDirectory.Assets), Editor.Model.ResultType.Unpacked);

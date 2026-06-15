@@ -18,7 +18,7 @@ export function getMyDreams(callback, pageToken = null) {
             return;
         }
         callback(response);
-        if (data === null || data === void 0 ? void 0 : data.nextPageToken) {
+        if (data?.nextPageToken) {
             getMyDreams(callback, data.nextPageToken.toString());
         }
     });

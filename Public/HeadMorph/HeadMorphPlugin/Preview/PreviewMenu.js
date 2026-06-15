@@ -26,26 +26,8 @@ export class PreviewMenu {
         this.editEffectButton.enabled = false;
         app.log('Creating new asset...', { 'progressBar': true });
 
-        let settings = {};
-        let inputFormat = "";
-
-        if (this.promptPickerRadioButton.checked) {
-            settings = {
-                'prompt': controls['promptPicker'].value,
-                'seed': 0,
-                'uploadUid': null
-            }
-
-            inputFormat = "PROMPT_TEXT";
-        } else {
-            settings = {
-                'prompt': null,
-                'seed': 0,
-                'uploadUid': controls['imageReferencePicker'].value[0].uid
-            }
-
-            inputFormat = "PROMPT_IMAGE";
-        }
+        const settings = buildAssetData(controls);
+        let inputFormat = controls["imageReferencePicker"].value.length > 0 ? "PROMPT_IMAGE" : "PROMPT_TEXT";
 
         createAsset(settings, (response) => {
             if (response.statusCode == 200) {
@@ -90,8 +72,6 @@ export class PreviewMenu {
         this.updateEditButtonVisibility();
         this.controls['promptPicker'].hide();
         this.controls['imageReferencePicker'].hide();
-        this.promptPickerRadioButton.enabled = false;
-        this.imagePickerRadioButton.enabled = false;
         this.editEffectButton.visible = true;
         this.showImportButton();
     }
@@ -100,27 +80,15 @@ export class PreviewMenu {
         this.asset_id = state.asset_id;
         this.status = state.status;
 
+        const prompt = state.settings && state.settings.prompt != null ? state.settings.prompt : '';
+        this.controls['promptPicker'].value = prompt;
+
         if (state.uploadUid) {
-            this.promptPickerRadioButton.checked = false;
-            this.imagePickerRadioButton.checked = true;
-            this.controls['promptPicker'].hide();
-            this.controls['imageReferencePicker'].show();
-
-            this.controls['promptPicker'].value = '';
             this.controls['imageReferencePicker'].value = [{uid: state.uploadUid, url: state.uploadUrl}];
-        }
-        else {
-            this.promptPickerRadioButton.checked = true;
-            this.imagePickerRadioButton.checked = false;
-            this.controls['promptPicker'].show();
-            this.controls['imageReferencePicker'].hide();
-
-            this.controls['promptPicker'].value = state.settings.prompt;
+        } else {
             this.controls['imageReferencePicker'].value = [];
         }
 
-        this.promptPickerRadioButton.enabled = false;
-        this.imagePickerRadioButton.enabled = false;
         this.controls['promptPicker'].hide();
         this.controls['imageReferencePicker'].hide();
         this.editEffectButton.visible = true;
@@ -199,24 +167,9 @@ export class PreviewMenu {
         this.editEffectButton.text = 'Copy settings';
 
         this.connections.push(this.editEffectButton.onClick.connect(() => {
-            this.promptPickerRadioButton.enabled = true;
-            this.imagePickerRadioButton.enabled = true;
-            if (this.controls['imageReferencePicker'].value.length > 0) {
-                this.promptPickerRadioButton.checked = false;
-                this.imagePickerRadioButton.checked = true;
-                this.controls['promptPicker'].hide();
-                this.controls['imageReferencePicker'].show();
-            }
-            else {
-                this.promptPickerRadioButton.checked = true;
-                this.imagePickerRadioButton.checked = false;
-                this.controls['promptPicker'].show();
-                this.controls['imageReferencePicker'].hide();
-            }
-            this.promptPickerRadioButton.enabled = true;
-            this.imagePickerRadioButton.enabled = true;
+            this.controls['promptPicker'].show();
+            this.controls['imageReferencePicker'].show();
             this.editEffectButton.visible = false;
-            // this.modifyAsset(this.controls);
             this.hideImportButton();
         }));
 
@@ -229,8 +182,6 @@ export class PreviewMenu {
     setGeneratePreviewsButton(button) {
         this.generatePreviewsButton = button;
         this.connections.push(this.generatePreviewsButton.onClick.connect(() => {
-            this.promptPickerRadioButton.enabled = false;
-            this.imagePickerRadioButton.enabled = false;
             this.controls['promptPicker'].hide();
             this.controls['imageReferencePicker'].hide();
             this.modifyAsset(this.controls);
@@ -331,23 +282,6 @@ export class PreviewMenu {
         this.controls['imageReferencePicker'].addOnValueChanged((value) => {
             this.updateEditButtonVisibility();
         });
-
-        this.promptPickerRadioButton = this.controls['promptPicker'].getRadioButton();
-        this.imagePickerRadioButton = this.controls['imageReferencePicker'].getRadioButton();
-
-        this.promptPickerRadioButton.onClick.connect(() => {
-            this.promptPickerRadioButton.checked = true;
-            this.imagePickerRadioButton.checked = false;
-            this.controls['promptPicker'].show();
-            this.controls['imageReferencePicker'].hide();
-        })
-
-        this.imagePickerRadioButton.onClick.connect(() => {
-            this.imagePickerRadioButton.checked = true;
-            this.promptPickerRadioButton.checked = false;
-            this.controls['imageReferencePicker'].show();
-            this.controls['promptPicker'].hide();
-        })
 
         this.menuLayout.addStretch(0);
 

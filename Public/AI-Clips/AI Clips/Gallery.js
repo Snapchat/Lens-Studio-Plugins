@@ -2,16 +2,19 @@
 import * as Ui from "LensStudio:Ui";
 import { GalleryItem } from "./GalleryItem.js";
 export class Gallery {
-    constructor(onTileClickCallback, onImportClickCallback, onReloadClickCallback, onScrollToBottomCallback, onSearchChangedCallback) {
+    constructor(onTileClickCallback, onImportClickCallback, onReloadClickCallback, onScrollToBottomCallback, onSearchChangedCallback, onFavoriteClickCallback, onFavoritesFilterCallback) {
         this.items = [];
         this.isWaitingForCallback = false;
         this.pendingPreviews = {};
         this.tilesPerRow = 3;
+        this._favoritesFilterActive = false;
         this.onTileClickCallback = onTileClickCallback;
         this.onImportClickCallback = onImportClickCallback;
         this.onReloadClickCallback = onReloadClickCallback;
         this.onScrollToBottomCallback = onScrollToBottomCallback;
         this.onSearchChangedCallback = onSearchChangedCallback;
+        this.onFavoriteClickCallback = onFavoriteClickCallback;
+        this.onFavoritesFilterCallback = onFavoritesFilterCallback;
     }
     create(parent) {
         const widget = new Ui.Widget(parent);
@@ -77,8 +80,56 @@ export class Gallery {
         const reloadIconPath = new Editor.Path(import.meta.resolve('./Resources/refresh.svg'));
         reloadButton.setIcon(Editor.Icon.fromFile(reloadIconPath));
         const searchLine = new Ui.SearchLineEdit(widget);
+        this.filterButton = new Ui.ToolButton(widget);
+        const filterIconPath = new Editor.Path(import.meta.resolve('./Resources/filter.svg'));
+        this.filterButton.setIcon(Editor.Icon.fromFile(filterIconPath));
+        this.filterMenu = new Ui.Menu(widget);
+        this.showAllAction = new Ui.Action(widget);
+        this.showAllAction.text = 'Show All';
+        this.showAllAction.checkable = true;
+        this.showAllAction.checked = true;
+        this.myFavoritesAction = new Ui.Action(widget);
+        this.myFavoritesAction.text = 'My Favorites';
+        this.myFavoritesAction.checkable = true;
+        this.myFavoritesAction.checked = false;
+        this.filterMenu.addAction(this.showAllAction);
+        this.filterMenu.addAction(this.myFavoritesAction);
+        this.showAllAction.onToggle.connect((toggled) => {
+            if (!toggled && !this.myFavoritesAction.checked) {
+                this.showAllAction.blockSignals(true);
+                this.showAllAction.checked = true;
+                this.showAllAction.blockSignals(false);
+                return;
+            }
+            if (toggled) {
+                this.myFavoritesAction.blockSignals(true);
+                this.myFavoritesAction.checked = false;
+                this.myFavoritesAction.blockSignals(false);
+                this._favoritesFilterActive = false;
+                this.onFavoritesFilterCallback(false);
+            }
+        });
+        this.myFavoritesAction.onToggle.connect((toggled) => {
+            if (!toggled && !this.showAllAction.checked) {
+                this.myFavoritesAction.blockSignals(true);
+                this.myFavoritesAction.checked = true;
+                this.myFavoritesAction.blockSignals(false);
+                return;
+            }
+            if (toggled) {
+                this.showAllAction.blockSignals(true);
+                this.showAllAction.checked = false;
+                this.showAllAction.blockSignals(false);
+                this._favoritesFilterActive = true;
+                this.onFavoritesFilterCallback(true);
+            }
+        });
+        this.filterButton.onClick.connect(() => {
+            this.filterMenu.popup(this.filterButton);
+        });
         layout.addWidget(reloadButton);
         layout.addWidget(searchLine);
+        layout.addWidget(this.filterButton);
         widget.layout = layout;
         searchLine.onTextChange.connect((text) => {
             this.onSearchChangedCallback(text);
@@ -86,11 +137,14 @@ export class Gallery {
         reloadButton.onClick.connect(() => {
             this.onReloadClickCallback();
         });
+        widget.onShow.connect(() => {
+            searchLine.setFocus();
+        });
         return widget;
     }
-    addItem(id, description, previewUrl, isDefault = false, inProgress = false, isTraining = false, isTrained = false) {
+    addItem(id, description, previewUrl, isDefault = false, inProgress = false, isTraining = false, isTrained = false, isFavorite = false) {
         const startIndex = this.items.length;
-        const item = this.createItem(id, description, previewUrl, isDefault, inProgress, isTraining, isTrained);
+        const item = this.createItem(id, description, previewUrl, isDefault, inProgress, isTraining, isTrained, isFavorite);
         if (item) {
             item.widget.visible = false;
             this.appendToLayout(startIndex);
@@ -101,7 +155,7 @@ export class Gallery {
         const startIndex = this.items.length;
         const newItems = [];
         itemsData.forEach((data) => {
-            const item = this.createItem(data.id, data.description, data.previewUrl, data.isDefault ?? false, data.inProgress ?? false, data.isTraining ?? false, data.isTrained ?? false);
+            const item = this.createItem(data.id, data.description, data.previewUrl, data.isDefault ?? false, data.inProgress ?? false, data.isTraining ?? false, data.isTrained ?? false, data.isFavorite ?? false);
             if (item) {
                 item.widget.visible = false;
                 newItems.push(item);
@@ -112,7 +166,7 @@ export class Gallery {
             item.widget.visible = true;
         });
     }
-    createItem(id, description, previewUrl, isDefault, inProgress, isTraining, isTrained) {
+    createItem(id, description, previewUrl, isDefault, inProgress, isTraining, isTrained, isFavorite = false) {
         if (!this.parent || !this.gridLayout) {
             return undefined;
         }
@@ -152,6 +206,10 @@ export class Gallery {
         item.setOnImportClickCallback((id) => {
             return this.onImportClickCallback(id);
         });
+        item.setOnFavoriteClickCallback((id, isFav) => {
+            this.onFavoriteClickCallback(id, isFav, item);
+        });
+        item.setFavorite(isFavorite);
         item.addDescription(description);
         this.items.push(item);
         return item;
@@ -206,6 +264,17 @@ export class Gallery {
             return false;
         }
         return this.verticalScrollArea.value >= this.verticalScrollArea.maximum * 0.9;
+    }
+    resetFilter() {
+        this._favoritesFilterActive = false;
+        if (this.showAllAction && this.myFavoritesAction) {
+            this.showAllAction.blockSignals(true);
+            this.myFavoritesAction.blockSignals(true);
+            this.showAllAction.checked = true;
+            this.myFavoritesAction.checked = false;
+            this.showAllAction.blockSignals(false);
+            this.myFavoritesAction.blockSignals(false);
+        }
     }
     reset() {
         this.items.forEach((item, i) => {

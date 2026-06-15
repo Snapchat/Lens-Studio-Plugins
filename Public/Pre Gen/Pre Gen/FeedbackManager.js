@@ -63,14 +63,13 @@ export class FeedbackManager {
                 }
             });
             starImage.onClick.connect(() => {
-                var _a;
                 this.selectedIdx = i;
                 for (let j = 0; j < 5; j++) {
                     this.stars[j].pixmap = j <= i ? this.selectedTexture : this.defaultTexture;
                 }
                 if (this.selectedIdx < 3) {
                     this.isSubmitClicked = false;
-                    (_a = this.submitDialog) === null || _a === void 0 ? void 0 : _a.show();
+                    this.submitDialog?.show();
                 }
                 else {
                     logEventFeedback(this.starValues[this.selectedIdx], "POSITIVE_FEEDBACK");
@@ -133,13 +132,11 @@ export class FeedbackManager {
         submitButton.primary = true;
         const _this = this;
         cancelButton.onClick.connect(function () {
-            var _a;
-            (_a = _this.submitDialog) === null || _a === void 0 ? void 0 : _a.close();
+            _this.submitDialog?.close();
         });
         submitButton.onClick.connect(function () {
-            var _a;
             _this.isSubmitClicked = true;
-            (_a = _this.submitDialog) === null || _a === void 0 ? void 0 : _a.close();
+            _this.submitDialog?.close();
         });
         this.submitDialog.onFinish.connect(() => {
             if (_this.isSubmitClicked) {

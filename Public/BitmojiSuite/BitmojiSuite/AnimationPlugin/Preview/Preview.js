@@ -70,7 +70,6 @@ export class Preview {
         this.blendButton.primary = true;
         this.blendButton.visible = false;
         this.blendButton.onClick.connect(() => {
-            var _a;
             this.blendButton.visible = false;
             this.importButton.enabled = false;
             this.importButton.visible = true;
@@ -83,7 +82,7 @@ export class Preview {
             animationLibrary.clearSelection();
             this.transitionMenu.reset();
             this.fbxPath = undefined;
-            (_a = this.lbePreview) === null || _a === void 0 ? void 0 : _a.sendMessage({
+            this.lbePreview?.sendMessage({
                 "event_type": "reset_animation"
             });
             const startIntervalFunction = animationLibrary.addAnimationToMyGallery("STITCHED");
@@ -152,8 +151,7 @@ export class Preview {
     }
     async getStitchedAsset(fileName, url) {
         return new Promise((resolve) => {
-            var _a;
-            (_a = this.assetLibImporter) === null || _a === void 0 ? void 0 : _a.downloadAsset(url, fileName, (response) => {
+            this.assetLibImporter?.downloadAsset(url, fileName, (response) => {
                 if (!this.isActive) {
                     return;
                 }
@@ -200,30 +198,27 @@ export class Preview {
         }
     }
     onTransitionTileClicked(pageName, id) {
-        var _a;
         const animLibrary = dependencyContainer.get(DependencyKeys.AnimationLibrary);
         if (pageName !== null && id !== null && id !== undefined && pageName !== undefined) {
             animLibrary.selectTile(pageName, id);
         }
         else {
             animLibrary.clearSelection();
-            (_a = this.lbePreview) === null || _a === void 0 ? void 0 : _a.sendMessage({
+            this.lbePreview?.sendMessage({
                 "event_type": "reset_animation"
             });
         }
     }
     onNewTileClicked() {
-        var _a;
         if (this.transitionMenu.getNonEmptyTilesCount() > 1) {
             this.importButton.visible = false;
             this.blendButton.visible = true;
         }
-        (_a = this.lbePreview) === null || _a === void 0 ? void 0 : _a.sendMessage({
+        this.lbePreview?.sendMessage({
             "event_type": "reset_animation"
         });
     }
     onTransitionTileRemoved() {
-        var _a;
         const visibleTilesCnt = this.transitionMenu.getVisibleTilesCount();
         const nonEmptyTilesCount = this.transitionMenu.getNonEmptyTilesCount();
         if (nonEmptyTilesCount == 1) {
@@ -238,7 +233,7 @@ export class Preview {
         }
         if (visibleTilesCnt == 0) {
             this.importButton.visible = false;
-            (_a = this.lbePreview) === null || _a === void 0 ? void 0 : _a.sendMessage({
+            this.lbePreview?.sendMessage({
                 "event_type": "reset_animation"
             });
         }

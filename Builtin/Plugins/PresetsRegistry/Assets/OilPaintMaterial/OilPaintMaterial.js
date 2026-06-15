@@ -7,7 +7,7 @@ const params = {
         'description': 'PostEffectVisual material applying painterly oil paint effect with tunable intensity',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
-    graph_path: import.meta.resolve('Resources/oil_paint.ss_graph'),
+    graph_path: import.meta.resolve('Resources/oil_paint.graphShader'),
     custom_defines: [
         'COLOR_MODE 0'
     ],

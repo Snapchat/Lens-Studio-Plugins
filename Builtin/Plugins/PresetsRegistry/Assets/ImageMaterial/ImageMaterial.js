@@ -7,7 +7,7 @@ const params = {
         'description': 'Default unlit material for Image component',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
-    graph_path: import.meta.resolve('../Resources/flat.ss_graph'),
+    graph_path: import.meta.resolve('../Resources/flat.graphShader'),
     pass_info: {
         'depthWrite': false,
         'depthTest': false,

@@ -41,7 +41,7 @@ export function acceptTerms(terms, callback) {
 
 export function updateFavorites(effect_id, callback) {
     const request = new Network.HttpRequest();
-    request.url = `${base_url}/api/me/favorites/${effect_id}`;
+    request.url = `${base_url}/api/effects/${effect_id}:favorite`;
     request.method = Network.HttpRequest.Method.Put;
 
     Network.performAuthorizedHttpRequest(request, function(response) {
@@ -51,8 +51,8 @@ export function updateFavorites(effect_id, callback) {
 
 export function deleteFavorites(effect_id, callback) {
     const request = new Network.HttpRequest();
-    request.url = `${base_url}/api/me/favorites/${effect_id}`;
-    request.method = Network.HttpRequest.Method.Delete;
+    request.url = `${base_url}/api/effects/${effect_id}:unfavorite`;
+    request.method = Network.HttpRequest.Method.Put;
 
     Network.performAuthorizedHttpRequest(request, function(response) {
         callback(response);
@@ -112,7 +112,6 @@ export function getEffect(id, callback) {
         try {
             callback(JSON.parse(response.body.toString()));
         } catch(error) {
-            console.log(`${app.name}`, "Failed to load the effect.");
         }
     });
 }
@@ -126,7 +125,6 @@ export function getPostProcessing(id, callback) {
         try {
             callback(JSON.parse(response.body.toString()));
         } catch (error) {
-            console.log(`${app.name}`, "Failed to load the effect.");
         }
     });
 }
@@ -163,19 +161,43 @@ export function createAttachment(data, contentType, filename, callback) {
     });
 }
 
-export function getModels(id, callback) {
-    const request = new Network.HttpRequest();
-    request.url = `${base_url}/api/effects/${id}/models`;
-    request.method = Network.HttpRequest.Method.Get;
+const GET_MODELS_MAX_RETRIES = 3;
+const GET_MODELS_INITIAL_BACKOFF_MS = 1000;
+const getModelsRetryTimeouts = [];
 
-    Network.performAuthorizedHttpRequest(request, function(response) {
-        try {
-            callback(JSON.parse(response.body.toString()));
-        } catch (error) {
-            console.log(`${app.name}`, "Failed to aquire models.");
+export function getModels(id, callback) {
+    let attempt = 0;
+
+    function doRequest() {
+        const request = new Network.HttpRequest();
+        request.url = `${base_url}/api/effects/${id}/models`;
+        request.method = Network.HttpRequest.Method.Get;
+
+        Network.performAuthorizedHttpRequest(request, function(response) {
+            if (response.statusCode === 429 && attempt < GET_MODELS_MAX_RETRIES) {
+                attempt += 1;
+                const backoffMs = GET_MODELS_INITIAL_BACKOFF_MS << (attempt - 1);
+                const timeoutId = setTimeout(function() {
+                    const i = getModelsRetryTimeouts.indexOf(timeoutId);
+                    if (i !== -1) getModelsRetryTimeouts.splice(i, 1);
+                    doRequest();
+                }, backoffMs);
+                getModelsRetryTimeouts.push(timeoutId);
+                return;
+            }
+            if (response.statusCode === 200) {
+                try {
+                    callback(JSON.parse(response.body.toString()));
+                } catch (error) {
+                    callback([]);
+                }
+                return;
+            }
             callback([]);
-        }
-    });
+        });
+    }
+
+    doRequest();
 }
 
 export function createModel(id, postProcessingSettings, callback) {

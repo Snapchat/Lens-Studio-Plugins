@@ -390,7 +390,7 @@ export class PreviewMenu {
         footerLayout.setContentsMargins(16, 0, 16, 0);
 
         this.editEffectButton = new Ui.PushButton(this.footer);
-        this.editEffectButton.text = `Copy Settings`;
+        this.editEffectButton.text = `Copy settings`;
 
         this.connections.push(this.editEffectButton.onClick.connect(() => {
             this.editEffectButton.visible = false;

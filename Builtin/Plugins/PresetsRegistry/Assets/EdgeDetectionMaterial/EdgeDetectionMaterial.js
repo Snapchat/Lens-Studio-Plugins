@@ -7,7 +7,7 @@ const params = {
         'description': 'PostEffectVisual material detecting and coloring edges with tunable outline color',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
-    graph_path: import.meta.resolve('Resources/edge_detection.ss_graph'),
+    graph_path: import.meta.resolve('Resources/edge_detection.graphShader'),
     pass_info: {
         'depthTest': false,
         'depthWrite': false,

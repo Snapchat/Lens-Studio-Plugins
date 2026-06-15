@@ -1,0 +1,1717 @@
+SchemaVersion: 1
+Nodes:
+  ChildNodes:
+    Node0:
+      DependencyIndex: 0
+      LevelID: 38
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Group:
+          String: ""
+        ItemCount:
+          Variable: 4
+        Output:
+          IOType: 1
+          Wireless: true
+          Variable: 0.0
+        ScriptName:
+          String: NODE_38_DROPLIST_ITEM
+        SortIndex:
+          Variable: 0
+        SpecifySpecConst:
+          Variable: false
+        Title:
+          String: Vertex Color
+        Title0:
+          String: None
+        Title1:
+          String: Base Color
+        Title2:
+          String: Emissive
+        Title3:
+          String: AO
+        Tooltip:
+          String: Specifies the purpose for which vertex color will be used. Requires vertex color to be supplied by the mesh.
+      PositionX: 4363
+      PositionY: 1721
+      TemplateID: nodes_inputs_parameters_droplist
+      Title1: DropList Parameter
+      Title2: Vertex Color
+    Node1:
+      DependencyIndex: 1
+      LevelID: 5
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 0
+          ItemList: "rgba : rgb"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        Group:
+          String: ""
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: baseColor
+        SortIndex:
+          Variable: 1
+        Tooltip:
+          String: |-
+            Specifies the base color (albedo) of the material if the 'Base Textre' is disabled. 
+            Multiplied with the 'Base Texture' otherwise.
+        UniqueID:
+          String: Base Color
+      PositionX: 2642
+      PositionY: 486
+      TemplateID: nodes_inputs_parameters_color
+      Title1: Color Parameter
+      Title2: Base Color
+    Node10:
+      DependencyIndex: 10
+      LevelID: 68
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        DepthMap:
+          Variable: false
+        ExtraOutputs:
+          Variable: false
+        Group:
+          String: Opacity Texture
+        PixelSize:
+          IOType: 1
+          Variable: [0.0, 0.0]
+        ScriptName:
+          String: opacityTex
+        SortIndex:
+          Variable: 20
+        Texture:
+          ClassType2: TEXTURE_OBJECT_2D
+          IOType: 1
+        TextureSize:
+          IOType: 1
+          Variable: [0.0, 0.0]
+        Title:
+          String: Texture
+        Tooltip:
+          String: ""
+      PositionX: 2576
+      PositionY: 1971
+      TemplateID: nodes_inputs_parameters_texture2d_object
+      Title1: Texture 2D Object Parameter
+      Title2: Texture
+    Node11:
+      DependencyIndex: 11
+      LevelID: 69
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Group:
+          String: Opacity Texture
+        ItemCount:
+          Variable: 4
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: NODE_69_DROPLIST_ITEM
+        SortIndex:
+          Variable: 21
+        SpecifySpecConst:
+          Variable: false
+        Title:
+          String: Texture UV
+        Title0:
+          String: Mesh UV 0
+        Title1:
+          String: Mesh UV 1
+        Title2:
+          String: Transformed UV 2
+        Title3:
+          String: Transformed UV 3
+        Tooltip:
+          String: Specifies the UV set used as the base on top of which the transform is applied.
+      PositionX: 2597
+      PositionY: 2090
+      TemplateID: nodes_inputs_parameters_droplist
+      Title1: DropList Parameter
+      Title2: Texture UV
+    Node12:
+      DependencyIndex: 12
+      LevelID: 223
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        CreateGroup:
+          Variable: true
+        Group:
+          String: ""
+        OptimizeOnExport:
+          Variable: true
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: ENABLE_EMISSIVE
+        SortIndex:
+          Variable: 70
+        SpecifySpecConst:
+          Variable: true
+        Static:
+          Variable: true
+        Tooltip:
+          String: Enables the emissive texture.
+        UniqueID:
+          String: Emissive
+      PositionX: 2693
+      PositionY: 2787
+      TemplateID: nodes_inputs_parameters_bool
+      Title1: Bool Parameter
+      Title2: Emissive
+    Node13:
+      DependencyIndex: 13
+      LevelID: 75
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        DepthMap:
+          Variable: false
+        ExtraOutputs:
+          Variable: false
+        Group:
+          String: Emissive
+        PixelSize:
+          IOType: 1
+          Variable: [0.0, 0.0]
+        ScriptName:
+          String: emissiveTex
+        SortIndex:
+          Variable: 70
+        Texture:
+          ClassType2: TEXTURE_OBJECT_2D
+          IOType: 1
+        TextureSize:
+          IOType: 1
+          Variable: [0.0, 0.0]
+        Title:
+          String: Texture
+        Tooltip:
+          String: ""
+      PositionX: 2628
+      PositionY: 2898
+      TemplateID: nodes_inputs_parameters_texture2d_object
+      Title1: Texture 2D Object Parameter
+      Title2: Texture
+    Node14:
+      DependencyIndex: 14
+      LevelID: 76
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Group:
+          String: Emissive
+        ItemCount:
+          Variable: 4
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: NODE_76_DROPLIST_ITEM
+        SortIndex:
+          Variable: 71
+        SpecifySpecConst:
+          Variable: false
+        Title:
+          String: Texture UV
+        Title0:
+          String: Mesh UV 0
+        Title1:
+          String: Mesh UV 1
+        Title2:
+          String: Transformed UV 2
+        Title3:
+          String: Transformed UV 3
+        Tooltip:
+          String: Specifies the UV set used for sampling this texture.
+      PositionX: 2678
+      PositionY: 3008
+      TemplateID: nodes_inputs_parameters_droplist
+      Title1: DropList Parameter
+      Title2: Texture UV
+    Node15:
+      DependencyIndex: 15
+      LevelID: 236
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 1
+          ItemList: "rgba : rgb"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        Group:
+          String: Emissive
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: emissiveColor
+        SortIndex:
+          Variable: 72
+        Tooltip:
+          String: |-
+            Multiplies the existing emissive color. 
+            Requires 'Enable Emissive' and/or 'Vertex Color' should be set to 'Emissive'.
+        UniqueID:
+          String: Color
+      PositionX: 2697
+      PositionY: 3134
+      TemplateID: nodes_inputs_parameters_color
+      Title1: Color Parameter
+      Title2: Color
+    Node16:
+      DependencyIndex: 16
+      LevelID: 233
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 5
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: true
+        EnableMin:
+          Variable: true
+        Group:
+          String: Emissive
+        Max:
+          Variable: 10.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: emissiveIntensity
+        SortIndex:
+          Variable: 73
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Intensity
+        Tooltip:
+          String: |-
+            Multiplies the existing emissive color. 
+            Requires 'Enable Emissive' and/or 'Vertex Color' should be set to 'Emissive'.
+      PositionX: 2700
+      PositionY: 3257
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Intensity
+    Node17:
+      DependencyIndex: 17
+      LevelID: 67
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        CreateGroup:
+          Variable: true
+        Group:
+          String: ""
+        OptimizeOnExport:
+          Variable: true
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: ENABLE_UV2
+        SortIndex:
+          Variable: 140
+        SpecifySpecConst:
+          Variable: true
+        Static:
+          Variable: true
+        Tooltip:
+          String: Allows tiling and animation of texture coordinates.
+        UniqueID:
+          String: Transformed UV 2
+      PositionX: 2797
+      PositionY: 3813
+      TemplateID: nodes_inputs_parameters_bool
+      Title1: Bool Parameter
+      Title2: Transformed UV 2
+    Node18:
+      DependencyIndex: 18
+      LevelID: 13
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Group:
+          String: Transformed UV 2
+        ItemCount:
+          Variable: 3
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: NODE_13_DROPLIST_ITEM
+        SortIndex:
+          Variable: 140
+        SpecifySpecConst:
+          Variable: false
+        Title:
+          String: Source
+        Title0:
+          String: Mesh UV 0
+        Title1:
+          String: Mesh UV 1
+        Title2:
+          String: Screen UV
+        Tooltip:
+          String: Specifies the UV set used as the base on top of which the transform is applied.
+      PositionX: 2788
+      PositionY: 3944
+      TemplateID: nodes_inputs_parameters_droplist
+      Title1: DropList Parameter
+      Title2: Source
+    Node19:
+      DependencyIndex: 19
+      LevelID: 14
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 4
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: false
+        EnableMin:
+          Variable: false
+        Group:
+          String: Transformed UV 2
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: uv2Scale
+        SortIndex:
+          Variable: 141
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Scale
+        Tooltip:
+          String: Allows tiling of textures.
+      PositionX: 2801
+      PositionY: 4052
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Scale
+    Node2:
+      DependencyIndex: 2
+      LevelID: 121
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        CreateGroup:
+          Variable: true
+        Group:
+          String: ""
+        OptimizeOnExport:
+          Variable: true
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: ENABLE_BASE_TEX
+        SortIndex:
+          Variable: 0
+        SpecifySpecConst:
+          Variable: true
+        Static:
+          Variable: true
+        Tooltip:
+          String: "Most materials use a base texture (albedo), but disabling it means the base texture will be considered white, and 'Base Color' will solely control the color."
+        UniqueID:
+          String: Base Texture
+      PositionX: 2643
+      PositionY: 594
+      TemplateID: nodes_inputs_parameters_bool
+      Title1: Bool Parameter
+      Title2: Base Texture
+    Node20:
+      DependencyIndex: 20
+      LevelID: 15
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 4
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: false
+        EnableMin:
+          Variable: false
+        Group:
+          String: Transformed UV 2
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: uv2Offset
+        SortIndex:
+          Variable: 142
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Offset
+        Tooltip:
+          String: |-
+            Allows shifting of textures, or controls the speed of scrolling if animation is enabled. 
+            If animation is enabled, the speed is 'Offset' UVs per second. So if 'Offset' is 2, the texture will scroll through two complete times per second.
+      PositionX: 2801
+      PositionY: 4156
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Offset
+    Node21:
+      DependencyIndex: 21
+      LevelID: 16
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        CreateGroup:
+          Variable: false
+        Group:
+          String: Transformed UV 2
+        OptimizeOnExport:
+          Variable: true
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: uv2EnableAnimation
+        SortIndex:
+          Variable: 143
+        SpecifySpecConst:
+          Variable: false
+        Static:
+          Variable: true
+        Tooltip:
+          String: |-
+            If this is enabled, the UV's will scroll. In this case the Offset specifies the speed of scrolling. 
+            The speed is 'Offset' UVs per second. So if 'Offset' is 2, the texture will scroll through two complete times per second.
+        UniqueID:
+          String: Animation
+      PositionX: 2802
+      PositionY: 4265
+      TemplateID: nodes_inputs_parameters_bool
+      Title1: Bool Parameter
+      Title2: Animation
+    Node22:
+      DependencyIndex: 22
+      LevelID: 11
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        CreateGroup:
+          Variable: true
+        Group:
+          String: ""
+        OptimizeOnExport:
+          Variable: true
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: ENABLE_UV3
+        SortIndex:
+          Variable: 150
+        SpecifySpecConst:
+          Variable: true
+        Static:
+          Variable: true
+        Tooltip:
+          String: Allows tiling and animation of texture coordinates.
+        UniqueID:
+          String: Transformed UV 3
+      PositionX: 2800
+      PositionY: 4477
+      TemplateID: nodes_inputs_parameters_bool
+      Title1: Bool Parameter
+      Title2: Transformed UV 3
+    Node23:
+      DependencyIndex: 23
+      LevelID: 49
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Group:
+          String: Transformed UV 3
+        ItemCount:
+          Variable: 4
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: NODE_49_DROPLIST_ITEM
+        SortIndex:
+          Variable: 150
+        SpecifySpecConst:
+          Variable: false
+        Title:
+          String: Source
+        Title0:
+          String: Mesh UV 0
+        Title1:
+          String: Mesh UV 1
+        Title2:
+          String: Screen UV
+        Title3:
+          String: Transformed UV 2
+        Tooltip:
+          String: Specifies the UV set used as the base on top of which the transform is applied.
+      PositionX: 2788
+      PositionY: 4594
+      TemplateID: nodes_inputs_parameters_droplist
+      Title1: DropList Parameter
+      Title2: Source
+    Node24:
+      DependencyIndex: 24
+      LevelID: 50
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 4
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: false
+        EnableMin:
+          Variable: false
+        Group:
+          String: Transformed UV 3
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: uv3Scale
+        SortIndex:
+          Variable: 151
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Scale
+        Tooltip:
+          String: Allows tiling of textures.
+      PositionX: 2813
+      PositionY: 4708
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Scale
+    Node25:
+      DependencyIndex: 25
+      LevelID: 51
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 4
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: false
+        EnableMin:
+          Variable: false
+        Group:
+          String: Transformed UV 3
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: uv3Offset
+        SortIndex:
+          Variable: 152
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Offset
+        Tooltip:
+          String: |-
+            Allows shifting of textures, or controls the speed of scrolling if animation is enabled. 
+            If animation is enabled, the speed is 'Offset' UVs per second. So if 'Offset' is 2, the texture will scroll through two complete times per second.
+      PositionX: 2813
+      PositionY: 4812
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Offset
+    Node26:
+      DependencyIndex: 26
+      LevelID: 52
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        CreateGroup:
+          Variable: false
+        Group:
+          String: Transformed UV 3
+        OptimizeOnExport:
+          Variable: true
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: uv3EnableAnimation
+        SortIndex:
+          Variable: 153
+        SpecifySpecConst:
+          Variable: false
+        Static:
+          Variable: true
+        Tooltip:
+          String: |-
+            If this is enabled, the UV's will scroll. In this case the Offset specifies the speed of scrolling. 
+            The speed is 'Offset' UVs per second. So if 'Offset' is 2, the texture will scroll through two complete times per second.
+        UniqueID:
+          String: Animation
+      PositionX: 2814
+      PositionY: 4921
+      TemplateID: nodes_inputs_parameters_bool
+      Title1: Bool Parameter
+      Title2: Animation
+    Node27:
+      DependencyIndex: 27
+      LevelID: 7
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Albedo:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        BaseColorValue:
+          ClassType1: COLOR
+          Connection0:
+            NodeLevelID: 5
+            PortID: Output
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        BaseTexture:
+          ClassType2: TEXTURE_OBJECT_2D
+          Connection0:
+            NodeLevelID: 28
+            PortID: Texture
+        BaseTextureUVSwitch:
+          Connection0:
+            NodeLevelID: 27
+            PortID: Output
+          Variable: 0.0
+        Code:
+          ClassType1: TEXT
+          String: |-
+            input_int VertexColorSwitch;
+            input_color4 BaseColorValue;
+            input_bool EnableBaseTexture;
+            input_texture_2d BaseTexture;
+            input_int BaseTextureUVSwitch;
+            
+            input_bool EnableRecolor; 
+            input_color3 RecolorR;
+            input_color3 RecolorG;
+            input_color3 RecolorB;
+            
+            input_bool EnableOpacityTexture;
+            input_texture_2d OpacityTexture;
+            input_int OpacityUVSwitch;
+            
+            input_bool EnableEmissiveTexture;
+            input_texture_2d EmissiveTexture;
+            input_int EmissiveUVSwitch;
+            
+            input_color3 EmissiveColor;
+            input_float EmissiveIntensity;
+            
+            input_bool EnableUV2;
+            input_int UV2Switch;
+            input_vec2 UV2Scale;
+            input_vec2 UV2Offset;
+            input_bool UV2Animation;
+            
+            input_bool EnableUV3;
+            input_int UV3Switch;
+            input_vec2 UV3Scale;
+            input_vec2 UV3Offset;
+            input_bool UV3Animation;
+            
+            output_vec4 Albedo;
+            output_float Opacity;
+            output_vec3 Emissive;
+            
+            global_vec2 TransformedUV2;
+            global_vec2 TransformedUV3;
+            
+            
+            ///////////////////////////////////////////////////////////////////////////////
+            // FUNCTIONS
+            ///////////////////////////////////////////////////////////////////////////////
+            vec2 gettransformUV(int pickUV, vec2 scale, vec2 offset, bool animated, bool enabled)
+            {   
+                vec2 uv = system.getSurfaceUVCoord0();
+                if(enabled == EnableUV2) {
+                    if (pickUV == 0) uv = system.getSurfaceUVCoord0();
+                    if (pickUV == 1) uv = system.getSurfaceUVCoord1();
+                    if (pickUV == 2) uv = system.getScreenUVCoord();
+                }
+                else{
+                    if (pickUV == 0) uv = system.getSurfaceUVCoord0();
+                    if (pickUV == 1) uv = system.getSurfaceUVCoord1();
+                    if (pickUV == 2) uv = system.getScreenUVCoord();
+                    if (pickUV == 3) uv = TransformedUV2;
+                }
+            	uv = uv * scale + offset;
+                if(animated){
+            		uv =  uv + offset * system.getTimeElapsed();
+                }
+                return uv;
+            }
+            
+            vec2 getUV(int pickUV)
+            {
+                vec2 uv = system.getSurfaceUVCoord0();
+                if (pickUV == 0) uv = system.getSurfaceUVCoord0();
+                if (pickUV == 1) uv = system.getSurfaceUVCoord1();
+            	if (pickUV == 2) uv = TransformedUV2;
+            	if (pickUV == 3) uv = TransformedUV3;
+                return uv;
+            }
+            
+            void main()
+            {
+            
+            	///////////////////////////////////////////////////////////////////////////////
+            	// UV TRANSFORM UVs
+            	///////////////////////////////////////////////////////////////////////////////
+            	TransformedUV2 = gettransformUV(UV2Switch, UV2Scale, UV2Offset, UV2Animation, EnableUV2);
+            	TransformedUV3 = gettransformUV(UV3Switch, UV3Scale, UV3Offset, UV3Animation, EnableUV3);
+            	//We removed Projected UV from transform UVs, there's no way to hide the matrix parameter UI.
+            
+            	///////////////////////////////////////////////////////////////////////////////
+            	// BASE TEXTURE
+            	///////////////////////////////////////////////////////////////////////////////
+                vec2 base_UV = system.getSurfaceUVCoord0();
+                vec2 opacity_UV = system.getSurfaceUVCoord0();
+            
+                Opacity = 1.0;
+                Albedo = BaseColorValue;
+            
+                if(EnableBaseTexture){
+            		base_UV = getUV(BaseTextureUVSwitch);
+                    Albedo *= BaseTexture.sample(base_UV);
+                }
+            
+                if(EnableRecolor){
+                    Albedo.rgb = Albedo.r * RecolorR + Albedo.g * RecolorG + Albedo.b * RecolorB;
+                }
+            
+            	///////////////////////////////////////////////////////////////////////////////
+            	// Opacity
+            	///////////////////////////////////////////////////////////////////////////////
+                if(EnableOpacityTexture){
+            		opacity_UV = getUV(OpacityUVSwitch);
+                    Opacity = OpacityTexture.sample(opacity_UV).r;
+                }
+            
+                Opacity *= Albedo.a;
+            
+                if(VertexColorSwitch == 1){
+                    Albedo *= system.getSurfaceColor();
+                    Opacity *= system.getSurfaceColor().a;
+                }
+            
+                ///////////////////////////////////////////////////////////////////////////////
+            	// EMISSIVE
+            	///////////////////////////////////////////////////////////////////////////////
+            	vec2 UV = system.getSurfaceUVCoord0();
+                vec3 simplereflectionColor = vec3(0.0, 0.0, 0.0);
+                vec3 rimHighlight = vec3(0.0, 0.0, 0.0);
+            	// We need this line to guard the value so it will render correctly when Advanced Graphics is enabled.
+            	Emissive = vec3(0.0, 0.0, 0.0);
+            
+            
+                if(EnableEmissiveTexture){
+            		
+            		UV = getUV(EmissiveUVSwitch);
+                    Emissive = EmissiveTexture.sample(UV).rgb;
+                }
+            
+            	if(VertexColorSwitch == 2){
+                    Emissive += system.getSurfaceColor().rgb;
+                }
+            	
+            	if(VertexColorSwitch == 2 || EnableEmissiveTexture){
+            		Emissive = pow(Emissive * EmissiveColor * vec3(EmissiveIntensity), vec3(2.2));
+            	}
+            
+            	Emissive = pow(Emissive + simplereflectionColor + rimHighlight, vec3(1.0 / 2.2));
+            
+            }
+        Description:
+          ClassType1: TEXT
+          String: |-
+            // VERSION NOTES:
+            // 1.2.1 - Redundant functions clean up.
+            // 1.2.0 - TransformedUV fix.
+            // 1.1.0 - Assign 0.0 to Emissive to prevent issue with Advanced Graphics. 
+        Emissive:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0]
+        EmissiveColor:
+          ClassType1: COLOR
+          Connection0:
+            NodeLevelID: 236
+            PortID: Output
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EmissiveIntensity:
+          Connection0:
+            NodeLevelID: 233
+            PortID: Output
+          Variable: 0.0
+        EmissiveTexture:
+          ClassType2: TEXTURE_OBJECT_2D
+          Connection0:
+            NodeLevelID: 75
+            PortID: Texture
+        EmissiveUVSwitch:
+          Connection0:
+            NodeLevelID: 76
+            PortID: Output
+          Variable: 0.0
+        EnableBaseTexture:
+          Connection0:
+            NodeLevelID: 121
+            PortID: Output
+          Variable: 0.0
+        EnableEmissiveTexture:
+          Connection0:
+            NodeLevelID: 223
+            PortID: Output
+          Variable: 0.0
+        EnableOpacityTexture:
+          Connection0:
+            NodeLevelID: 308
+            PortID: Output
+          Variable: 0.0
+        EnableRecolor:
+          Connection0:
+            NodeLevelID: 37
+            PortID: Output
+          Variable: 0.0
+        EnableUV2:
+          Connection0:
+            NodeLevelID: 67
+            PortID: Output
+          Variable: 0.0
+        EnableUV3:
+          Connection0:
+            NodeLevelID: 11
+            PortID: Output
+          Variable: 0.0
+        Examples:
+          ItemIndex: 0
+          ItemList: "Custom : Input/Output/Global Types : Extra Functions : Procedural Execution : Lighting Loop : System Built-In Values/Functions"
+        ID:
+          Variable: 7
+        Locked:
+          Variable: false
+        Opacity:
+          IOType: 1
+          Variable: 0.0
+        OpacityTexture:
+          ClassType2: TEXTURE_OBJECT_2D
+          Connection0:
+            NodeLevelID: 68
+            PortID: Texture
+        OpacityUVSwitch:
+          Connection0:
+            NodeLevelID: 69
+            PortID: Output
+          Variable: 0.0
+        RecolorB:
+          ClassType1: COLOR
+          Connection0:
+            NodeLevelID: 87
+            PortID: Output
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        RecolorG:
+          ClassType1: COLOR
+          Connection0:
+            NodeLevelID: 86
+            PortID: Output
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        RecolorR:
+          ClassType1: COLOR
+          Connection0:
+            NodeLevelID: 85
+            PortID: Output
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        Stage:
+          ItemIndex: 1
+          ItemList: "Vertex : Pixel"
+        Title:
+          String: Code Node Uber Unlit
+        UV2Animation:
+          Connection0:
+            NodeLevelID: 16
+            PortID: Output
+          Variable: 0.0
+        UV2Offset:
+          Connection0:
+            NodeLevelID: 15
+            PortID: Output
+          Variable: [0.0, 0.0]
+        UV2Scale:
+          Connection0:
+            NodeLevelID: 14
+            PortID: Output
+          Variable: [0.0, 0.0]
+        UV2Switch:
+          Connection0:
+            NodeLevelID: 13
+            PortID: Output
+          Variable: 0.0
+        UV3Animation:
+          Connection0:
+            NodeLevelID: 52
+            PortID: Output
+          Variable: 0.0
+        UV3Offset:
+          Connection0:
+            NodeLevelID: 51
+            PortID: Output
+          Variable: [0.0, 0.0]
+        UV3Scale:
+          Connection0:
+            NodeLevelID: 50
+            PortID: Output
+          Variable: [0.0, 0.0]
+        UV3Switch:
+          Connection0:
+            NodeLevelID: 49
+            PortID: Output
+          Variable: 0.0
+        VertexColorSwitch:
+          Connection0:
+            NodeLevelID: 38
+            PortID: Output
+          Variable: 0.0
+        ngs_Height:
+          Variable: 400
+        ngs_Version:
+          String: 1.2.1
+      PositionX: 4546
+      PositionY: 2025
+      Selected: true
+      TemplateID: node_util_custom
+      TemplateVersionMinor: 2
+      Title1: Code Node Uber Unlit
+    Node28:
+      DependencyIndex: 28
+      LevelID: 8
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Input0:
+          Connection0:
+            NodeLevelID: 7
+            PortID: Albedo
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        Input1:
+          Connection0:
+            NodeLevelID: 7
+            PortID: Emissive
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        Inputs:
+          ItemIndex: 0
+          ItemList: "2 : 3 : 4 : 5 : 6"
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        Type0:
+          ItemIndex: 0
+          ItemList: "auto : xyzw : rgba : xyz : rgb : xy : x"
+        Type1:
+          ItemIndex: 0
+          ItemList: "auto : xyzw : rgba : xyz : rgb : xy : x"
+      PositionX: 4896
+      PositionY: 1936
+      TemplateID: nodes_math_add
+      Title1: Add
+    Node29:
+      DependencyIndex: 29
+      LevelID: 10
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Dimension1:
+          ItemIndex: 2
+          ItemList: "1 : 2 : 3"
+        Dimension2:
+          ItemIndex: 0
+          ItemList: "1 : disabled"
+        Dimension3:
+          ItemIndex: 0
+          ItemList: disabled
+        Dimension4:
+          ItemIndex: 0
+          ItemList: disabled
+        IsColor:
+          Variable: false
+        Value:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        Value1:
+          Connection0:
+            NodeLevelID: 8
+            PortID: Output
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        Value2:
+          Connection0:
+            NodeLevelID: 7
+            PortID: Opacity
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        Value3:
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        Value4:
+          Variable: [0.0, 0.0, 0.0, 0.0]
+      PositionX: 5109
+      PositionY: 2007
+      TemplateID: node_channels_combine
+      Title1: Construct Vector
+    Node3:
+      DependencyIndex: 3
+      LevelID: 28
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        DepthMap:
+          Variable: false
+        ExtraOutputs:
+          Variable: false
+        Group:
+          String: Base Texture
+        PixelSize:
+          IOType: 1
+          Variable: [0.0, 0.0]
+        ScriptName:
+          String: baseTex
+        SortIndex:
+          Variable: 10
+        Texture:
+          ClassType2: TEXTURE_OBJECT_2D
+          IOType: 1
+        TextureSize:
+          IOType: 1
+          Variable: [0.0, 0.0]
+        Title:
+          String: Texture
+        Tooltip:
+          String: ""
+      PositionX: 2563
+      PositionY: 701
+      TemplateID: nodes_inputs_parameters_texture2d_object
+      Title1: Texture 2D Object Parameter
+      Title2: Texture
+    Node30:
+      CommentSizeX: 0
+      CommentSizeY: 0
+      DependencyIndex: 30
+      LevelID: 4
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Depth:
+          Variable: 1.0
+        DepthMode:
+          ItemIndex: 0
+          ItemList: |2-
+            		Non-Linear - Normalized [0 to 1] ) :		Linear - Normalized [-1 to 1] :		View Space - Non-Normalized [-near to -far]	
+        DontFreezeSpec:
+          Variable: false
+        FinalColor:
+          ClassType1: COLOR
+          Connection0:
+            NodeLevelID: 10
+            PortID: Value
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        FinalColor1:
+          ClassType1: COLOR
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        FinalColor2:
+          ClassType1: COLOR
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        FinalColor3:
+          ClassType1: COLOR
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        Negative:
+          Variable: false
+        RayDirection:
+          Variable: [0.0, 1.0, 0.0]
+        RayOrigin:
+          Variable: [0.0, 0.0, 0.0]
+        Targets:
+          ItemIndex: 0
+          ItemList: "1 : 2 : 3 : 4"
+        Type:
+          ItemIndex: 0
+          ItemList: "3D : Post Effect : Hair"
+        WorldNormal:
+          Variable: [0.0, 1.0, 0.0]
+        WorldPosition:
+          Variable: [0.0, 0.0, 0.0]
+        WorldTangent:
+          Variable: [0.0, 0.0, 1.0]
+        WriteDepth:
+          Variable: false
+      PositionX: 5346
+      PositionY: 2007
+      TemplateID: nodes_main_graph
+      Title1: Shader
+      Title2: 3D
+    Node31:
+      CommentSizeX: 861
+      CommentSizeY: 1535
+      DependencyIndex: 31
+      LevelID: 147
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Color:
+          ClassType1: COLOR
+          Variable: [0.4000000059604645, 0.699999988079071, 1.0, 0.10000000149011612]
+        Comment:
+          String: Transformed UVs
+        NewComment:
+          ClassType1: TEXT
+          String: Transformed UVs
+        NewToolTip:
+          ClassType1: TEXT
+          String: ""
+        Tooltip:
+          String: ""
+        Upgraded:
+          Variable: true
+      PositionX: 2706
+      PositionY: 3675
+      TemplateID: node_util_comment
+      Title1: ""
+    Node32:
+      CommentSizeX: 457
+      CommentSizeY: 542
+      DependencyIndex: 32
+      LevelID: 71
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Color:
+          ClassType1: COLOR
+          Variable: [0.250980406999588, 0.5019454956054688, 0.008957046084105968, 0.11215381324291229]
+        Comment:
+          String: Opacity
+        NewComment:
+          ClassType1: TEXT
+          String: Opacity
+        NewToolTip:
+          ClassType1: TEXT
+          String: ""
+        Tooltip:
+          String: ""
+        Upgraded:
+          Variable: true
+      PositionX: 2498
+      PositionY: 1747
+      TemplateID: node_util_comment
+      Title1: ""
+    Node33:
+      CommentSizeX: 441
+      CommentSizeY: 561
+      DependencyIndex: 33
+      LevelID: 34
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Color:
+          ClassType1: COLOR
+          Variable: [0.250980406999588, 0.5019454956054688, 0.008957046084105968, 0.11215381324291229]
+        Comment:
+          String: Recolor
+        NewComment:
+          ClassType1: TEXT
+          String: Recolor
+        NewToolTip:
+          ClassType1: TEXT
+          String: ""
+        Tooltip:
+          String: ""
+        Upgraded:
+          Variable: true
+      PositionX: 2507
+      PositionY: 1071
+      TemplateID: node_util_comment
+      Title1: ""
+    Node34:
+      CommentSizeX: 1183
+      CommentSizeY: 936
+      DependencyIndex: 34
+      LevelID: 301
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Color:
+          ClassType1: COLOR
+          Variable: [0.4000000059604645, 0.699999988079071, 1.0, 0.10000000149011612]
+        Comment:
+          String: Emissive
+        NewComment:
+          ClassType1: TEXT
+          String: Emissive
+        NewToolTip:
+          ClassType1: TEXT
+          String: ""
+        Tooltip:
+          String: ""
+        Upgraded:
+          Variable: true
+      PositionX: 2379
+      PositionY: 2598
+      TemplateID: node_util_comment
+      Title1: ""
+    Node35:
+      CommentSizeX: 441
+      CommentSizeY: 598
+      DependencyIndex: 35
+      LevelID: 368
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Color:
+          ClassType1: COLOR
+          Variable: [0.250980406999588, 0.5019454956054688, 0.008957046084105968, 0.11215381324291229]
+        Comment:
+          String: Base Color
+        NewComment:
+          ClassType1: TEXT
+          String: Base Color
+        NewToolTip:
+          ClassType1: TEXT
+          String: ""
+        Tooltip:
+          String: ""
+        Upgraded:
+          Variable: true
+      PositionX: 2500
+      PositionY: 391
+      TemplateID: node_util_comment
+      Title1: ""
+    Node36:
+      CommentSizeX: 365
+      CommentSizeY: 207
+      DependencyIndex: 36
+      LevelID: 349
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Color:
+          ClassType1: COLOR
+          Variable: [0.4000000059604645, 0.699999988079071, 1.0, 0.10000000149011612]
+        Comment:
+          String: Vertex Color Selection
+        NewComment:
+          ClassType1: TEXT
+          String: Vertex Color Selection
+        NewToolTip:
+          ClassType1: TEXT
+          String: ""
+        Tooltip:
+          String: ""
+        Upgraded:
+          Variable: true
+      PositionX: 4282
+      PositionY: 1659
+      TemplateID: node_util_comment
+      Title1: ""
+    Node37:
+      CommentSizeX: 464
+      CommentSizeY: 700
+      DependencyIndex: 37
+      LevelID: 217
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Color:
+          ClassType1: COLOR
+          Variable: [0.250980406999588, 0.5019454956054688, 0.008957046084105968, 0.11215381324291229]
+        Comment:
+          String: Emissive Color
+        NewComment:
+          ClassType1: TEXT
+          String: Emissive Color
+        NewToolTip:
+          ClassType1: TEXT
+          String: ""
+        Tooltip:
+          String: ""
+        Upgraded:
+          Variable: true
+      PositionX: 2521
+      PositionY: 2729
+      TemplateID: node_util_comment
+      Title1: ""
+    Node38:
+      CommentSizeX: 1162
+      CommentSizeY: 2283
+      DependencyIndex: 38
+      LevelID: 149
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Color:
+          ClassType1: COLOR
+          Variable: [0.4000000059604645, 0.699999988079071, 1.0, 0.10000000149011612]
+        Comment:
+          String: Albedo
+        NewComment:
+          ClassType1: TEXT
+          String: Albedo and Opacity
+        NewToolTip:
+          ClassType1: TEXT
+          String: ""
+        Tooltip:
+          String: ""
+        Upgraded:
+          Variable: true
+      PositionX: 2396
+      PositionY: 165
+      TemplateID: node_util_comment
+      Title1: ""
+    Node39:
+      CommentSizeX: 235
+      CommentSizeY: 584
+      DependencyIndex: 39
+      LevelID: 1
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Color:
+          ClassType1: COLOR
+          Variable: [0.250980406999588, 0.5019454956054688, 0.008957046084105968, 0.11215381324291229]
+        Comment:
+          String: Group Comment
+        NewComment:
+          ClassType1: TEXT
+          String: UV 2
+        NewToolTip:
+          ClassType1: TEXT
+          String: ""
+        Tooltip:
+          String: ""
+        Upgraded:
+          Variable: true
+      PositionX: 2758
+      PositionY: 3783
+      TemplateID: node_util_comment
+      Title1: ""
+    Node4:
+      DependencyIndex: 4
+      LevelID: 27
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Group:
+          String: Base Texture
+        ItemCount:
+          Variable: 4
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: NODE_27_DROPLIST_ITEM
+        SortIndex:
+          Variable: 11
+        SpecifySpecConst:
+          Variable: false
+        Title:
+          String: Texture UV
+        Title0:
+          String: Mesh UV 0
+        Title1:
+          String: Mesh UV 1
+        Title2:
+          String: Transformed UV 2
+        Title3:
+          String: Transformed UV 3
+        Tooltip:
+          String: Specifies the UV set used as the base on top of which the transform is applied.
+      PositionX: 2615
+      PositionY: 828
+      TemplateID: nodes_inputs_parameters_droplist
+      Title1: DropList Parameter
+      Title2: Texture UV
+    Node40:
+      CommentSizeX: 239
+      CommentSizeY: 576
+      DependencyIndex: 40
+      LevelID: 6
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Color:
+          ClassType1: COLOR
+          Variable: [0.250980406999588, 0.5019454956054688, 0.008957046084105968, 0.11215381324291229]
+        Comment:
+          String: Group Comment
+        NewComment:
+          ClassType1: TEXT
+          String: UV 3
+        NewToolTip:
+          ClassType1: TEXT
+          String: ""
+        Tooltip:
+          String: ""
+        Upgraded:
+          Variable: true
+      PositionX: 2758
+      PositionY: 4447
+      TemplateID: node_util_comment
+      Title1: ""
+    Node41:
+      DependencyIndex: 41
+      LevelID: 3
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        ArrowBottom:
+          Variable: false
+        ArrowLeft:
+          Variable: false
+        ArrowRight:
+          Variable: false
+        ArrowTop:
+          Variable: false
+        BackgroundColor:
+          ClassType1: COLOR
+          Variable: [0.8999999761581421, 0.8999999761581421, 0.30000001192092896, 1.0]
+        Text:
+          ClassType1: TEXT
+          String: |-
+            To learn more about how to create a Uber Unlit with node
+            graph, check Graph Uber Unlit material in the Asset Library.
+        TextColor:
+          ClassType1: COLOR
+          Variable: [0.0, 0.0, 0.0, 1.0]
+        TextSize:
+          ItemIndex: 1
+          ItemList: "Medium : Large"
+      PositionX: 4736
+      PositionY: 1702
+      TemplateID: node_util_sticky
+      Title1: ""
+    Node5:
+      DependencyIndex: 5
+      LevelID: 37
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        CreateGroup:
+          Variable: true
+        Group:
+          String: ""
+        OptimizeOnExport:
+          Variable: true
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: ENABLE_RECOLOR
+        SortIndex:
+          Variable: 30
+        SpecifySpecConst:
+          Variable: true
+        Static:
+          Variable: true
+        Tooltip:
+          String: "Recolor replaces colors in the base texture. \\nThis is useful for adding variety to assets, ex: recolor a red shirt with a green logo to a blue shirt with a black logo, or any other color combination. \\nWhere the base texture is red, you will get whatever color you set in Recolor Red, and same thing for the green and blue channels of the base texture. \\nThis also works in combination if the base color is not a pure red, green or blue color."
+        UniqueID:
+          String: Recolor
+      PositionX: 2617
+      PositionY: 1165
+      TemplateID: nodes_inputs_parameters_bool
+      Title1: Bool Parameter
+      Title2: Recolor
+    Node6:
+      DependencyIndex: 6
+      LevelID: 85
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 1
+          ItemList: "rgba : rgb"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        Group:
+          String: Recolor
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: recolorRed
+        SortIndex:
+          Variable: 30
+        Tooltip:
+          String: ""
+        UniqueID:
+          String: Recolor Red
+      PositionX: 2610
+      PositionY: 1269
+      TemplateID: nodes_inputs_parameters_color
+      Title1: Color Parameter
+      Title2: Recolor Red
+    Node7:
+      DependencyIndex: 7
+      LevelID: 86
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 1
+          ItemList: "rgba : rgb"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        Group:
+          String: Recolor
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: recolorGreen
+        SortIndex:
+          Variable: 31
+        Tooltip:
+          String: ""
+        UniqueID:
+          String: Recolor Green
+      PositionX: 2612
+      PositionY: 1365
+      TemplateID: nodes_inputs_parameters_color
+      Title1: Color Parameter
+      Title2: Recolor Green
+    Node8:
+      DependencyIndex: 8
+      LevelID: 87
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 1
+          ItemList: "rgba : rgb"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        Group:
+          String: Recolor
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: recolorBlue
+        SortIndex:
+          Variable: 32
+        Tooltip:
+          String: ""
+        UniqueID:
+          String: Recolor Blue
+      PositionX: 2612
+      PositionY: 1475
+      TemplateID: nodes_inputs_parameters_color
+      Title1: Color Parameter
+      Title2: Recolor Blue
+    Node9:
+      DependencyIndex: 9
+      LevelID: 308
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        CreateGroup:
+          Variable: true
+        Group:
+          String: ""
+        OptimizeOnExport:
+          Variable: true
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: ENABLE_OPACITY_TEX
+        SortIndex:
+          Variable: 20
+        SpecifySpecConst:
+          Variable: true
+        Static:
+          Variable: true
+        Tooltip:
+          String: |-
+            Normally, the Base Texture's alpha is taken as opacity. Enabling this allows you to define a separate greyscale opacity texture. 
+            The 'Opacity Texture' value will be multiplied with the Base Texture's alpha (which is 1 for textures without alpha) to get the final opacity. 
+            'Opacity Texture' is only available if 'Blend Mode' is not 'Disabled'.
+        UniqueID:
+          String: Opacity Texture
+      PositionX: 2609
+      PositionY: 1864
+      TemplateID: nodes_inputs_parameters_bool
+      Title1: Bool Parameter
+      Title2: Opacity Texture
+  IsSubGraph0: true
+  IsSubGraph1: true
+  IsSubGraph2: true
+  IsSubGraph3: true
+  LevelID: 0
+  NodeType: 3
+  PositionX: 0
+  PositionY: 0
+  TemplateID: nodes_main_subgraph
+  Title1: ""
+  ViewOffsetX0: -4745
+  ViewOffsetX1: -3949
+  ViewOffsetX2: -3949
+  ViewOffsetX3: -3949
+  ViewOffsetY0: -2236
+  ViewOffsetY1: -2687
+  ViewOffsetY2: -2687
+  ViewOffsetY3: -2687
+  ViewScale0: 0.90141654
+SystemID: dev.snap.shaders

@@ -24,26 +24,8 @@ export class ChangeGeometryMenu {
         this.editEffectButton.enabled = false;
         app.log('Creating new asset...', { 'progressBar': true });
 
-        let settings = {};
-        let inputFormat = "";
-
-        if (this.promptPickerRadioButton.checked) {
-            settings = {
-                'prompt': controls['promptPicker'].value,
-                'seed': 0,
-                'uploadUid': null
-            }
-
-            inputFormat = "PROMPT_TEXT";
-        } else {
-            settings = {
-                'prompt': null,
-                'seed': 0,
-                'uploadUid': controls['imageReferencePicker'].value[0].uid
-            }
-
-            inputFormat = "PROMPT_IMAGE";
-        }
+        const settings = buildAssetData(controls);
+        let inputFormat = controls["imageReferencePicker"].value.length > 0 ? "PROMPT_IMAGE" : "PROMPT_TEXT";
 
         createAsset(settings, (response) => {
             if (response.statusCode == 200) {
@@ -92,21 +74,12 @@ export class ChangeGeometryMenu {
         this.asset_id = state.asset_id;
         this.status = state.status;
 
-        if (state.assetData.uploadUid) {
-            this.promptPickerRadioButton.checked = false;
-            this.imagePickerRadioButton.checked = true;
-            this.controls['promptPicker'].hide();
-            this.controls['imageReferencePicker'].show();
+        const prompt = state.assetData.prompt != null ? state.assetData.prompt : '';
+        this.controls['promptPicker'].value = prompt;
 
-            this.controls['promptPicker'].value = '';
+        if (state.assetData.uploadUid) {
             this.controls['imageReferencePicker'].value = [{uid: state.assetData.uploadUid, url: state.assetData.uploadUrl }];
         } else {
-            this.promptPickerRadioButton.checked = true;
-            this.imagePickerRadioButton.checked = false;
-            this.controls['promptPicker'].show();
-            this.controls['imageReferencePicker'].hide();
-
-            this.controls['promptPicker'].value = state.assetData.prompt;
             this.controls['imageReferencePicker'].value = [];
         }
 
@@ -177,21 +150,8 @@ export class ChangeGeometryMenu {
     onAllPreviewsGenerated() {
         this.isGenerationInProgress = false;
         this.editEffectButton.enabled = ((this.controls['promptPicker'].value.length > 0) || (this.controls['imageReferencePicker'].value.length > 0));
-        if (this.controls['imageReferencePicker'].value.length > 0) {
-            this.promptPickerRadioButton.checked = false;
-            this.imagePickerRadioButton.checked = true;
-            this.controls['promptPicker'].hide();
-            this.controls['imageReferencePicker'].show();
-        }
-        else {
-            this.promptPickerRadioButton.checked = true;
-            this.imagePickerRadioButton.checked = false;
-            this.controls['promptPicker'].show();
-            this.controls['imageReferencePicker'].hide();
-        }
-
-        this.promptPickerRadioButton.enabled = true;
-        this.imagePickerRadioButton.enabled = true;
+        this.controls['promptPicker'].show();
+        this.controls['imageReferencePicker'].show();
     }
 
     onNewGenerationStarted() {
@@ -199,12 +159,10 @@ export class ChangeGeometryMenu {
         this.controls['imageReferencePicker'].hide();
         this.editEffectButton.enabled = false;
         this.isGenerationInProgress = true;
-        this.promptPickerRadioButton.enabled = false;
-        this.imagePickerRadioButton.enabled = false;
     }
 
     updateEditButtonVisibility() {
-        this.editEffectButton.enabled = ((this.promptPickerRadioButton.checked && this.controls['promptPicker'].value.length > 0) || (this.imagePickerRadioButton.checked && this.controls['imageReferencePicker'].value.length > 0))  && !this.isGenerationInProgress;
+        this.editEffectButton.enabled = ((this.controls['promptPicker'].value.length > 0) || (this.controls['imageReferencePicker'].value.length > 0)) && !this.isGenerationInProgress;
     }
 
     createMenu(parent) {
@@ -296,25 +254,6 @@ export class ChangeGeometryMenu {
         this.controls['imageReferencePicker'].addOnValueChanged((value) => {
             this.updateEditButtonVisibility();
         });
-
-        this.promptPickerRadioButton = this.controls['promptPicker'].getRadioButton();
-        this.imagePickerRadioButton = this.controls['imageReferencePicker'].getRadioButton();
-
-        this.promptPickerRadioButton.onClick.connect(() => {
-            this.promptPickerRadioButton.checked = true;
-            this.imagePickerRadioButton.checked = false;
-            this.controls['promptPicker'].show();
-            this.controls['imageReferencePicker'].hide();
-            this.updateEditButtonVisibility();
-        })
-
-        this.imagePickerRadioButton.onClick.connect(() => {
-            this.imagePickerRadioButton.checked = true;
-            this.promptPickerRadioButton.checked = false;
-            this.controls['imageReferencePicker'].show();
-            this.controls['promptPicker'].hide();
-            this.updateEditButtonVisibility();
-        })
 
         this.menuLayout.addStretch(0);
 

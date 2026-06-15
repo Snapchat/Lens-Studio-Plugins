@@ -49,16 +49,38 @@ export class PreviewMenu {
                         logEventAssetCreation("SUCCESS", "UPDATE_EXISTING", inputFormat);
                         app.log(`${app.name} is queued. ${app.name} creation is estimated to take 5 minutes, please check back later.`, {'progressBar': true});
                     } else if (postProcessingResponse.statusCode == 400) {
-                        logEventAssetCreation("GUIDELINES_VIOLATION", "UPDATE_EXISTING", inputFormat);
-                        app.log('The result violates our community guidelines');
+                        try {
+                            const errorBody = JSON.parse(postProcessingResponse.body.toString());
+                            if (errorBody.detail && errorBody.detail.toLowerCase().includes('limit')) {
+                                logEventAssetCreation("RATE_LIMITED", "UPDATE_EXISTING", inputFormat);
+                                app.log('Limit reached — A maximum of 5 effects can be generated at once.');
+                            } else {
+                                logEventAssetCreation("GUIDELINES_VIOLATION", "UPDATE_EXISTING", inputFormat);
+                                app.log('The result violates our community guidelines');
+                            }
+                        } catch (e) {
+                            logEventAssetCreation("GUIDELINES_VIOLATION", "UPDATE_EXISTING", inputFormat);
+                            app.log('The result violates our community guidelines');
+                        }
                     } else {
                         logEventAssetCreation("FAILED", "UPDATE_EXISTING", inputFormat);
                         app.log('Something went wrong, please try again.');
                     }
                 });
             } else if (effectResponse.statusCode == 400) {
-                logEventAssetCreation("GUIDELINES_VIOLATION", "UPDATE_EXISTING", inputFormat);
-                app.log('The result violates our community guidelines');
+                try {
+                    const errorBody = JSON.parse(effectResponse.body.toString());
+                    if (errorBody.detail && errorBody.detail.toLowerCase().includes('limit')) {
+                        logEventAssetCreation("RATE_LIMITED", "UPDATE_EXISTING", inputFormat);
+                        app.log('Limit reached — A maximum of 5 effects can be generated at once.');
+                    } else {
+                        logEventAssetCreation("GUIDELINES_VIOLATION", "UPDATE_EXISTING", inputFormat);
+                        app.log('The result violates our community guidelines');
+                    }
+                } catch (e) {
+                    logEventAssetCreation("GUIDELINES_VIOLATION", "UPDATE_EXISTING", inputFormat);
+                    app.log('The result violates our community guidelines');
+                }
             } else {
                 logEventAssetCreation("FAILED", "UPDATE_EXISTING", inputFormat);
                 app.log('Something went wrong, please try again.');

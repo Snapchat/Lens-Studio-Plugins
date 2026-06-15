@@ -38,8 +38,8 @@ export class BinaryStream {
      * @param end The index of the end of the array.
      */
     subarray(begin, end) {
-        begin !== null && begin !== void 0 ? begin : (begin = 0);
-        end !== null && end !== void 0 ? end : (end = this.length);
+        begin ??= 0;
+        end ??= this.length;
         if (end < 0)
             end += this.length;
         if (begin < 0 || begin > this.length)

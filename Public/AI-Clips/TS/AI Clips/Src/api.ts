@@ -77,6 +77,26 @@ export function deleteById(animationId: string, callback?: Function): any {
     });
 }
 
+export function favoriteDream(dreamId: string, callback: Function) {
+    const request = new Network.HttpRequest();
+    request.url = BASE_URL + '/api/dreams/' + dreamId + ':favorite';
+    request.method = Network.HttpRequest.Method.Put;
+
+    Network.performAuthorizedHttpRequest(request, (response) => {
+        callback(response);
+    });
+}
+
+export function unfavoriteDream(dreamId: string, callback: Function) {
+    const request = new Network.HttpRequest();
+    request.url = BASE_URL + '/api/dreams/' + dreamId + ':unfavorite';
+    request.method = Network.HttpRequest.Method.Put;
+
+    Network.performAuthorizedHttpRequest(request, (response) => {
+        callback(response);
+    });
+}
+
 export function downloadFile(url: string, callback: Function) {
     const request = new Network.HttpRequest();
     request.url = url + "";

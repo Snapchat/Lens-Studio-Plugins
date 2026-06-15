@@ -7,7 +7,7 @@ const params = {
         'description': 'Diffuse material with comprehensive set of standard properties. This version has baseTex, normalTex, uv2Offset, uv3Offset properties',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
-    graph_path: import.meta.resolve('Resources/uber_diffuse.ss_graph'),
+    graph_path: import.meta.resolve('Resources/uber_diffuse.graphShader'),
     pass_info: {
         'uv2Offset': new vec2(0.0, 0.0),
         'uv3Offset': new vec2(0.0, 0.0),

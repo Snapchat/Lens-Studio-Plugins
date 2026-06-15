@@ -19,6 +19,7 @@
     },
     "include": [
         "Src/**/*",
-        "../../../../shared-types/**/*.d.ts"
+        "../../../../public-docs/**/*.d.ts",
+        "Declarations/**/*.d.ts"
     ]
 }

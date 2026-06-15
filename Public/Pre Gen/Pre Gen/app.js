@@ -8,8 +8,7 @@ class Application {
         this.mPluginSystem = pluginSystem;
     }
     findInterface(_interface) {
-        var _a;
-        return (_a = this.mPluginSystem) === null || _a === void 0 ? void 0 : _a.findInterface(_interface);
+        return this.mPluginSystem?.findInterface(_interface);
     }
     get name() {
         return this.curName;

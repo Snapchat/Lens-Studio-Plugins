@@ -102,6 +102,10 @@ export class HomeScreen {
         this.creationMenu.reset();
     }
 
+    hidePopups() {
+        if (this.creationMenu.popup) this.creationMenu.popup.visible = false;
+    }
+
     onLoginChanged(status) {
         if (app.plugin.isActive) {
             this.init(status);

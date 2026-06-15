@@ -40,7 +40,7 @@ export function acceptTerms(terms, callback) {
 
 export function updateFavorites(effect_id, callback) {
     const request = new Network.HttpRequest();
-    request.url = 'https://ml.snap.com/api/me/favorites/' + effect_id;
+    request.url = 'https://ml.snap.com/api/effects/' + effect_id + ':favorite';
     request.method = Network.HttpRequest.Method.Put;
 
     Network.performAuthorizedHttpRequest(request, function(response) {
@@ -50,8 +50,8 @@ export function updateFavorites(effect_id, callback) {
 
 export function deleteFavorites(effect_id, callback) {
     const request = new Network.HttpRequest();
-    request.url = 'https://ml.snap.com/api/me/favorites/' + effect_id;
-    request.method = Network.HttpRequest.Method.Delete;
+    request.url = 'https://ml.snap.com/api/effects/' + effect_id + ':unfavorite';
+    request.method = Network.HttpRequest.Method.Put;
 
     Network.performAuthorizedHttpRequest(request, function(response) {
         callback(response);

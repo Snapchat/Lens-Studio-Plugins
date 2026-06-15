@@ -34,6 +34,7 @@ export class PreviewMenu {
         const settings = buildAssetData(controls);
 
         createAsset(settings, (response) => {
+            if (!app.authStatus) return;
             this.editEffectButton.enabled = true;
             if (response.statusCode == 200) {
                 logEventAssetCreation("SUCCESS", "UPDATE_EXISTING", inputFormat, "GENERATE_PREVIEW");
@@ -72,9 +73,11 @@ export class PreviewMenu {
         const settings = buildAnimationUpdateData(controls);
 
         addAnimationToAsset(this.asset_id, settings, (response) => {
+            if (!app.authStatus) return;
             if (response.statusCode == 200) {
                 //logEventAssetCreation("SUCCESS", "UPDATE_EXISTING", inputFormat, "GENERATE_PREVIEW");
                 getAsset(this.asset_id, (responseBody) => {
+                    if (!app.authStatus) return;
                     this.updateAnimationButton.enabled = true;
 
                     this.draftMeshState = true;
@@ -118,6 +121,7 @@ export class PreviewMenu {
         const settings = buildAnimationUpdateData(controls);
 
         copyAnimation(this.asset_id, settings, (response) => {
+            if (!app.authStatus) return;
             this.updateAnimationButton.enabled = true;
 
             if (response.statusCode == 200) {
@@ -153,6 +157,7 @@ export class PreviewMenu {
     onChangeAnimationClicked(controls) {
         app.log('Changing animation...', { 'progressBar': true });
         getAsset(this.asset_id, (asset) => {
+            if (!app.authStatus) return;
             if (asset.selectedDrivingAnimationId != null) {
                 this.copyAnimationFromAsset(controls);
             } else {
@@ -212,6 +217,7 @@ export class PreviewMenu {
         this.controls['imageReferencePicker'].value = [];
 
         getAsset(state.asset_id, (asset) => {
+            if (!app.authStatus) return;
             if (asset && asset.uploadUid) {
                 this.controls['imageReferencePicker'].value = [{uid: asset.uploadUid, url: asset.uploadUrl }];
                 this.updateEditButtonVisibility();

@@ -7,7 +7,7 @@ const params = {
         'description': 'Physically Based Rendering material with texture maps (base, normal, material params) and UV scale',
         'icon': import.meta.resolve('../Resources/Material.svg')
     },
-    graph_path: import.meta.resolve('Resources/pbr.ss_graph'),
+    graph_path: import.meta.resolve('Resources/pbr.graphShader'),
     custom_pass_info: {
         baseTex: {
             type: MaterialPresetFactory.CUSTOM_PARAMS_TYPE.baseTexture,

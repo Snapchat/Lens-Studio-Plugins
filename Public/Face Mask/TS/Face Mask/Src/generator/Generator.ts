@@ -47,6 +47,7 @@ export class Generator {
                         this.verificationFlow();
                     }
                 } else {
+                    this.cancel();
                     this.changeState(GeneratorState.Unauthorized);
                 }
             }
@@ -83,15 +84,34 @@ export class Generator {
             this.changeState(GeneratorState.Running);
             this.stopper.stop = false;
 
-            const api = new FaceMaskGenTask(params.prompt, params.negativePrompt, params.seed, this.stopper);
+            const api = new FaceMaskGenTask(
+                params.prompt,
+                params.negativePrompt,
+                params.seed,
+                this.stopper,
+                () => !app.authStatus
+            );
             const base64ImageData = await api.run();
+
+            if (!app.authStatus) {
+                this.changeState(GeneratorState.Unauthorized);
+                return;
+            }
 
             const imageBytes = Base64.decode(base64ImageData);
 
             this.retrieveTexturesFromBytes(imageBytes);
 
         } catch (error) {
+            if (!app.authStatus) {
+                this.changeState(GeneratorState.Unauthorized);
+                return;
+            }
             if (error instanceof ErrorWithCode) {
+                if (error.code === ErrorCode.Cancelled) {
+                    this.changeState(GeneratorState.Unauthorized);
+                    return;
+                }
                 this.changeState(GeneratorState.Failed, error.message);
                 if (error.code === ErrorCode.ViolatesCommunityGuidelines) {
                     app.notificationManager.showNotification(NotificationKey.ErrorViolatesCommunityGuidelines);
@@ -108,6 +128,11 @@ export class Generator {
                 app.notificationManager.showNotification(NotificationKey.ErrorUnknown);
                 logEventCreateAsset(EVENT_STATUS.FAILED, origin, EVENT_CREATE_ASSET.INPUT_FORMAT.TEXT);
             }
+            return;
+        }
+
+        if (!app.authStatus) {
+            this.changeState(GeneratorState.Unauthorized);
             return;
         }
 

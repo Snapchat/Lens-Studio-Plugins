@@ -1,0 +1,637 @@
+SchemaVersion: 1
+Nodes:
+  ChildNodes:
+    Node0:
+      DependencyIndex: 0
+      LevelID: 15
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Group:
+          String: ""
+        ItemCount:
+          Variable: 2
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: COLOR_MODE
+        SortIndex:
+          Variable: 0
+        SpecifySpecConst:
+          Variable: true
+        Title:
+          String: Color/Greyscale
+        Title0:
+          String: Color
+        Title1:
+          String: Greyscale
+        Tooltip:
+          String: ""
+      PositionX: 738
+      PositionY: -1412
+      TemplateID: nodes_inputs_parameters_droplist
+      Title1: DropList Parameter
+      Title2: Color/Greyscale
+    Node1:
+      DependencyIndex: 1
+      LevelID: 29
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 5
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: true
+        EnableMin:
+          Variable: true
+        Group:
+          String: ""
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.05
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: ditheringSize
+        SortIndex:
+          Variable: 3
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Dithering Size
+        Tooltip:
+          String: ""
+      PositionX: -349
+      PositionY: -1221
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Dithering Size
+    Node10:
+      DependencyIndex: 10
+      LevelID: 11
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Color:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        Coords:
+          ItemIndex: 2
+          ItemList: "UV Coord 0 : UV Coord 1 : Custom"
+        LODMode:
+          ItemIndex: 0
+          ItemList: "Auto : Custom"
+        LODValue:
+          Variable: 0.0
+        Texture:
+          ClassType2: TEXTURE_OBJECT_2D
+          Connection0:
+            NodeLevelID: 6
+            PortID: Texture
+        Type:
+          ItemIndex: 0
+          ItemList: "2D Map : 2D Normal Map"
+        UVCoord:
+          Connection0:
+            NodeLevelID: 12
+            PortID: ScreenCoord
+          Variable: [0.0, 0.0]
+      PositionX: 453
+      PositionY: -752
+      TemplateID: node_function_util_sample
+      TemplateVersionMajor: 2
+      TemplateVersionMinor: 1
+      Title1: Texture 2D Sample
+    Node11:
+      DependencyIndex: 11
+      LevelID: 5
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Code:
+          ClassType1: TEXT
+          String: |-
+            input_int ModeSwitch;
+            input_float IndexValue;
+            input_float Intensity;
+            input_color4 Tint;
+            input_color3 ScreenTexture;
+            output_vec4 Result;
+            
+            
+            float dither(float c, float i, float v)
+            {
+            	float closestColor = (c < i) ? 0.0 : 1.0;
+            	float secondClosestColor = 1.0 - closestColor;
+                float index = v / 16.0;
+            	float dis = abs(closestColor - c);
+            	return(dis < index) ? closestColor : secondClosestColor;
+            }
+            
+            void main()
+            {
+            
+                if(ModeSwitch == 0){
+            	Result = vec4(dither(ScreenTexture.r, Intensity, IndexValue),
+            				   dither(ScreenTexture.g, Intensity, IndexValue),
+            				   dither(ScreenTexture.b, Intensity, IndexValue), 1.0);
+                }
+                else{
+            	float dotColor = dot(ScreenTexture, vec3(0.3, 0.59, 0.11));
+            	Result = vec4(dither(dotColor, Intensity, IndexValue),
+            					dither(dotColor, Intensity, IndexValue),
+            					dither(dotColor, Intensity, IndexValue),1.0);
+                }
+                Result *= Tint;
+            }
+        Description:
+          ClassType1: TEXT
+          String: ""
+        Examples:
+          ItemIndex: 0
+          ItemList: "Custom : Input/Output/Global Types : Extra Functions : Procedural Execution : Lighting Loop : System Built-In Values/Functions"
+        ID:
+          Variable: 5
+        IndexValue:
+          Connection0:
+            NodeLevelID: 72
+            PortID: Output
+          Variable: 0.0
+        Intensity:
+          Connection0:
+            NodeLevelID: 60
+            PortID: Output
+          Variable: 0.0
+        Locked:
+          Variable: false
+        ModeSwitch:
+          Connection0:
+            NodeLevelID: 15
+            PortID: Output
+          Variable: 0.0
+        Result:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScreenTexture:
+          ClassType1: COLOR
+          Connection0:
+            NodeLevelID: 11
+            PortID: Color
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        Stage:
+          ItemIndex: 1
+          ItemList: "Vertex : Pixel"
+        Tint:
+          ClassType1: COLOR
+          Connection0:
+            NodeLevelID: 63
+            PortID: Output
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        Title:
+          String: dither
+        ngs_Height:
+          Variable: 400
+        ngs_Version:
+          String: 1.0.0
+      PositionX: 1260
+      PositionY: -1325
+      TemplateID: node_util_custom
+      TemplateVersionMinor: 1
+      Title1: dither
+    Node12:
+      CommentSizeX: 0
+      CommentSizeY: 0
+      DependencyIndex: 12
+      LevelID: 4
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        CustomRays:
+          Variable: false
+        Depth:
+          Variable: 1.0
+        DepthMode:
+          ItemIndex: 0
+          ItemList: |2-
+            		Non-Linear - Normalized [0 to 1] ) :		Linear - Normalized [-1 to 1] :		View Space - Non-Normalized [-near to -far]	
+        DontFreezeSpec:
+          Variable: false
+        FinalColor:
+          ClassType1: COLOR
+          Connection0:
+            NodeLevelID: 5
+            PortID: Result
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        FinalColor1:
+          ClassType1: COLOR
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        FinalColor2:
+          ClassType1: COLOR
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        FinalColor3:
+          ClassType1: COLOR
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        Negative:
+          Variable: false
+        RayDirection:
+          Variable: [0.0, 1.0, 0.0]
+        RayOrigin:
+          Variable: [0.0, 0.0, 0.0]
+        Targets:
+          ItemIndex: 0
+          ItemList: "1 : 2 : 3 : 4"
+        Type:
+          ItemIndex: 1
+          ItemList: "3D : Post Effect : Hair"
+        WorldNormal:
+          Variable: [0.0, 1.0, 0.0]
+        WorldPosition:
+          Variable: [0.0, 0.0, 0.0]
+        WorldTangent:
+          Variable: [0.0, 0.0, 1.0]
+        WriteDepth:
+          Variable: false
+      PositionX: 2023
+      PositionY: -1327
+      TemplateID: nodes_main_graph
+      Title1: Shader
+      Title2: Post Effect
+    Node13:
+      CommentSizeX: 423
+      CommentSizeY: 334
+      DependencyIndex: 13
+      LevelID: 0
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Color:
+          ClassType1: COLOR
+          Variable: [0.4000000059604645, 0.699999988079071, 1.0, 0.10000000149011612]
+        Comment:
+          String: "indexMatrix4x4[16]"
+        NewComment:
+          ClassType1: TEXT
+          String: "indexMatrix[16]"
+        NewToolTip:
+          ClassType1: TEXT
+          String: ""
+        Tooltip:
+          String: ""
+        Upgraded:
+          Variable: true
+      PositionX: 121
+      PositionY: -1316
+      TemplateID: node_util_comment
+      Title1: ""
+    Node14:
+      CommentSizeX: 982
+      CommentSizeY: 518
+      DependencyIndex: 14
+      LevelID: 13
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Color:
+          ClassType1: COLOR
+          Variable: [0.4000000059604645, 0.699999988079071, 1.0, 0.10000000149011612]
+        Comment:
+          String: indexValue()
+        NewComment:
+          ClassType1: TEXT
+          String: indexValue
+        NewToolTip:
+          ClassType1: TEXT
+          String: ""
+        Tooltip:
+          String: ""
+        Upgraded:
+          Variable: true
+      PositionX: -394
+      PositionY: -1384
+      TemplateID: node_util_comment
+      Title1: ""
+    Node2:
+      DependencyIndex: 2
+      LevelID: 6
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        DepthMap:
+          Variable: false
+        ExtraOutputs:
+          Variable: false
+        Group:
+          String: ""
+        PixelSize:
+          IOType: 1
+          Variable: [0.0, 0.0]
+        ScriptName:
+          String: screenTexture
+        SortIndex:
+          Variable: 0
+        Texture:
+          ClassType2: TEXTURE_OBJECT_2D
+          IOType: 1
+        TextureSize:
+          IOType: 1
+          Variable: [0.0, 0.0]
+        Title:
+          String: Screen Texture
+        Tooltip:
+          String: ""
+      PositionX: -420
+      PositionY: -736
+      Selected: true
+      TemplateID: nodes_inputs_parameters_texture2d_object
+      Title1: Texture 2D Object Parameter
+      Title2: Screen Texture
+    Node3:
+      DependencyIndex: 3
+      LevelID: 9
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Code:
+          ClassType1: TEXT
+          String: |-
+            input_float DitheringSize;
+            input_texture_2d ScreenTexture;
+            output_float Result;
+            
+            void main()
+            {	
+            	vec2 uv = system.getSurfaceUVCoord0();
+            	vec2 texSize = ScreenTexture.textureSize();
+            	vec2 fragCoord = uv * texSize;
+            	float xIndex = floor(mod(fragCoord.x * DitheringSize, 4.0));
+            	float yIndex = floor(mod(fragCoord.y * DitheringSize, 4.0));
+            	Result = xIndex + yIndex * 4.0;
+            }
+        Description:
+          ClassType1: TEXT
+          String: ""
+        DitheringSize:
+          Connection0:
+            NodeLevelID: 29
+            PortID: Output
+          Variable: 0.0
+        Examples:
+          ItemIndex: 0
+          ItemList: "Custom : Input/Output/Global Types : Extra Functions : Procedural Execution : Lighting Loop : System Built-In Values/Functions"
+        ID:
+          Variable: 9
+        Locked:
+          Variable: false
+        Result:
+          IOType: 1
+          Variable: 0.0
+        ScreenTexture:
+          ClassType2: TEXTURE_OBJECT_2D
+          Connection0:
+            NodeLevelID: 6
+            PortID: Texture
+        Stage:
+          ItemIndex: 1
+          ItemList: "Vertex : Pixel"
+        Title:
+          String: XY Index Value
+        ngs_Height:
+          Variable: 400
+        ngs_Version:
+          String: 1.0.0
+      PositionX: -134
+      PositionY: -1239
+      TemplateID: node_util_custom
+      TemplateVersionMinor: 1
+      Title1: XY Index Value
+    Node4:
+      DependencyIndex: 4
+      LevelID: 69
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 5
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Index:
+          Connection0:
+            NodeLevelID: 9
+            PortID: Result
+          Variable: 0.0
+        Item0:
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        Item1:
+          Variable: [8.0, 0.0, 0.0, 0.0]
+        Item10:
+          Variable: [1.0, 0.0, 0.0, 0.0]
+        Item11:
+          Variable: [9.0, 0.0, 0.0, 0.0]
+        Item12:
+          Variable: [15.0, 0.0, 0.0, 0.0]
+        Item13:
+          Variable: [7.0, 0.0, 0.0, 0.0]
+        Item14:
+          Variable: [13.0, 0.0, 0.0, 0.0]
+        Item15:
+          Variable: [5.0, 0.0, 0.0, 0.0]
+        Item2:
+          Variable: [2.0, 0.0, 0.0, 0.0]
+        Item3:
+          Variable: [10.0, 0.0, 0.0, 0.0]
+        Item4:
+          Variable: [12.0, 0.0, 0.0, 0.0]
+        Item5:
+          Variable: [4.0, 0.0, 0.0, 0.0]
+        Item6:
+          Variable: [14.0, 0.0, 0.0, 0.0]
+        Item7:
+          Variable: [6.0, 0.0, 0.0, 0.0]
+        Item8:
+          Variable: [3.0, 0.0, 0.0, 0.0]
+        Item9:
+          Variable: [11.0, 0.0, 0.0, 0.0]
+        Size:
+          Variable: 16
+        SizeOut:
+          IOType: 1
+          Variable: 0.0
+        Value:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+      PositionX: 157
+      PositionY: -1275
+      TemplateID: nodes_util_array
+      Title1: Float Array Value
+    Node5:
+      DependencyIndex: 5
+      LevelID: 71
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        EnableMax:
+          Variable: true
+        EnableMin:
+          Variable: true
+        Group:
+          String: ""
+        Max:
+          Variable: 10
+        Min:
+          Variable: 0
+        Output:
+          IOType: 1
+          Variable: 0.0
+        ScriptName:
+          String: contrast
+        SortIndex:
+          Variable: 4
+        Step:
+          Variable: 1
+        Title:
+          String: Contrast
+        Tooltip:
+          String: ""
+      PositionX: 169
+      PositionY: -1107
+      TemplateID: nodes_inputs_parameters_int
+      Title1: Int Parameter
+      Title2: Contrast
+    Node6:
+      DependencyIndex: 6
+      LevelID: 72
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Input0:
+          Connection0:
+            NodeLevelID: 69
+            PortID: Value
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        Input1:
+          Connection0:
+            NodeLevelID: 71
+            PortID: Output
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        Inputs:
+          ItemIndex: 0
+          ItemList: "2 : 3 : 4 : 5 : 6"
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        Type0:
+          ItemIndex: 0
+          ItemList: "auto : xyzw : rgba : xyz : rgb : xy : x"
+        Type1:
+          ItemIndex: 0
+          ItemList: "auto : xyzw : rgba : xyz : rgb : xy : x"
+      PositionX: 438
+      PositionY: -1294
+      TemplateID: nodes_math_add
+      Title1: Add
+    Node7:
+      DependencyIndex: 7
+      LevelID: 60
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 5
+          ItemList: "xyzw : rgba : xyz : rgb : xy : x"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        EnableMax:
+          Variable: true
+        EnableMin:
+          Variable: true
+        Group:
+          String: ""
+        Max:
+          Variable: 1.0
+        Min:
+          Variable: 0.0
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: intensity
+        SortIndex:
+          Variable: 2
+        Step:
+          Variable: 0.009999999776482582
+        Title:
+          String: Intensity
+        Tooltip:
+          String: ""
+      PositionX: 748
+      PositionY: -1220
+      TemplateID: nodes_inputs_parameters_float
+      Title1: Float Parameter
+      Title2: Intensity
+    Node8:
+      DependencyIndex: 8
+      LevelID: 63
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        Channels:
+          ItemIndex: 0
+          ItemList: "rgba : rgb"
+        Default:
+          Variable: [1.0, 1.0, 1.0, 1.0]
+        Group:
+          String: ""
+        Output:
+          IOType: 1
+          Variable: [0.0, 0.0, 0.0, 0.0]
+        ScriptName:
+          String: colortint
+        SortIndex:
+          Variable: 1
+        Tooltip:
+          String: ""
+        UniqueID:
+          String: Color Tint
+      PositionX: 747
+      PositionY: -1134
+      TemplateID: nodes_inputs_parameters_color
+      Title1: Color Parameter
+      Title2: Color Tint
+    Node9:
+      DependencyIndex: 9
+      LevelID: 12
+      NodeCount: 0
+      NodeType: 1
+      Ports:
+        ScreenCoord:
+          IOType: 1
+          Variable: [0.0, 0.0]
+      PositionX: 147
+      PositionY: -566
+      TemplateID: node_input_shader_screencoord
+      Title1: Screen UV Coord
+  IsSubGraph0: true
+  IsSubGraph1: true
+  IsSubGraph2: true
+  IsSubGraph3: true
+  LevelID: 0
+  NodeType: 3
+  PositionX: 0
+  PositionY: 0
+  TemplateID: nodes_main_subgraph
+  Title1: ""
+  ViewOffsetX0: 392
+  ViewOffsetX1: -864
+  ViewOffsetX2: -864
+  ViewOffsetX3: -864
+  ViewOffsetY0: 1046
+  ViewOffsetY1: 953
+  ViewOffsetY2: 953
+  ViewOffsetY3: 953
+  ViewScale0: 0.701
+SystemID: dev.snap.shaders

@@ -2,6 +2,7 @@ import * as Ui from 'LensStudio:Ui';
 
 import { Preview } from './Preview/Preview.js';
 import { HomeScreen } from './HomeScreen/HomeScreen.js';
+import { RefineImageScreen } from './RefineImage/RefineImageScreen.js';
 
 import app from '../application/app.js';
 
@@ -19,6 +20,7 @@ export class BodyMorphPlugin {
 
         this.preview = new Preview(this.stateChanged.bind(this));
         this.homeScreen = new HomeScreen(this.stateChanged.bind(this));
+        this.refineScreen = new RefineImageScreen(this.stateChanged.bind(this));
 
         this.configureDialog();
 
@@ -41,6 +43,9 @@ export class BodyMorphPlugin {
         if (state.screen == 'preview') {
             this.preview.updatePreview(state);
             this.views.currentIndex = 1;
+        } else if (state.screen == 'refine') {
+            this.refineScreen.updateState(state);
+            this.views.currentIndex = 2;
         } else if (state.screen == 'default') {
             this.views.currentIndex = 0;
             this.homeScreen.reset(state);
@@ -116,6 +121,7 @@ export class BodyMorphPlugin {
 
         this.views.addWidget(this.homeScreen.create(this.views));
         this.views.addWidget(this.preview.create(this.views));
+        this.views.addWidget(this.refineScreen.create(this.views));
 
         this.views.currentIndex = 0;
 

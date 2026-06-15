@@ -136,6 +136,7 @@ export class AssetPreview {
 
         this.deletionDialog = gui.createDialog();
         this.deletionDialog.windowTitle = 'Delete Gaussian Splatting Asset';
+        this.deletionDialog.setModal(true);
 
         this.deletionDialog.resize(460, 140);
 

@@ -4,7 +4,8 @@ A panel plugin for executing editor code snippets during Lens Studio plugin deve
 
 ## Features
 
-- **Monaco Editor** - Syntax highlighting, undo/redo, code folding, dark theme, full Lens Studio API autocomplete (from shared-types/editor.d.ts)
+- **Monaco Editor** - Syntax highlighting, undo/redo, code folding, dark theme, Lens Studio API autocomplete (from public-docs/public-editor.
+  d.ts)
 - **Pre-defined Variables** - `model` and `pluginSystem` passed as parameters; get `scene` and `assetManager` from `model.project`
 - **Async Support** - `await import()` and top-level await for dynamic imports
 - **Output Panel** - `console.log`, `console.error`, `console.warn` shown inline

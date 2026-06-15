@@ -626,6 +626,7 @@ export class GalleryView {
 
         this.deletionDialog = gui.createDialog();
         this.deletionDialog.windowTitle = 'Delete Head Generator asset?';
+        this.deletionDialog.setModal(true);
 
         this.deletionDialog.resize(460, 140);
 

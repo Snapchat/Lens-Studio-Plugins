@@ -7,7 +7,7 @@
   "scripts": {
     "clean": "rm -rf dist",
     "build": "npm run clean && tsc && cp src/replacements_grouped.json dist/",
-    "update": "python3 scripts/update_deprecated.py $1",
+    "update": "python3 scripts/update_deprecated.py ${1:-../../public-docs/public-editor.d.ts}",
     "export": "mkdir -p storage/resources/$npm_package_version && zip -r storage/resources/$npm_package_version/package.zip dist module.json",
     "watch": "tsc --watch"
   },

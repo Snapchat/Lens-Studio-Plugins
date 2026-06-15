@@ -8,10 +8,12 @@ export class GalleryItem {
         this.tileHeight = 206;
         this.isFailed = false;
         this.isTrained = false;
+        this._isFavorite = false;
         this.connections = [];
         this.curState = "RUNNING";
         this.onClickCallback = () => { };
         this.onImportClickCallback = () => { };
+        this.onFavoriteClickCallback = () => { };
         this.id = id;
         this.tempDir = FileSystem.TempDir.create();
         this.description = "";
@@ -72,6 +74,7 @@ export class GalleryItem {
                     this.importButton.setFixedWidth(32);
                 }
             }
+            this.favoriteButton.visible = hovered || this._isFavorite;
         }));
         [this.frame, this.border, this.movieView].forEach((item) => {
             this.connections.push(item.onClick.connect(() => {
@@ -112,6 +115,22 @@ export class GalleryItem {
                     this.importButton.enabled = true;
                 });
             }
+        }));
+        this.favoriteTruePixmap = new Ui.Pixmap(import.meta.resolve('./Resources/favorite_true.svg'));
+        this.favoriteFalsePixmap = new Ui.Pixmap(import.meta.resolve('./Resources/favorite_false.svg'));
+        const favoriteIconSize = 16;
+        const favoriteIconMargin = 8;
+        this.favoriteButton = new Ui.ImageView(this.frame);
+        this.favoriteButton.setFixedWidth(favoriteIconSize);
+        this.favoriteButton.setFixedHeight(favoriteIconSize);
+        this.favoriteButton.scaledContents = true;
+        this.favoriteButton.move(this.tileWidth - favoriteIconMargin - favoriteIconSize, favoriteIconMargin);
+        this.favoriteButton.pixmap = this.favoriteFalsePixmap;
+        this.favoriteButton.visible = false;
+        this.connections.push(this.favoriteButton.onClick.connect(() => {
+            this._isFavorite = !this._isFavorite;
+            this.favoriteButton.pixmap = this._isFavorite ? this.favoriteTruePixmap : this.favoriteFalsePixmap;
+            this.onFavoriteClickCallback(this.id, this._isFavorite);
         }));
     }
     addPreview(previewUrl) {
@@ -154,6 +173,19 @@ export class GalleryItem {
     }
     setOnImportClickCallback(callback) {
         this.onImportClickCallback = callback;
+    }
+    setOnFavoriteClickCallback(callback) {
+        this.onFavoriteClickCallback = callback;
+    }
+    setFavorite(isFavorite) {
+        this._isFavorite = isFavorite;
+        this.favoriteButton.pixmap = isFavorite ? this.favoriteTruePixmap : this.favoriteFalsePixmap;
+        this.favoriteButton.visible = isFavorite;
+    }
+    revertFavorite() {
+        this._isFavorite = !this._isFavorite;
+        this.favoriteButton.pixmap = this._isFavorite ? this.favoriteTruePixmap : this.favoriteFalsePixmap;
+        this.favoriteButton.visible = this._isFavorite;
     }
     enableLoading() {
         this.loading.visible = true;

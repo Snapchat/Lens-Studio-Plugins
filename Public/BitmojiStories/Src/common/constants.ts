@@ -1,0 +1,6 @@
+export const SIDE_BAR_WIDTH = 260;
+export const TOOL_BAR_BUTTON_WIDTH = 32;
+export const FRAME_CONTROL_BAR_HEIGHT = 56;
+export const FRAME_PREVIEW_WIDTH = 52;
+export const FRAME_PREVIEW_HEIGHT = 40;
+export const BUILDING_BLOCKS_PACKAGE_ID = "494920cf-41dc-4113-bd2b-23f226b1f877";

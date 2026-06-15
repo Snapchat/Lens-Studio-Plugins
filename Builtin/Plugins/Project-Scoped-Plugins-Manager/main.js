@@ -1,6 +1,7 @@
 import { CoreService } from 'LensStudio:CoreService';
 import * as fs from 'LensStudio:FileSystem';
 import { PackageTracker } from './PackageTracker.js';
+import { PluginDirectoryLoader } from './PluginDirectoryLoader.js';
 
 const pluginsFolderName = "Plugins";
 
@@ -17,6 +18,21 @@ export class ProjectScopedPluginsManager extends CoreService {
         this.model = this.pluginSystem.findInterface(Editor.Model.IModel);
         this.modelGuards = [];
         this.projectGuards = [];
+        this.packageTracker = null;
+        this.startupTimer = null;
+        this.stopping = false;
+        this.pluginDirectoryLoader = new PluginDirectoryLoader(this.pluginSystem);
+
+        this.startupTimer = setTimeout(() => {
+            this.startupTimer = null;
+            this.initializeAfterPluginLoad();
+        }, 0);
+    }
+
+    initializeAfterPluginLoad() {
+        if (!this.pluginDirectoryLoader) {
+            return;
+        }
 
         this.packageTracker = new PackageTracker({
             getAbsolutePath: (sourcePath) => {
@@ -28,13 +44,13 @@ export class ProjectScopedPluginsManager extends CoreService {
                 const dir = new Editor.Path(pluginDir);
                 if (fs.exists(dir)) {
                     console.log("[PackageTracker] Loading plugins from: " + pluginDir, console.None);
-                    this.pluginSystem.loadDirectory(dir);
+                    this.pluginDirectoryLoader.load(dir);
                 }
             },
             unloadPlugins: (pluginDir) => {
                 const dir = new Editor.Path(pluginDir);
                 console.log("[PackageTracker] Unloading plugins from: " + pluginDir, console.None);
-                this.pluginSystem.unloadDirectory(dir);
+                this.pluginDirectoryLoader.unload(dir, !this.stopping);
             }
         });
 
@@ -44,7 +60,7 @@ export class ProjectScopedPluginsManager extends CoreService {
 
         this.connectProjectListeners();
 
-        this.timeout = setTimeout(() => this.addDirectory(this.getPluginsDirectory()), 0);
+        this.addDirectory(this.getPluginsDirectory());
     }
 
     connectProjectListeners() {
@@ -101,7 +117,9 @@ export class ProjectScopedPluginsManager extends CoreService {
 
     onProjectAboutToBeChanged() {
         this.disconnectProjectListeners();
-        this.packageTracker.clear();
+        if (this.packageTracker) {
+            this.packageTracker.clear();
+        }
         this.removeDirectory(this.getPluginsDirectory());
     }
 
@@ -132,12 +150,26 @@ export class ProjectScopedPluginsManager extends CoreService {
     }
 
     stop() {
+        this.stopping = true;
+
+        if (this.startupTimer) {
+            clearTimeout(this.startupTimer);
+            this.startupTimer = null;
+        }
+
         this.modelGuards.forEach(guard => guard.disconnect());
         this.modelGuards.length = 0;
         this.disconnectProjectListeners();
-        this.packageTracker.clear();
+        if (this.packageTracker) {
+            this.packageTracker.clear();
+        }
 
         this.removeDirectory(this.getPluginsDirectory());
+
+        if (this.pluginDirectoryLoader) {
+            this.pluginDirectoryLoader.dispose();
+            this.pluginDirectoryLoader = null;
+        }
     }
 
     getProjectDirectory() {
@@ -149,12 +181,14 @@ export class ProjectScopedPluginsManager extends CoreService {
     }
 
     addDirectory(directory) {
-        if (fs.exists(directory)) {
-            this.pluginSystem.loadDirectory(directory);
+        if (this.pluginDirectoryLoader && fs.exists(directory)) {
+            this.pluginDirectoryLoader.load(directory);
         }
     }
 
     removeDirectory(directory) {
-        this.pluginSystem.unloadDirectory(directory);
+        if (this.pluginDirectoryLoader) {
+            this.pluginDirectoryLoader.unload(directory, !this.stopping);
+        }
     }
 }
