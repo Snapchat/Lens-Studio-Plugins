@@ -27,7 +27,7 @@ const customParamsTypeToFactory = {
 export function createMaterialPreset(params, section = 'Materials') {
     class MaterialPreset extends Preset {
         static descriptor() {
-            return {
+            const d = {
                 id: params.descriptor.id,
                 name: params.descriptor.name,
                 description: params.descriptor.description,
@@ -35,6 +35,10 @@ export function createMaterialPreset(params, section = 'Materials') {
                 section: section,
                 entityType: 'Material'
             };
+            if (params.descriptor.intendedPlatforms) {
+                d.intendedPlatforms = params.descriptor.intendedPlatforms;
+            }
+            return d;
         }
         async createAsync(d) {
             const destination = d ? d : new Editor.Path('');

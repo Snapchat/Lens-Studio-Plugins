@@ -1,7 +1,7 @@
 /**
  * @module Editor Scripting
- * @version 5.22.0
- * For Snapchat Version: 13.95
+ * @version 5.23.0
+ * For Snapchat Version: 14.12
 */
 interface ComponentNameMap {
     "AnimationPlayer": Editor.Components.AnimationPlayer;
@@ -4878,6 +4878,121 @@ declare namespace Editor {
 
 declare namespace Editor {
     namespace Assets {
+        class RemoteAssetMetadata {
+            
+            /** @hidden */
+            protected constructor()
+            
+            /**
+            * @readonly
+            */
+            description: string
+            
+            /**
+            * @readonly
+            */
+            iconUrl: string
+            
+            /**
+            * @readonly
+            */
+            id: string
+            
+            /**
+            * @readonly
+            */
+            lensUsages: number
+            
+            /**
+            * @readonly
+            */
+            name: string
+            
+            /**
+            * @readonly
+            */
+            organization: Editor.Assets.RemoteAssetOrganization
+            
+            /**
+            * @readonly
+            */
+            resource: Editor.Assets.RemoteAssetResource
+            
+            /**
+            * @readonly
+            */
+            size: number
+            
+            /**
+            * @readonly
+            */
+            type: Editor.Assets.RemoteAssetType
+            
+        }
+    
+    }
+
+}
+
+declare namespace Editor {
+    namespace Assets {
+        class RemoteAssetOrganization {
+            
+            /** @hidden */
+            protected constructor()
+            
+            /**
+            * @readonly
+            */
+            id: string
+            
+            /**
+            * @readonly
+            */
+            name: string
+            
+        }
+    
+    }
+
+}
+
+declare namespace Editor {
+    namespace Assets {
+        class RemoteAssetResource {
+            
+            /** @hidden */
+            protected constructor()
+            
+            /**
+            * @readonly
+            */
+            url: string
+            
+        }
+    
+    }
+
+}
+
+declare namespace Editor {
+    namespace Assets {
+        enum RemoteAssetType {
+            Mesh,
+            Texture,
+            ObjectPrefab,
+            Script,
+            Audio,
+            MlAsset,
+            Invalid
+        }
+    
+    }
+
+}
+
+declare namespace Editor {
+    namespace Assets {
         /**
         * ML asset backed by a remote device-dependent resource.
         
@@ -4947,6 +5062,11 @@ declare namespace Editor {
             * Unique identifier of the remote asset.
             */
             assetId: string
+            
+            /**
+            * @readonly
+            */
+            metadata?: Editor.Assets.RemoteAssetMetadata
             
             /**
             * NEW
@@ -12984,6 +13104,8 @@ declare namespace Editor {
             */
             containsPanels(id: string): boolean
             
+            createPanel(id: string): void
+            
             /**
             * Retrieve a panel by ID.
             */
@@ -13166,6 +13288,8 @@ declare namespace Editor {
             
             */
             compressionProfile: Editor.GaussianSplatting.GsCompressionProfile
+            
+            crisp: boolean
             
             /**
             * Whether frames are encoded in groups of pictures to exploit temporal coherence between successive frames.
@@ -13930,6 +14054,22 @@ declare namespace Editor {
         
         /** @hidden */
         protected constructor()
+        
+    }
+
+}
+
+declare namespace Editor {
+    class IRuntimeBundleExporter extends Editor.IPluginComponent {
+        
+        /** @hidden */
+        protected constructor()
+        
+        exportRuntimeBundle(asset: Editor.Assets.Asset, targetDir: Editor.Path): Editor.Path | undefined
+        
+        exportRuntimeBundleAsync(asset: Editor.Assets.Asset, targetDir: Editor.Path): any
+        
+        static interfaceId: Editor.InterfaceId
         
     }
 
@@ -17159,6 +17299,16 @@ declare namespace Editor {
         * Creates a Rect from minimum and maximum corner points.
         */
         static fromMinMax(min: vec2, max: vec2): Editor.Rect
+        
+    }
+
+}
+
+declare namespace Editor {
+    class RuntimeBundleExporter extends Editor.IRuntimeBundleExporter {
+        
+        /** @hidden */
+        protected constructor()
         
     }
 
@@ -27690,15 +27840,6 @@ declare module "LensStudio:Ui" {
         dialogs: IDialogs
         
         /**
-        * Manager for workspace layouts and panels.
-        
-        * @readonly
-        
-        * @beta
-        */
-        workspaces: IWorkspaceManager
-        
-        /**
         * Interface identifier for IGui.
         */
         static interfaceId: Editor.InterfaceId
@@ -27841,132 +27982,6 @@ declare module "LensStudio:Ui" {
         
         */
         ItemIsUserTristate
-    }
-
-}
-
-declare module "LensStudio:Ui" {
-    /**
-    * Interface for workspace management.
-    
-    * @example
-    * ```ts
-    *     // IWorkspaceManager manages workspace layouts and presets.
-    *     // Access via gui.workspaces property.
-    *     const gui = this.pluginSystem.findInterface(IGui.interfaceId) as IGui;
-    *     const mgr: IWorkspaceManager = gui.workspaces;
-    *     console.log('Workspace count:', mgr.all.length);
-    
-    *     this.connections.push(
-    *       mgr.onActivated.connect((ws) => {
-    *         console.log('Workspace activated:', ws.metadata.name);
-    *       })
-    *     );
-    *     // Methods: create(descriptor), register(descriptor), unregister(handle)
-    *     // Properties: all (readonly Workspaces.Workspace[])
-    * ```
-    
-    */
-    class IWorkspaceManager extends ScriptObject {
-        
-        /** @hidden */
-        protected constructor()
-        
-        /**
-        * Create a workspace from a descriptor.
-        */
-        create(descriptor: Workspaces.Descriptor): Workspaces.Workspace
-        
-        /**
-        * Check if a descriptor is registered.
-        */
-        isRegistered(descriptor: Workspaces.Descriptor): boolean
-        
-        /**
-        * Read a workspace descriptor from a directory path.
-        */
-        readDescriptor(presetDirPath: Editor.Path): Workspaces.Descriptor | undefined
-        
-        /**
-        * Register a workspace descriptor and return a preset handle.
-        */
-        register(descriptor: Workspaces.Descriptor): Workspaces.PresetHandle
-        
-        /**
-        * Unregister a workspace by its preset handle.
-        */
-        unregister(handle: Workspaces.PresetHandle): void
-        
-        /**
-        * Array of all available workspaces.
-        
-        * @readonly
-        */
-        all: Workspaces.Workspace[]
-        
-        /**
-        * Emitted just before a workspace becomes the current active workspace during setCurrent(). Allows listeners to prepare for activation.
-        
-        * @readonly
-        */
-        onAboutToBeActivated: signal1<import('LensStudio:Ui').Workspaces.Workspace, void>
-        
-        /**
-        * Emitted just before a workspace is inserted into the manager's list. Fires during add() before the workspace is added to the internal collection.
-        
-        * @readonly
-        */
-        onAboutToBeAdded: signal1<import('LensStudio:Ui').Workspaces.Workspace, void>
-        
-        /**
-        * Emitted just before the current workspace is deactivated when switching to another workspace. Allows listeners to save state or cleanup.
-        
-        * @readonly
-        */
-        onAboutToBeDeactivated: signal1<import('LensStudio:Ui').Workspaces.Workspace, void>
-        
-        /**
-        * Emitted just before a workspace is removed from the manager. Fires during remove() before the workspace is ejected from the list, allowing state saving.
-        
-        * @readonly
-        */
-        onAboutToBeRemoved: signal1<import('LensStudio:Ui').Workspaces.Workspace, void>
-        
-        /**
-        * Emitted after a workspace has been successfully activated and is now current. Fires after the tab index is set and the workspace is ready for use.
-        
-        * @readonly
-        */
-        onActivated: signal1<import('LensStudio:Ui').Workspaces.Workspace, void>
-        
-        /**
-        * Emitted after a workspace has been successfully added to the manager and its tab created. Fires after the workspace is inserted into the internal list.
-        
-        * @readonly
-        */
-        onAdded: signal1<import('LensStudio:Ui').Workspaces.Workspace, void>
-        
-        /**
-        * Emitted after a workspace is fully initialized with its layout loaded and panel properties deserialized. Indicates the workspace is ready for interaction.
-        
-        * @readonly
-        */
-        onCreated: signal1<import('LensStudio:Ui').Workspaces.Workspace, void>
-        
-        /**
-        * Emitted after a workspace has been deactivated and is no longer current. Fires after another workspace is activated.
-        
-        * @readonly
-        */
-        onDeactivated: signal1<import('LensStudio:Ui').Workspaces.Workspace, void>
-        
-        /**
-        * Emitted after a workspace is successfully removed from the manager. Passes the workspace's metadata (not the object itself, as it may be destroyed).
-        
-        * @readonly
-        */
-        onRemoved: signal1<import('LensStudio:Ui').Workspaces.Metadata, void>
-        
     }
 
 }
@@ -33555,202 +33570,6 @@ declare module "LensStudio:Ui" {
 
 }
 
-declare module "LensStudio:Ui" {
-    namespace Workspaces {
-        /**
-        * Describes a workspace layout, holding its serialized layout data and associated metadata.
-        
-        * @beta
-        
-        * @example
-        * ```ts
-        *     // Workspaces.Descriptor defines a workspace layout preset.
-        *     // Properties: metadata (Workspaces.Metadata), layoutReader (IReader).
-        *     const desc = new Workspaces.Descriptor();
-        *     const meta = new Workspaces.Metadata();
-        *     meta.name = 'Custom Layout';
-        *     meta.icon = Editor.Icon.fromFile(new Editor.Path('workspace-icon.svg'));
-        *     desc.metadata = meta;
-        
-        *     console.log('Workspace descriptor name:', desc.metadata.name);
-        
-        *     // Register with IWorkspaceManager
-        *     const gui = this.pluginSystem.findInterface(IGui.interfaceId) as IGui;
-        *     const mgr = gui.workspaces;
-        *     console.log('Registered:', mgr.isRegistered(desc));
-        * ```
-        
-        */
-        class Descriptor {
-            /**
-            * Constructs a new workspace descriptor holding layout and metadata configuration.
-            
-            * @beta
-            */
-            constructor()
-            
-            /**
-            * Function that reads and returns the layout configuration for the workspace.
-            
-            * @beta
-            */
-            layoutReader: import('LensStudio:Serialization').IReader
-            
-            /**
-            * Metadata associated with the workspace descriptor, such as display name and other identifying properties.
-            
-            * @beta
-            */
-            metadata: Workspaces.Metadata
-            
-        }
-    
-    }
-
-}
-
-declare module "LensStudio:Ui" {
-    namespace Workspaces {
-        /**
-        * Holds display metadata for a workspace, including its name and icon.
-        
-        * @beta
-        
-        * @example
-        * ```ts
-        *     // Workspaces.Metadata holds the display name and icon for a workspace.
-        *     // Properties: name (string), icon (Editor.Icon).
-        *     const meta = new Workspaces.Metadata();
-        *     meta.name = 'Development';
-        *     meta.icon = Editor.Icon.fromFile(new Editor.Path('workspace-icon.svg'));
-        *     console.log('Metadata name:', meta.name);
-        
-        *     // Read metadata from existing workspaces
-        *     const gui = this.pluginSystem.findInterface(IGui.interfaceId) as IGui;
-        *     const mgr = gui.workspaces;
-        *     for (const ws of mgr.all) {
-        *       console.log('Workspace:', ws.metadata.name);
-        *     }
-        * ```
-        
-        */
-        class Metadata {
-            /**
-            * Constructs a new Metadata instance for a workspace, holding its display name and icon.
-            
-            * @beta
-            */
-            constructor()
-            
-            /**
-            * Icon representing the workspace in the UI.
-            
-            * @beta
-            */
-            icon: Editor.Icon
-            
-            /**
-            * Display name of the workspace.
-            
-            * @beta
-            */
-            name: string
-            
-        }
-    
-    }
-
-}
-
-declare module "LensStudio:Ui" {
-    namespace Workspaces {
-        /**
-        * Handle referencing a predefined workspace preset.
-        
-        * @beta
-        
-        * @example
-        * ```ts
-        *     // Workspaces.PresetHandle is an opaque handle returned by
-        *     // IWorkspaceManager.register(). Store it to unregister later.
-        *     const gui = this.pluginSystem.findInterface(IGui.interfaceId) as IGui;
-        *     const mgr = gui.workspaces;
-        
-        *     // PresetHandle is returned by IWorkspaceManager.register()
-        *     // Store it to unregister the workspace preset during cleanup
-        *     console.log('IWorkspaceManager obtained via gui.workspaces');
-        *     console.log('PresetHandle is the opaque token from mgr.register(descriptor)');
-        * ```
-        
-        */
-        class PresetHandle {
-            
-            /** @hidden */
-            protected constructor()
-            
-        }
-    
-    }
-
-}
-
-declare module "LensStudio:Ui" {
-    namespace Workspaces {
-        /**
-        * Represents an editor workspace, managing its layout and state.
-        
-        * @beta
-        
-        * @example
-        * ```ts
-        *     // Workspaces.Workspace represents a workspace layout with a dock manager
-        *     // and metadata. Access via IWorkspaceManager.all or IWorkspaceManager.create().
-        *     // Properties: metadata (Workspaces.Metadata), dockManager (Editor.Dock.IDockManager).
-        *     const gui = this.pluginSystem.findInterface(IGui.interfaceId) as IGui;
-        *     const mgr = gui.workspaces;
-        
-        *     const workspaces: Workspaces.Workspace[] = mgr.all;
-        *     for (const ws of workspaces) {
-        *       console.log('Workspace:', ws.metadata.name);
-        *     }
-        
-        *     this.connections.push(
-        *       mgr.onActivated.connect((ws: Workspaces.Workspace) => {
-        *         console.log('Activated workspace:', ws.metadata.name);
-        *       })
-        *     );
-        * ```
-        
-        */
-        class Workspace extends ScriptObject {
-            
-            /** @hidden */
-            protected constructor()
-            
-            /**
-            * The dock manager controlling panel layout within this workspace.
-            
-            * @readonly
-            
-            * @beta
-            */
-            dockManager: Editor.Dock.IDockManager
-            
-            /**
-            * Metadata associated with this workspace.
-            
-            * @readonly
-            
-            * @beta
-            */
-            metadata: Workspaces.Metadata
-            
-        }
-    
-    }
-
-}
-
 /**
 * Module providing synthetic input and widget inspection utilities for driving the Lens Studio UI in integration tests.
 
@@ -33789,6 +33608,10 @@ declare module "LensStudio:UiTest" {
     
     */
     export function MouseEvent(type: EventType, button: import('LensStudio:Ui').MouseButton, modifiers: import('LensStudio:Ui').KeyboardModifier, x: number, y: number): import('LensStudio:Ui').MouseEvent
+    
+    export function compareImages(actual: import('LensStudio:Ui').Pixmap, reference: import('LensStudio:Ui').Pixmap): number
+    
+    export function createDiffImage(actual: import('LensStudio:Ui').Pixmap, reference: import('LensStudio:Ui').Pixmap): import('LensStudio:Ui').Pixmap
     
     /**
     * Returns descendant widgets of the given widget whose class matches the specified class name.
@@ -34278,6 +34101,138 @@ declare module "LensStudio:WebSocket" {
         * Creates and returns a new WebSocketServer instance.
         */
         static create(): WebSocketServer
+        
+    }
+
+}
+
+/**
+* @module LensStudio:Workspaces
+*/
+declare module "LensStudio:Workspaces" {
+}
+
+declare module "LensStudio:Workspaces" {
+    class Descriptor {
+        constructor()
+        
+        layoutReader: import('LensStudio:Serialization').IReader
+        
+        metadata: Metadata
+        
+    }
+
+}
+
+declare module "LensStudio:Workspaces" {
+    class IWorkspaceManager extends Editor.IPluginComponent {
+        
+        /** @hidden */
+        protected constructor()
+        
+        create(descriptor: Descriptor): Workspace
+        
+        isRegistered(descriptor: Descriptor): boolean
+        
+        readDescriptor(presetDirPath: Editor.Path): Descriptor | undefined
+        
+        register(descriptor: Descriptor): PresetHandle
+        
+        unregister(handle: PresetHandle): void
+        
+        /**
+        * @readonly
+        */
+        all: Workspace[]
+        
+        /**
+        * @readonly
+        */
+        onAboutToBeActivated: signal1<import('LensStudio:Workspaces').Workspace, void>
+        
+        /**
+        * @readonly
+        */
+        onAboutToBeAdded: signal1<import('LensStudio:Workspaces').Workspace, void>
+        
+        /**
+        * @readonly
+        */
+        onAboutToBeDeactivated: signal1<import('LensStudio:Workspaces').Workspace, void>
+        
+        /**
+        * @readonly
+        */
+        onAboutToBeRemoved: signal1<import('LensStudio:Workspaces').Workspace, void>
+        
+        /**
+        * @readonly
+        */
+        onActivated: signal1<import('LensStudio:Workspaces').Workspace, void>
+        
+        /**
+        * @readonly
+        */
+        onAdded: signal1<import('LensStudio:Workspaces').Workspace, void>
+        
+        /**
+        * @readonly
+        */
+        onCreated: signal1<import('LensStudio:Workspaces').Workspace, void>
+        
+        /**
+        * @readonly
+        */
+        onDeactivated: signal1<import('LensStudio:Workspaces').Workspace, void>
+        
+        /**
+        * @readonly
+        */
+        onRemoved: signal1<import('LensStudio:Workspaces').Metadata, void>
+        
+        static interfaceId: Editor.InterfaceId
+        
+    }
+
+}
+
+declare module "LensStudio:Workspaces" {
+    class Metadata {
+        constructor()
+        
+        icon: Editor.Icon
+        
+        name: string
+        
+    }
+
+}
+
+declare module "LensStudio:Workspaces" {
+    class PresetHandle {
+        
+        /** @hidden */
+        protected constructor()
+        
+    }
+
+}
+
+declare module "LensStudio:Workspaces" {
+    class Workspace extends ScriptObject {
+        
+        /** @hidden */
+        protected constructor()
+        
+        /**
+        * @readonly
+        */
+        dockManager: Editor.Dock.IDockManager
+        
+        /**
+        * @readonly
+        */
+        metadata: Metadata
         
     }
 
@@ -36190,6 +36145,324 @@ declare class vec4b {
 }
 
 /**
+ * @module LensStudio:Event.js
+ */
+declare module "LensStudio:Event.js" {
+/**
+ * A function that handles event notifications.
+ * @template T - The type of data passed to the listener. Use void for events without data.
+ */
+export type EventListener<T = void> = T extends void ? () => void : (data: T) => void;
+/**
+ * A function that unsubscribes a listener from an event when called.
+ */
+export type Unsubscribe = () => void;
+/**
+ * A type-safe event emitter that supports adding, removing, and triggering listeners.
+ * Provides functionality for one-time listeners, error handling, and event enabling/disabling.
+ *
+ * @template T - The type of data passed to event listeners. Defaults to void for events without data.
+ *
+ * @example
+ * // Event without data
+ * const onComplete = new Event<void>();
+ * onComplete.add(() => console.log('Complete!'));
+ * onComplete.trigger();
+ *
+ * @example
+ * // Event with data
+ * const onMessage = new Event<string>();
+ * onMessage.add((msg) => console.log('Message:', msg));
+ * onMessage.trigger('Hello World');
+ *
+ * @example
+ * // One-time listener with unsubscribe
+ * const onClick = new Event<{x: number, y: number}>();
+ * const unsubscribe = onClick.addOnce((pos) => console.log('Clicked at', pos));
+ * // unsubscribe(); // Can manually unsubscribe before first trigger
+ */
+export class Event<T = void> {
+    private listeners;
+    private onceListeners;
+    private enabled;
+    private readonly onError;
+    /**
+     * Creates a new Event instance.
+     * @param onError - Optional error handler for exceptions thrown by listeners.
+     *                  If not provided, errors are logged to the console.
+     */
+    constructor(onError?: (error: unknown) => void);
+    /**
+     * Adds a listener function to the list of listeners for this event.
+     * @param listener - The listener function that processes the event.
+     * @returns A function that removes the listener when called.
+     */
+    add(listener: EventListener<T>): Unsubscribe;
+    /**
+     * Adds a listener function that will be removed after its first invocation.
+     * @param listener - The listener function to invoke only once.
+     * @returns A function that removes the listener when called (useful for canceling before first trigger).
+     */
+    addOnce(listener: EventListener<T>): Unsubscribe;
+    /**
+     * Removes a specific listener from the list of listeners for this event.
+     * @param listener - The listener function to remove.
+     */
+    remove(listener: EventListener<T>): void;
+    /**
+     * Removes all listeners and once listeners for this event.
+     */
+    clear(): void;
+    /**
+     * Triggers the event, calling all registered listeners in the order they were added.
+     * Errors in listeners do not prevent subsequent listeners from being called.
+     *
+     * @param data - The data to pass to each listener function. Omit for Event<void>.
+     *
+     * @example
+     * // For Event<void>
+     * event.trigger();
+     *
+     * @example
+     * // For Event<string>
+     * event.trigger("Hello");
+     */
+    trigger(...args: T extends void ? [] : [data: T]): void;
+    /**
+     * Disables triggering of the event.
+     */
+    disable(): void;
+    /**
+     * Enables triggering of the event.
+     */
+    enable(): void;
+    /**
+     * Returns true if the event is enabled.
+     * @returns true if the event can be triggered, false if disabled.
+     */
+    isEnabled(): boolean;
+    /**
+     * Returns the number of attached listeners.
+     * @returns The total count of regular and one-time listeners.
+     */
+    listenerCount(): number;
+    /**
+     * Returns true if there are any listeners attached.
+     * @returns true if at least one listener is attached, false otherwise.
+     */
+    hasListeners(): boolean;
+    private safeInvoke;
+    private static logError;
+}
+
+}
+/**
+ * @module LensStudio:HierarchyUtils.js
+ */
+declare module "LensStudio:HierarchyUtils.js" {
+/**
+ * Represents the options for creating a scene object.
+ */
+export interface CreateOptions {
+    /**
+     * The scene in which the object will be created.
+     */
+    scene: Editor.Assets.Scene;
+    /**
+     * The parent object under which the new object will be created.
+     */
+    parent: Editor.Model.SceneObject;
+    /**
+     * The type(s) of component(s) to be attached to the new object.
+     * if null, no component will be attached.
+     */
+    componentType: string | string[] | null;
+    /**
+     * The name of the new object
+     */
+    name: string;
+}
+/**
+ * Represents the options for searching.
+ */
+export interface SearchOptions {
+    /**
+     * The maximum depth to search. 1 means only the immediate children of the base object.
+     */
+    maxDepth?: number;
+    /**
+     * Indicates whether to find all matches or stop at the first match.
+     */
+    findAll?: boolean;
+    /**
+     * Indicates whether to create the item if it is not found.
+     */
+    createIfNotFound?: boolean;
+    /**
+     * The options for creating the item.
+     */
+    createOptions?: CreateOptions;
+}
+/**
+ * Finds a scene object or an array of scene objects in the ancestors of a given base scene object by the specified component type.
+ *
+ * @param base - The base scene object from which to start the search.
+ * @param componentType - The type of component to search for.
+ * @param options - Optional search options.
+ * @param options.maxDepth - The maximum depth to search. Default is 100.
+ * @param options.findAll - Whether to find all matches. Default is false.
+ * @param options.createIfNotFound - Whether to create if not found. Default is false.
+ * @param options.createOptions - Options for creation if needed.
+ * @returns An array of found scene objects, or null if not found.
+ */
+export function findInAncestorsByType(base: Editor.Model.SceneObject, componentType: keyof ComponentNameMap, options?: SearchOptions): Editor.Model.SceneObject[];
+/**
+ * Finds a scene object or an array of scene objects within the descendants of a base scene object, based on the specified component type.
+ *
+ * @param base - The base scene object or scene to search within.
+ * @param componentType - The type of component to search for.
+ * @param options - Optional search options.
+ * @returns an array of found scene objects, or null if not found.
+ */
+export function findInDescendantsByType(base: Editor.Model.SceneObject | Editor.Assets.Scene, componentType: string, options?: SearchOptions): Editor.Model.SceneObject[];
+/**
+ * Finds a scene object with the specified name in the ancestors of the given base scene object.
+ *
+ * @param base - The base scene object from which to start the search.
+ * @param name - The name of the scene object to find. Only exact matches are considered.
+ * @param options - The search options.
+ * @returns The found scene object if `findAll` is `false`, an array of found scene objects if `findAll` is `true`, or `null` if no scene object is found.
+ */
+export function findInAncestorsByName(base: Editor.Model.SceneObject, name: string, options?: SearchOptions): Editor.Model.SceneObject[];
+/**
+ * Finds a scene object or an array of scene objects in the descendants of a base scene object by name.
+ *
+ * @param base - The base scene object to search in.
+ * @param name - The name of the scene object(s) to find. Only exact matches are considered.
+ * @param options - Optional search options.
+ * @param options.maxDepth - The maximum depth to search. 1 means only the immediate children of the base object. Default is 100.
+ * @param options.findAll - Indicates whether to find all matches or stop at the first match. Default is false.
+ * @param options.createIfNotFound - Indicates whether to create the item if it is not found. Default is false.
+ * @param options.createOptions - The options for creating the item. Default is null.
+ *
+ *
+ * @returns an array of found scene objects, or null if not found.
+ */
+export function findInDescendantsByName(base: Editor.Model.SceneObject | Editor.Assets.Scene, name: string, options?: SearchOptions): Editor.Model.SceneObject[];
+/**
+ * Finds objects of a specific component type in the root of a scene.
+ *
+ * @param scene - The scene to search in.
+ * @param componentType - The type of component to search for.
+ * @param options - Additional search options.
+ * @returns an array of found scene objects, or null if not found.
+ */
+export function findInRootObjectsByType(scene: Editor.Assets.Scene, componentType: string, options?: SearchOptions): Editor.Model.SceneObject[];
+/**
+ * Finds a scene object or an array of scene objects in the root objects of a scene by name.
+ *
+ * @param scene - The scene to search in.
+ * @param name - The name of the scene object(s) to find. Only exact matches are considered.
+ * @param options - The search options.
+ * @returns an array of found scene objects, or null if not found.
+ */
+export function findInRootObjectsByName(scene: Editor.Assets.Scene, name: string, options?: SearchOptions): Editor.Model.SceneObject[];
+/**
+ * Finds or creates a child scene object with the specified name under the given root object.
+ * It only searches the immediate children of the root object.
+ * If a child object with the specified name already exists, it is returned.
+ * Otherwise, a new scene object is created, added to the scene, and assigned the specified name.
+ *
+ * @param rootObject - The root object under which to search for or create the child object.
+ * @param name - The name of the child object to find or create. Only exact matches are considered.
+ * @param scene - The scene in which to add the new scene object if it needs to be created.
+ * @returns The found or created child scene object.
+ */
+export function findOrCreateChildWithName(rootObject: Editor.Model.SceneObject, name: string, scene: Editor.Assets.Scene): Editor.Model.SceneObject;
+/**
+ * Finds the nearest camera in the ancestors of the given scene object.
+ *
+ * @param baseSceneObject - The scene object from which to start the search.
+ * @param cameraType - The type of camera to search for (e.g., Orthographic, Perspective). Use null for any type.
+ * @param maxDepth - Maximum search depth. Default is 1000.
+ * @returns The nearest matching camera or null.
+ */
+export function findNearestCameraInAncestors(baseSceneObject: Editor.Model.SceneObject, cameraType?: Editor.Components.CameraType, maxDepth?: number): Editor.Model.SceneObject;
+/**
+ * Finds the nearest camera ancestor of a scene object, if one exists.
+ * if not, it returns the first camera in the scene.
+ *
+ * @param sceneObject - The scene object to search for orthographic camera ancestors.
+ * @param cameraType - The type of camera to search for, or null to find any camera.
+ * @returns The nearest camera ancestor of the scene object, or null if none is found.
+ */
+export function getNearestOrFirstCamera(sceneObject: Editor.Model.SceneObject, scene: Editor.Assets.Scene, cameraType?: Editor.Components.CameraType): Editor.Model.SceneObject;
+/**
+ * Finds the first camera in the scene.
+ *
+ * @param cameraType - The type of camera to search for, or null to find any camera.
+ * @returns The first camera in the scene model, or null if none is found.
+ */
+export function getFirstCameraInScene(scene: Editor.Assets.Scene, cameraType?: Editor.Components.CameraType): Editor.Model.SceneObject;
+/**
+ * Retrieves or creates a canvas component for a given camera object.
+ *
+ * @param cameraObject - The camera object to retrieve or create the canvas component for.
+ * @param unitType - The unit type for the canvas component.
+ * @returns The canvas component associated with the camera object.
+ */
+export function getOrCreateCanvas(cameraObject: Editor.Model.SceneObject, unitType: Editor.Components.UnitType): Editor.Components.Canvas;
+/**
+ * Retrieves or creates a ScreenRegionComponent for a given camera object and scene.
+ *
+ * @param cameraObject - The camera object to search for a ScreenRegionComponent.
+ * @param scene - The scene in which to create the ScreenRegionComponent if it doesn't exist.
+ * @returns The ScreenRegionComponent associated with the camera object, or a newly created one.
+ */
+export function getOrCreateScreenRegion(cameraObject: Editor.Model.SceneObject, scene: Editor.Assets.Scene): Editor.Components.ScreenRegionComponent;
+/**
+ * Creates an orthographic camera component on a scene object.
+ *
+ * @param scene - The scene in which the camera will be created.
+ * @param sceneObject - The scene object on which the camera component will be added.
+ * @param unitType - The unit type for the canvas component (optional, default is `Editor.Components.UnitType.Points`).
+ * @returns The modified scene object with the added camera and canvas components.
+ */
+export function createOrthoCameraOnObject(scene: Editor.Assets.Scene, sceneObject: Editor.Model.SceneObject, unitType?: Editor.Components.UnitType, renderLayer?: Editor.Model.LayerId): Editor.Model.SceneObject;
+/**
+ * Creates a perspective camera on the specified scene object.
+ *
+ * @param scene - The scene in which the camera will be created.
+ * @param sceneObject - The scene object on which the camera will be added.
+ * @returns The modified scene object with the added camera component.
+ */
+export function createPerspectiveCameraOnObject(scene: Editor.Assets.Scene, sceneObject: Editor.Model.SceneObject, renderLayer?: Editor.Model.LayerId): Editor.Model.SceneObject;
+/**
+ * Finds or creates an orthographic camera for a given scene object.
+ *
+ * @param scene - The scene in which the camera will be created or searched.
+ * @param sceneObject - The scene object for which the camera will be created or searched.
+ * @param canvasUnitType - The unit type for the canvas component of the camera. Defaults to `Editor.Components.UnitType.Points`.
+ * @returns An object containing the camera object, screen region component, and canvas component.
+ */
+export function findOrCreateOrthoCameraForObject(scene: Editor.Assets.Scene, sceneObject: Editor.Model.SceneObject, canvasUnitType?: Editor.Components.UnitType): {
+    cameraObject: Editor.Model.SceneObject;
+    screenRegionComponent: Editor.Components.ScreenRegionComponent;
+    canvasComponent: Editor.Components.Canvas;
+};
+/**
+ * Finds or creates a camera object of the specified type within the given scene.
+ *
+ * @param scene - The scene in which to find or create the camera object.
+ * @param cameraType - The type of camera to find or create (Orthographic or Perspective).
+ * @param bearerSceneObject - Optional. The scene object to which the new camera will be attached if created.
+ * @returns The scene object containing the camera of the specified type.
+ * @throws Will throw an error if the camera type is invalid.
+ */
+export function findOrCreateCameraObject(scene: Editor.Assets.Scene, cameraType: Editor.Components.CameraType, bearerSceneObject?: Editor.Model.SceneObject): Editor.Model.SceneObject;
+
+}
+/**
  * The following interfaces are returned by various APIs
  * and allows you to bind some callback when `connect` occurs.
 */
@@ -36244,4 +36517,476 @@ interface signal5<T0,T1,T2,T3,T4, R> {
 interface ImportMeta {
     resolve(path: string): string
     url: string
+}
+/**
+ * @module LensStudio:RemoteMediaModule.js
+ */
+declare module "LensStudio:RemoteMediaModule.js" {
+import { Pixmap, Movie } from "LensStudio:Ui";
+interface IStorage {
+    createFile(name: string, content: string | Uint8Array): Editor.Path;
+    readFile(path: Editor.Path | string): string | null;
+    readBytes(path: Editor.Path | string): Uint8Array | null;
+    unpackContent(archivePath: Editor.Path | string): Editor.Path;
+    path: Editor.Path;
+}
+/**
+ * Static utility class for loading various types of media from URLs.
+ * All methods are asynchronous and return Promises.
+ *
+ * @remarks
+ * This module requires:
+ * - `LensStudio:Network` - For HTTP requests
+ * - `LensStudio:Ui` - For Pixmap and Movie types
+ * - `IStorage` from FileSystem module - For file operations (Pixmap/Movie only)
+ *
+ * ## Usage Patterns
+ *
+ * **Option 1: Initialize storage once (recommended for multiple media loads)**
+ * ```typescript
+ * import { RemoteMediaModule } from 'LensStudio:RemoteMediaModule.js';
+ * import { ScopedStorage } from 'LensStudio:ScopedStorage.js';
+ *
+ * // Initialize once at startup
+ * RemoteMediaModule.initializeStorage(new ScopedStorage());
+ *
+ * // Then load media without passing storage each time
+ * const config = await RemoteMediaModule.loadAsJson('https://api.example.com/config.json');
+ * const pixmap = await RemoteMediaModule.loadAsPixmap(config.imageUrl);
+ * const movie = await RemoteMediaModule.loadAsMovie('https://example.com/video.mp4');
+ * ```
+ *
+ * **Option 2: Pass storage per call**
+ * ```typescript
+ * const storage = new ScopedStorage();
+ * const pixmap = await RemoteMediaModule.loadAsPixmap('https://example.com/image.png', storage);
+ * ```
+ */
+export class RemoteMediaModule {
+    private static storage?;
+    /**
+     * Initializes the storage for the RemoteMediaModule.
+     * Call this once to set a default storage for all media loading operations.
+     * After initialization, storage parameter becomes optional for loadAsPixmap and loadAsMovie.
+     *
+     * @param storage - The storage instance to use as default for media loading
+     *
+     * @example
+     * ```typescript
+     * import { RemoteMediaModule } from 'LensStudio:RemoteMediaModule.js';
+     * import { ScopedStorage } from 'LensStudio:ScopedStorage.js';
+     *
+     * // Initialize once at startup
+     * RemoteMediaModule.initializeStorage(new ScopedStorage());
+     *
+     * // Then use without passing storage
+     * const pixmap = await RemoteMediaModule.loadAsPixmap('https://example.com/image.png');
+     * ```
+     */
+    static initializeStorage(storage: IStorage): void;
+    /**
+     * Loads content from a URL as a string.
+     *
+     * @param url - The URL to load from
+     * @returns Promise resolving to the response body as a string
+     * @throws Rejects with the HTTP status code if the request fails
+     *
+     * @example
+     * ```typescript
+     * const text = await RemoteMediaModule.loadAsString('https://example.com/data.txt');
+     * console.log(text);
+     * ```
+     */
+    static loadAsString(url: string): Promise<string>;
+    /**
+     * Loads content from a URL as a byte array.
+     *
+     * @param url - The URL to load from
+     * @returns Promise resolving to the response body as a Uint8Array
+     * @throws Rejects with the HTTP status code if the request fails
+     *
+     * @example
+     * ```typescript
+     * const bytes = await RemoteMediaModule.loadAsBytes('https://example.com/file.bin');
+     * ```
+     */
+    static loadAsBytes(url: string): Promise<Uint8Array>;
+    /**
+     * Loads and parses JSON content from a URL.
+     *
+     * @param url - The URL to load from
+     * @returns Promise resolving to the parsed JSON object
+     * @throws Rejects with the HTTP status code if the request fails, or parsing error if JSON is invalid
+     *
+     * @example
+     * ```typescript
+     * const data = await RemoteMediaModule.loadAsJson('https://api.example.com/data.json');
+     * console.log(data.someProperty);
+     * ```
+     */
+    static loadAsJson(url: string): Promise<object>;
+    /**
+     * Loads an image from a URL and creates a Pixmap.
+     * The image is downloaded, saved to storage, and then loaded as a Pixmap.
+     *
+     * @param url - The URL of the image
+     * @param storage - Optional storage instance. If not provided, uses the storage from initializeStorage()
+     * @returns Promise resolving to a Pixmap object
+     * @throws Rejects with the HTTP status code if the request fails, or Error if no storage is available
+     *
+     * @example
+     * ```typescript
+     * // Option 1: Pass storage directly
+     * const storage = new ScopedStorage();
+     * const pixmap = await RemoteMediaModule.loadAsPixmap('https://example.com/image.png', storage);
+     *
+     * // Option 2: Use initialized storage
+     * RemoteMediaModule.initializeStorage(new ScopedStorage());
+     * const pixmap = await RemoteMediaModule.loadAsPixmap('https://example.com/image.png');
+     * ```
+     */
+    static loadAsPixmap(url: string, storage?: IStorage): Promise<Pixmap>;
+    /**
+     * Loads a video from a URL and creates a Movie.
+     * The video is downloaded, saved to storage, and then loaded as a Movie.
+     *
+     * @param url - The URL of the video
+     * @param storage - Optional storage instance. If not provided, uses the storage from initializeStorage()
+     * @returns Promise resolving to a Movie object
+     * @throws Rejects with the HTTP status code if the request fails, or Error if no storage is available
+     *
+     * @example
+     * ```typescript
+     * // Option 1: Pass storage directly
+     * const storage = new ScopedStorage();
+     * const movie = await RemoteMediaModule.loadAsMovie('https://example.com/video.mp4', storage);
+     *
+     * // Option 2: Use initialized storage
+     * RemoteMediaModule.initializeStorage(new ScopedStorage());
+     * const movie = await RemoteMediaModule.loadAsMovie('https://example.com/video.mp4');
+     * ```
+     */
+    static loadAsMovie(url: string, storage?: IStorage): Promise<Movie>;
+    /**
+     * Creates an HTTP GET request for the specified URL.
+     *
+     * @param url - The URL to request
+     * @returns Configured HTTP request object
+     */
+    private static createRequest;
+    /**
+     * Extracts the filename from a URL.
+     * Removes query parameters and fragments.
+     *
+     * @param url - The URL to extract the filename from
+     * @returns The filename (everything after the last `/`)
+     *
+     * @example
+     * ```typescript
+     * // Returns "image.png"
+     * getFilename('https://example.com/path/image.png?size=large#preview');
+     * ```
+     */
+    private static getFilename;
+}
+export {};
+
+}
+/**
+ * @module LensStudio:LcaUtils.js
+ */
+declare module "LensStudio:LcaUtils.js" {
+import * as Network from "LensStudio:Network";
+/**
+ * Adds LCA token to Http Request
+ *
+ * @param request - Request object which LCA token needs to be attached to
+ * @param issuer - Issuer URL which used for generating LCA token
+ */
+export function attachLCAHeader(request: Network.HttpRequest, issuer: string): void;
+
+}
+/**
+ * @module LensStudio:GeneralUtils.js
+ */
+declare module "LensStudio:GeneralUtils.js" {
+/**
+ * Converts a callback-based function to a Promise-based function.
+ * @param fn The callback-based function to convert.
+ * @returns A Promise-based version of the function.
+ */
+export function promisify<T>(fn: (callback: (err: Error | null, result?: T) => void) => void): Promise<T>;
+
+}
+/**
+ * @module LensStudio:ScopedStorage.js
+ */
+declare module "LensStudio:ScopedStorage.js" {
+/**
+ * Interface for safe file system operations within a specified directory
+ */
+export interface IStorage {
+    /** Creates a new file in the storage directory */
+    createFile(name: string, content: string | Uint8Array): Editor.Path;
+    /** Reads a file as a string */
+    readFile(path: Editor.Path | string): string | null;
+    /** Reads a file as a byte array */
+    readBytes(path: Editor.Path | string): Uint8Array | null;
+    /** Unpacks a ZIP archive into the storage directory */
+    unpackContent(archivePath: Editor.Path | string): Editor.Path;
+    /** Gets the path of the storage directory */
+    path: Editor.Path;
+}
+interface Directory {
+    path: Editor.Path;
+}
+/**
+ * Provides safe file system operations within a specified directory.
+ * All operations are scoped to the storage directory to prevent unauthorized file access.
+ *
+ * @example
+ * ```typescript
+ * // Create storage in a temporary directory
+ * const tempStorage = new ScopedStorage();
+ *
+ * // Create storage in a specific directory
+ * const storage = new ScopedStorage('/path/to/directory');
+ * ```
+ *
+ * @example
+ * ```typescript
+ * // Write and read data
+ * const storage = new ScopedStorage();
+ * const configPath = storage.createFile('config.json', JSON.stringify({
+ *     version: '1.0',
+ *     enabled: true
+ * }));
+ *
+ * const configData = storage.readFile(configPath);
+ * const config = JSON.parse(configData);
+ * ```
+ */
+export class ScopedStorage implements IStorage {
+    directory: Directory;
+    /**
+     * Creates a new ScopedStorage instance.
+     *
+     * @param path - Optional base directory path for storage operations. If not provided, a temporary directory is created.
+     *
+     * @example
+     * ```typescript
+     * const tempStorage = new ScopedStorage();
+     * const customStorage = new ScopedStorage('/path/to/directory');
+     * ```
+     */
+    constructor(path?: Editor.Path | string);
+    /** Gets the path of the storage directory */
+    get path(): Editor.Path;
+    /**
+     * Creates a new file in the storage directory.
+     *
+     * @param fileName - The name of the file to create
+     * @param content - The file content as a string or byte array
+     * @returns The full path to the created file
+     * @throws {Error} If the resolved path is outside the storage directory
+     *
+     * @example
+     * ```typescript
+     * const filePath = storage.createFile('config.json', '{"key": "value"}');
+     * const imagePath = storage.createFile('image.png', imageBytes);
+     * ```
+     */
+    createFile(fileName: string, content: string | Uint8Array): Editor.Path;
+    /**
+     * Generic read method that accepts a custom read function.
+     * Ensures the file is within the storage directory before reading.
+     *
+     * @param path - Path to the file (relative to storage directory or absolute)
+     * @param readFunction - Custom function to read the file
+     * @returns Result of the read function, or null if the file is outside the storage directory
+     *
+     * @example
+     * ```typescript
+     * const data = storage.read('/path/to/file', FileSystem.readFile);
+     * ```
+     */
+    private read;
+    /**
+     * Unpacks a ZIP archive into the storage directory.
+     *
+     * @param archivePath - Path to the ZIP archive
+     * @returns Path to the unpacked directory
+     *
+     * @example
+     * ```typescript
+     * const unpackedPath = storage.unpackContent(storage.path.appended(new Editor.Path('archive.zip')));
+     * ```
+     */
+    unpackContent(archivePath: Editor.Path | string): Editor.Path;
+    /**
+     * Reads a file as a string.
+     *
+     * @param path - Path to the file (relative to storage directory or absolute)
+     * @returns File content as string, or null if the file is outside the storage directory
+     *
+     * @example
+     * ```typescript
+     * const content = storage.readFile(storage.path.appended(new Editor.Path('config.json')));
+     * const config = JSON.parse(content);
+     * ```
+     */
+    readFile(path: Editor.Path | string): string | null;
+    /**
+     * Reads a file as a byte array.
+     *
+     * @param path - Path to the file (relative to storage directory or absolute)
+     * @returns File content as Uint8Array, or null if the file is outside the storage directory
+     *
+     * @example
+     * ```typescript
+     * const bytes = storage.readBytes(storage.path.appended(new Editor.Path('image.png')));
+     * ```
+     */
+    readBytes(path: Editor.Path | string): Uint8Array | null;
+    /**
+     * Verifies that a file path is within the storage directory.
+     * Prevents directory traversal attacks and unauthorized file access.
+     *
+     * @param filePath - The file path to verify
+     * @returns True if the path is within the storage directory, false otherwise
+     */
+    private verifyPath;
+    /**
+     * Converts a string or Editor.Path to Editor.Path.
+     *
+     * @param path - The path to convert
+     * @returns The path as an Editor.Path object
+     */
+    private deducePath;
+}
+export {};
+
+}
+/**
+ * @module LensStudio:AssetUtils.js
+ */
+declare module "LensStudio:AssetUtils.js" {
+export enum ShaderGraphType {
+    ShaderGraphImage = 0,
+    ShaderGraphUberPbr = 1,
+    ShaderGraphUnlit = 2,
+    ShaderGraphOccluder = 3,
+    ShaderGraphGltf = 4
+}
+/**
+ * Retrieves the resource file absolute path for the specified asset type.
+ *
+ * @param assetType - The type of the asset, use ShaderGraphType enum.
+ * @returns The absolute path of the resource file.
+ */
+export function getResourceFile(assetType: ShaderGraphType): Editor.Path;
+/**
+ * Finds or creates an asset in the asset manager.
+ *
+ * @param assetManager - The asset manager instance.
+ * @param assetAbsPath - The absolute path of the asset.
+ * @param destDirInProject - The destination directory in the project. this is a relative path to the project Assets root.
+ * @returns The primary asset found or created.
+ * @throws Error if there is an error importing the asset or if the import result is invalid.
+ */
+export function findOrCreateNonNativeAsset(assetManager: Editor.Model.AssetManager, assetAbsPath: Editor.Path, destDirInProject: Editor.Path): Promise<Editor.Assets.Asset>;
+/**
+ * Finds or creates a native asset with the specified name.
+ *
+ * @param nativeAssetTypeName - The name of the native asset.
+ * @param assetManager - The asset manager.
+ * @param basename - The base name of the asset.
+ * @param destinationDir - the relative path to Assets root in the project, if searching will be limited to this directory,
+ * and the asset will be created in this directory if not found. If not provided, the search will be done in the entire
+ * project and the creation will be in the root directory.
+ * @returns The found or created native asset.
+ */
+export function findOrCreateNativeAsset(nativeAssetTypeName: string, assetManager: Editor.Model.AssetManager, basename: string, destinationDir?: Editor.Path): Editor.Assets.Asset;
+/**
+ * Finds an asset in the asset manager based on the specified type, name, and optional parent directory.
+ *
+ * @param assetManager
+ * @param assetType - The type of the asset to find.
+ * @param assetName - The name of the asset to find.
+ * @param parentDir - (Optional) The parent directory of the asset. If provided, the asset's source path must match this directory.
+ * @returns An array of assets that match the specified criteria.
+ */
+export function findAsset(assetManager: Editor.Model.AssetManager, assetType: string, assetName: string, parentDir?: Editor.Path): Editor.Assets.Asset[];
+/**
+ * Finds or creates an object tracking texture asset.
+ *
+ * @param assetManager - The asset manager to search for or create the asset.
+ * @param destination - The destination path for the asset.
+ * @param type - The type of the object tracking texture.
+ * @returns The found or created object tracking texture asset.
+ */
+export function findOrCreateObjectTrackingTexture(assetManager: Editor.Model.AssetManager, destination: Editor.Path, type: Editor.Assets.ObjectTrackingTextureType): Editor.Assets.Asset;
+/**
+ * Finds or creates a screen texture asset.
+ *
+ * @param assetManager - The asset manager to use.
+ * @param destination - The destination path for the asset.
+ * @returns The screen texture asset.
+ */
+export function findOrCreateScreenTexture(assetManager: Editor.Model.AssetManager, destination: Editor.Path): Editor.Assets.Asset;
+/**
+ * Creates a material from a shader graph asset.
+ *
+ * @param assetManager - The asset manager used to create the material.
+ * @param graphType - The type of the shader graph asset.
+ * @param materialDir - The directory where the material will be created. Default is an empty string.
+ * @param materialName - The name of the material. Default is 'new material'.
+ * @param shaderGraphDir - The directory of the shader graph asset. Default is an empty string.
+ * @returns An object containing the created material asset, the shader graph asset, and the pass on the material.
+ */
+export function createMaterialFromGraph(assetManager: Editor.Model.AssetManager, graphType: ShaderGraphType, materialDir?: string, materialName?: string, shaderGraphDir?: string): Promise<{
+    material: Editor.Assets.Material;
+    shaderGraphAsset: Editor.Assets.Pass;
+    passInfo: Editor.Assets.PassInfo;
+}>;
+/**
+ * Adds a pass to the given material and optionally adds define strings to the pass.
+ *
+ * @param material - The material to which the pass will be added.
+ * @param pass - The pass to be added to the material.
+ * @param addDefineStrings - An optional array of define strings to be added to the pass. Defaults to ['ENABLE_BASE_TEX'].
+ * @returns The pass information after adding the pass and define strings.
+ */
+export function addGraphToMaterial(material: Editor.Assets.Material, pass: Editor.Assets.Pass, addDefineStrings?: string[]): Editor.Assets.PassInfo;
+/**
+ * Imports an image as a texture and sets up its wrap mode.
+ *
+ * @param assetManager
+ * @param imageFileAbsolutePath - The absolute path to the image file.
+ * @param wrapMode - The wrap mode for the texture. Defaults to `Editor.Assets.WrapMode.ClampToEdge`.
+ * @param imageImportDestinationDir - The directory where the image will be imported. Defaults to "Images".
+ * @returns An object containing the image asset and texture parameter.
+ *
+ * @throws Will log an error if the image asset fails to load.
+ */
+export function importImageAsTexture(assetManager: Editor.Model.AssetManager, imageFileAbsolutePath: string, wrapMode?: Editor.Assets.WrapMode, imageImportDestinationDir?: string): Promise<{
+    imageAsset: Editor.Assets.Asset;
+    textureParam: Editor.Assets.TextureParameter;
+}>;
+/**
+ * Add a define to the pass info's defines array.
+ * @param passInfo - The pass info object to modify.
+ * @param define - The define string to add.
+ */
+export function addDefine(passInfo: Editor.Assets.PassInfo, define: string): void;
+/**
+ * Set up the wrap mode for a sampler. If only one wrap mode is provided, it's applied to all dimensions.
+ * @param sampler - The sampler to modify.
+ * @param wrapModeU - The wrap mode for U dimension.
+ * @param wrapModeV - The wrap mode for V dimension. If not provided, uses wrapModeU.
+ * @param wrapModeW - The wrap mode for W dimension. If not provided, uses wrapModeU.
+ * @returns The modified sampler.
+ */
+export function setupSamplerWrapMode(sampler: Editor.Assets.Sampler, wrapModeU: Editor.Assets.WrapMode, wrapModeV?: Editor.Assets.WrapMode, wrapModeW?: Editor.Assets.WrapMode): Editor.Assets.Sampler;
+
 }

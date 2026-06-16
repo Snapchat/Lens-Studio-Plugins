@@ -39,7 +39,6 @@ export class CreationMenu {
     reset() {
         if (this.popup) this.popup.visible = false;
         this.controls['imageReferencePicker'].value = [];
-        this.controls['humanoidAnatomy'].value = false;
         this.controls['faceSwap'].value = false;
     }
 

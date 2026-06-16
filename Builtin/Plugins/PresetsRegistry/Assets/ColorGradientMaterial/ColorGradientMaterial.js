@@ -5,7 +5,8 @@ const params = {
         'id': 'Com.Snap.MaterialPreset.ColorGradient',
         'name': 'Color Gradient',
         'description': 'PostEffectVisual material mapping screen color ranges to four-color gradient',
-        'icon': import.meta.resolve('../Resources/Material.svg')
+        'icon': import.meta.resolve('../Resources/Material.svg'),
+        'intendedPlatforms': [Editor.TargetPlatform.Snapchat]
     },
     graph_path: import.meta.resolve('Resources/color_gradient.graphShader'),
     pass_info: {

@@ -9,7 +9,8 @@ export class VoxelizerCameraObjectPreset extends Preset {
             description: '',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/Camera.svg')),
             section: 'General',
-            entityType: 'SceneObject'
+            entityType: 'SceneObject',
+            intendedPlatforms: [Editor.TargetPlatform.Snapchat]
         };
     }
 

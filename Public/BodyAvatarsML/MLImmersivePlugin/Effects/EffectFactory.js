@@ -4,8 +4,7 @@ export function buildEffectData(controls) {
         'effectTypeId': 'full-frame-body-avatars',
         'settings': {
             'seed': 42,
-            'face_swap_mode': controls['faceSwap'].value ? 'cartoon-v2' : 'disabled',
-            'enable_preprocessing': controls['humanoidAnatomy'].value ? false : true
+            'face_swap_mode': controls['faceSwap'].value ? 'cartoon-v2' : 'disabled'
         }
     };
 
@@ -19,8 +18,7 @@ export function buildEffectDataFromResponse(response, controls) {
         'effectTypeId': 'full-frame-body-avatars',
         'settings': {
             'seed': 42,
-            'face_swap_mode': controls['faceSwap'].value ? 'cartoon-v2' : 'disabled',
-            'enable_preprocessing': controls['humanoidAnatomy'].value ? false : true
+            'face_swap_mode': controls['faceSwap'].value ? 'cartoon-v2' : 'disabled'
         }
     };
 

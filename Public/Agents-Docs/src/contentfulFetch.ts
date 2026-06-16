@@ -14,7 +14,7 @@ export interface ContentfulFetchOptions {
  *
  * - Picks the resource whose version best matches `App.version` (highest
  *   resource version <= LS version; lowest if all are newer; first one if
- *   no resource has a parseable `vMAJOR.MINOR.PATCH` tag).
+ *   no resource has a parseable `vMAJOR.MINOR[.PATCH]` tag).
  * - Auto-unzips the response body if it's a zip archive.
  *
  * Throws on any failure. Requires `asset_library` and `network` permissions.
@@ -93,11 +93,25 @@ function unzipFirstFile(bytes: Uint8Array): string {
     throw new Error("Zip archive contained no readable files");
 }
 
-interface VersionTriple { major: number; minor: number; patch: number; }
+export interface VersionTriple { major: number; minor: number; patch: number; }
 
-function parseVersion(version: string): VersionTriple {
-    const m = version?.match(/v?(\d+)\.(\d+)\.(\d+)/);
-    return m ? { major: +m[1], minor: +m[2], patch: +m[3] } : { major: 0, minor: 0, patch: 0 };
+const VERSION_PATTERN = /(^|[^A-Za-z0-9])v?(\d+)\.(\d+)(?:\.(\d+))?(?:\.\d+)?(?=$|[^A-Za-z0-9])/i;
+
+/**
+ * Parse Lens Studio/resource version strings.
+ *
+ * Asset Library resource names have historically used both `5.22` and
+ * `5.22.0`; Lens Studio builds can look like `5.22.0.123`. For doc
+ * selection, normalize all of those to a major/minor/patch triple and ignore
+ * any fourth build component.
+ */
+export function parseVersion(version: string | null | undefined): VersionTriple | null {
+    if (!version) {
+        return null;
+    }
+
+    const m = version.match(VERSION_PATTERN);
+    return m ? { major: +m[2], minor: +m[3], patch: m[4] === undefined ? 0 : +m[4] } : null;
 }
 
 function compareVersions(a: VersionTriple, b: VersionTriple): number {
@@ -105,21 +119,40 @@ function compareVersions(a: VersionTriple, b: VersionTriple): number {
 }
 
 function getResourceVersion(r: AssetLibrary.Resource): VersionTriple | null {
-    const m = r.uri.match(/v(\d+)\.(\d+)\.(\d+)/) ?? r.name.match(/v?(\d+)\.(\d+)\.(\d+)/);
-    return m ? { major: +m[1], minor: +m[2], patch: +m[3] } : null;
+    return parseVersion(r.name) ?? parseVersion(r.uri);
 }
 
-/** Highest version `<= target`; lowest if all newer; first if no versions parseable. */
-function pickResourceForVersion(
+function describeResource(resource: AssetLibrary.Resource, index: number): string {
+    const label = resource.name || resource.uri || "<unnamed>";
+    return `#${index + 1} "${label}"`;
+}
+
+/** Highest version `<= target`; lowest if all newer; first if no versions parseable or target is unknown. */
+export function pickResourceForVersion(
     resources: AssetLibrary.Resource[],
-    target: VersionTriple
+    target: VersionTriple | null
 ): AssetLibrary.Resource {
-    const versioned = resources
-        .map(res => ({ res, v: getResourceVersion(res) }))
-        .filter((x): x is { res: AssetLibrary.Resource; v: VersionTriple } => x.v !== null)
+    const parsedResources = resources
+        .map((res, index) => ({ res, index, v: getResourceVersion(res) }));
+    const versioned = parsedResources
+        .filter((x): x is { res: AssetLibrary.Resource; index: number; v: VersionTriple } => x.v !== null)
         .sort((a, b) => compareVersions(a.v, b.v));
 
+    const unversioned = parsedResources.filter(x => x.v === null);
+    if (unversioned.length > 0) {
+        console.log(
+            `[AgentsDocs] Could not read version from ${unversioned.length}/${resources.length} Asset Library resource(s): ` +
+            unversioned.map(x => describeResource(x.res, x.index)).join(", ")
+        );
+    }
+
     if (versioned.length === 0) {
+        console.log("[AgentsDocs] No Asset Library resource versions could be read; using the first resource.");
+        return resources[0];
+    }
+
+    if (target === null) {
+        console.log("[AgentsDocs] Could not read Lens Studio version; using the first Asset Library resource.");
         return resources[0];
     }
     let best = versioned[0].res;

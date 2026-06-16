@@ -5,7 +5,8 @@ const params = {
         'id': 'Com.Snap.MaterialPreset.DitheringMaterial',
         'name': 'Dithering',
         'description': 'PostEffectVisual material applying color or grayscale dithering with tunable size',
-        'icon': import.meta.resolve('../Resources/Material.svg')
+        'icon': import.meta.resolve('../Resources/Material.svg'),
+        'intendedPlatforms': [Editor.TargetPlatform.Snapchat]
     },
     graph_path: import.meta.resolve('Resources/dithering.graphShader'),
     custom_defines: [

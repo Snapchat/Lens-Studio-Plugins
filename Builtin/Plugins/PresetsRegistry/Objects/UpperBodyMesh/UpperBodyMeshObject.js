@@ -46,7 +46,8 @@ export class UpperBodyMeshObjectPreset extends Preset {
             description: 'Creates upper body mesh with RenderMeshVisual, head mesh, and 3D upper body tracking for torso rendering',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/UpperBodyMesh.svg')),
             section: '3D',
-            entityType: 'SceneObject'
+            entityType: 'SceneObject',
+            intendedPlatforms: [Editor.TargetPlatform.Snapchat]
         };
     }
     async createAsync(destination) {

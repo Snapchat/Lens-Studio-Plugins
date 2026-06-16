@@ -13,7 +13,8 @@ export class ScreenRegionComponentPreset extends Preset {
             description: 'ScreenRegion component (defaults to Full Frame)',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/ScreenRegion.svg')),
             section: '2D',
-            entityType: 'ScreenRegionComponent'
+            entityType: 'ScreenRegionComponent',
+            intendedPlatforms: [Editor.TargetPlatform.Snapchat]
         };
     }
     constructor(pluginSystem, descriptor) {

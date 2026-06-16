@@ -5,7 +5,8 @@ const params = {
         'id': 'Com.Snap.MaterialPreset.EdgeDetectionMaterial',
         'name': 'Edge Detection',
         'description': 'PostEffectVisual material detecting and coloring edges with tunable outline color',
-        'icon': import.meta.resolve('../Resources/Material.svg')
+        'icon': import.meta.resolve('../Resources/Material.svg'),
+        'intendedPlatforms': [Editor.TargetPlatform.Snapchat]
     },
     graph_path: import.meta.resolve('Resources/edge_detection.graphShader'),
     pass_info: {

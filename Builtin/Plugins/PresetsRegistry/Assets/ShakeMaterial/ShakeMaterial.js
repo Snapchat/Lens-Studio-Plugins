@@ -5,7 +5,8 @@ const params = {
         'id': 'Com.Snap.MaterialPreset.ShakeMaterial',
         'name': 'Shake',
         'description': 'PostEffectVisual material creating screen shake distortion with configurable amplitude and frequency',
-        'icon': import.meta.resolve('../Resources/Material.svg')
+        'icon': import.meta.resolve('../Resources/Material.svg'),
+        'intendedPlatforms': [Editor.TargetPlatform.Snapchat]
     },
     graph_path: import.meta.resolve('Resources/shake.graphShader'),
     pass_info: {

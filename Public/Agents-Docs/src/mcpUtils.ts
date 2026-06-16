@@ -64,8 +64,22 @@ export function buildServerName(_projectName?: string): string {
     return "lens-studio";
 }
 
+export const MCP_RETRY_BASE_DELAY_MS = 250;
+export const MCP_RETRY_MAX_DELAY_MS = 5000;
+
+export function getMcpRetryDelayMs(
+    attempt: number,
+    baseDelayMs: number = MCP_RETRY_BASE_DELAY_MS,
+    maxDelayMs: number = MCP_RETRY_MAX_DELAY_MS
+): number {
+    const normalizedAttempt = Math.max(0, Math.floor(attempt));
+    const delay = baseDelayMs * Math.pow(2, normalizedAttempt);
+    return Math.min(delay, maxDelayMs);
+}
+
 /**
- * Extract the lens-studio server config from the getConfig() API response.
+ * Extract the lens-studio server config from the getConfig() API response
+ * or from a flat URL/token snapshot built from the MCP server connection APIs.
  *
  * The LensStudio:Mcp getConfig() API returns:
  * {
@@ -82,15 +96,25 @@ export function buildServerName(_projectName?: string): string {
  */
 export function extractServerConfig(mcpConfig: any): McpServerConfig | null {
     const serverConfig = mcpConfig?.mcpServers?.["lens-studio"];
-    if (!serverConfig || !serverConfig.url) {
+    if (serverConfig?.url) {
+        return {
+            type: serverConfig.type || "http",
+            url: serverConfig.url,
+            headers: {
+                Authorization: serverConfig.headers?.Authorization || ""
+            }
+        };
+    }
+
+    if (!mcpConfig?.url || !mcpConfig?.token) {
         return null;
     }
 
     return {
-        type: serverConfig.type || "http",
-        url: serverConfig.url,
+        type: mcpConfig.type || "http",
+        url: mcpConfig.url,
         headers: {
-            Authorization: serverConfig.headers?.Authorization || ""
+            Authorization: `Bearer ${mcpConfig.token}`
         }
     };
 }

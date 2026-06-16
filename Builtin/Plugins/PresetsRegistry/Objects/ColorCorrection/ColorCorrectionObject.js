@@ -53,7 +53,8 @@ function createColorCorrectionClass(name, assetMaterialPreset) {
                 description: `PostEffectVisual with ${name} LUT`,
                 icon: Editor.Icon.fromFile(import.meta.resolve('Resources/PostEffect.svg')),
                 section: 'Color Correction',
-                entityType: 'SceneObject'
+                entityType: 'SceneObject',
+                intendedPlatforms: [Editor.TargetPlatform.Snapchat]
             };
         }
         async createAsync(destination) {

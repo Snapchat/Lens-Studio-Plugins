@@ -18,7 +18,8 @@ export class FaceMaskComponentPreset extends Preset {
             description: 'FaceMaskVisual component with default Face Mask material',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/FaceMask.svg')),
             section: 'Face',
-            entityType: 'FaceMaskVisual'
+            entityType: 'FaceMaskVisual',
+            intendedPlatforms: [Editor.TargetPlatform.Snapchat]
         };
     }
     async createAsync(destination) {

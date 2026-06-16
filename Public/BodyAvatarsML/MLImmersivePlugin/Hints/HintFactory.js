@@ -2,8 +2,7 @@ import * as Ui from 'LensStudio:Ui';
 
 export const HintID = {
     'imagePrompt': 0,
-    'humanoidAnatomy': 1,
-    'faceSwap': 2
+    'faceSwap': 1
 };
 
 const hintScheme = {
@@ -12,10 +11,6 @@ const hintScheme = {
         'image_height': 86,
         'image_path': new Editor.Path(import.meta.resolve('./Resources/img.png')),
         'text': 'Examples of good image references'
-    },
-    [HintID.humanoidAnatomy]: {
-        'title': 'Non-humanoid anatomy',
-        'text': 'Enable this option if your reference image shows a character or object without a human-like body structure (for example: a banana, cactus, snowman, or other non-humanoid shapes).'
     },
     [HintID.faceSwap]: {
         'title': 'Preserve user’s face',

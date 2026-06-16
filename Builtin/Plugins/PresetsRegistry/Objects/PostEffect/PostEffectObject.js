@@ -25,7 +25,8 @@ function createPostEffectClass(name, assetMaterialPreset) {
                 description: `PostEffectVisual using ${name} material`,
                 icon: Editor.Icon.fromFile(import.meta.resolve('Resources/PostEffect.svg')),
                 section: 'Visual Effects',
-                entityType: 'SceneObject'
+                entityType: 'SceneObject',
+                intendedPlatforms: [Editor.TargetPlatform.Snapchat]
             };
         }
         async createAsync(destination) {

@@ -5,7 +5,8 @@ const params = {
         'id': 'Com.Snap.MaterialPreset.DistortionMaterial',
         'name': 'Distortion',
         'description': 'PostEffectVisual material distorting screen with configurable flow texture, speed, intensity, and UV scale',
-        'icon': import.meta.resolve('../Resources/Material.svg')
+        'icon': import.meta.resolve('../Resources/Material.svg'),
+        'intendedPlatforms': [Editor.TargetPlatform.Snapchat]
     },
     graph_path: import.meta.resolve('Resources/distortion.graphShader'),
     custom_defines: [

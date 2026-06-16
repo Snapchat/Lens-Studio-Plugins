@@ -5,7 +5,8 @@ const params = {
         'id': 'Com.Snap.MaterialPreset.ColorRemapMaterial',
         'name': 'Color Remap',
         'description': 'PostEffectVisual material remapping screen texture with four color mixers',
-        'icon': import.meta.resolve('../Resources/Material.svg')
+        'icon': import.meta.resolve('../Resources/Material.svg'),
+        'intendedPlatforms': [Editor.TargetPlatform.Snapchat]
     },
     graph_path: import.meta.resolve('Resources/color_remap.graphShader'),
     pass_info: {

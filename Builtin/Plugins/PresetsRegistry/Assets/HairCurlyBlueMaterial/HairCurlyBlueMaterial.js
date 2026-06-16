@@ -5,7 +5,8 @@ const params = {
         'id': 'Com.Snap.MaterialPreset.HairCurlyBlue',
         'name': 'Hair Curly Blue',
         'description': 'Curly blue hair material for HairVisual component with configurable growth, color, and lighting',
-        'icon': import.meta.resolve('../Resources/Material.svg')
+        'icon': import.meta.resolve('../Resources/Material.svg'),
+        'intendedPlatforms': [Editor.TargetPlatform.Snapchat]
     },
     graph_path: import.meta.resolve('Resources/hair_curly_blue.graphShader'),
     custom_defines: [

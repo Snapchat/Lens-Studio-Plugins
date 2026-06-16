@@ -5,7 +5,8 @@ const params = {
         'id': 'Com.Snap.MaterialPreset.ObjectSegmentation',
         'name': 'Object Segmentation',
         'description': 'Segments objects using tracking texture with configurable radius and softness (defaults to hand segmentation)',
-        'icon': import.meta.resolve('../Resources/Material.svg')
+        'icon': import.meta.resolve('../Resources/Material.svg'),
+        'intendedPlatforms': [Editor.TargetPlatform.Snapchat]
     },
     graph_path: import.meta.resolve('Resources/object_seg.graphShader'),
     custom_defines: [

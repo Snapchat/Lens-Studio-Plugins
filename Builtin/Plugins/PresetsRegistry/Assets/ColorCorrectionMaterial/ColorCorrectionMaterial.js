@@ -6,7 +6,8 @@ function createColorCorrection(tex){
             'id': 'Com.Snap.ColorCorrectionMaterial',
             'name': 'Color Correction',
             'description': 'Applies a LUT (Look Up Table) texture to the screen',
-            'icon': import.meta.resolve('../Resources/Material.svg')
+            'icon': import.meta.resolve('../Resources/Material.svg'),
+            'intendedPlatforms': [Editor.TargetPlatform.Snapchat]
         },
         graph_path: import.meta.resolve('Resources/color_correction.graphShader'),
         pass_info: {

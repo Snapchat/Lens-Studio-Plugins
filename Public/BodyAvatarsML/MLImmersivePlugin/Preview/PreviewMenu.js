@@ -95,7 +95,6 @@ export class PreviewMenu {
 
         this.lockSettings();
         this.controls['imageReferencePicker'].value = JSON.parse(JSON.stringify(effect_settings.settings.image_prompts));
-        this.controls['humanoidAnatomy'].value = effect_settings.settings.enable_preprocessing ? false : true;
         this.controls['faceSwap'].value = effect_settings.settings.face_swap_mode === 'cartoon-v2';
     }
 
@@ -113,7 +112,6 @@ export class PreviewMenu {
     lockSettings() {
         this.generateButton.visible = false;
         this.controls['imageReferencePicker'].widget.enabled = false;
-        this.controls['humanoidAnatomy'].widget.enabled = false;
         this.controls['faceSwap'].widget.enabled = false;
         this.label.visible = false;
     }
@@ -122,7 +120,6 @@ export class PreviewMenu {
         this.generateButton.enabled = true;
         this.generateButton.visible = true;
         this.controls['imageReferencePicker'].widget.enabled = true;
-        this.controls['humanoidAnatomy'].widget.enabled = true;
         this.controls['faceSwap'].widget.enabled = true;
         this.label.visible = true;
     }

@@ -22,7 +22,8 @@ export class FaceRetouchObjectPreset extends Preset {
             description: 'Creates a scene object with RetouchVisual component with default Retouch material',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/FaceRetouch.svg')),
             section: 'Face',
-            entityType: 'SceneObject'
+            entityType: 'SceneObject',
+            intendedPlatforms: [Editor.TargetPlatform.Snapchat]
         };
     }
     async createAsync(destination) {

@@ -167,7 +167,7 @@ export class ThreeDAssetGenerationPlugin {
 
         this.views.currentIndex = 0;
 
-        this.errorScreen = new Ui.StatusIndicator('Error happend', this.dialog);
+        this.errorScreen = new Ui.StatusIndicator('Error happened', this.dialog);
 
         this.errorScreen.setFixedWidth(800);
         const positionX = 800 / 2 - this.errorScreen.width / 2;

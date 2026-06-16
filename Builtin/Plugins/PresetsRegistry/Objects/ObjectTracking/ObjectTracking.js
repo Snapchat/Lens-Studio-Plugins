@@ -12,7 +12,8 @@ function createObjectTrackingPreset(id, niceName) {
                 description: `Creates screen transform with ObjectTracking component configured for 2D ${id} detection and tracking`,
                 icon: Editor.Icon.fromFile(import.meta.resolve('Resources/ObjectTracking.svg')),
                 section: 'Tracking',
-                entityType: 'SceneObject'
+                entityType: 'SceneObject',
+                intendedPlatforms: [Editor.TargetPlatform.Snapchat]
             };
         }
         async createAsync(destination) {

@@ -3,12 +3,12 @@
  * Pure functions for parsing, merging, and serializing Claude Code project-level settings.
  */
 
-/** The marketplace config we inject. */
+/** Marketplace config retained for when marketplace injection is re-enabled. */
 export const MARKETPLACE_NAME = "lens-studio-extensions";
 export const MARKETPLACE_CONFIG = {
     source: {
         source: "github" as const,
-        repo: "Snapchat/Lens-Studio-Plugins"
+        repo: "lens-studio-devs/ls-agent-extensions"
     }
 };
 

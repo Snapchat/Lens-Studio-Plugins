@@ -551,24 +551,28 @@ class MeshAsset {
         const normalBuffer = vertexLayout.getBySemantic(lc.Semantic.Normal).buffer
         this.blendShapes = getArray(root, "blendshapes", BlendShape, normalBuffer)
 
+        // These sections are all optional and only present when non-empty:
+        // boneAabbs/skinbones for skinned meshes, submeshes for multi-material
+        // meshes, vertexCache for cached animation, texmin/texmax for meshes with
+        // texcoords. A mesh that lacks one (e.g. a static, single-material mesh)
+        // omits the key entirely, so guard every read on `root.has(key)` and
+        // default to empty. None of these sections are consumed by generateGltf —
+        // they're parsed and discarded — so defaulting to empty when absent is safe.
+
         // TODO: vertex caches are not yet supported
-        if (version >= 2) {
-            const vertexCacheVersion = getNumber(root, "vertexCacheVersion")
-            this.vertexCache = getArray(root, "vertexCache", VertexCache)
-            this.vertexCacheAabbKeyframes = getArray(root, "vertexCacheAabbKeyframes", VertexCacheAabbKeyframes)
-        } else {
-            this.vertexCache = []
-            this.vertexCacheAabbKeyframes = []
-        }
+        this.vertexCache = root.has("vertexCache") ? getArray(root, "vertexCache", VertexCache) : []
+        this.vertexCacheAabbKeyframes = root.has("vertexCacheAabbKeyframes")
+            ? getArray(root, "vertexCacheAabbKeyframes", VertexCacheAabbKeyframes)
+            : []
 
         this.bbMin = getVec3(root, "bbmin")
         this.bbMax = getVec3(root, "bbmax")
-        this.texMin = version >= 2 ? getVec2(root, "texmin") : vec2.zero()
-        this.texMax = version >= 2 ? getVec2(root, "texmax") : vec2.zero()
-        this.skinBones = getArray(root, "skinbones", Bone)
-        this.boneAabbs = version >= 2 ? getArray(root, "boneAabbs", Aabb) : []
+        this.texMin = root.has("texmin") ? getVec2(root, "texmin") : vec2.zero()
+        this.texMax = root.has("texmax") ? getVec2(root, "texmax") : vec2.zero()
+        this.skinBones = root.has("skinbones") ? getArray(root, "skinbones", Bone) : []
+        this.boneAabbs = root.has("boneAabbs") ? getArray(root, "boneAabbs", Aabb) : []
         this.renderGroups = getArray(root, "rgroups", RenderGroup)
-        this.submeshes = version >= 2 ? getArray(root, "submeshes", SubMesh) : []
+        this.submeshes = root.has("submeshes") ? getArray(root, "submeshes", SubMesh) : []
 
         // calculate the size needed for final combined output buffer
         let outputLength = 0

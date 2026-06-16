@@ -5,7 +5,8 @@ const params = {
         'id': 'Com.Snap.MaterialPreset.NailsSegmentation',
         'name': 'Nails Segmentation',
         'description': 'Nail segmentation material using Object Tracking Texture with configurable base color, radius, and softness',
-        'icon': import.meta.resolve('../Resources/Material.svg')
+        'icon': import.meta.resolve('../Resources/Material.svg'),
+        'intendedPlatforms': [Editor.TargetPlatform.Snapchat]
     },
     graph_path: import.meta.resolve('Resources/object_seg.graphShader'),
     custom_defines: [

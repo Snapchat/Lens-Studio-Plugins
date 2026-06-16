@@ -5,7 +5,8 @@ const params = {
         'id': 'Com.Snap.MaterialPreset.FaceInsetMaterialPreset',
         'name': 'Face Inset',
         'description': 'Extracts face section as texture (eyes, mouth, etc.) for use with FaceInset component',
-        'icon': import.meta.resolve('../Resources/Material.svg')
+        'icon': import.meta.resolve('../Resources/Material.svg'),
+        'intendedPlatforms': [Editor.TargetPlatform.Snapchat]
     },
     graph_path: import.meta.resolve('../Resources/flat.graphShader'),
     custom_defines: [

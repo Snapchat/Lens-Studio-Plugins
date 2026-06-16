@@ -1,0 +1,5 @@
+{
+    "main": "main.js",
+    "name": "Action - Export Runtime Bundle",
+    "permissions": ["filesystem"]
+}

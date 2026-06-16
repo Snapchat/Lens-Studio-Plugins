@@ -5,7 +5,8 @@ const params = {
         'id': 'Com.Snap.MaterialPreset.OilPaintMaterial',
         'name': 'Oil Paint',
         'description': 'PostEffectVisual material applying painterly oil paint effect with tunable intensity',
-        'icon': import.meta.resolve('../Resources/Material.svg')
+        'icon': import.meta.resolve('../Resources/Material.svg'),
+        'intendedPlatforms': [Editor.TargetPlatform.Snapchat]
     },
     graph_path: import.meta.resolve('Resources/oil_paint.graphShader'),
     custom_defines: [

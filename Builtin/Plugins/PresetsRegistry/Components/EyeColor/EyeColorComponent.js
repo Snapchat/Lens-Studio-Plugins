@@ -18,7 +18,8 @@ export class EyeColorComponentPreset extends Preset {
             description: 'EyeColorVisual component',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/EyeColor.svg')),
             section: 'Face',
-            entityType: 'EyeColorVisual'
+            entityType: 'EyeColorVisual',
+            intendedPlatforms: [Editor.TargetPlatform.Snapchat]
         };
     }
 

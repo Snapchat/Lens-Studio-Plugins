@@ -5,7 +5,8 @@ const params = {
         'id': 'Com.Snap.MaterialPreset.FaceMaskMaterialPreset',
         'name': 'Face Mask',
         'description': 'Default material for FaceMaskVisual component',
-        'icon': import.meta.resolve('../Resources/Material.svg')
+        'icon': import.meta.resolve('../Resources/Material.svg'),
+        'intendedPlatforms': [Editor.TargetPlatform.Snapchat]
     },
     graph_path: import.meta.resolve('../Resources/flat.graphShader'),
     pass_info: {

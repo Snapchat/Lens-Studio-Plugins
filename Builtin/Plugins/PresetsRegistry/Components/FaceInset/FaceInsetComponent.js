@@ -20,7 +20,8 @@ export class FaceInsetComponentPreset extends Preset {
             description: 'FaceInsetVisual component',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/FaceInset.svg')),
             section: 'Face',
-            entityType: 'FaceInsetVisual'
+            entityType: 'FaceInsetVisual',
+            intendedPlatforms: [Editor.TargetPlatform.Snapchat]
         };
     }
     async createAsync(destination) {

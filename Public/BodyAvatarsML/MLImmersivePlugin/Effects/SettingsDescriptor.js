@@ -29,19 +29,6 @@ export class SettingsDescriptor {
                     'type': 'control',
                     'class': CheckBox,
                     'parent': parent,
-                    'name': 'humanoidAnatomy',
-                    'label': 'Non-humanoid anatomy',
-                    'importer': null,
-                    'exporter': null,
-                    'preset_based': false,
-                    'hint': {
-                        'id': HintID.humanoidAnatomy
-                    }
-                },
-                {
-                    'type': 'control',
-                    'class': CheckBox,
-                    'parent': parent,
                     'name': 'faceSwap',
                     'label': 'Preserve user\'s face',
                     'importer': null,

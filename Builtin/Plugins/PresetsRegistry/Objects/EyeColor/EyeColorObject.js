@@ -22,7 +22,8 @@ export class EyeColorObjectPreset extends Preset {
             description: 'Creates a scene object with EyeColorVisual component with default Eye Color material',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/EyeColor.svg')),
             section: 'Face',
-            entityType: 'SceneObject'
+            entityType: 'SceneObject',
+            intendedPlatforms: [Editor.TargetPlatform.Snapchat]
         };
     }
     async createAsync(destination) {

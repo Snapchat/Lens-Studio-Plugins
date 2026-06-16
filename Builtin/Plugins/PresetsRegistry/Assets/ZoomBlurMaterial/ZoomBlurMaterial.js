@@ -6,6 +6,7 @@ const params = {
         name: 'Zoom Blur',
         icon: import.meta.resolve('../Resources/Material.svg'),
         'description': 'PostEffectVisual material applying radial zoom blur effect',
+        intendedPlatforms: [Editor.TargetPlatform.Snapchat],
     },
     graph_path: import.meta.resolve('Resources/zoom_blur.graphShader'),
     pass_info: {

@@ -5,7 +5,8 @@ const params = {
         'id': 'Com.Snap.MaterialPreset.MatteShadowMaterial',
         'name': 'Matte Shadow',
         'description': 'Renders only shadows cast on object surface, hiding the object itself',
-        'icon': import.meta.resolve('../Resources/Material.svg')
+        'icon': import.meta.resolve('../Resources/Material.svg'),
+        'intendedPlatforms': [Editor.TargetPlatform.Snapchat]
     },
     graph_path: import.meta.resolve('Resources/matte_shadow.graphShader'),
     pass_info: {

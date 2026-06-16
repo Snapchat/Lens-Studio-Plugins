@@ -5,7 +5,8 @@ const params = {
         'id': 'Com.Snap.MaterialPreset.SmoothingMaterial',
         'name': 'Smoothing',
         'description': 'PostEffectVisual material smoothing and softening rendered image',
-        'icon': import.meta.resolve('../Resources/Material.svg')
+        'icon': import.meta.resolve('../Resources/Material.svg'),
+        'intendedPlatforms': [Editor.TargetPlatform.Snapchat]
     },
     graph_path: import.meta.resolve('Resources/smoothing.graphShader'),
     pass_info: {

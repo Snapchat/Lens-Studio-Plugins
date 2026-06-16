@@ -167,7 +167,7 @@ async function handleEditorMessage(socket, message, serverManager) {
             }
             break;
         case EDITOR_EVENTS.SAVE_SCRIPT_CONTENT:
-            if (payload && payload.filePath && payload.content) {
+            if (payload && payload.filePath && payload.content != null) {
                 const assetsDirectoryPath = serverManager.assetManager.assetsDirectory;
                 const absolutePath = `${assetsDirectoryPath.toString()}/${payload.filePath}`;
                 let pathToWrite = new Editor.Path(absolutePath)

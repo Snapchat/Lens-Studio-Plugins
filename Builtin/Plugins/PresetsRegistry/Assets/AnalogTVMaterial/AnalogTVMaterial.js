@@ -5,7 +5,8 @@ const params = {
         'id': 'Com.Snap.MaterialPreset.AnalogTV',
         'name': 'Analog TV',
         'description': 'PostEffectVisual material simulating old VCR effects (scanlines, distortion, noise)',
-        'icon': import.meta.resolve('../Resources/Material.svg')
+        'icon': import.meta.resolve('../Resources/Material.svg'),
+        'intendedPlatforms': [Editor.TargetPlatform.Snapchat]
     },
     graph_path: import.meta.resolve('Resources/analog_tv.graphShader'),
     pass_info: {

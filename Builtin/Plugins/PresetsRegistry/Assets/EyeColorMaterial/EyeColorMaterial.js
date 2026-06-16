@@ -5,7 +5,8 @@ const params = {
         'id': 'Com.Snap.MaterialPreset.EyeColorMaterialPreset',
         'name': 'Eye Color',
         'description': 'Applies tunable color tint to eyes',
-        'icon': import.meta.resolve('../Resources/Material.svg')
+        'icon': import.meta.resolve('../Resources/Material.svg'),
+        'intendedPlatforms': [Editor.TargetPlatform.Snapchat]
     },
     graph_path: import.meta.resolve('../Resources/flat.graphShader'),
     pass_info: {

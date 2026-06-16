@@ -5,7 +5,8 @@ const params = {
         'id': 'Com.Snap.MaterialPreset.PixelizationMaterial',
         'name': 'Pixelization',
         'description': 'PostEffectVisual material pixelating screen with tunable pixel size',
-        'icon': import.meta.resolve('../Resources/Material.svg')
+        'icon': import.meta.resolve('../Resources/Material.svg'),
+        'intendedPlatforms': [Editor.TargetPlatform.Snapchat]
     },
     graph_path: import.meta.resolve('Resources/pixelization.graphShader'),
     pass_info: {

@@ -5,7 +5,8 @@ const params = {
         'id': 'Com.Snap.MaterialPreset.HalfToneMaterial',
         'name': 'Half Tone',
         'description': 'PostEffectVisual material creating comic book-style halftone dots with configurable colors',
-        'icon': import.meta.resolve('../Resources/Material.svg')
+        'icon': import.meta.resolve('../Resources/Material.svg'),
+        'intendedPlatforms': [Editor.TargetPlatform.Snapchat]
     },
     graph_path: import.meta.resolve('Resources/half_tone.graphShader'),
     pass_info: {
