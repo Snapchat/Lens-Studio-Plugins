@@ -19,7 +19,7 @@ export class RenderMeshVisualPBRComponentPreset extends Preset {
     static descriptor() {
         return {
             id: 'Com.Snap.RenderMeshVisualPBRPreset',
-            name: 'Render Mesh Visual',
+            name: 'Render Mesh Visual (PBR)',
             description: 'RenderMeshVisual component with a platform-appropriate material (Uber PBR on Snapchat, Uber Diffuse on Spectacles)',
             icon: Editor.Icon.fromFile(import.meta.resolve('Resources/RenderMeshVisual.svg')),
             section: '3D',

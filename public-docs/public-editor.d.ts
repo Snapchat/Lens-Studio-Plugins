@@ -1,7 +1,7 @@
 /**
  * @module Editor Scripting
- * @version 5.23.0
- * For Snapchat Version: 14.12
+ * @version 5.24.0
+ * For Snapchat Version: 14.17
 */
 interface ComponentNameMap {
     "AnimationPlayer": Editor.Components.AnimationPlayer;
@@ -179,6 +179,11 @@ declare class BaseDescriptor extends IPluginDescriptor {
     * Display name of the plugin.
     */
     name: string
+    
+    /**
+    * Returns the type name of this class.
+    */
+    static getTypeName(): string
     
 }
 
@@ -956,6 +961,29 @@ declare namespace Editor {
 
 declare namespace Editor {
     namespace Assets {
+        class AssetImporterSettings extends Editor.Model.EntityStructure {
+            
+            /** @hidden */
+            protected constructor()
+            
+            /**
+            * Returns metadata about this type.
+            */
+            static getMeta(): Editor.Model.Meta
+            
+            /**
+            * Returns the type name of this class.
+            */
+            static getTypeName(): string
+            
+        }
+    
+    }
+
+}
+
+declare namespace Editor {
+    namespace Assets {
         /**
         * Represents an audio track asset.
         
@@ -1373,6 +1401,31 @@ declare namespace Editor {
 
 declare namespace Editor {
     namespace Assets {
+        class CustomAsset extends Editor.Assets.Asset {
+            
+            /** @hidden */
+            protected constructor()
+            
+            scriptAsset: Editor.Assets.ScriptAsset
+            
+            /**
+            * Returns metadata about this type.
+            */
+            static getMeta(): Editor.Model.Meta
+            
+            /**
+            * Returns the type name of this class.
+            */
+            static getTypeName(): string
+            
+        }
+    
+    }
+
+}
+
+declare namespace Editor {
+    namespace Assets {
         /**
         * Asset representing a custom code node in a visual graph.
         
@@ -1397,6 +1450,49 @@ declare namespace Editor {
             
             /** @hidden */
             protected constructor()
+            
+            /**
+            * Returns the type name of this class.
+            */
+            static getTypeName(): string
+            
+        }
+    
+    }
+
+}
+
+declare namespace Editor {
+    namespace Assets {
+        class CustomVariationStyle extends Editor.Model.EntityStructure {
+            
+            /** @hidden */
+            protected constructor()
+            
+            italic: boolean
+            
+            /**
+            * @readonly
+            */
+            name: string
+            
+            opticalSize: number
+            
+            slant: number
+            
+            weight: number
+            
+            width: number
+            
+            /**
+            * Returns metadata about this type.
+            */
+            static getMeta(): Editor.Model.Meta
+            
+            /**
+            * Returns the type name of this class.
+            */
+            static getTypeName(): string
             
         }
     
@@ -2355,6 +2451,25 @@ declare namespace Editor {
             /** @hidden */
             protected constructor()
             
+            createVariationStyle(name: string): Editor.Assets.CustomVariationStyle
+            
+            customVariationStyles: Editor.Assets.CustomVariationStyle[]
+            
+            /**
+            * @readonly
+            */
+            isVariableFont: boolean
+            
+            /**
+            * @readonly
+            */
+            namedInstances: Editor.Assets.NamedInstanceInfo[]
+            
+            /**
+            * @readonly
+            */
+            variationAxes: Editor.Assets.VariationAxisInfo[]
+            
             /**
             * Returns metadata about this type.
             */
@@ -2441,7 +2556,7 @@ declare namespace Editor {
             * Font or FontFamily asset referenced by this entry.
             
             */
-            asset: (Editor.Assets.FontFamily|Editor.Assets.Font)
+            asset: (Editor.Assets.Font|Editor.Assets.FontFamily)
             
             /**
             * Whether the entry's asset should be rendered in italic style.
@@ -2778,6 +2893,11 @@ declare namespace Editor {
             */
             scale: number
             
+            /**
+            * Returns the type name of this class.
+            */
+            static getTypeName(): string
+            
         }
     
     }
@@ -2815,6 +2935,33 @@ declare namespace Editor {
             
             /** @hidden */
             protected constructor()
+            
+            /**
+            * Returns metadata about this type.
+            */
+            static getMeta(): Editor.Model.Meta
+            
+            /**
+            * Returns the type name of this class.
+            */
+            static getTypeName(): string
+            
+        }
+    
+    }
+
+}
+
+declare namespace Editor {
+    namespace Assets {
+        class HandMesh extends Editor.Assets.RenderMesh {
+            
+            /** @hidden */
+            protected constructor()
+            
+            handIndex: number
+            
+            handType: Editor.Assets.HandTracking3DHandType
             
             /**
             * Returns metadata about this type.
@@ -3033,6 +3180,11 @@ declare namespace Editor {
             
             /** @hidden */
             protected constructor()
+            
+            /**
+            * Returns the type name of this class.
+            */
+            static getTypeName(): string
             
         }
     
@@ -3603,6 +3755,13 @@ declare namespace Editor {
             /** @hidden */
             protected constructor()
             
+            /**
+            * Returns the type name of this class.
+            
+            * @beta
+            */
+            static getTypeName(): string
+            
         }
     
     }
@@ -3646,6 +3805,29 @@ declare namespace Editor {
             * Apply MSAA only when necessary for quality.
             */
             OnlyWhenRequired
+        }
+    
+    }
+
+}
+
+declare namespace Editor {
+    namespace Assets {
+        class NamedInstanceInfo {
+            
+            /** @hidden */
+            protected constructor()
+            
+            /**
+            * @readonly
+            */
+            coordinates: number[]
+            
+            /**
+            * @readonly
+            */
+            name: string
+            
         }
     
     }
@@ -3927,6 +4109,11 @@ declare namespace Editor {
             * Whether referenced assets are preserved when the prefab is modified.
             */
             retainAssets: boolean
+            
+            /**
+            * Returns the type name of this class.
+            */
+            static getTypeName(): string
             
         }
     
@@ -4484,6 +4671,11 @@ declare namespace Editor {
             */
             shaderType: Editor.Assets.ShaderType
             
+            /**
+            * Returns the type name of this class.
+            */
+            static getTypeName(): string
+            
         }
     
     }
@@ -5026,6 +5218,13 @@ declare namespace Editor {
             */
             deviceDependentAssetId: string
             
+            /**
+            * Returns the type name of this class.
+            
+            * @beta
+            */
+            static getTypeName(): string
+            
         }
     
     }
@@ -5464,6 +5663,8 @@ declare namespace Editor {
             */
             readMe: Editor.Assets.MarkdownAsset
             
+            scriptType: Editor.Assets.ScriptType
+            
             /**
             * Array of tags categorizing this script.
             */
@@ -5546,6 +5747,18 @@ declare namespace Editor {
             */
             uiInfo: string
             
+        }
+    
+    }
+
+}
+
+declare namespace Editor {
+    namespace Assets {
+        enum ScriptType {
+            Component,
+            Module,
+            Asset
         }
     
     }
@@ -5920,6 +6133,11 @@ declare namespace Editor {
             /** @hidden */
             protected constructor()
             
+            /**
+            * Returns the type name of this class.
+            */
+            static getTypeName(): string
+            
         }
     
     }
@@ -6162,6 +6380,67 @@ declare namespace Editor {
             * @readonly
             */
             scriptInputInfo: any
+            
+            /**
+            * Returns the type name of this class.
+            */
+            static getTypeName(): string
+            
+        }
+    
+    }
+
+}
+
+declare namespace Editor {
+    namespace Assets {
+        class VariationAxisInfo {
+            
+            /** @hidden */
+            protected constructor()
+            
+            /**
+            * @readonly
+            */
+            defaultValue: number
+            
+            /**
+            * @readonly
+            */
+            maxValue: number
+            
+            /**
+            * @readonly
+            */
+            minValue: number
+            
+            /**
+            * @readonly
+            */
+            name: string
+            
+            /**
+            * @readonly
+            */
+            tag: string
+            
+        }
+    
+    }
+
+}
+
+declare namespace Editor {
+    namespace Assets {
+        class VectorComposite extends Editor.Assets.Asset {
+            
+            /** @hidden */
+            protected constructor()
+            
+            /**
+            * Returns the type name of this class.
+            */
+            static getTypeName(): string
             
         }
     
@@ -7029,6 +7308,11 @@ declare namespace Editor {
             mode: Editor.Components.CameraClearColor.Mode
             
             /**
+            * Returns the type name of this class.
+            */
+            static getTypeName(): string
+            
+            /**
             * Return metadata for CameraClearColor.
             */
             static staticMeta(): Editor.Model.Meta
@@ -7128,6 +7412,11 @@ declare namespace Editor {
             * Depth value to clear to when mode is set to Value.
             */
             value: number
+            
+            /**
+            * Returns the type name of this class.
+            */
+            static getTypeName(): string
             
             /**
             * Return metadata for CameraClearDepth.
@@ -8519,6 +8808,55 @@ declare namespace Editor {
 
 declare namespace Editor {
     namespace Components {
+        class FontStyles {
+            
+            /** @hidden */
+            protected constructor()
+            
+            static Bold: string
+            
+            static BoldItalic: string
+            
+            static ExtraBold: string
+            
+            static ExtraBoldItalic: string
+            
+            static ExtraLight: string
+            
+            static ExtraLightItalic: string
+            
+            static Heavy: string
+            
+            static HeavyItalic: string
+            
+            static Light: string
+            
+            static LightItalic: string
+            
+            static Medium: string
+            
+            static MediumItalic: string
+            
+            static Regular: string
+            
+            static RegularItalic: string
+            
+            static SemiBold: string
+            
+            static SemiBoldItalic: string
+            
+            static Thin: string
+            
+            static ThinItalic: string
+            
+        }
+    
+    }
+
+}
+
+declare namespace Editor {
+    namespace Components {
         /**
         * Renders a Gaussian Splatting asset with optional frame selection for animated content.
         
@@ -8551,6 +8889,11 @@ declare namespace Editor {
             * A GaussianSplattingAsset to render.
             */
             asset: Editor.Assets.GaussianSplattingAsset
+            
+            /**
+            * Returns the type name of this class.
+            */
+            static getTypeName(): string
             
         }
     
@@ -10081,11 +10424,15 @@ declare namespace Editor {
             
             /**
             * Returns metadata about this type.
+            
+            * @beta
             */
             static getMeta(): Editor.Model.Meta
             
             /**
             * Returns the type name of this class.
+            
+            * @beta
             */
             static getTypeName(): string
             
@@ -11331,6 +11678,11 @@ declare namespace Editor {
             /** @hidden */
             protected constructor()
             
+            /**
+            * Returns the type name of this class.
+            */
+            static getTypeName(): string
+            
         }
     
     }
@@ -12210,7 +12562,7 @@ declare namespace Editor {
             * The font source for this text component. Can be a Font, FontFamily, or FontCollection asset.
             
             */
-            fontSource: (Editor.Assets.FontCollection|Editor.Assets.FontFamily|Editor.Assets.Font)
+            fontSource: (Editor.Assets.Font|Editor.Assets.FontFamily|Editor.Assets.FontCollection)
             
             /**
             * Behavior when text exceeds horizontal bounds.
@@ -12220,7 +12572,7 @@ declare namespace Editor {
             /**
             * Enable or disable italic text styling.
             */
-            italic: boolean
+            italic?: boolean
             
             layoutRect: Editor.Rect
             
@@ -12238,6 +12590,8 @@ declare namespace Editor {
             * Text outline effect settings.
             */
             outlineSettings: Editor.Components.OutlineSettings
+            
+            preferredStyle: string
             
             /**
             * Show the text editing preview in the editor.
@@ -12282,7 +12636,7 @@ declare namespace Editor {
             /**
             * Font weight value.
             */
-            weight: number
+            weight?: number
             
             /**
             * Returns metadata about this type.
@@ -12374,7 +12728,7 @@ declare namespace Editor {
             * The font source for this text component. Can be a Font, FontFamily, or FontCollection asset.
             
             */
-            fontSource: (Editor.Assets.FontCollection|Editor.Assets.FontFamily|Editor.Assets.Font)
+            fontSource: (Editor.Assets.Font|Editor.Assets.FontFamily|Editor.Assets.FontCollection)
             
             /**
             * Behavior when text exceeds horizontal bounds.
@@ -12384,7 +12738,7 @@ declare namespace Editor {
             /**
             * Apply italic style to text.
             */
-            italic: boolean
+            italic?: boolean
             
             layoutRect: Editor.Rect
             
@@ -12397,6 +12751,8 @@ declare namespace Editor {
             * Space between text lines.
             */
             lineSpacing: number
+            
+            preferredStyle: string
             
             /**
             * Display text editing preview in editor.
@@ -12431,7 +12787,7 @@ declare namespace Editor {
             /**
             * Font weight value.
             */
-            weight: number
+            weight?: number
             
             /**
             * Returns metadata about this type.
@@ -13153,6 +13509,11 @@ declare namespace Editor {
             panels: IPanelPlugin[]
             
             /**
+            * Returns the type name of this class.
+            */
+            static getTypeName(): string
+            
+            /**
             * Interface identifier for the dock manager.
             */
             static interfaceId: Editor.InterfaceId
@@ -13185,6 +13546,33 @@ declare namespace Editor {
         */
         static createGsafImporterSettings(scene: Editor.Assets.Scene): Editor.GaussianSplatting.GsafImporterSettings
         
+        static createImporterSettings(scene: Editor.Assets.Scene): Editor.GaussianSplatting.GaussianSplattingImporterSettings
+        
+    }
+
+}
+
+declare namespace Editor {
+    namespace GaussianSplatting {
+        class GaussianSplattingImporterSettings extends Editor.Assets.AssetImporterSettings {
+            
+            /** @hidden */
+            protected constructor()
+            
+            preserveOrder: boolean
+            
+            /**
+            * Returns metadata about this type.
+            */
+            static getMeta(): Editor.Model.Meta
+            
+            /**
+            * Returns the type name of this class.
+            */
+            static getTypeName(): string
+            
+        }
+    
     }
 
 }
@@ -13539,6 +13927,11 @@ declare namespace Editor {
         onAuthorizationChange: signal1<boolean, void>
         
         /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
+        /**
         * The unique identifier for the IAuthorization interface.
         */
         static interfaceId: Editor.InterfaceId
@@ -13609,6 +14002,11 @@ declare namespace Editor {
         /** @hidden */
         protected constructor()
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -13668,6 +14066,11 @@ declare namespace Editor {
         registerAction(action: (arg1: Editor.IContext) => Editor): Editor.IGuard
         
         /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
+        /**
         * Unique identifier for the IContextActionRegistry interface.
         */
         static interfaceId: Editor.InterfaceId
@@ -13723,6 +14126,11 @@ declare namespace Editor {
         requestPicker(entityType: string, callback: (arg1: Editor.Model.Entity) => void, contextEntities?: any): void
         
         /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
+        /**
         * Interface identifier for IEntityPicker.
         */
         static interfaceId: Editor.InterfaceId
@@ -13770,6 +14178,11 @@ declare namespace Editor {
         */
         dispose(): void
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -13793,6 +14206,11 @@ declare namespace Editor {
         
         /** @hidden */
         protected constructor()
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -13862,6 +14280,11 @@ declare namespace Editor {
         
         */
         exportScript(scriptAsset: Editor.Assets.ScriptAsset, path: Editor.Path, exportOptions: Editor.Model.ExportOptions): void
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
         /**
         * Static interface ID for resolving the package actions component via the plugin system.
@@ -13987,6 +14410,11 @@ declare namespace Editor {
         syncVersions(): void
         
         /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
+        /**
         * Static interface ID for resolving the package registry component via the plugin system.
         
         */
@@ -14029,6 +14457,11 @@ declare namespace Editor {
         */
         id: string
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -14055,6 +14488,11 @@ declare namespace Editor {
         /** @hidden */
         protected constructor()
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -14068,6 +14506,11 @@ declare namespace Editor {
         exportRuntimeBundle(asset: Editor.Assets.Asset, targetDir: Editor.Path): Editor.Path | undefined
         
         exportRuntimeBundleAsync(asset: Editor.Assets.Asset, targetDir: Editor.Path): any
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
         static interfaceId: Editor.InterfaceId
         
@@ -14142,6 +14585,11 @@ declare namespace Editor {
             * @readonly
             */
             selection: Editor.Model.AssetContext.Item[]
+            
+            /**
+            * Returns the type name of this class.
+            */
+            static getTypeName(): string
             
         }
     
@@ -14328,6 +14776,11 @@ declare namespace Editor {
             topmostNativePackageRoot: Editor.Model.AssetImportMetadata
             
             /**
+            * Returns the type name of this class.
+            */
+            static getTypeName(): string
+            
+            /**
             * Returns the static metadata descriptor for the AssetImportMetadata type.
             */
             static staticMeta(): Editor.Model.Meta
@@ -14503,6 +14956,11 @@ declare namespace Editor {
             */
             cacheDirectory: Editor.Path
             
+            /**
+            * Returns the type name of this class.
+            */
+            static getTypeName(): string
+            
         }
     
     }
@@ -14539,6 +14997,11 @@ declare namespace Editor {
             * @readonly
             */
             isNative: boolean
+            
+            /**
+            * Returns the type name of this class.
+            */
+            static getTypeName(): string
             
         }
     
@@ -14582,6 +15045,11 @@ declare namespace Editor {
             * Executes a set of changes grouped under a named operation for undo/redo purposes.
             */
             executeAsGroup(name: string, change: () => void): void
+            
+            /**
+            * Returns the type name of this class.
+            */
+            static getTypeName(): string
             
         }
     
@@ -15028,7 +15496,7 @@ declare namespace Editor {
             
             * @beta
             */
-            createEntity(entityType: string, context: (Editor.Path|Editor.Model.Entity), callback: (arg1: Editor.Model.Entity) => void): void
+            createEntity(entityType: string, context: (Editor.Model.Entity|Editor.Path), callback: (arg1: Editor.Model.Entity) => void): void
             
             /**
             * Returns the display caption string for the given entity type identifier.
@@ -15053,6 +15521,11 @@ declare namespace Editor {
             * Registers a new entity prototype from the provided prototype data and returns a guard managing the registration lifetime.
             */
             registerEntityPrototype(prototypeData: Editor.Model.EntityPrototypeData): Editor.IGuard
+            
+            /**
+            * Returns the type name of this class.
+            */
+            static getTypeName(): string
             
             /**
             * Unique identifier string for the IEntityPrototypeRegistry interface.
@@ -15088,6 +15561,11 @@ declare namespace Editor {
             * Get the metadata of an entity.
             */
             getMeta(entityType: string): Editor.Model.Meta
+            
+            /**
+            * Returns the type name of this class.
+            */
+            static getTypeName(): string
             
             /**
             * Unique identifier for the IEntityRegistry interface, used to look up this component via findInterface.
@@ -15200,6 +15678,11 @@ declare namespace Editor {
             * @readonly
             */
             project: Editor.Model.Project
+            
+            /**
+            * Returns the type name of this class.
+            */
+            static getTypeName(): string
             
             /**
             * Unique identifier for this interface, used when resolving it via the plugin system.
@@ -15317,6 +15800,8 @@ declare namespace Editor {
             */
             aborted: boolean
             
+            static create(importerSettings: Editor.Assets.AssetImporterSettings): Editor.Model.ImportSettings
+            
         }
     
     }
@@ -15360,6 +15845,11 @@ declare namespace Editor {
             * @readonly
             */
             icon: Editor.Icon
+            
+            /**
+            * Returns the type name of this class.
+            */
+            static getTypeName(): string
             
         }
     
@@ -15895,6 +16385,11 @@ declare namespace Editor {
             */
             isAbstract: boolean
             
+            /**
+            * Returns the type name of this class.
+            */
+            static getTypeName(): string
+            
         }
     
     }
@@ -16035,6 +16530,11 @@ declare namespace Editor {
             */
             selection: Editor.Model.SceneObject[]
             
+            /**
+            * Returns the type name of this class.
+            */
+            static getTypeName(): string
+            
         }
     
     }
@@ -16105,6 +16605,18 @@ declare namespace Editor {
             
             /** @hidden */
             protected constructor()
+            
+            getPrefabInstanceRoot(): Editor.Model.Prefabable
+            
+            /**
+            * @readonly
+            */
+            hasPrefabChanges: boolean
+            
+            /**
+            * @readonly
+            */
+            isPrefabInstanceRoot: boolean
             
             /**
             * Returns metadata about this type.
@@ -16254,6 +16766,11 @@ declare namespace Editor {
             
             */
             targetPlatform: Editor.TargetPlatform
+            
+            /**
+            * Returns the type name of this class.
+            */
+            static getTypeName(): string
             
         }
     
@@ -16429,6 +16946,8 @@ declare namespace Editor {
             */
             addComponentAt(value: Editor.Components.Component, pos?: number): void
             
+            applyToPrefab(): void
+            
             /**
             * Remove all children from this object.
             */
@@ -16524,6 +17043,8 @@ declare namespace Editor {
             */
             removeComponentAt(pos: number): void
             
+            resetFromPrefab(): void
+            
             /**
             * Set the child scene object `value` to be at the specified `pos`.
             */
@@ -16538,6 +17059,8 @@ declare namespace Editor {
             * Set the parent of this scene object.
             */
             setParent(newParent: Editor.Model.SceneObject, position?: number): void
+            
+            unlinkFromPrefab(): void
             
             /**
             * A list of scene objects that is a child of this scene object.
@@ -16560,6 +17083,11 @@ declare namespace Editor {
             * @readonly
             */
             hasVisuals: boolean
+            
+            /**
+            * @readonly
+            */
+            isPrefabPrototypeRoot: boolean
             
             /**
             * The layerSet this scene object is on.
@@ -16592,6 +17120,11 @@ declare namespace Editor {
             * Returns the nearest common ancestor shared by a set of scene objects.
             */
             static commonParent(sceneObjects: Editor.Model.SceneObject[]): Editor.Model.SceneObject
+            
+            /**
+            * Returns the type name of this class.
+            */
+            static getTypeName(): string
             
             /**
             * Returns the static metadata descriptor for the SceneObject type.
@@ -16815,6 +17348,11 @@ declare namespace Editor {
             */
             scale: vec3
             
+            /**
+            * Returns the type name of this class.
+            */
+            static getTypeName(): string
+            
         }
     
     }
@@ -16861,8 +17399,23 @@ declare namespace Editor {
             */
             scale: vec3
             
+            /**
+            * Returns the type name of this class.
+            */
+            static getTypeName(): string
+            
         }
     
+    }
+
+}
+
+declare namespace Editor {
+    class MyLenses {
+        
+        /** @hidden */
+        protected constructor()
+        
     }
 
 }
@@ -17155,6 +17708,11 @@ declare namespace Editor {
         */
         descriptors: IPluginDescriptor[]
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -17310,6 +17868,11 @@ declare namespace Editor {
         /** @hidden */
         protected constructor()
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -17358,6 +17921,11 @@ declare namespace Editor {
         * @readonly
         */
         isConnected: boolean
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -17673,6 +18241,11 @@ declare class IPanelPlugin extends Editor.IPlugin {
     */
     widget: import('LensStudio:Ui').Widget
     
+    /**
+    * Returns the type name of this class.
+    */
+    static getTypeName(): string
+    
 }
 
 /**
@@ -17746,6 +18319,11 @@ declare class IPluginDescriptor extends ScriptObject {
     * @readonly
     */
     name: string
+    
+    /**
+    * Returns the type name of this class.
+    */
+    static getTypeName(): string
     
 }
 
@@ -17962,6 +18540,11 @@ declare module "LensStudio:AssetInstantiator" {
         */
         pluginSystem: Editor.PluginSystem
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -17995,6 +18578,11 @@ declare module "LensStudio:AssetInstantiator" {
         * Function that takes an asset and returns whether it can be instantiated by this descriptor.
         */
         canInstantiate: (arg1: Editor.Assets.Asset) => any
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -18363,6 +18951,11 @@ declare module "LensStudio:AssetLibrary" {
         * Fetches a list of assets from the Asset Library matching the given request, returning a promise that resolves to an AssetListResponse.
         */
         fetchAsync(request: AssetListRequest): Promise<AssetListResponse>
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -18852,6 +19445,11 @@ declare module "LensStudio:AssetLibrary" {
         */
         fetchAsync(request: GetAssetsByIdsRequest): Promise<GetAssetsByIdsResponse>
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -18918,6 +19516,11 @@ declare module "LensStudio:AssetLibrary" {
         * @readonly
         */
         musicService: MusicListService
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
         /**
         * Unique identifier for the IAssetLibraryProvider plugin component interface.
@@ -19224,6 +19827,11 @@ declare module "LensStudio:AssetLibrary" {
         * Fetches a list of music assets matching the given request and returns a promise resolving to a MusicListResponse.
         */
         fetchAsync(request: AssetListRequest): Promise<MusicListResponse>
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -19774,6 +20382,11 @@ declare module "LensStudio:ChatTool" {
         */
         pluginSystem: Editor.PluginSystem
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -19844,6 +20457,11 @@ declare module "LensStudio:ChatTool" {
         */
         schema: any
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -19901,6 +20519,11 @@ declare module "LensStudio:ChatTool" {
         * @readonly
         */
         tools: IPluginDescriptor[]
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
         /**
         * Unique identifier used to look up this interface via the plugin system.
@@ -20161,6 +20784,11 @@ declare module "LensStudio:CoreService" {
         */
         pluginSystem: Editor.PluginSystem
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -20193,6 +20821,11 @@ declare module "LensStudio:CoreService" {
         * Constructs a new service descriptor for registering a CoreService plugin with the plugin system.
         */
         constructor()
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -20391,6 +21024,11 @@ declare module "LensStudio:DialogPlugin" {
         */
         toolbarConfig?: import('LensStudio:Ui').ToolbarConfig
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -20477,6 +21115,11 @@ declare module "LensStudio:DialogPlugin" {
         * @readonly
         */
         pluginSystem: Editor.PluginSystem
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -20626,6 +21269,11 @@ declare module "LensStudio:EditorPlugin" {
         */
         canEdit: (arg1: Editor.Model.Entity) => any
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -20730,6 +21378,11 @@ declare module "LensStudio:EditorPlugin" {
         */
         pluginSystem: Editor.PluginSystem
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -20821,6 +21474,11 @@ declare module "LensStudio:EntityGenerator" {
         */
         icon: Editor.Icon
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -20883,6 +21541,11 @@ declare module "LensStudio:EntityGenerator" {
         * @readonly
         */
         pluginSystem: Editor.PluginSystem
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -20991,7 +21654,7 @@ declare module "LensStudio:FileSystem" {
     /**
     * Writes a file to `path` given the `data`.
     */
-    export function writeFile(path: Editor.Path, data: (Uint8Array|string)): void
+    export function writeFile(path: Editor.Path, data: (string|Uint8Array)): void
     
 }
 
@@ -21140,6 +21803,11 @@ declare module "LensStudio:FileSystem" {
         */
         static create(): TempDir
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -21253,6 +21921,11 @@ declare module "LensStudio:FileSystem" {
         */
         static create(path: Editor.Path): Watcher
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -21323,6 +21996,11 @@ declare module "LensStudio:GuiService" {
         */
         constructor()
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -21391,6 +22069,11 @@ declare module "LensStudio:GuiService" {
         * @readonly
         */
         pluginSystem: Editor.PluginSystem
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -21566,6 +22249,11 @@ declare module "LensStudio:Logger" {
         onRevealLogRequest: signal1<string, void>
         
         /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
+        /**
         * Unique identifier for the IUserLogCollector interface.
         */
         static interfaceId: Editor.InterfaceId
@@ -21644,6 +22332,11 @@ declare module "LensStudio:Mcp" {
         
         */
         isRunning(): boolean
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
         /**
         * Interface identifier for resolving the MCP server component via the plugin system.
@@ -21790,6 +22483,11 @@ declare module "LensStudio:ModelUi" {
         * @readonly
         */
         onEntitySelect: signal0<void>
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -22033,6 +22731,11 @@ declare module "LensStudio:Network" {
         */
         port: number
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -22135,6 +22838,11 @@ declare module "LensStudio:Network" {
         */
         remoteAddress: Address
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -22187,7 +22895,7 @@ declare module "LensStudio:Network" {
         
         * @beta
         */
-        append(body: (Uint8Array|string), headers: any): void
+        append(body: (string|Uint8Array), headers: any): void
         
     }
 
@@ -22269,6 +22977,13 @@ declare module "LensStudio:Network" {
         */
         onError: signal1<import('LensStudio:Network').HttpResponse, void>
         
+        /**
+        * Returns the type name of this class.
+        
+        * @beta
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -22313,7 +23028,7 @@ declare module "LensStudio:Network" {
         
         * @beta
         */
-        body: (Uint8Array|import('LensStudio:Network').FormData|string)
+        body: (string|Uint8Array|import('LensStudio:Network').FormData)
         
         /**
         * The content type of the request body.
@@ -22566,6 +23281,11 @@ declare module "LensStudio:Network" {
         */
         static create(): TcpServer
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -22672,7 +23392,12 @@ declare module "LensStudio:Network" {
         /**
         * Write to the socket.
         */
-        write(data: (Uint8Array|string)): number
+        write(data: (string|Uint8Array)): number
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -22766,6 +23491,11 @@ declare module "LensStudio:PanelPlugin" {
         */
         constructor()
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -22802,6 +23532,11 @@ declare module "LensStudio:PanelPlugin" {
         
         /** @hidden */
         protected constructor()
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -22871,6 +23606,11 @@ declare module "LensStudio:PanelPlugin" {
         * Optional toolbar configuration to display in the panel.
         */
         toolbarConfig?: import('LensStudio:Ui').ToolbarConfig
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -22947,6 +23687,11 @@ declare module "LensStudio:PanelPlugin" {
         * @readonly
         */
         pluginSystem: Editor.PluginSystem
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -23026,6 +23771,11 @@ declare module "LensStudio:PluginVerifier" {
         */
         canVerify: (arg1: IPluginDescriptor) => any
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -23088,6 +23838,11 @@ declare module "LensStudio:PluginVerifier" {
         * @readonly
         */
         pluginSystem: Editor.PluginSystem
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -23188,6 +23943,11 @@ declare module "LensStudio:Preset" {
         */
         section: string
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -23244,12 +24004,12 @@ declare module "LensStudio:Preset" {
         /**
         * Synchronously creates and places a pre-configured entity at the given destination scene object or path.
         */
-        create(destination: (Editor.Model.SceneObject|Editor.Path), importSettings?: any): Editor.Model.Entity
+        create(destination: (Editor.Path|Editor.Model.SceneObject), importSettings?: any): Editor.Model.Entity
         
         /**
         * Asynchronously creates and places a pre-configured entity at the given destination scene object or path.
         */
-        createAsync(destination: (Editor.Model.SceneObject|Editor.Path), importSettings?: any): Promise<Editor.Model.Entity>
+        createAsync(destination: (Editor.Path|Editor.Model.SceneObject), importSettings?: any): Promise<Editor.Model.Entity>
         
         /**
         * The plugin system instance used to resolve interface dependencies.
@@ -23257,6 +24017,11 @@ declare module "LensStudio:Preset" {
         * @readonly
         */
         pluginSystem: Editor.PluginSystem
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -23461,6 +24226,11 @@ declare module "LensStudio:ProjectSettingsPlugin" {
         */
         title: string
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -23542,7 +24312,7 @@ declare module "LensStudio:ProjectSettingsPlugin" {
         /**
         * Sets the current issue status (errors, warnings, or no issues) for this settings panel. Triggers the issuesChanged signal when statuses change, allowing the settings dialog to update visual indicators.
         */
-        setIssues(issues: (import('LensStudio:Ui').ProjectSettings.Error|import('LensStudio:Ui').ProjectSettings.Warning|import('LensStudio:Ui').ProjectSettings.NoIssue)[]): void
+        setIssues(issues: (import('LensStudio:Ui').ProjectSettings.NoIssue|import('LensStudio:Ui').ProjectSettings.Warning|import('LensStudio:Ui').ProjectSettings.Error)[]): void
         
         /**
         * Reference to the plugin system instance.
@@ -23550,6 +24320,11 @@ declare module "LensStudio:ProjectSettingsPlugin" {
         * @readonly
         */
         pluginSystem: Editor.PluginSystem
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -23690,7 +24465,7 @@ declare module "LensStudio:RemoteServiceModule" {
         /**
         * The body of the request.
         */
-        body: (Uint8Array|string)
+        body: (string|Uint8Array)
         
         /**
         * The endpoint of the request (e.g. API path).
@@ -23932,6 +24707,13 @@ declare module "LensStudio:Serialization" {
         /** @hidden */
         protected constructor()
         
+        /**
+        * Returns the type name of this class.
+        
+        * @beta
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -23983,6 +24765,13 @@ declare module "LensStudio:Serialization" {
         * @beta
         */
         getString(): string
+        
+        /**
+        * Returns the type name of this class.
+        
+        * @beta
+        */
+        static getTypeName(): string
         
     }
 
@@ -24634,6 +25423,11 @@ declare module "LensStudio:Subprocess" {
         */
         static create(command: string, args: string[], options: SpawnOptions): Subprocess
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -24687,7 +25481,12 @@ declare module "LensStudio:Subprocess" {
         /**
         * Write data to the stream and return the number of bytes written.
         */
-        write(data: (Uint8Array|string)): number
+        write(data: (string|Uint8Array)): number
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -24814,6 +25613,11 @@ declare module "LensStudio:TypeScript" {
         
         */
         runIsolatedCompilation(tsconfigPath: string): Promise<TypeScriptCompilationResult>
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
         /**
         * Interface identifier for resolving the TypeScript compilation API via the plugin system.
@@ -25043,6 +25847,11 @@ declare module "LensStudio:Ui" {
         */
         text: string
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -25064,6 +25873,11 @@ declare module "LensStudio:Ui" {
         * @readonly
         */
         model: QtObject
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -25176,6 +25990,11 @@ declare module "LensStudio:Ui" {
         * Display the menu at the target widget's location.
         */
         popup(target: Widget): void
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -25328,6 +26147,11 @@ declare module "LensStudio:Ui" {
         toolTip: string
         
         visible: boolean
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -25717,6 +26541,11 @@ declare module "LensStudio:Ui" {
         */
         setDirection(direction: Direction): void
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -25796,6 +26625,11 @@ declare module "LensStudio:Ui" {
         */
         lineWidth: number
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -25859,6 +26693,11 @@ declare module "LensStudio:Ui" {
         * @readonly
         */
         onToggle: signal1<boolean, void>
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -25969,6 +26808,11 @@ declare module "LensStudio:Ui" {
         */
         onClick: signal0<void>
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -26000,6 +26844,11 @@ declare module "LensStudio:Ui" {
         
         /** @hidden */
         protected constructor()
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -26105,6 +26954,11 @@ declare module "LensStudio:Ui" {
         * If true - the panel explicitly paints its background using the color from the color scheme for the role specified in customBackgroundRole. If false - the panel uses the default widget background, allowing parent theming to apply
         */
         overrideBackgroundRole: boolean
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -26264,6 +27118,11 @@ declare module "LensStudio:Ui" {
         * @readonly
         */
         lastAcceptedColor: Color
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -26556,6 +27415,11 @@ declare module "LensStudio:Ui" {
         */
         onCurrentTextChange: signal1<string, void>
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -26832,6 +27696,11 @@ declare module "LensStudio:Ui" {
         * @readonly
         */
         onFinish: signal1<number, void>
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -27209,6 +28078,11 @@ declare module "LensStudio:Ui" {
         */
         value: number
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -27249,6 +28123,11 @@ declare module "LensStudio:Ui" {
         /** @hidden */
         protected constructor()
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -27287,6 +28166,11 @@ declare module "LensStudio:Ui" {
         
         */
         ignore(): void
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -27557,6 +28441,11 @@ declare module "LensStudio:Ui" {
         */
         setRowStretch(row: number, stretch: number): void
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -27587,6 +28476,11 @@ declare module "LensStudio:Ui" {
         
         /** @hidden */
         protected constructor()
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -27737,6 +28631,11 @@ declare module "LensStudio:Ui" {
         */
         selectFolderToSave(params: Dialogs.Params, defaultPath: Editor.Path): Editor.Path
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -27781,6 +28680,11 @@ declare module "LensStudio:Ui" {
         * Open editors for the specified entity with optional plugin-specific configurations.
         */
         openEditors(entity: Editor.Model.Entity, editorPluginIds?: any): void
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
         /**
         * Interface identifier for retrieving this plugin component.
@@ -27838,6 +28742,11 @@ declare module "LensStudio:Ui" {
         * @readonly
         */
         dialogs: IDialogs
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
         /**
         * Interface identifier for IGui.
@@ -27921,6 +28830,11 @@ declare module "LensStudio:Ui" {
         * Controls whether the image (pixmap) is scaled to fit the dimensions of the ImageView widget. Setting it to true will scale the image to match the widget size, while false will display the image at its original size.
         */
         scaledContents: boolean
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -28419,6 +29333,11 @@ declare module "LensStudio:Ui" {
         */
         text: string
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -28493,6 +29412,11 @@ declare module "LensStudio:Ui" {
         * Enable or disable automatic text wrapping.
         */
         wordWrap: boolean
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -28620,6 +29544,11 @@ declare module "LensStudio:Ui" {
         */
         spacing: number
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -28715,6 +29644,11 @@ declare module "LensStudio:Ui" {
         */
         text: string
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -28806,6 +29740,11 @@ declare module "LensStudio:Ui" {
         * @readonly
         */
         onRowDoubleClicked: signal1<number, void>
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -28907,6 +29846,11 @@ declare module "LensStudio:Ui" {
         */
         text: string
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -28979,6 +29923,11 @@ declare module "LensStudio:Ui" {
         * Create a Menu instance for building menu hierarchies.
         */
         constructor(parent: Widget)
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -29632,6 +30581,11 @@ declare module "LensStudio:Ui" {
         */
         y: number
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -29739,6 +30693,11 @@ declare module "LensStudio:Ui" {
         * The playback speed of the movie
         */
         width: number
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -29888,6 +30847,11 @@ declare module "LensStudio:Ui" {
         */
         scaledContents: boolean
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -30015,6 +30979,11 @@ declare module "LensStudio:Ui" {
         */
         addWidget(widget: Widget, section: Section, action?: Action): void
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -30123,6 +31092,11 @@ declare module "LensStudio:Ui" {
         */
         width: number
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -30210,6 +31184,11 @@ declare module "LensStudio:Ui" {
         */
         setMainWidget(widget: Widget): void
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -30275,6 +31254,11 @@ declare module "LensStudio:Ui" {
         */
         value: number
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -30324,6 +31308,11 @@ declare module "LensStudio:Ui" {
         * Stops and hides the progress animation.
         */
         stop(): void
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -30524,6 +31513,11 @@ declare module "LensStudio:Ui" {
         */
         primary: boolean
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -30537,6 +31531,11 @@ declare module "LensStudio:Ui" {
         
         /** @hidden */
         protected constructor()
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -30595,6 +31594,11 @@ declare module "LensStudio:Ui" {
         * @readonly
         */
         onClick: signal0<void>
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -30702,6 +31706,11 @@ declare module "LensStudio:Ui" {
         * Pixel spacing between buttons in the group.
         */
         spacing: number
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -30835,6 +31844,11 @@ declare module "LensStudio:Ui" {
         */
         onRowsRemoved: signal3<import('LensStudio:Ui').ModelIndex, number, number, void>
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -30916,6 +31930,11 @@ declare module "LensStudio:Ui" {
         */
         constructor(parent: Widget)
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -30960,6 +31979,11 @@ declare module "LensStudio:Ui" {
         * Constructs a SearchLineEdit widget for use in plugin UI panels.
         */
         constructor(parent: Widget)
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -31092,6 +32116,11 @@ declare module "LensStudio:Ui" {
         
         /** @internal */
         static create(widget: Separator): Separator
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -31227,6 +32256,11 @@ declare module "LensStudio:Ui" {
         * @readonly
         */
         onActivatedAmbiguously: signal0<void>
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -31710,6 +32744,11 @@ declare module "LensStudio:Ui" {
         */
         value: number
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -31794,6 +32833,11 @@ declare module "LensStudio:Ui" {
         * The current numeric value of the spin box.
         */
         value: number
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -31905,6 +32949,11 @@ declare module "LensStudio:Ui" {
         */
         sizes: number[]
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -32012,6 +33061,11 @@ declare module "LensStudio:Ui" {
         */
         stackingMode: StackingMode
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -32101,6 +33155,11 @@ declare module "LensStudio:Ui" {
         * Reference to the currently visible widget.
         */
         currentWidget: Widget
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -32238,6 +33297,11 @@ declare module "LensStudio:Ui" {
         */
         text: string
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -32305,6 +33369,11 @@ declare module "LensStudio:Ui" {
         * @readonly
         */
         onCurrentChange: signal1<number, void>
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -32610,6 +33679,11 @@ declare module "LensStudio:Ui" {
         */
         textCursor: TextCursor
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -32805,6 +33879,11 @@ declare module "LensStudio:Ui" {
         */
         onClick: signal0<void>
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -32914,6 +33993,11 @@ declare module "LensStudio:Ui" {
         * The current scroll position within the scroll area.
         */
         value: number
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -33087,6 +34171,11 @@ declare module "LensStudio:Ui" {
         */
         volume: number
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -33175,6 +34264,11 @@ declare module "LensStudio:Ui" {
         * @readonly
         */
         onLoadStarted: signal0<void>
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -33566,6 +34660,11 @@ declare module "LensStudio:Ui" {
         */
         windowTitle: string
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -33619,11 +34718,15 @@ declare module "LensStudio:UiTest" {
     */
     export function findChildren(widget: import('LensStudio:Ui').Widget, className: string): import('LensStudio:Ui').Widget[]
     
+    export function findTopLevelWidgets(className: string): import('LensStudio:Ui').Widget[]
+    
     /**
     * Invokes the named method on the target widget (such as the preview panel) and returns whether the call succeeded.
     
     */
     export function invoke(widget: import('LensStudio:Ui').Widget, method: string): boolean
+    
+    export function itemActivate(widget: import('LensStudio:Ui').Widget, path: number[]): void
     
     /**
     * Clicks the item at the given index path within a tree or list widget.
@@ -33838,6 +34941,11 @@ declare module "LensStudio:UriHandlerPlugin" {
         */
         canHandle: (arg1: string) => any
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
     }
 
 }
@@ -33896,6 +35004,11 @@ declare module "LensStudio:UriHandlerPlugin" {
         * @readonly
         */
         pluginSystem: Editor.PluginSystem
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -34054,12 +35167,17 @@ declare module "LensStudio:WebSocket" {
         /**
         * Sends binary or text data over the WebSocket connection, returning the number of bytes sent.
         */
-        send(data: (Uint8Array|string)): number
+        send(data: (string|Uint8Array)): number
         
         /**
         * Creates a new WebSocket instance.
         */
         static create(): WebSocket
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -34101,6 +35219,11 @@ declare module "LensStudio:WebSocket" {
         * Creates and returns a new WebSocketServer instance.
         */
         static create(): WebSocketServer
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -34190,6 +35313,11 @@ declare module "LensStudio:Workspaces" {
         */
         onRemoved: signal1<import('LensStudio:Workspaces').Metadata, void>
         
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
         static interfaceId: Editor.InterfaceId
         
     }
@@ -34233,6 +35361,11 @@ declare module "LensStudio:Workspaces" {
         * @readonly
         */
         metadata: Metadata
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -34917,6 +36050,11 @@ declare class ScriptObject {
     */
     isSame(other: ScriptObject): boolean
     
+    /**
+    * Returns the name of this object's type.
+    */
+    static getTypeName(): string
+    
 }
 
 /**
@@ -34959,6 +36097,11 @@ declare class SecureLocalStorage extends ScriptObject {
     * Sets the value stored under `keyName`.
     */
     setItem(keyName: string, keyValue: string): void
+    
+    /**
+    * Returns the type name of this class.
+    */
+    static getTypeName(): string
     
 }
 
@@ -35010,6 +36153,11 @@ declare namespace Task {
         whenAllCompleted(): Promise<void>
         
         /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
+        
+        /**
         * Unique identifier for the ITaskManager interface, used for component lookup.
         */
         static interfaceId: Editor.InterfaceId
@@ -35037,6 +36185,11 @@ declare namespace Task {
         
         /** @hidden */
         protected constructor()
+        
+        /**
+        * Returns the type name of this class.
+        */
+        static getTypeName(): string
         
     }
 
@@ -35075,6 +36228,11 @@ declare class TextDecoder extends ScriptObject {
     * @readonly
     */
     encoding: string
+    
+    /**
+    * Returns the type name of this class.
+    */
+    static getTypeName(): string
     
 }
 
@@ -35130,6 +36288,11 @@ declare class TextEncoder extends ScriptObject {
     */
     encoding: string
     
+    /**
+    * Returns the type name of this class.
+    */
+    static getTypeName(): string
+    
 }
 
 /**
@@ -35152,6 +36315,11 @@ declare class Timeout extends ScriptObject {
     
     /** @hidden */
     protected constructor()
+    
+    /**
+    * Returns the type name of this class.
+    */
+    static getTypeName(): string
     
 }
 
@@ -35216,7 +36384,7 @@ declare class vec2 {
     /**
     * Copies x and y values from the given vector into this vector.
     */
-    copyFrom(source: (vec3|vec4|vec2)): void
+    copyFrom(source: (vec2|vec3|vec4)): void
     
     /**
     * Returns the distance between this vector and the given vector.
@@ -35509,7 +36677,7 @@ declare class vec3 {
     /**
     * Copies the component values from the given vector into this vector.
     */
-    copyFrom(source: (vec3|vec4|vec2)): void
+    copyFrom(source: (vec2|vec3|vec4)): void
     
     /**
     * Returns the cross product of this vector and the given vector.
@@ -35854,7 +37022,7 @@ declare class vec4 {
     /**
     * Copies component values from the given vec4 into this vector.
     */
-    copyFrom(source: (vec3|vec4|vec2)): void
+    copyFrom(source: (vec2|vec3|vec4)): void
     
     /**
     * Returns the distance between this vector and the given vector.

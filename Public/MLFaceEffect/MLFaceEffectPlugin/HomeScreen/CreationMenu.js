@@ -234,7 +234,7 @@ export class CreationMenu {
         this.settingsWidget.addWidget(this.advancedSettingsWidget);
         this.settingsWidget.addWidget(this.standardSettingsWidget);
 
-        this.settingsWidget.currentIndex = 0;
+        this.settingsWidget.currentIndex = 1;
 
         this.controls['modelType'].addOnValueChanged((value) => {
             this.settingsWidget.currentIndex = value;

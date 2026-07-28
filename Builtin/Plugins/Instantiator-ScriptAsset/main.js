@@ -1,6 +1,7 @@
 // @ts-ignore: Suppress module not found error if LensStudio:AssetInstantiator is not available during type checking
 import { AssetInstantiator, Descriptor } from 'LensStudio:AssetInstantiator';
 import * as InstantiatorUtils from './utils/InstantiatorUtils.js';
+
 /**
 * ScriptInstantiator usage example:
 * @example
@@ -46,9 +47,7 @@ export class ScriptInstantiator extends AssetInstantiator {
         descriptor.dependencies = [];
         descriptor.name = 'Instantiator - Script Asset';
         descriptor.description = 'Instantiator for Scripts and Custom Components. Allows executing setup scripts defined in the script asset settings.';
-        descriptor.canInstantiate = (asset) => {
-            return asset.type == "JavaScriptAsset" || asset.type == "TypeScriptAsset";
-        };
+        descriptor.canInstantiate = (asset) => ScriptInstantiator.canInstantiate(asset);
         return descriptor;
     }
     prepareDependencies(asset, assetManager) {
@@ -109,7 +108,18 @@ export class ScriptInstantiator extends AssetInstantiator {
     }
     createScriptComponent(sceneObject, scriptAsset) {
         const scriptComponent = sceneObject.addComponent("ScriptComponent");
-        scriptComponent.scriptAsset = scriptAsset;
+        // The asset from C++ instantiate() is Ref<const Asset> which can't be
+        // assigned to the scriptAsset setter (expects Ref<ScriptAsset>).
+        // Re-resolve via fileMeta.primaryAsset to get a mutable, properly-typed ref.
+        const resolvedAsset = scriptAsset.fileMeta.primaryAsset;
+        scriptComponent.scriptAsset = resolvedAsset;
         return scriptComponent;
+    }
+    static canInstantiate(scriptAsset) {
+        if (scriptAsset.type !== "JavaScriptAsset" && scriptAsset.type !== "TypeScriptAsset") {
+            return false;
+        }
+        const ScriptType = Editor.Assets?.ScriptType;
+        return !ScriptType || scriptAsset.scriptType == ScriptType.Component;
     }
 }

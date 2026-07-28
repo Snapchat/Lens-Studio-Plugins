@@ -1,0 +1,12 @@
+{
+  "name": "ai-clips",
+  "version": "5.23.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w"
+  },
+  "dependencies": {
+    "typescript": "^5.9.2"
+  }
+}

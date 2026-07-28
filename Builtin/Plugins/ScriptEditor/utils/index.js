@@ -1,3 +1,7 @@
+import { EDITABLE_ASSET_TYPES } from './editableAssetTypes.js';
+
+const editableTypeNames = new Set(EDITABLE_ASSET_TYPES.map((t) => t.entityType));
+
 const isScriptAsset = (entity) => {
     return entity.getTypeName() === "JavaScriptAsset"
         || entity.getTypeName() === "TypeScriptAsset";
@@ -13,7 +17,7 @@ export const isValidScriptToEdit = (entity) => {
 }
 
 export const isValidEntityToEdit = (entity) => {
-    return isValidScriptToEdit(entity) || entity.getTypeName() === "MarkdownAsset" || entity.getTypeName() === "JsonAsset" || entity.getTypeName() === "CustomCodeNodeAsset";
+    return isValidScriptToEdit(entity) || editableTypeNames.has(entity.getTypeName());
 }
 
 export const getLanguageFromFilePath = (filePath) => {
@@ -21,13 +25,8 @@ export const getLanguageFromFilePath = (filePath) => {
         return 'typescript';
     } else if (filePath.endsWith('.js')) {
         return 'javascript';
-    } else if (filePath.endsWith('.md')) {
-        return 'markdown';
-    } else if (filePath.endsWith('.json')) {
-        return 'json';
-    } else if (filePath.endsWith('.customCode')) {
-        return 'CustomCodeNodeGlsl';
     }
+    return EDITABLE_ASSET_TYPES.find((t) => filePath.endsWith(t.extension))?.language;
 }
 
 export const isCustomComponentFile = (filePath) => {

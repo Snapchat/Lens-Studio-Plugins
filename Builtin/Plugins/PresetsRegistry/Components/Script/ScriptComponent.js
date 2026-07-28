@@ -1,7 +1,8 @@
 import { Preset } from 'LensStudio:Preset';
 import * as Utils from 'LensStudio:Utils@1.0.js';
 import { createTypeScriptAsset } from '../../Assets/TypeScript/TypeScriptComponentPreset.js';
-import { createJavaScriptAsset } from '../../Assets/Script/JavaScriptPreset.js';
+import { createJavaScriptAsset } from '../../Assets/Script/JavaScriptComponentPreset.js';
+
 
 export async function createTypeScriptComponent(model, destinationObject) {
     const scriptAsset = await createTypeScriptAsset(model, new Editor.Path(''));

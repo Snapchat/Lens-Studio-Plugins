@@ -44,7 +44,7 @@ export function createAssetEditMenuItem({
                 return action;
             }
 
-            action.id = "Action.MarkdownEdit";
+            action.id = `Action.Edit${entityType}`;
             action.caption = `Edit ${entityType} in the Text Editor`;
             action.description = `Edits the selected ${entityType} file(s) in the Text Editor.`;
             action.group = [];
@@ -55,7 +55,7 @@ export function createAssetEditMenuItem({
                     /** @type {Editor.Model.AssetManager} */
                     const assetDirectory = model.project.assetsDirectory;
 
-                    editableAssets.map(asset => assetDirectory.appended(asset.fileMeta.sourcePath));
+                    editableAssets.forEach(asset => assetDirectory.appended(asset.fileMeta.sourcePath));
 
                     const editorsComponent = this.pluginSystem.findInterface(Ui.IEditorsManager);
                     for (const asset of editableAssets) {

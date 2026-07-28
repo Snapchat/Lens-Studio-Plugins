@@ -1,6 +1,9 @@
 declare class TypeName<Tp extends Component> extends String {
     private ["__TypeName__"]: void;
 }
+declare abstract class BaseCustomAsset {
+    name: string;
+}
 declare abstract class BaseScriptComponent implements ScriptComponent {
     api: Record<string, any>;
     enabled: boolean;

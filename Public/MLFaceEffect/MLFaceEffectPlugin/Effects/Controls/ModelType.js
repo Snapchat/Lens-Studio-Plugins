@@ -23,10 +23,10 @@ export class ModelType extends Control{
         const modelTypeButtonGroup = new Ui.RadioButtonGroup(this.widget);
         this.modelTypeButtonGroup = modelTypeButtonGroup;
 
-        const enhancedButton = new Ui.RadioButton(modelTypeButtonGroup);
-        enhancedButton.text = "Enhanced";
         const advancedButton = new Ui.RadioButton(modelTypeButtonGroup);
         advancedButton.text = "Advanced";
+        const enhancedButton = new Ui.RadioButton(modelTypeButtonGroup);
+        enhancedButton.text = "Enhanced";
         const standardButton = new Ui.RadioButton(modelTypeButtonGroup);
         standardButton.text = "Original";
 
@@ -34,19 +34,19 @@ export class ModelType extends Control{
         this.advancedButton = advancedButton;
         this.standardButton = standardButton;
 
-        modelTypeButtonGroup.addButton(enhancedButton, 0);
         modelTypeButtonGroup.addButton(advancedButton, 1);
+        modelTypeButtonGroup.addButton(enhancedButton, 0);
         modelTypeButtonGroup.addButton(standardButton, 2);
 
         this.textPromptHint = this['createHintWidget'](this.widget, imageHint, this.enhancedButton);
         this.advancedPromptHint = this['createHintWidget'](this.widget, advancedHint, this.advancedButton);
         this.imagePromptHint = this['createHintWidget'](this.widget, textHint, this.standardButton);
 
-        gridLayout.addWidgetAt(this.textPromptHint, 0, 0, Ui.Alignment.AlignLeft)
-        gridLayout.addWidgetAt(this.advancedPromptHint, 1, 0, Ui.Alignment.AlignLeft)
+        gridLayout.addWidgetAt(this.advancedPromptHint, 0, 0, Ui.Alignment.AlignLeft)
+        gridLayout.addWidgetAt(this.textPromptHint, 1, 0, Ui.Alignment.AlignLeft)
         gridLayout.addWidgetAt(this.imagePromptHint, 2, 0, Ui.Alignment.AlignLeft)
 
-        modelTypeButtonGroup.currentIndex = 0;
+        modelTypeButtonGroup.currentIndex = 1;
 
         enhancedButton.onClick.connect(() => {
             this.mOnValueChanged.forEach((callback) => callback(this.modelTypeButtonGroup.currentIndex));

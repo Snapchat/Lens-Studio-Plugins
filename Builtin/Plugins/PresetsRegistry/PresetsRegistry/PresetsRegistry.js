@@ -52,9 +52,7 @@ export { VHSMaterialPreset } from '../Assets/VHSMaterial/VHSMaterial.js';
 export * from '../Assets/Meshes/Meshes.js';
 export * from '../Assets/Fonts/Fonts.js';
 export { DefaultCustomCodePreset } from '../Assets/CustomCodeNodeAssets/CustomCodeNodeAssets.js';
-export { JavaScriptPreset } from '../Assets/Script/JavaScriptPreset.js';
 export { ObjectPrefabPreset } from '../Assets/ObjectPrefab/ObjectPrefab.js';
-export { TypeScriptComponentPreset } from '../Assets/TypeScript/TypeScriptComponentPreset.js';
 
 // Components
 export { EyeColorComponentPreset } from '../Components/EyeColor/EyeColorComponent.js';
@@ -79,6 +77,7 @@ export { FaceLiquifyObjectPreset } from '../Objects/FaceLiquify/FaceLiquifyObjec
 export { FaceStretchObjectPreset } from '../Objects/FaceStretch/FaceStretchObject.js';
 export { FaceMaskObjectPreset } from '../Objects/FaceMask/FaceMaskObject.js';
 export { FaceMeshObjectPreset, HeadMeshObjectPreset } from '../Objects/FaceMesh/FaceMeshObject.js';
+export { HandMeshObjectPreset } from '../Objects/HandMesh/HandMeshObject.js';
 export { FaceRetouchObjectPreset } from '../Objects/FaceRetouch/FaceRetouchObject.js';
 export { GPUParticlesObjectPreset } from '../Objects/GPUParticles/GPUParticlesObject.js';
 export { GPUParticlesTrailsObjectPreset } from '../Objects/GPUParticlesTrails/GPUParticlesTrailsObject.js';
@@ -104,3 +103,11 @@ export { PhysicsWorldObjectPreset } from '../Objects/PhysicsWorld/PhysicsWorld.j
 export * from '../Objects/PostEffect/PostEffectObject.js';
 export * from '../Objects/ColorCorrection/ColorCorrectionObject.js';
 export * from '../Objects/ComponentOnly/ComponentOnlyObject.js';
+
+// Scripts
+export { JavaScriptModulePreset } from '../Assets/Script/JavaScriptModulePreset.js';
+export { JavaScriptCustomAssetPreset } from '../Assets/Script/JavaScriptCustomAssetPreset.js';
+export { JavaScriptComponentPreset } from '../Assets/Script/JavaScriptComponentPreset.js';
+export { TypeScriptComponentPreset } from '../Assets/TypeScript/TypeScriptComponentPreset.js';
+export { TypeScriptModulePreset } from '../Assets/TypeScript/TypeScriptModulePreset.js';
+export { TypeScriptCustomAssetPreset } from '../Assets/TypeScript/TypeScriptCustomAssetPreset.js';
