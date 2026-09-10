@@ -29,9 +29,6 @@ export class CanvasComponentPreset extends Preset {
             entityType: 'Canvas'
         };
     }
-    constructor(pluginSystem, descriptor) {
-        super(pluginSystem, descriptor);
-    }
     async createAsync(destination) {
         return createCanvasComponent(destination);
     }

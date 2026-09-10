@@ -7,7 +7,7 @@ export async function createRenderMeshVisualPBRComponent(model, sceneObject) {
 
     const isSpectacles = model.project.targetPlatform === Editor.TargetPlatform.Spectacles;
     const MaterialPreset = isSpectacles ? UberDiffuseMaterialPreset : UberPBRMaterialPreset;
-    const materialPreset = new MaterialPreset(this.pluginSystem);
+    const materialPreset = new MaterialPreset(this.pluginSystem, MaterialPreset.descriptor());
     const material = await materialPreset.createAsync();
 
     renderMeshVisualComponent.materials = [material];

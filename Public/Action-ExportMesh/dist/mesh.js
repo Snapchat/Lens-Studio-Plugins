@@ -330,7 +330,7 @@ class VertexLayout {
     }
     /** find attribute in array */
     getBySemantic(semantic) {
-        return verify(this.attributes.find(a => a.semantic === semantic));
+        return this.attributes.find(a => a.semantic === semantic) ?? null;
     }
 }
 /** morph target represented as a sparse array of relative vertex positions and absolute vertex normals */
@@ -350,19 +350,21 @@ class BlendShape {
         // expand packed vertex data into array data suitable for gltf file format
         const sparseIndexReader = new BinaryStream(indexBuffer);
         const interleavedReader = new BinaryStream(packedBuffer);
-        const basisNormalReader = new BinaryStream(basisNormalBuffer);
         const positionBuffer = new Uint8Array(this.sparseCount * BlendShape.VEC3_SIZE);
-        const normalBuffer = new Uint8Array(this.sparseCount * BlendShape.VEC3_SIZE);
         const positionWriter = new BinaryStream(positionBuffer);
-        const normalWriter = new BinaryStream(normalBuffer);
+        const basisNormalReader = basisNormalBuffer ? new BinaryStream(basisNormalBuffer) : null;
+        const normalBuffer = basisNormalBuffer ? new Uint8Array(this.sparseCount * BlendShape.VEC3_SIZE) : null;
+        const normalWriter = basisNormalBuffer ? new BinaryStream(normalBuffer) : null;
         for (let i = 0; i < this.sparseCount; i++) {
             const index = sparseIndexReader.readUint16();
-            basisNormalReader.position = index * BlendShape.VEC3_SIZE;
-            const basisNormal = basisNormalReader.readVec3();
             const position = interleavedReader.readVec3_xyz16f();
-            const normal = interleavedReader.readVec3_x11y11z1();
             positionWriter.writeVec3(position);
-            normalWriter.writeVec3(normal.sub(basisNormal));
+            const normal = interleavedReader.readVec3_x11y11z1();
+            if (basisNormalBuffer) {
+                basisNormalReader.position = index * BlendShape.VEC3_SIZE;
+                const basisNormal = basisNormalReader.readVec3();
+                normalWriter.writeVec3(normal.sub(basisNormal));
+            }
             // calculate bounds because deltaMin and deltaMax are zero
             this.deltaMin.x = Math.min(this.deltaMin.x, position.x);
             this.deltaMin.y = Math.min(this.deltaMin.y, position.y);
@@ -437,26 +439,28 @@ class MeshAsset {
         const vertexLayout = new VertexLayout(getMap(root, "vertexlayout"), getBlob(root, "vertices"));
         const indexBuffer = getBlob(root, "indices");
         // blend shapes have vertex data that is unpacked into larger buffers
-        const normalBuffer = vertexLayout.getBySemantic(lc.Semantic.Normal).buffer;
+        const normalBuffer = vertexLayout.getBySemantic(lc.Semantic.Normal)?.buffer ?? null;
         this.blendShapes = getArray(root, "blendshapes", BlendShape, normalBuffer);
+        // These sections are all optional and only present when non-empty:
+        // boneAabbs/skinbones for skinned meshes, submeshes for multi-material
+        // meshes, vertexCache for cached animation, texmin/texmax for meshes with
+        // texcoords. A mesh that lacks one (e.g. a static, single-material mesh)
+        // omits the key entirely, so guard every read on `root.has(key)` and
+        // default to empty. None of these sections are consumed by generateGltf —
+        // they're parsed and discarded — so defaulting to empty when absent is safe.
         // TODO: vertex caches are not yet supported
-        if (version >= 2) {
-            const vertexCacheVersion = getNumber(root, "vertexCacheVersion");
-            this.vertexCache = getArray(root, "vertexCache", VertexCache);
-            this.vertexCacheAabbKeyframes = getArray(root, "vertexCacheAabbKeyframes", VertexCacheAabbKeyframes);
-        }
-        else {
-            this.vertexCache = [];
-            this.vertexCacheAabbKeyframes = [];
-        }
+        this.vertexCache = root.has("vertexCache") ? getArray(root, "vertexCache", VertexCache) : [];
+        this.vertexCacheAabbKeyframes = root.has("vertexCacheAabbKeyframes")
+            ? getArray(root, "vertexCacheAabbKeyframes", VertexCacheAabbKeyframes)
+            : [];
         this.bbMin = getVec3(root, "bbmin");
         this.bbMax = getVec3(root, "bbmax");
-        this.texMin = version >= 2 ? getVec2(root, "texmin") : vec2.zero();
-        this.texMax = version >= 2 ? getVec2(root, "texmax") : vec2.zero();
-        this.skinBones = getArray(root, "skinbones", Bone);
-        this.boneAabbs = version >= 2 ? getArray(root, "boneAabbs", Aabb) : [];
+        this.texMin = root.has("texmin") ? getVec2(root, "texmin") : vec2.zero();
+        this.texMax = root.has("texmax") ? getVec2(root, "texmax") : vec2.zero();
+        this.skinBones = root.has("skinbones") ? getArray(root, "skinbones", Bone) : [];
+        this.boneAabbs = root.has("boneAabbs") ? getArray(root, "boneAabbs", Aabb) : [];
         this.renderGroups = getArray(root, "rgroups", RenderGroup);
-        this.submeshes = version >= 2 ? getArray(root, "submeshes", SubMesh) : [];
+        this.submeshes = root.has("submeshes") ? getArray(root, "submeshes", SubMesh) : [];
         // calculate the size needed for final combined output buffer
         let outputLength = 0;
         for (const attribute of vertexLayout.attributes) {
@@ -468,9 +472,11 @@ class MeshAsset {
             let align = lc.componentSize(lc.ComponentType.FLOAT);
             outputLength += (align - (outputLength % align)) % align;
             outputLength += shape.positionBuffer.length;
-            align = lc.componentSize(lc.ComponentType.FLOAT);
-            outputLength += (align - (outputLength % align)) % align;
-            outputLength += shape.normalBuffer.length;
+            if (shape.normalBuffer) {
+                align = lc.componentSize(lc.ComponentType.FLOAT);
+                outputLength += (align - (outputLength % align)) % align;
+                outputLength += shape.normalBuffer.length;
+            }
             align = lc.indexSize(lc.IndexType.USHORT);
             outputLength += (align - (outputLength % align)) % align;
             outputLength += shape.indexBuffer.length;
@@ -492,9 +498,11 @@ class MeshAsset {
             let align = lc.componentSize(lc.ComponentType.FLOAT);
             writer.position += (align - (writer.position % align)) % align;
             shape.positionBuffer = writer.writeBytes(shape.positionBuffer);
-            align = lc.componentSize(lc.ComponentType.FLOAT);
-            writer.position += (align - (writer.position % align)) % align;
-            shape.normalBuffer = writer.writeBytes(shape.normalBuffer);
+            if (shape.normalBuffer) {
+                align = lc.componentSize(lc.ComponentType.FLOAT);
+                writer.position += (align - (writer.position % align)) % align;
+                shape.normalBuffer = writer.writeBytes(shape.normalBuffer);
+            }
             align = lc.indexSize(lc.IndexType.USHORT);
             writer.position += (align - (writer.position % align)) % align;
             shape.indexBuffer = writer.writeBytes(shape.indexBuffer);
@@ -620,7 +628,7 @@ function generateGltf(mesh, assetName) {
     const blendShapeWeights = [];
     const blendShapeNames = [];
     for (const shape of mesh.blendShapes) {
-        if (!shape.positionBuffer.length || !shape.normalBuffer.length || !shape.indexBuffer.length)
+        if (!shape.positionBuffer.length || !shape.indexBuffer.length)
             continue;
         g.bufferViews.push({
             buffer: bufferId,
@@ -628,11 +636,13 @@ function generateGltf(mesh, assetName) {
             byteOffset: shape.positionBuffer.byteOffset,
         });
         const deltaPositionBufferViewId = g.bufferViews.length - 1;
-        g.bufferViews.push({
-            buffer: bufferId,
-            byteLength: shape.normalBuffer.byteLength,
-            byteOffset: shape.normalBuffer.byteOffset,
-        });
+        if (shape.normalBuffer) {
+            g.bufferViews.push({
+                buffer: bufferId,
+                byteLength: shape.normalBuffer.byteLength,
+                byteOffset: shape.normalBuffer.byteOffset,
+            });
+        }
         const deltaNormalBufferViewId = g.bufferViews.length - 1;
         g.bufferViews.push({
             buffer: bufferId,
@@ -658,26 +668,35 @@ function generateGltf(mesh, assetName) {
             max: [shape.deltaMax.x, shape.deltaMax.y, shape.deltaMax.z],
         });
         const deltaPositionAccessorId = g.accessors.length - 1;
-        g.accessors.push({
-            componentType: gl.FLOAT,
-            count: shape.vertexCount,
-            type: gl.VEC3,
-            sparse: {
-                count: shape.sparseCount,
-                indices: {
-                    bufferView: sparseIndexBufferViewIds,
-                    componentType: gl.UNSIGNED_SHORT,
-                },
-                values: {
-                    bufferView: deltaNormalBufferViewId,
+        if (shape.normalBuffer) {
+            g.accessors.push({
+                componentType: gl.FLOAT,
+                count: shape.vertexCount,
+                type: gl.VEC3,
+                sparse: {
+                    count: shape.sparseCount,
+                    indices: {
+                        bufferView: sparseIndexBufferViewIds,
+                        componentType: gl.UNSIGNED_SHORT,
+                    },
+                    values: {
+                        bufferView: deltaNormalBufferViewId,
+                    }
                 }
-            }
-        });
+            });
+        }
         const deltaNormalAccessorId = g.accessors.length - 1;
-        blendShapeAccessorIds.push({
-            [gl.POSITION]: deltaPositionAccessorId,
-            [gl.NORMAL]: deltaNormalAccessorId,
-        });
+        if (shape.normalBuffer) {
+            blendShapeAccessorIds.push({
+                [gl.POSITION]: deltaPositionAccessorId,
+                [gl.NORMAL]: deltaNormalAccessorId,
+            });
+        }
+        else {
+            blendShapeAccessorIds.push({
+                [gl.POSITION]: deltaPositionAccessorId
+            });
+        }
         blendShapeWeights.push(shape.defaultWeight);
         blendShapeNames.push(shape.name);
     }

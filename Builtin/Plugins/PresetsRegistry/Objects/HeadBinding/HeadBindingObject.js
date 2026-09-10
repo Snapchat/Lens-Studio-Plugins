@@ -23,7 +23,7 @@ export async function createFaceOccluder(model, parent) {
     meshVisual.mesh = result.primary;
 
     // Add Material
-    const materialPreset = new OccluderMaterialPreset(this.pluginSystem);
+    const materialPreset = new OccluderMaterialPreset(this.pluginSystem, OccluderMaterialPreset.descriptor());
     meshVisual.materials = [await materialPreset.createAsync()];
 
     return meshVisual;

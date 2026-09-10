@@ -12,10 +12,6 @@ export class ObjectMenuItemService extends CoreService {
     /**
      * @param {Editor.PluginSystem} pluginSystem
      */
-    constructor(pluginSystem, descriptor) {
-        super(pluginSystem, descriptor)
-    }
-
 
     ungroup(node) {
         if (node == null) {

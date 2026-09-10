@@ -204,7 +204,7 @@ export class Preview {
 
         if (this.footer && this.transitionMenuWidget) {
             this.footer.toNativeWidget().visible = true;
-            this.transitionMenuWidget?.toNativeWidget().visible = true;
+            this.transitionMenuWidget.toNativeWidget().visible = true;
             this.lbePreview?.sendMessage({
                 "event_type": "select_bitmoji"
             });

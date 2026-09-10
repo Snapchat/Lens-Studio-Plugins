@@ -11,7 +11,7 @@ const tempDir = FileSystem.TempDir.create();
 export class AssetLibImporter {
     constructor(pluginSystem) {
         this.pluginSystem = pluginSystem;
-        this.assetLibService = this.findInterface(AssetLibrary.IAssetLibraryProvider).service;
+        this.assetLibService = this.findInterface(AssetLibrary.IAssetLibraryProvider).assetService;
         this.model = this.findInterface(Editor.Model.IModel);
         this.scene = this.model.project.scene;
         this.asserManager = this.model.project.assetManager;
@@ -84,20 +84,23 @@ export class AssetLibImporter {
         assetFilter.searchText = "";
         assetFilter.pagination = AssetLibrary.Pagination.singleBatch(fetchStartIdx, this.fetchItemsCount);
         const request = new AssetLibrary.AssetListRequest(this.envSettings, assetFilter);
-        this.assetLibService.fetch(request, (response) => {
-            if (response.assets.length == 0) {
+        this.assetLibService.fetchAsync(request).then((response) => {
+            if (!response.ok) {
+                if (!response.cancelled && onFailed) {
+                    onFailed(response.error ? response.error.description : "Fetch failed.");
+                }
+                return;
+            }
+            const success = response.data;
+            if (success.assets.length == 0) {
                 onFailed("No assets found.");
                 return;
             }
-            const found = response.assets.find(asset => asset.assetId === assetId);
+            const found = success.assets.find(asset => asset.assetId === assetId);
             if (found != undefined) {
                 onSuccess(found);
             } else {
-                this.fetchAsset(fetchStartIdx + response.assets.length, assetId, onSuccess, onFailed);
-            }
-        }, (error) => {
-            if (onFailed) {
-                onFailed(error.description);
+                this.fetchAsset(fetchStartIdx + success.assets.length, assetId, onSuccess, onFailed);
             }
         });
     }

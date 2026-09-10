@@ -21,7 +21,7 @@ export class GPUParticlesTrailsObjectPreset extends Preset {
         parent.name = 'GPU Particles Trails';
 
         // Add Material
-        const gpuParticlesTrailsMaterialPreset = new GPUParticlesTrailsMaterialPreset(this.pluginSystem);
+        const gpuParticlesTrailsMaterialPreset = new GPUParticlesTrailsMaterialPreset(this.pluginSystem, GPUParticlesTrailsMaterialPreset.descriptor());
         const gpuParticlesTrailsMaterial = await gpuParticlesTrailsMaterialPreset.createAsync(/*destination*/null);
         const renderMeshVisual = parent.addComponent('RenderMeshVisual');
         renderMeshVisual.materials = [gpuParticlesTrailsMaterial];

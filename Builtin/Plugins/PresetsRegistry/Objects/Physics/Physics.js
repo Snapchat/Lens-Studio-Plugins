@@ -20,7 +20,7 @@ function createPhysicsObjectClass(name, iconPath, meshPreset, shapeType) {
                 const scene = Utils.resolveScene(model, destination);
 
                 // Add mesh
-                const meshObjectPreset = new meshPreset(this.pluginSystem);
+                const meshObjectPreset = new meshPreset(this.pluginSystem, meshPreset.descriptor());
                 destination = await meshObjectPreset.createAsync(destination);
 
                 destination.name = name;

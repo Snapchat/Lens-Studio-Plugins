@@ -24,10 +24,10 @@ function createMeshObjectClass(name, iconPath, assetMeshPreset, assetMaterialPre
         async createAsync(destination) {
             try {
                 // Create the required assets/settings
-                const meshPreset = new assetMeshPreset(this.pluginSystem);
+                const meshPreset = new assetMeshPreset(this.pluginSystem, assetMeshPreset.descriptor());
                 const meshAsset = await meshPreset.createAsync();
 
-                const materialPreset = new assetMaterialPreset(this.pluginSystem);
+                const materialPreset = new assetMaterialPreset(this.pluginSystem, assetMaterialPreset.descriptor());
                 const materialAsset = await materialPreset.createAsync();
 
                 const transform = defaultTransform;

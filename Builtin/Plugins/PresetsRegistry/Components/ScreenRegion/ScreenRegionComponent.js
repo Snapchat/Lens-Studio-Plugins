@@ -17,9 +17,6 @@ export class ScreenRegionComponentPreset extends Preset {
             intendedPlatforms: [Editor.TargetPlatform.Snapchat]
         };
     }
-    constructor(pluginSystem, descriptor) {
-        super(pluginSystem, descriptor);
-    }
     async createAsync(destination) {
         const screenRegion = createScreenRegionComponent(destination);
         return screenRegion;

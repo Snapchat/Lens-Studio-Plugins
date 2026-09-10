@@ -212,7 +212,15 @@ export const glslGetterFunctions = [
     'getDirectionalLightIntensity',
     'getPointLightCount', 'getPointLightPosition', 'getPointLightColor', 'getPointLightIntensity',
     // Depth
-    'getViewSpacePositionFromDepth', 'getWorldSpacePositionFromDepth'
+    'getViewSpacePositionFromDepth', 'getWorldSpacePositionFromDepth',
+    // Text
+    'getTextUv', 'getTextQuadColor', 'getTextCoverageAlphaMaskedColor',
+    'getTextCoverageAlphaMask', 'getTextSdfDistance', 'getTextPassIdentifier'
+];
+
+// Text setter functions
+export const glslTextSetterFunctions = [
+    'setTextSdfSpreadDefault', 'setTextSdfSpreadMedium', 'setTextSdfSpreadLarge', 'setTextSdfSpreadMax'
 ];
 
 // VFX Particle getter functions

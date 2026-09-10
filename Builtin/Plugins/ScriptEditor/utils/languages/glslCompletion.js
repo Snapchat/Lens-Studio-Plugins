@@ -7,6 +7,7 @@ import {
     glslTextureFunctions,
     glslUtilityFunctions,
     glslGetterFunctions,
+    glslTextSetterFunctions,
     glslVFXGetterFunctions,
     glslVFXSetterFunctions,
     glslVFXVertexOutputFunctions,
@@ -113,6 +114,18 @@ export function initializeGlslCompletionProvider(monaco) {
                         insertText: `${func}($0)`,
                         insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
                         documentation: `System getter function`,
+                        range: range
+                    });
+                });
+
+                // Add text setter functions
+                glslTextSetterFunctions.forEach(func => {
+                    suggestions.push({
+                        label: func,
+                        kind: monaco.languages.CompletionItemKind.Method,
+                        insertText: `${func}($0)`,
+                        insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                        documentation: `Text setter function`,
                         range: range
                     });
                 });

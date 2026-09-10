@@ -11,7 +11,7 @@ export class FaceMLService extends EntityGenerator {
         descriptor.name = app.name;
         descriptor.description = app.name;
         descriptor.dependencies = [];
-        descriptor.displayOrder = 12;
+        descriptor.displayOrder = 17;
         descriptor.icon = app.icon;
         descriptor.entityType = 'Texture';
 

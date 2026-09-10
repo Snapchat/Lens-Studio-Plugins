@@ -9,7 +9,7 @@ async function createBodyMeshComponent(model, destinationObject) {
     const renderMeshVisual = destinationObject.addComponent('RenderMeshVisual');
 
     // Add Material
-    const bodyMeshMaterialPreset = new BodyMeshMaterialPreset(this.pluginSystem);
+    const bodyMeshMaterialPreset = new BodyMeshMaterialPreset(this.pluginSystem, BodyMeshMaterialPreset.descriptor());
     renderMeshVisual.materials = [await bodyMeshMaterialPreset.createAsync()];
 
     // Add Mesh
@@ -21,7 +21,7 @@ async function createBodyMeshComponent(model, destinationObject) {
 async function createBodyMeshObject(model, sceneObject) {
     const scene = Utils.resolveScene(model, sceneObject);
 
-    const bodyTracking3DPreset = new BodyObjectTracking3DPreset(this.pluginSystem);
+    const bodyTracking3DPreset = new BodyObjectTracking3DPreset(this.pluginSystem, BodyObjectTracking3DPreset.descriptor());
     const bodyTrackingObject = await bodyTracking3DPreset.createAsync(sceneObject);
 
     const bodyMeshObject = scene.addSceneObject(bodyTrackingObject);

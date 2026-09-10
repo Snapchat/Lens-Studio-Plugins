@@ -49,7 +49,7 @@ export class AssetMenuItem extends GuiService {
                 return action;
             if (context.selection.length !== 1)
                 return action;
-            if (!context.selection.every(i => isFileMesh(i.asset)))
+            if (!context.selection.every((i) => isFileMesh(i.asset)))
                 return action;
             const selection = context.selection[0];
             action.id = "Action.ExportMesh.Gltf";

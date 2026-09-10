@@ -20,7 +20,7 @@ export class WorldMeshObjectPreset extends Preset {
         parent.name = 'World Mesh';
 
         // Add Material
-        const worldMeshMaterialPreset = new WorldMeshMaterialPreset(this.pluginSystem);
+        const worldMeshMaterialPreset = new WorldMeshMaterialPreset(this.pluginSystem, WorldMeshMaterialPreset.descriptor());
         const worldMeshMaterial = await worldMeshMaterialPreset.createAsync(/*destination*/null);
         const renderMeshVisual = parent.addComponent('RenderMeshVisual');
         renderMeshVisual.materials = [worldMeshMaterial];

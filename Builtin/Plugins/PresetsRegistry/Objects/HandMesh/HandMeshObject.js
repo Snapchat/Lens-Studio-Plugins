@@ -40,7 +40,7 @@ function createHandMeshSide(model, parent, sideName, handType, material) {
 
 async function createHandMeshObject(model, sceneObject) {
     // Do all async work up front so the scene is never observed half-built.
-    const materialPreset = new PBRMaterialPreset(this.pluginSystem);
+    const materialPreset = new PBRMaterialPreset(this.pluginSystem, PBRMaterialPreset.descriptor());
     const assetManager = model.project.assetManager;
     const assetsPath = new Editor.Path('Hand Mesh Assets');
     const rightMaterial = await materialPreset.createAsync(assetsPath);

@@ -108,10 +108,7 @@ export class ScriptInstantiator extends AssetInstantiator {
     }
     createScriptComponent(sceneObject, scriptAsset) {
         const scriptComponent = sceneObject.addComponent("ScriptComponent");
-        // The asset from C++ instantiate() is Ref<const Asset> which can't be
-        // assigned to the scriptAsset setter (expects Ref<ScriptAsset>).
-        // Re-resolve via fileMeta.primaryAsset to get a mutable, properly-typed ref.
-        const resolvedAsset = scriptAsset.fileMeta.primaryAsset;
+        const resolvedAsset = scriptAsset.fileMeta?.primaryAsset ?? scriptAsset;
         scriptComponent.scriptAsset = resolvedAsset;
         return scriptComponent;
     }
@@ -120,6 +117,9 @@ export class ScriptInstantiator extends AssetInstantiator {
             return false;
         }
         const ScriptType = Editor.Assets?.ScriptType;
-        return !ScriptType || scriptAsset.scriptType == ScriptType.Component;
+        if (!ScriptType) {
+            return true;
+        }
+        return scriptAsset.scriptType !== ScriptType.Asset && scriptAsset.scriptType !== ScriptType.Module;
     }
 }

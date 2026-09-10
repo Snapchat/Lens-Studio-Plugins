@@ -18,6 +18,7 @@ declare namespace ui {
 }
 declare function allowUndefined(target: any, key: string): void;
 declare function allowUndefined(target: any, key: string, index: number): void;
+declare function runInEditor<T extends typeof BaseScriptComponent>(target: T): void;
 declare function component<T extends typeof BaseScriptComponent>(target: T): void;
 declare function asset<T extends typeof BaseCustomAsset>(target: T): void;
 declare function typedef<T>(target: T): void;

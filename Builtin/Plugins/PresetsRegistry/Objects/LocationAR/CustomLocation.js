@@ -69,7 +69,7 @@ export class CustomLocationObjectPreset extends Preset {
         // Load camera flip JS
         const jsAsset = await Utils.findOrCreateAsync(assetManager, new Editor.Path(import.meta.resolve('Resources/FrontCameraMirror.js')), new Editor.Path(''));
         // Load material
-        const locationMeshMaterialPreset = new LocationMeshMaterialPreset(this.pluginSystem);
+        const locationMeshMaterialPreset = new LocationMeshMaterialPreset(this.pluginSystem, LocationMeshMaterialPreset.descriptor());
         const locationMeshMaterial = await locationMeshMaterialPreset.createAsync(new Editor.Path(''));
 
         const history = model.project.history;

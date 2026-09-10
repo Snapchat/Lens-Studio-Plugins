@@ -107,7 +107,7 @@ export class PreviewMenu {
                         });
                         logEventAssetCreation("SUCCESS", "UPDATE_EXISTING", inputFormat);
                         if (isAdvancedEffectType(effectBody.effectTypeId)) {
-                            app.log(`${app.name} is queued. ${app.name} creation is estimated to take up to 20 minutes, please check back later.`, {'progressBar': true});
+                            app.log(`${app.name} is queued. ${app.name} creation is estimated to take up to 3 minutes, please check back later.`, {'progressBar': true});
                         } else if (isEnhancedEffectType(effectBody.effectTypeId)) {
                             app.log(`${app.name} is queued. ${app.name} creation is estimated to take up to 5 minutes, please check back later.`, {'progressBar': true});
                         } else {
@@ -152,7 +152,7 @@ export class PreviewMenu {
                 this.settingsWidget.currentIndex = 1;
                 this.controls['modelType'].showAdvancedButton();
                 this.controls['advancedPromptPicker'].textValue = effect_settings.settings.text_prompt;
-                this.controls['advancedPromptPicker'].imageValue = JSON.parse(JSON.stringify(effect_settings.settings.image_prompts));
+                this.controls['advancedPromptPicker'].imageValue = JSON.parse(JSON.stringify(effect_settings.settings.image_prompts || []));
 
                 this.lockAdvanced();
             }
@@ -160,7 +160,7 @@ export class PreviewMenu {
                 this.settingsWidget.currentIndex = 0;
                 this.controls['modelType'].showEnhancedButton();
                 this.controls['enhancedPromptPicker'].textValue = effect_settings.settings.text_prompt;
-                this.controls['enhancedPromptPicker'].imageValue = JSON.parse(JSON.stringify(effect_settings.settings.image_prompts));
+                this.controls['enhancedPromptPicker'].imageValue = JSON.parse(JSON.stringify(effect_settings.settings.image_prompts || []));
 
                 this.controls['referenceStrength'].value = this.convertSliderValue(effect_settings.settings.image_reference_strength, 0.5, 2.5, 1.0, 10.0);
                 this.controls['attributesPreservation'].value = this.convertSliderValue(effect_settings.settings.attributes_preservation, 1.0, 2.0, 1.0, 10.0);
@@ -181,7 +181,7 @@ export class PreviewMenu {
                     this.controls['promptPicker'].mode = 'Text';
                     this.controls['promptPicker'].value = '';
                     this.controls['promptPicker'].mode = 'Image';
-                    this.controls['promptPicker'].value = JSON.parse(JSON.stringify(effect_settings.settings.target_images));
+                    this.controls['promptPicker'].value = JSON.parse(JSON.stringify(effect_settings.settings.target_images || []));
                 }
 
                 this.controls['promptPicker'].widget.enabled = true;

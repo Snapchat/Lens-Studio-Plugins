@@ -8,7 +8,7 @@ export async function createGPUParticlesComponent(model, destinationObject) {
 
     const gpuParticlesMeshPath = new Editor.Path(import.meta.resolve('Resources/GPUParticlesMesh.mesh'));
     const particlesMesh = Utils.findOrCreate(assetManager, gpuParticlesMeshPath);
-    const gPUParticlesMaterialPreset = new GPUParticlesMaterialPreset(this.pluginSystem);
+    const gPUParticlesMaterialPreset = new GPUParticlesMaterialPreset(this.pluginSystem, GPUParticlesMaterialPreset.descriptor());
     const material = await gPUParticlesMaterialPreset.createAsync();
 
     renderMeshVis.materials = [material];

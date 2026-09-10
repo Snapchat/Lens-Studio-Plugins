@@ -10,7 +10,7 @@ export async function createFaceMeshComponent(model, destinationObject, headMesh
 
     // Add Material
     const MaterialPresetPlugin = headMeshMode ? PBRMaterialPreset : FaceMeshMaterialPreset;
-    const materialPreset = new MaterialPresetPlugin(this.pluginSystem);
+    const materialPreset = new MaterialPresetPlugin(this.pluginSystem, MaterialPresetPlugin.descriptor());
     renderMeshVisual.materials = [await materialPreset.createAsync()];
 
     // Add Mesh Material

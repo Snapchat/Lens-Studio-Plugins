@@ -4,7 +4,7 @@ import { FaceMaskMaterialPreset } from '../../Assets/FaceMaskMaterial/FaceMaskMa
 export async function createFaceMaskComponent(model, destinationObject) {
     const faceMask = destinationObject.addComponent('FaceMaskVisual');
 
-    const materialPreset = new FaceMaskMaterialPreset(this.pluginSystem);
+    const materialPreset = new FaceMaskMaterialPreset(this.pluginSystem, FaceMaskMaterialPreset.descriptor());
     faceMask.mainMaterial = await materialPreset.createAsync();
 
     return faceMask;

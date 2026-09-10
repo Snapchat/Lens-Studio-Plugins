@@ -1,0 +1,14 @@
+{
+  "displayName": "Await SPECS Asset Jobs Barrier",
+  "name": "AwaitSpecsAssetJobsBarrier",
+  "modelDescription": "Wait for the retained SPECS asset jobs and collect completed GLB files. Each call polls for a bounded time and then returns; a PENDING status means jobs are still generating, not a failure. Keep calling this tool on PENDING until it returns a terminal status (READY, PARTIAL_FAILED, or FAILED) or ACTION_REQUIRED. Do not fall back to another generator while the result is PENDING.",
+  "inputSchema": {
+    "type": "object",
+    "required": [],
+    "properties": {}
+  },
+  "annotations": {
+    "readOnlyHint": false,
+    "destructiveHint": false
+  }
+}

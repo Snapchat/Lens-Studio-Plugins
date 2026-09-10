@@ -49,7 +49,7 @@ console.log("Created:", obj.name);
 
 type Language = "javascript" | "typescript";
 
-function getWsPort(): number {
+function getWebSocketConnectionParams(): { port: number; token: string } {
   // Prefer hash but fall back to search for backward compatibility
   const queryString = window.location.hash.substring(1) || window.location.search;
   const params = new URLSearchParams(queryString);
@@ -57,7 +57,11 @@ function getWsPort(): number {
   if (!port) {
     throw new Error("No WebSocket port specified");
   }
-  return parseInt(port, 10);
+  const token = params.get("wsToken");
+  if (!token) {
+    throw new Error("No WebSocket authentication token specified");
+  }
+  return { port: parseInt(port, 10), token };
 }
 
 function sendToPlugin(ws: WebSocket, event: string, payload?: unknown): void {
@@ -251,10 +255,11 @@ function init(): void {
     langJsBtn.addEventListener("click", () => setLanguage("javascript"));
     langTsBtn.addEventListener("click", () => setLanguage("typescript"));
 
-    const wsPort = getWsPort();
+    const { port: wsPort, token: wsToken } = getWebSocketConnectionParams();
     const ws = new WebSocket(`ws://127.0.0.1:${wsPort}`);
 
     ws.onopen = () => {
+      sendToPlugin(ws, "auth", { token: wsToken });
       setupConsoleLogging(ws);
       sendToPlugin(ws, "ready");
     };

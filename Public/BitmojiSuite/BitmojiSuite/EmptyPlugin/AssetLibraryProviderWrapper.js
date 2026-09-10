@@ -13,7 +13,7 @@ export class AssetLibraryProviderWrapper {
      */
     constructor(pluginSystem, space, status) {
         this.pluginSystem = pluginSystem
-        this.assetLibService = pluginSystem.findInterface(AssetLibrary.IAssetLibraryProvider).service
+        this.assetLibService = pluginSystem.findInterface(AssetLibrary.IAssetLibraryProvider).assetService
         this.envSettings = new AssetLibrary.EnvironmentSetting()
         this.envSettings.environment = status
         this.envSettings.space = space
@@ -49,7 +49,15 @@ export class AssetLibraryProviderWrapper {
         // request
         let request = new AssetLibrary.AssetListRequest(this.envSettings, assetFilter)
         try {
-            this.assetLibService.fetch(request, (response) => this.onAssetsFetched(response, id, category, version, offset, onSuccess, onFail), onFail)
+            this.assetLibService.fetchAsync(request)
+                .then((response) => {
+                    if (response.ok) {
+                        this.onAssetsFetched(response.data, id, category, version, offset, onSuccess, onFail)
+                    } else if (!response.cancelled) {
+                        onFail(response.error)
+                    }
+                })
+                .catch(onFail)
         } catch (e) {
             onFail(e);
         }

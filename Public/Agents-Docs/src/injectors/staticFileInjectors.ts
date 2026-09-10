@@ -14,6 +14,12 @@ const GITIGNORE_ENTRIES = [
     ".vscode/mcp.json",
     ".codex/config.toml",
     ".claude/settings.local.json",
+    "ls-live-instance.json",
+    // The record is staged in a sibling temp file before being renamed into
+    // place. A crash between those two steps is the scenario this whole feature
+    // exists for, and it leaves the temp file behind until the project is next
+    // opened, so keep it out of the user's working tree too.
+    "ls-live-instance.json.tmp",
 ];
 
 /** Marker comments delimiting the Lens Studio managed region of .gitignore. */
@@ -193,6 +199,7 @@ export function injectClaudeSettings(projectDir: Editor.Path, projectFile: Edito
         // let merged = mergeMarketplace(settings);
         let merged = settings;
 
+        // TODO: Add read_only tools of Supabase into the allowlist.
         const projectName = extractProjectName(projectFile);
         if (projectName) {
             const serverName = buildServerName(projectName);

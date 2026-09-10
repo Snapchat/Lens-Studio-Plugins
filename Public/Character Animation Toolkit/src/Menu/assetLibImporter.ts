@@ -14,7 +14,7 @@ export class AssetLibImporter {
 
     constructor(pluginSystem: Editor.PluginSystem) {
         this.pluginSystem = pluginSystem;
-        this.assetLibService = (this.findInterface(AssetLibrary.IAssetLibraryProvider) as AssetLibrary.IAssetLibraryProvider).service;
+        this.assetLibService = (this.findInterface(AssetLibrary.IAssetLibraryProvider) as AssetLibrary.IAssetLibraryProvider).assetService;
         this.envSettings = new AssetLibrary.EnvironmentSetting();
         this.envSettings.environment = AssetLibrary.Environment["Production"];
         this.envSettings.space = AssetLibrary.Space["Public"];
@@ -30,8 +30,11 @@ export class AssetLibImporter {
         assetFilter.pagination = AssetLibrary.Pagination.singleBatch(fetchStartIdx, this.fetchItemsCount);
 
         let rec = new AssetLibrary.AssetListRequest(this.envSettings, assetFilter);
-        this.assetLibService.fetch(rec, (response: any) => {
-            response.assets.forEach((asset: AssetLibrary.Asset) => {
+        this.assetLibService.fetchAsync(rec).then((response: any) => {
+            if (!response.ok) {
+                return;
+            }
+            response.data.assets.forEach((asset: AssetLibrary.Asset) => {
                 if (ids.includes(asset.assetId)) {
                     this.neededItemsCount++;
                     const assetData = {id : asset.assetId, animation_preview : "", bitmoji_animation : "",  body_morph_animation : ""};
@@ -59,8 +62,6 @@ export class AssetLibImporter {
             else {
                 onFinished();
             }
-        }, () => {
-
         })
     }
 

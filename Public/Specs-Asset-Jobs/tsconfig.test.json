@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "./dist-test",
+    "noEmit": false
+  },
+  "include": [
+    "src/domain/contracts.ts",
+    "src/persistence/stateJournal.ts",
+    "src/service/specsAssetJobCoordinator.ts",
+    "src/service/remoteProtocol.ts",
+    "tests/**/*.ts"
+  ]
+}

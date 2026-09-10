@@ -1,6 +1,6 @@
 {
   "name": "run-editor-code-panel",
-  "version": "5.18.0",
+  "version": "5.19.0",
   "files": [
     "module.json",
     "dist",
@@ -12,6 +12,7 @@
     "build:ui": "vite build",
     "prebuild": "node -e \"const fs=require('fs');fs.mkdirSync('ui/types',{recursive:true});fs.copyFileSync('../../public-docs/public-editor.d.ts','ui/types/editor.d.ts');fs.copyFileSync('../../public-docs/public-editor.d.ts','ui/types/editor.txt');\"",
     "build": "npm run build:ui && npm run build:plugin",
+    "test:auth": "rm -rf .test-dist && tsc src/AuthenticatedMessageGate.ts --target ES2021 --module CommonJS --moduleResolution node --strict --skipLibCheck --outDir .test-dist && node --test tests/AuthenticatedMessageGate.test.cjs",
     "clean": "rm -rf dist",
     "watch": "tsc -w",
     "prepack": "npm run clean && npm run build",

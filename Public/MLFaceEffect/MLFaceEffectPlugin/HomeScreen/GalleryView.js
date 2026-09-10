@@ -376,20 +376,25 @@ export class GalleryView {
                                         this.statusIndicators[i].visible = false;
                                         this.getRequestGuard = false;
 
-                                        const modelData = modelsResponse.find(
-                                            item => item.trainingState !== 'FAILED' &&
-                                                item.settings.modelSize === 'base' &&
-                                                (item.trainingState !== "SUCCESS" || item.objectLsUrl !== null)
-                                        ) || null;
+                                        try {
+                                            const modelData = modelsResponse.find(
+                                                item => item.trainingState !== 'FAILED' &&
+                                                    item.settings.modelSize === 'base' &&
+                                                    (item.trainingState !== "SUCCESS" || item.objectLsUrl !== null)
+                                            ) || null;
 
-                                        this.onStateChanged({
-                                            'screen': 'preview',
-                                            'effect_id': item.id,
-                                            'created_on': item.createdAt,
-                                            'effect_get_response': this.effectResponse[item.id],
-                                            'post_processing_get_response': this.postProcessingResponse[item.id],
-                                            'models_response': modelData
-                                        });
+                                            this.onStateChanged({
+                                                'screen': 'preview',
+                                                'effect_id': item.id,
+                                                'created_on': item.createdAt,
+                                                'effect_get_response': this.effectResponse[item.id],
+                                                'post_processing_get_response': this.postProcessingResponse[item.id],
+                                                'models_response': modelData
+                                            });
+                                        } catch (error) {
+                                            console.error(`${app.name}`, `Couldn't open effect ${item.id}.`, error, console.None);
+                                            app.log(`Something went wrong during opening ${app.name}. Please, try again.`);
+                                        }
                                 });
                             } catch (error) {
                                 this.statusIndicators[i].visible = false;

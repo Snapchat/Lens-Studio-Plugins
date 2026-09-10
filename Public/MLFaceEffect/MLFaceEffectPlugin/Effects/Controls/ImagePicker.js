@@ -15,6 +15,8 @@ export class ImagePicker extends Control {
         this.pickedImages = [];
         this.pickedCrosses = [];
         this.maxPickedImages = maxPickedImages;
+        // Bumped on every reset so downloads started for a superseded value are discarded.
+        this.updateVersion = 0;
 
         this.imageGridLayout = new Ui.GridLayout();
 
@@ -180,6 +182,7 @@ export class ImagePicker extends Control {
 
     importNewImage() {
         const filePaths = this.gui.dialogs.selectFilesToOpen({ 'caption': 'Select file to open', 'filter': '*.webp *.jpeg *.jpg *.gif *.avif *.avifs *.png' }, '');
+        const version = this.updateVersion;
 
         filePaths.forEach((filePath) => {
             if (filePath.isEmpty) {
@@ -189,6 +192,9 @@ export class ImagePicker extends Control {
             const imageData = fs.readBytes(filePath);
 
             createAttachment(imageData, getContentType(filePath), filePath.fileName.toString(), (response) => {
+                if (version !== this.updateVersion) {
+                    return;
+                }
                 if (this.imagesData.length == this.maxPickedImages) {
                     console.log('Coudn\'t upload image from ' + filePath + `, because maximum limit (${this.maxPickedImages}) has been reached.`);
                 } else if (response.statusCode == 201) {
@@ -241,6 +247,11 @@ export class ImagePicker extends Control {
     }
 
     deleteImageAt(index) {
+        if (index < 0 || index >= this.pickedImages.length) {
+            console.error(`${app.name}`, `Couldn't delete image at index ${index}, only ${this.pickedImages.length} image(s) are displayed.`, console.None);
+            return;
+        }
+
         this.pickedImages[index].visible = false;
         if (index + 1 < this.pickedCrosses.length) {
             this.pickedCrosses[index + 1].visible = true;
@@ -248,7 +259,6 @@ export class ImagePicker extends Control {
         for (let i = index; i < this.pickedImages.length - 1; i++) {
             this.pickedImages[i] = this.pickedImages[i + 1];
             this.pickedCrosses[i] = this.pickedCrosses[i + 1];
-            this.imagesData[i] = this.imagesData[i + 1];
             this.imageGridLayout.addWidgetWithSpan(this.pickedImages[i], Math.floor(i / this.MAX_TILES_IN_ROW), i % this.MAX_TILES_IN_ROW, 1, 1, Ui.Alignment.AlignCenter);
         }
 
@@ -259,7 +269,7 @@ export class ImagePicker extends Control {
         this.importButton.visible = false;
         this.pickedImages.pop();
         this.pickedCrosses.pop();
-        this.imagesData.pop();
+        this.imagesData.splice(index, 1);
 
         this.addImportButton();
 
@@ -268,15 +278,27 @@ export class ImagePicker extends Control {
 
     reset() {
         super.reset();
-        const imagesLength = this.imagesData.length;
-        for (let i = imagesLength - 1; i >= 0; i--) {
+        this.updateVersion++;
+
+        for (let i = this.pickedImages.length - 1; i >= 0; i--) {
             this.deleteImageAt(i);
+        }
+
+        // Entries whose thumbnail never got displayed (download still in flight or failed)
+        // are not covered by deleteImageAt, so drop them here to keep the arrays in sync.
+        if (this.imagesData.length > 0) {
+            this.imagesData = [];
+            this.valueChanged();
         }
     }
 
     updateUi() {
+        const version = this.updateVersion;
         this.imagesData.forEach((imageData) => {
             downloadFileFromBucket(imageData.url, imageData.name, (filePath) => {
+                if (version !== this.updateVersion) {
+                    return;
+                }
                 this.addImage(filePath);
             });
         });
@@ -284,7 +306,7 @@ export class ImagePicker extends Control {
 
     set value(value) {
         this.reset();
-        this.imagesData = value;
+        this.imagesData = Array.isArray(value) ? value : [];
         this.updateUi();
     }
 

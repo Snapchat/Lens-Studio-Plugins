@@ -6,9 +6,27 @@
 export interface McpServerConfig {
     type: string;
     url: string;
-    headers: {
-        Authorization: string;
+    /**
+     * Optional: remote servers that authenticate through custom OAuth flow
+     */
+    headers?: {
+        Authorization?: string;
     };
+    /**
+     * Optional update policy. Given the server already present under the same
+     * name, return true to overwrite it or false to keep the developer's.
+     * Absent means always overwrite. Not serialized — JSON.stringify drops it.
+     */
+    shouldOverwrite?: (existing: McpServerConfig) => boolean;
+}
+
+/**
+ * A named server to write into an MCP config file. Whether an existing server
+ * of the same name is overwritten is decided by config.shouldOverwrite.
+ */
+export interface McpServerEntry {
+    name: string;
+    config: McpServerConfig;
 }
 
 export interface McpJsonContent {
@@ -120,13 +138,13 @@ export function extractServerConfig(mcpConfig: any): McpServerConfig | null {
 }
 
 /**
- * Internal helper: merge a new MCP server config into existing JSON content
- * using the specified server key (e.g., "mcpServers" or "servers").
+ * Merge server entries into existing JSON content under `serverKey`
+ * ("mcpServers" or "servers"). Only the given names are (over)written; every
+ * other server the developer configured is preserved.
  */
 function _mergeServers(
     existingContent: string | null,
-    newServerName: string,
-    newServerConfig: McpServerConfig,
+    entries: McpServerEntry[],
     serverKey: string
 ): Record<string, unknown> {
     let data: Record<string, unknown>;
@@ -147,47 +165,44 @@ function _mergeServers(
 
     const filtered: { [key: string]: McpServerConfig } = {};
     for (const [key, value] of Object.entries(servers)) {
-        // Remove any previous lens-studio entry (both old per-project and new fixed names)
-        if (key !== newServerName && !key.startsWith('lens-studio-')) {
-            filtered[key] = value as McpServerConfig;
+        // Drop stale per-project lens-studio-* keys (renames). Managed names are
+        // overwritten in place below — stable key order keeps no-op passes no-ops.
+        if (key.startsWith('lens-studio-')) {
+            continue;
         }
+        filtered[key] = value as McpServerConfig;
     }
 
-    filtered[newServerName] = newServerConfig;
+    // Overwrite each entry in place (preserving position), or append if new.
+    // A config may veto the overwrite (shouldOverwrite) to keep the developer's.
+    for (const entry of entries) {
+        const existing = filtered[entry.name];
+        if (existing && entry.config.shouldOverwrite && !entry.config.shouldOverwrite(existing)) {
+            continue;
+        }
+        filtered[entry.name] = entry.config;
+    }
 
     return { ...data, [serverKey]: filtered };
 }
 
-/**
- * Merge a new MCP server config into existing .mcp.json content.
- * Uses "mcpServers" key (Claude Code / Cursor format).
- *
- * Strategy:
- * 1. Parse existing JSON (or start with empty structure)
- * 2. Filter out all old lens-studio-* entries (handles project renames)
- * 3. Add the new server entry
- * 4. Preserve non-lens-studio servers and other top-level keys
- */
+/** Merge MCP server entries into .mcp.json content ("mcpServers" key). */
 export function mergeMcpJson(
     existingContent: string | null,
-    newServerName: string,
-    newServerConfig: McpServerConfig
+    entries: McpServerEntry[]
 ): McpJsonContent {
-    return _mergeServers(existingContent, newServerName, newServerConfig, "mcpServers") as McpJsonContent;
+    return _mergeServers(existingContent, entries, "mcpServers") as McpJsonContent;
 }
 
 /**
- * Merge a new MCP server config into existing VS Code mcp.json content.
- * Uses "servers" key (VS Code format).
- *
- * Same merge strategy as mergeMcpJson — only the top-level key differs.
+ * Merge MCP server configs into existing VS Code mcp.json content in one pass.
+ * Uses "servers" key — same merge strategy, only the top-level key differs.
  */
 export function mergeVsCodeMcpJson(
     existingContent: string | null,
-    newServerName: string,
-    newServerConfig: McpServerConfig
+    entries: McpServerEntry[]
 ): VsCodeMcpJsonContent {
-    return _mergeServers(existingContent, newServerName, newServerConfig, "servers") as VsCodeMcpJsonContent;
+    return _mergeServers(existingContent, entries, "servers") as VsCodeMcpJsonContent;
 }
 
 /**

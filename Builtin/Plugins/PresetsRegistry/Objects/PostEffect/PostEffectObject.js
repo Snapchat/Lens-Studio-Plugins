@@ -31,7 +31,7 @@ function createPostEffectClass(name, assetMaterialPreset) {
         }
         async createAsync(destination) {
 
-            const materialPreset = new assetMaterialPreset(this.pluginSystem);
+            const materialPreset = new assetMaterialPreset(this.pluginSystem, assetMaterialPreset.descriptor());
 
             let materialAsset;
             if (materialPreset.createAsync) {

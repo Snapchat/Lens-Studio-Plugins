@@ -745,7 +745,7 @@ export class AssetPreview {
         this.stackedWithError.addWidget(createGenerationErrorWidget(this.widget));
         this.stackedWithError.addWidget(createGenerationInProgressWidget(this.widget, '5 minutes'));
         this.stackedWithError.addWidget(createGenerationInProgressWidget(this.widget, '10-15 minutes'));
-        this.stackedWithError.addWidget(createGenerationInProgressWidget(this.widget, '20 minutes'));
+        this.stackedWithError.addWidget(createGenerationInProgressWidget(this.widget, '3 minutes'));
 
         this.stackedWithError.currentIndex = 0;
 

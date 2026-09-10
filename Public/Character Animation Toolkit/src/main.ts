@@ -27,7 +27,7 @@ export class CharacterAnimationToolkit extends EntityGenerator {
 
     constructor(pluginSystem: Editor.PluginSystem, descriptor: Descriptor) {
         super(pluginSystem, descriptor);
-        dependencyContainer.register(DependencyKeys.PluginSystem, this.pluginSystem);
+        dependencyContainer.register(DependencyKeys.PluginSystem, pluginSystem);
         this.mGui = this.pluginSystem.findInterface(Ui.IGui);
         this.dialog = new Dialog(this.mGui.createDialog(), this.name);
     }

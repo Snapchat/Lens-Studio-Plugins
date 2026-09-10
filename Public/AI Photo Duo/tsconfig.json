@@ -1,0 +1,17 @@
+{
+    "extends": "../../tsconfig.base.json",
+    "compilerOptions": {
+        "isolatedModules": true,
+        "allowJs": true,
+        "checkJs": true,
+        "strict": true,
+        "noImplicitOverride": true,
+        "noImplicitReturns": true,
+        "types": [],
+        "rootDir": "./src",
+        "outDir": "./dist",
+        "moduleResolution": "bundler"
+    },
+    "include": ["src/**/*"],
+    "files": ["../../shared-types/editor.d.ts"]
+}

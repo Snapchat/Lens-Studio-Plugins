@@ -274,6 +274,8 @@ export function downloadFileFromBucket(url, file_name, callback) {
             } else {
                 throw new Error(`Resolved file path is not inside the resolved directory. resolvedFilePath: ${resolvedFilePath} | resolvedDirectoryPath: ${resolvedDirectoryPath}`);
             }
+        } else {
+            console.error(`${app.name}`, `Couldn't download ${file_name}, status code ${response.statusCode}.`, console.None);
         }
     });
 }

@@ -26,7 +26,7 @@ function createMarkerObjectPreset(name) {
                 // Get the Marker Asset to use
                 let markerAsset;
                 if (name === 'Image') {
-                    const imageMarkerAssetPreset = new ImageMarkerAssetPreset(this.pluginSystem);
+                    const imageMarkerAssetPreset = new ImageMarkerAssetPreset(this.pluginSystem, ImageMarkerAssetPreset.descriptor());
                     markerAsset = await imageMarkerAssetPreset.createAsync();
                 } else if (name === 'Snapcode') {
                     markerAsset = project.assetManager.createNativeAsset('SnapcodeMarker', 'Snapcode Marker', new Editor.Path(''));

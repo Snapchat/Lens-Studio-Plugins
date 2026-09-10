@@ -1,4 +1,4 @@
-import {GuiService} from "LensStudio:GuiService"
+import { GuiService } from "LensStudio:GuiService"
 import * as Ui from "LensStudio:Ui"
 import { isAssetContext, isFileMesh } from "./guards.js"
 import { convertMeshFile } from "./mesh.js"
@@ -21,7 +21,7 @@ export class AssetMenuItem extends GuiService {
 
         // ask user where to save the file
         const defaultPath = assetsDirectory.replaceFileNameBase(selection.asset.name)
-        const gui = this.pluginSystem.findInterface(Ui.IGui as any) as Ui.IGui
+        const gui = this.pluginSystem.findInterface(Ui.IGui)
         const outputPath = gui.dialogs.selectFileToSave({
             caption: "Export Mesh as glTF 2.0 (.glb)",
             filter: "*.glb",
@@ -42,7 +42,7 @@ export class AssetMenuItem extends GuiService {
             // only provide an action when selecting a single mesh asset
             if (!isAssetContext(context)) return action
             if (context.selection.length !== 1) return action
-            if (!context.selection.every(i => isFileMesh(i.asset))) return action
+            if (!context.selection.every((i) => isFileMesh(i.asset))) return action
             const selection = context.selection[0]
 
             action.id = "Action.ExportMesh.Gltf"

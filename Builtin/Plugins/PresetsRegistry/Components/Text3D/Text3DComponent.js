@@ -5,7 +5,7 @@ export async function createText3DComponent(model, destinationObject) {
     const textComponent = destinationObject.addComponent('Text3D');
     textComponent.text = '3D Text';
 
-    const text3DMaterialPreset = new Text3DMaterialPreset(this.pluginSystem);
+    const text3DMaterialPreset = new Text3DMaterialPreset(this.pluginSystem, Text3DMaterialPreset.descriptor());
     textComponent.mainMaterial = await text3DMaterialPreset.createAsync();
 
     return textComponent;

@@ -23,6 +23,7 @@ export { ObjectSegmentationMaterialPreset } from '../Assets/ObjectSegmentationMa
 export { OccluderMaterialPreset } from '../Assets/OccluderMaterial/OccluderMaterial.js';
 export { PBRMaterialPreset } from '../Assets/PBRMaterial/PBRMaterial.js';
 export { SimplePBRMaterialPreset } from '../Assets/SimplePBRMaterial/SimplePBRMaterial.js';
+export { Text2DMaterialPreset } from '../Assets/Text2DMaterial/Text2DMaterial.js';
 export { Text3DMaterialPreset } from '../Assets/Text3DMaterial/Text3DMaterial.js';
 export { UberDiffuseMaterialPreset } from '../Assets/UberDiffuseMaterial/UberDiffuseMaterial.js';
 export { UberPBRMaterialPreset } from '../Assets/UberPBRMaterial/UberPBRMaterial.js';
@@ -82,6 +83,7 @@ export { FaceRetouchObjectPreset } from '../Objects/FaceRetouch/FaceRetouchObjec
 export { GPUParticlesObjectPreset } from '../Objects/GPUParticles/GPUParticlesObject.js';
 export { GPUParticlesTrailsObjectPreset } from '../Objects/GPUParticlesTrails/GPUParticlesTrailsObject.js';
 export { OrthographicCameraObjectPreset } from '../Objects/OrthographicCamera/OrthographicCameraObject.js';
+export { CompositionLayerObjectPreset } from '../Objects/Quad/CompositionLayerObject.js';
 export { WorldMeshObjectPreset } from '../Objects/WorldMesh/WorldMeshObject.js';
 export { OverlayCameraObjectPreset } from '../Objects/OverlayCamera/OverlayCameraObjectPreset.js';
 export { ImageObjectPreset } from '../Objects/Image/ImageObject.js';

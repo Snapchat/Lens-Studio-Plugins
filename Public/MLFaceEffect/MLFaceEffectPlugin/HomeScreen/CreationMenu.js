@@ -130,7 +130,7 @@ export class CreationMenu {
 
                         logEventAssetCreation("SUCCESS", "NEW", inputFormat, preset, settings);
                         if (isAdvancedEffectType(effectBody.effectTypeId)) {
-                            app.log(`${app.name} is queued. ${app.name} creation is estimated to take up to 20 minutes, please check back later.`, {'progressBar': true});
+                            app.log(`${app.name} is queued. ${app.name} creation is estimated to take up to 3 minutes, please check back later.`, {'progressBar': true});
                         } else if (isEnhancedEffectType(effectBody.effectTypeId)) {
                             app.log(`${app.name} is queued. ${app.name} creation is estimated to take up to 5 minutes, please check back later.`, {'progressBar': true});
                         } else {

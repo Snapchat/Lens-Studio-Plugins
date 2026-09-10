@@ -40,7 +40,7 @@ function createJsObjectPreset(id, name, iconPath, objectName, ComponentPreset) {
 
                 destination.name = objectName;
 
-                const componentPreset = new ComponentPreset(this.pluginSystem);
+                const componentPreset = new ComponentPreset(this.pluginSystem, ComponentPreset.descriptor());
                 const component = await componentPreset.createAsync(destination);
 
                 return destination;

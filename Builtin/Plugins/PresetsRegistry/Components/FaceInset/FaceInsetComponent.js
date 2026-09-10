@@ -4,7 +4,7 @@ import { FaceInsetMaterialPreset } from '../../Assets/FaceInsetMaterial/FaceInse
 export async function createFaceInsetComponent(model, destinationObject) {
     const faceInset = destinationObject.addComponent('FaceInsetVisual');
 
-    const faceInsetPreset = new FaceInsetMaterialPreset(this.pluginSystem);
+    const faceInsetPreset = new FaceInsetMaterialPreset(this.pluginSystem, FaceInsetMaterialPreset.descriptor());
     faceInset.mainMaterial = await faceInsetPreset.createAsync();
 
     faceInset.faceRegion = Editor.Components.FaceInsetRegion.Mouth;

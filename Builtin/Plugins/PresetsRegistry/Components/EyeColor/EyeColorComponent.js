@@ -4,7 +4,7 @@ import { EyeColorMaterialPreset } from '../../Assets/EyeColorMaterial/EyeColorMa
 export async function createEyeColorComponent(model, destinationObject) {
     const eyeColor = destinationObject.addComponent('EyeColorVisual');
 
-    const materialPreset = new EyeColorMaterialPreset(this.pluginSystem);
+    const materialPreset = new EyeColorMaterialPreset(this.pluginSystem, EyeColorMaterialPreset.descriptor());
     eyeColor.mainMaterial = await materialPreset.createAsync();
 
     return eyeColor;

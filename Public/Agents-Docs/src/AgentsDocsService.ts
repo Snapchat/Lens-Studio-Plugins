@@ -4,6 +4,7 @@ import { ContentfulDocsProvider } from "./docs/ContentfulDocsProvider.js";
 import { EditorDtsInjector } from "./docs/EditorDtsInjector.js";
 import { AgentsMdInjector } from "./docs/AgentsMdInjector.js";
 import { McpConfigManager } from "./mcp/McpConfigManager.js";
+import { LiveInstanceWriter } from "./liveInstance/LiveInstanceWriter.js";
 import { cleanupLegacyInjections } from "./injectors/legacyCleanup.js";
 import {
     ensureInstructionsMd,
@@ -21,9 +22,10 @@ type CurrentProject = {
  *   1. Copies editor.d.ts to Support/ on project open/save
  *   2. Fetches AGENTS.md from Contentful and injects into projects
  *   3. Writes MCP config files for agent auto-discovery
- *   4. Ensures .gitignore covers auto-generated config files
- *   5. Updates .claude/settings.local.json with MCP permission allowlist
- *   6. Cleans up files previously injected by older versions of this plugin
+ *   4. Writes ls-live-instance.json describing how to restore this instance
+ *   5. Ensures .gitignore covers auto-generated config files
+ *   6. Updates .claude/settings.local.json with MCP permission allowlist
+ *   7. Cleans up files previously injected by older versions of this plugin
  *
  * The work is delegated to focused collaborators; this class only owns the
  * plugin lifecycle, event wiring, and per-project orchestration order.
@@ -35,6 +37,7 @@ export class AgentsDocsService extends CoreService {
     private editorDts!: EditorDtsInjector;
     private agentsMd!: AgentsMdInjector;
     private mcpConfig!: McpConfigManager;
+    private liveInstance!: LiveInstanceWriter;
 
     static descriptor(): Descriptor {
         const d = new Descriptor();
@@ -53,6 +56,7 @@ export class AgentsDocsService extends CoreService {
         this.editorDts = new EditorDtsInjector(this.pluginSystem, this.docsProvider);
         this.agentsMd = new AgentsMdInjector(this.docsProvider);
         this.mcpConfig = new McpConfigManager(this.pluginSystem);
+        this.liveInstance = new LiveInstanceWriter();
 
         this.connections.push(
             model.onProjectChanged.connect(() => this.onProjectReady())
@@ -87,6 +91,9 @@ export class AgentsDocsService extends CoreService {
             this.editorDts.ensure(project.projectDir);
             void this.agentsMd.inject(project.projectDir);
             ensureInstructionsMd(project.projectDir);
+            // Records nothing about MCP, so it runs ahead of the MCP config
+            // update rather than behind its retry backoff.
+            this.liveInstance.write(project.projectDir, project.projectFile);
             this.mcpConfig.updateOrRetry(project.projectDir, project.projectFile);
             ensureGitignore(project.projectDir);
             injectClaudeSettings(project.projectDir, project.projectFile);

@@ -1,4 +1,5 @@
 import { PanelPlugin, Descriptor } from "LensStudio:PanelPlugin";
+import * as Crypto from "LensStudio:Crypto";
 import * as Ui from "LensStudio:Ui";
 import { WebSocketBridge } from "./WebSocketBridge.js";
 import type { ExecuteCodeRequest } from "./types.js";
@@ -21,10 +22,6 @@ export class RunEditorCode extends PanelPlugin {
         return d;
     }
 
-    constructor(pluginSystem: Editor.PluginSystem, descriptor: Descriptor | undefined) {
-        super(pluginSystem, descriptor);
-    }
-
     createWidget(parent: Ui.Widget): Ui.Widget {
         this.root = new Ui.Widget(parent);
         const layout = new Ui.BoxLayout();
@@ -42,7 +39,8 @@ export class RunEditorCode extends PanelPlugin {
     }
 
     private initializeWebSocket(): void {
-        this.wsBridge = new WebSocketBridge();
+        const authToken = Crypto.randomUUID();
+        this.wsBridge = new WebSocketBridge(authToken);
         const port = this.wsBridge.start();
 
         this.wsBridge.onMessage((msg) => {
@@ -51,7 +49,9 @@ export class RunEditorCode extends PanelPlugin {
 
         const htmlUrl = this.resolveFileUrl("./ui/index.html");
         // Use hash (#) instead of query (?) to prevent Windows file not found errors
-        this.webView!.load(`${htmlUrl}#wsPort=${port}`);
+        this.webView!.load(
+            `${htmlUrl}#wsPort=${port}&wsToken=${encodeURIComponent(authToken)}`
+        );
 
         this.connections.push(
             this.webView!.onLoadFinished.connect(() => {

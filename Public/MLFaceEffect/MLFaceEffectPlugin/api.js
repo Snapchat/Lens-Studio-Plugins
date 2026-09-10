@@ -187,12 +187,13 @@ export function getModels(id, callback) {
                 return;
             }
             if (response.statusCode === 200) {
+                let models = [];
                 try {
-                    callback(JSON.parse(response.body.toString()));
+                    models = JSON.parse(response.body.toString());
                 } catch (error) {
-                    console.log(`${app.name}`, "Failed to parse models response.");
-                    callback([]);
+                    console.log(`${app.name}`, "Failed to parse models response.", error);
                 }
+                callback(models);
                 return;
             }
             callback([]);

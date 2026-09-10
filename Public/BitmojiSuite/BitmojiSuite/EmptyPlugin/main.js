@@ -40,7 +40,7 @@ export class EmptyPlugin extends Panel {
 
         let destination = selection.entities.find((entity) => entity.isOfType("SceneObject"));
 
-        const preset = new BitmojiComponentPreset(this.pluginSystem);
+        const preset = new BitmojiComponentPreset(this.pluginSystem, BitmojiComponentPreset.descriptor());
         preset.createAsync(destination).then((so) => {
             project.selection.set([so]);
         }).catch((error) => {

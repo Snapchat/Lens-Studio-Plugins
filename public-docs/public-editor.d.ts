@@ -1,7 +1,7 @@
 /**
  * @module Editor Scripting
- * @version 5.24.0
- * For Snapchat Version: 14.17
+ * @version 5.25.0
+ * For Snapchat Version: 14.25
 */
 interface ComponentNameMap {
     "AnimationPlayer": Editor.Components.AnimationPlayer;
@@ -13,6 +13,8 @@ interface ComponentNameMap {
     "ClothVisual": Editor.Components.ClothVisual;
     "ColliderComponent": Editor.Components.Physics.ColliderComponent;
     "Component": Editor.Components.Component;
+    "CompositionLayerComponent": Editor.Components.CompositionLayerComponent;
+    "CompositionLayerRenderComponent": Editor.Components.CompositionLayerRenderComponent;
     "ConstraintComponent": Editor.Components.Physics.ConstraintComponent;
     "DeviceTracking": Editor.Components.DeviceTracking;
     "EyeColorVisual": Editor.Components.EyeColorVisual;
@@ -4093,6 +4095,8 @@ declare namespace Editor {
             /** @hidden */
             protected constructor()
             
+            apply(): void
+            
             /**
             * Whether prefab assets load lazily on first use.
             */
@@ -5000,7 +5004,7 @@ declare namespace Editor {
             * ```
             
             */
-            class WorldSettingsAsset extends Editor.Assets.Asset {
+            class WorldSettingsAsset extends Editor.Assets.Physics.WorldSettingsBase {
                 
                 /** @hidden */
                 protected constructor()
@@ -5049,6 +5053,32 @@ declare namespace Editor {
                 * Duration to apply physics slowdown when triggered.
                 */
                 slowDownTime: number
+                
+                /**
+                * Returns metadata about this type.
+                */
+                static getMeta(): Editor.Model.Meta
+                
+                /**
+                * Returns the type name of this class.
+                */
+                static getTypeName(): string
+                
+            }
+        
+        }
+    
+    }
+
+}
+
+declare namespace Editor {
+    namespace Assets {
+        namespace Physics {
+            class WorldSettingsBase extends Editor.Assets.Asset {
+                
+                /** @hidden */
+                protected constructor()
                 
                 /**
                 * Returns metadata about this type.
@@ -5498,7 +5528,8 @@ declare namespace Editor {
 declare namespace Editor {
     namespace Assets {
         /**
-        * The entity which will be coverted into the Lens scene during project export. This scene will contan and own all objects and components in the Lens. This entity can be accessed via the current project’s `model.project.scene`.
+        * The entity which will be converted into the Lens scene during project export. This scene will contain and own all objects and components in the Lens. This entity can be accessed via the current project’s `model.project.scene`.
+        
         
         * @example
         * ```ts
@@ -5555,6 +5586,8 @@ declare namespace Editor {
             * @readonly
             */
             mainCamera: Editor.Components.Camera
+            
+            physicsRootWorldSettings: Editor.Assets.Physics.WorldSettingsBase
             
             /**
             * Returns metadata about this type.
@@ -8056,6 +8089,82 @@ declare namespace Editor {
             */
             static getTypeName(): string
             
+        }
+    
+    }
+
+}
+
+declare namespace Editor {
+    namespace Components {
+        class CompositionLayerComponent extends Editor.Components.Component {
+            
+            /** @hidden */
+            protected constructor()
+            
+            renderOrder: number
+            
+            smoothFollowDurationSec: number
+            
+            smoothFollowEnabled: boolean
+            
+            texture: Editor.Assets.Texture
+            
+            /**
+            * Returns metadata about this type.
+            */
+            static getMeta(): Editor.Model.Meta
+            
+            /**
+            * Returns the type name of this class.
+            */
+            static getTypeName(): string
+            
+        }
+    
+    }
+
+}
+
+declare namespace Editor {
+    namespace Components {
+        class CompositionLayerRenderComponent extends Editor.Components.Component {
+            
+            /** @hidden */
+            protected constructor()
+            
+            adaptiveResolutionEnabled: boolean
+            
+            adaptiveResolutionRoundingMultiple: number
+            
+            adaptiveResolutionScaler: number
+            
+            updateModes: Editor.Components.CompositionLayerRenderUpdateMode[]
+            
+            /**
+            * Returns metadata about this type.
+            */
+            static getMeta(): Editor.Model.Meta
+            
+            /**
+            * Returns the type name of this class.
+            */
+            static getTypeName(): string
+            
+        }
+    
+    }
+
+}
+
+declare namespace Editor {
+    namespace Components {
+        enum CompositionLayerRenderUpdateMode {
+            Always,
+            Once,
+            Interaction,
+            Visibility,
+            Manual
         }
     
     }
@@ -10969,6 +11078,8 @@ declare namespace Editor {
                 */
                 debugDrawEnabled: boolean
                 
+                excludeFromParentCompounding: boolean
+                
                 /**
                 * Collision filtering rules for this collider.
                 */
@@ -12529,6 +12640,8 @@ declare namespace Editor {
             * Override text capitalization style.
             */
             capitalizationOverride: Editor.Components.CapitalizationOverride
+            
+            customMaterial: Editor.Assets.Material
             
             debugRenderLayoutRect: boolean
             
@@ -14262,6 +14375,8 @@ declare namespace Editor {
         
         /** @hidden */
         protected constructor()
+        
+        createCustomComponent(scriptAsset: Editor.Assets.ScriptAsset): Editor.Model.AssetImportMetadata
         
         /**
         * Export the current project as a zip archive at the given path with the provided export options.
@@ -16430,6 +16545,8 @@ declare namespace Editor {
             */
             setIcon(externalPath: Editor.Path): void
             
+            setLensNameLocalizations(externalPath: Editor.Path): void
+            
             /**
             * Sets the video preview shown for the Lens from the given external file.
             
@@ -16440,6 +16557,8 @@ declare namespace Editor {
             * The camera which will be activated when this Lens is turned on. 
             */
             activationCamera: Editor.Model.LensActivationCamera
+            
+            buildVersion: string
             
             /**
             * The absolute path to the Lens Icon.
@@ -16470,6 +16589,13 @@ declare namespace Editor {
             * The publicly visible name of the Lens.
             */
             lensName: string
+            
+            /**
+            * @readonly
+            */
+            lensNameLocalizations: Editor.Path
+            
+            packageId: string
             
             /**
             * Absolute path to the Lens video preview file.
@@ -18360,16 +18486,32 @@ declare module "LensStudio:Analytics" {
 * ```
 */
 declare module "LensStudio:App" {
+    export function state(): AppState
+    
     /**
     * A map containing the PATH and PWD environment variables of the current Lens Studio process.
     */
     let env: any
+    
+    let executablePath: string
+    
+    let onStateChanged: signal1<import('LensStudio:App').AppState, void>
     
     /**
     * The Lens Studio version.
     */
     let version: string
     
+}
+
+declare module "LensStudio:App" {
+    enum AppState {
+        Suspended,
+        Hidden,
+        Inactive,
+        Active
+    }
+
 }
 
 /**
@@ -21370,6 +21512,8 @@ declare module "LensStudio:EditorPlugin" {
         * Handles editing of the given entities, returning true if the plugin handled them.
         */
         edit(entities: Editor.Model.Entity[]): boolean
+        
+        setTitle(subtitle: string): void
         
         /**
         * The plugin system instance this plugin belongs to.
@@ -25510,6 +25654,8 @@ declare module "LensStudio:Subprocess" {
 
 */
 declare module "LensStudio:SysInfo" {
+    let buildCpuArchitecture: string
+    
     /**
     * String identifier for the product type.
     */

@@ -376,8 +376,8 @@ class VertexLayout {
     }
 
     /** find attribute in array */
-    getBySemantic(semantic: lc.Semantic): Attribute {
-        return verify(this.attributes.find(a => a.semantic === semantic))
+    getBySemantic(semantic: lc.Semantic): Attribute | null {
+        return this.attributes.find(a => a.semantic === semantic) ?? null
     }
 }
 
@@ -391,13 +391,13 @@ class BlendShape {
     readonly deltaMax: vec3
 
     positionBuffer: Uint8Array
-    normalBuffer: Uint8Array
+    normalBuffer: Uint8Array | null
     indexBuffer: Uint8Array
 
     private static readonly PACKED_VERTEX_SIZE = 9
     private static readonly VEC3_SIZE = 12
 
-    constructor(node: MapNode, basisNormalBuffer: Uint8Array) {
+    constructor(node: MapNode, basisNormalBuffer: Uint8Array | null) {
         this.name = getString(node, "name")
         this.defaultWeight = getNumber(node, "defaultWeight")
         this.vertexCount = getNumber(node, "vertexCount")
@@ -415,21 +415,23 @@ class BlendShape {
         // expand packed vertex data into array data suitable for gltf file format
         const sparseIndexReader = new BinaryStream(indexBuffer)
         const interleavedReader = new BinaryStream(packedBuffer)
-        const basisNormalReader = new BinaryStream(basisNormalBuffer)
         const positionBuffer = new Uint8Array(this.sparseCount * BlendShape.VEC3_SIZE)
-        const normalBuffer = new Uint8Array(this.sparseCount * BlendShape.VEC3_SIZE)
         const positionWriter = new BinaryStream(positionBuffer)
-        const normalWriter = new BinaryStream(normalBuffer)
+        const basisNormalReader = basisNormalBuffer ? new BinaryStream(basisNormalBuffer) : null
+        const normalBuffer = basisNormalBuffer ? new Uint8Array(this.sparseCount * BlendShape.VEC3_SIZE) : null
+        const normalWriter = basisNormalBuffer ? new BinaryStream(normalBuffer!) : null
 
         for (let i = 0; i < this.sparseCount; i++) {
             const index = sparseIndexReader.readUint16()
-            basisNormalReader.position = index * BlendShape.VEC3_SIZE
-            const basisNormal = basisNormalReader.readVec3()
-
             const position = interleavedReader.readVec3_xyz16f()
-            const normal = interleavedReader.readVec3_x11y11z1()
             positionWriter.writeVec3(position)
-            normalWriter.writeVec3(normal.sub(basisNormal))
+
+            const normal = interleavedReader.readVec3_x11y11z1()
+            if (basisNormalBuffer) {
+                basisNormalReader!.position = index * BlendShape.VEC3_SIZE
+                const basisNormal = basisNormalReader!.readVec3()
+                normalWriter!.writeVec3(normal.sub(basisNormal))
+            }
 
             // calculate bounds because deltaMin and deltaMax are zero
             this.deltaMin.x = Math.min(this.deltaMin.x, position.x)
@@ -548,7 +550,7 @@ class MeshAsset {
         const indexBuffer = getBlob(root, "indices")
 
         // blend shapes have vertex data that is unpacked into larger buffers
-        const normalBuffer = vertexLayout.getBySemantic(lc.Semantic.Normal).buffer
+        const normalBuffer = vertexLayout.getBySemantic(lc.Semantic.Normal)?.buffer ?? null
         this.blendShapes = getArray(root, "blendshapes", BlendShape, normalBuffer)
 
         // These sections are all optional and only present when non-empty:
@@ -585,9 +587,11 @@ class MeshAsset {
             let align = lc.componentSize(lc.ComponentType.FLOAT)
             outputLength += (align - (outputLength % align)) % align
             outputLength += shape.positionBuffer.length
-            align = lc.componentSize(lc.ComponentType.FLOAT)
-            outputLength += (align - (outputLength % align)) % align
-            outputLength += shape.normalBuffer.length
+            if (shape.normalBuffer) {
+                align = lc.componentSize(lc.ComponentType.FLOAT)
+                outputLength += (align - (outputLength % align)) % align
+                outputLength += shape.normalBuffer.length
+            }
             align = lc.indexSize(lc.IndexType.USHORT)
             outputLength += (align - (outputLength % align)) % align
             outputLength += shape.indexBuffer.length
@@ -610,9 +614,11 @@ class MeshAsset {
             let align = lc.componentSize(lc.ComponentType.FLOAT)
             writer.position += (align - (writer.position % align)) % align
             shape.positionBuffer = writer.writeBytes(shape.positionBuffer)
-            align = lc.componentSize(lc.ComponentType.FLOAT)
-            writer.position += (align - (writer.position % align)) % align
-            shape.normalBuffer = writer.writeBytes(shape.normalBuffer)
+            if (shape.normalBuffer) {
+                align = lc.componentSize(lc.ComponentType.FLOAT)
+                writer.position += (align - (writer.position % align)) % align
+                shape.normalBuffer = writer.writeBytes(shape.normalBuffer)
+            }
             align = lc.indexSize(lc.IndexType.USHORT)
             writer.position += (align - (writer.position % align)) % align
             shape.indexBuffer = writer.writeBytes(shape.indexBuffer)
@@ -756,7 +762,7 @@ function generateGltf(mesh: MeshAsset, assetName: string): gl.GltfAsset {
     const blendShapeNames: string[] = []
 
     for (const shape of mesh.blendShapes) {
-        if (!shape.positionBuffer.length || !shape.normalBuffer.length || !shape.indexBuffer.length) continue
+        if (!shape.positionBuffer.length || !shape.indexBuffer.length) continue
 
         g.bufferViews.push({
             buffer: bufferId,
@@ -766,11 +772,13 @@ function generateGltf(mesh: MeshAsset, assetName: string): gl.GltfAsset {
 
         const deltaPositionBufferViewId = g.bufferViews.length - 1
 
-        g.bufferViews.push({
-            buffer: bufferId,
-            byteLength: shape.normalBuffer.byteLength,
-            byteOffset: shape.normalBuffer.byteOffset,
-        })
+        if (shape.normalBuffer) {
+            g.bufferViews.push({
+                buffer: bufferId,
+                byteLength: shape.normalBuffer.byteLength,
+                byteOffset: shape.normalBuffer.byteOffset,
+            })
+        }
 
         const deltaNormalBufferViewId = g.bufferViews.length - 1
 
@@ -802,28 +810,36 @@ function generateGltf(mesh: MeshAsset, assetName: string): gl.GltfAsset {
 
         const deltaPositionAccessorId = g.accessors.length - 1
 
-        g.accessors.push({
-            componentType: gl.FLOAT,
-            count: shape.vertexCount,
-            type: gl.VEC3,
-            sparse: {
-                count: shape.sparseCount,
-                indices: {
-                    bufferView: sparseIndexBufferViewIds,
-                    componentType: gl.UNSIGNED_SHORT,
-                },
-                values: {
-                    bufferView: deltaNormalBufferViewId,
+        if (shape.normalBuffer) {
+            g.accessors.push({
+                componentType: gl.FLOAT,
+                count: shape.vertexCount,
+                type: gl.VEC3,
+                sparse: {
+                    count: shape.sparseCount,
+                    indices: {
+                        bufferView: sparseIndexBufferViewIds,
+                        componentType: gl.UNSIGNED_SHORT,
+                    },
+                    values: {
+                        bufferView: deltaNormalBufferViewId,
+                    }
                 }
-            }
-        })
+            })
+        }
 
         const deltaNormalAccessorId = g.accessors.length - 1
 
-        blendShapeAccessorIds.push({
-            [gl.POSITION]: deltaPositionAccessorId,
-            [gl.NORMAL]: deltaNormalAccessorId,
-        })
+        if (shape.normalBuffer) {
+            blendShapeAccessorIds.push({
+                [gl.POSITION]: deltaPositionAccessorId,
+                [gl.NORMAL]: deltaNormalAccessorId,
+            })
+        } else {
+            blendShapeAccessorIds.push({
+                [gl.POSITION]: deltaPositionAccessorId
+            })
+        }
 
         blendShapeWeights.push(shape.defaultWeight)
         blendShapeNames.push(shape.name)

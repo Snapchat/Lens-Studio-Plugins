@@ -1,0 +1,9 @@
+{
+  "main": "dist/main.js",
+  "name": "SPECS Asset Jobs",
+  "permissions": [
+    "filesystem",
+    "network",
+    "snap_auth_token"
+  ]
+}

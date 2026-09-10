@@ -23,9 +23,6 @@ function createAssetAction(descriptor, createObjectAction) {
                 description: descriptor.description
             }
         }
-        constructor(pluginSystem, descriptor) {
-            super(pluginSystem, descriptor)
-        }
         start() {
             /** @type {Editor.IContextActionRegistry} */
             const actionsRegistry = this.pluginSystem.findInterface(Editor.IContextActionRegistry);

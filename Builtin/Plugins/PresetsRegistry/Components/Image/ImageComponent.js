@@ -4,7 +4,7 @@ import { ImageMaterialPreset } from '../../Assets/ImageMaterial/ImageMaterial.js
 export async function createImageComponent(model, destinationObject) {
     const image = destinationObject.addComponent('Image');
 
-    const materialPreset = new ImageMaterialPreset(this.pluginSystem);
+    const materialPreset = new ImageMaterialPreset(this.pluginSystem, ImageMaterialPreset.descriptor());
     image.materials = [await materialPreset.createAsync()];
 
     image.stretchMode = Editor.Components.StretchMode.Fit;

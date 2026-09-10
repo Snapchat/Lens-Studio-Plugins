@@ -10,6 +10,7 @@ import {
     serializeMcpJson,
     getMcpRetryDelayMs,
     McpServerConfig,
+    McpServerEntry,
     McpJsonContent,
     VsCodeMcpJsonContent
 } from "../mcpUtils.js";
@@ -17,6 +18,10 @@ import {
     CODEX_CONFIG_MANAGED_START,
     mergeCodexConfig,
 } from "../codexUtils.js";
+import {
+    SNAP_CLOUD_SERVER_NAME,
+    buildSnapCloudServerConfig,
+} from "./snapCloud/snapCloudUtils.js";
 
 /** Local type stub — the full IMcpServer definition lives in the C++ MCP bindings. */
 interface McpServerApi {
@@ -60,7 +65,7 @@ export class McpConfigManager {
     /** MCP config targets: path relative to project root, and which merge function to use. */
     private static readonly MCP_TARGETS: Array<{
         path: string;
-        merge: (existing: string | null, name: string, config: McpServerConfig) => McpJsonContent | VsCodeMcpJsonContent;
+        merge: (existing: string | null, entries: McpServerEntry[]) => McpJsonContent | VsCodeMcpJsonContent;
     }> = [
         { path: ".mcp.json", merge: mergeMcpJson },              // Claude Code
         { path: ".cursor/mcp.json", merge: mergeMcpJson },       // Cursor
@@ -120,11 +125,43 @@ export class McpConfigManager {
                 return { status: "skipped", reason: resolution.reason, retryable: resolution.retryable };
             }
 
-            this.updateMcpJson(projectDir, resolution.info);
-            this.updateCodexConfig(projectDir, resolution.info);
+            const entries: McpServerEntry[] = [];
+            // Only wire up the Snap Cloud server for projects that actually use
+            // Supabase — i.e. that contain a SupabaseProject asset created by the
+            // Supabase plugin — so it stays out of every other LS project's config.
+            if (this.projectHasSupabaseAsset()) {
+                entries.push({ name: SNAP_CLOUD_SERVER_NAME, config: buildSnapCloudServerConfig() });
+            }
+            entries.push({ name: resolution.info.serverName, config: resolution.info.serverConfig });
+
+            this.updateMcpJson(projectDir, entries, resolution.info.projectName);
+            this.updateCodexConfig(projectDir, entries, resolution.info.projectName);
             return { status: "updated" };
         } catch (e) {
             return { status: "failed", error: e };
+        }
+    }
+
+    /**
+     * True when the open project contains a SupabaseProject asset (created by the
+     * Supabase plugin). Used to inject the Snap Cloud MCP server only for
+     * projects that actually use Supabase.
+     */
+    private projectHasSupabaseAsset(): boolean {
+        try {
+            const model = this.pluginSystem.findInterface(Editor.Model.IModel) as Editor.Model.IModel;
+            const project = model && model.project;
+            if (!project || Editor.isNull(project)) {
+                return false;
+            }
+            const assetManager = project.assetManager;
+            if (!assetManager || Editor.isNull(assetManager)) {
+                return false;
+            }
+            return assetManager.assets.filter(asset => asset.isOfType("SupabaseProject")).length > 0;
+        } catch (e) {
+            console.error("[AgentsDocs] Could not check for a Supabase project asset:", e, console.None);
+            return false;
         }
     }
 
@@ -210,7 +247,7 @@ export class McpConfigManager {
      * Preserves existing non-lens-studio servers and removes stale
      * lens-studio-* entries from previous project names.
      */
-    private updateMcpJson(projectDir: Editor.Path, info: LiveMcpServerInfo): void {
+    private updateMcpJson(projectDir: Editor.Path, entries: McpServerEntry[], projectLabel: string): void {
         for (const target of McpConfigManager.MCP_TARGETS) {
             const filePath = projectDir.appended(new Editor.Path(target.path));
             const parentDir = filePath.parent;
@@ -219,23 +256,24 @@ export class McpConfigManager {
                 FileSystem.createDir(parentDir, { recursive: true });
             }
 
+            // Read existing so the merge keeps the developer's other servers, then always (re)write.
             let existing: string | null = null;
             if (FileSystem.exists(filePath)) {
                 existing = FileSystem.readFile(filePath);
             }
 
-            const merged = target.merge(existing, info.serverName, info.serverConfig);
-            FileSystem.writeFile(filePath, serializeMcpJson(merged));
+            FileSystem.writeFile(filePath, serializeMcpJson(target.merge(existing, entries)) + "\n");
         }
 
-        console.log(`[AgentsDocs] Updated MCP configs for project: ${info.projectName}`, console.None);
+        const names = entries.map(entry => entry.name).join(", ");
+        console.log(`[AgentsDocs] Updated MCP configs for project: ${projectLabel} (${names})`, console.None);
     }
 
     /**
      * Write `.codex/config.toml` with the same Lens Studio MCP server endpoint
      * used for the JSON-based editor integrations.
      */
-    private updateCodexConfig(projectDir: Editor.Path, info: LiveMcpServerInfo): void {
+    private updateCodexConfig(projectDir: Editor.Path, entries: McpServerEntry[], projectLabel: string): void {
         const codexDir = projectDir.appended(new Editor.Path(".codex"));
         const configPath = codexDir.appended(new Editor.Path("config.toml"));
 
@@ -244,11 +282,15 @@ export class McpConfigManager {
             existing = FileSystem.readFile(configPath);
         }
 
-        const merged = mergeCodexConfig(existing, info.serverName, info.serverConfig);
+        const merged = mergeCodexConfig(existing, entries);
         if (merged === null) {
             if ((existing ?? "").includes(CODEX_CONFIG_MANAGED_START)) {
                 console.warn("[AgentsDocs] .codex/config.toml has malformed managed markers; leaving file unchanged", console.None);
             }
+            return;
+        }
+
+        if (existing === merged) {
             return;
         }
 
@@ -257,7 +299,7 @@ export class McpConfigManager {
         }
 
         FileSystem.writeFile(configPath, merged);
-        console.log(`[AgentsDocs] Updated .codex/config.toml for project: ${info.projectName}`, console.None);
+        console.log(`[AgentsDocs] Updated .codex/config.toml for project: ${projectLabel}`, console.None);
     }
 
     private resetAfterSuccess(): void {

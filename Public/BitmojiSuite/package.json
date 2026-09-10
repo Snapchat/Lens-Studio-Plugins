@@ -1,9 +1,10 @@
 {
   "name": "bitmoji-suite",
-  "version": "5.23.0",
+  "version": "5.23.0.26072722",
   "private": true,
   "scripts": {
     "build": "tsc",
+    "build:verification": "tsc --outDir \"BitmojiSuite/AnimationPlugin\"",
     "watch": "tsc -w"
   },
   "dependencies": {

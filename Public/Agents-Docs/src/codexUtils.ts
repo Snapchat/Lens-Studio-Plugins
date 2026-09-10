@@ -1,4 +1,4 @@
-import { McpServerConfig } from "./mcpUtils.js";
+import { McpServerConfig, McpServerEntry } from "./mcpUtils.js";
 
 /** Marker comments used to identify the Lens Studio managed Codex config region. */
 export const CODEX_CONFIG_MANAGED_START = "# BEGIN Lens Studio managed Codex block";
@@ -23,55 +23,48 @@ function startsWithLineBreak(value: string): boolean {
 }
 
 /**
- * Build the Lens Studio managed block for `.codex/config.toml`.
- * Only includes `http_headers` when an Authorization header is present.
+ * Build the Multiple MCP servers block for `.codex/config.toml`.
  */
-export function buildManagedCodexConfig(
-    serverName: string,
-    serverConfig: McpServerConfig
-): string {
-    const lines = [
-        CODEX_CONFIG_MANAGED_START,
-        `[mcp_servers.${serverName}]`,
-        `url = "${escapeTomlString(serverConfig.url)}"`,
-    ];
+export function buildManagedCodexConfig(entries: McpServerEntry[]): string {
+    const lines: string[] = [CODEX_CONFIG_MANAGED_START];
 
-    const authorization = serverConfig.headers?.Authorization ?? "";
-    if (authorization.length > 0) {
-        lines.push(
-            `http_headers = { Authorization = "${escapeTomlString(authorization)}" }`
-        );
-    }
-    lines.push(`default_tools_approval_mode = "approve"`);
+    entries.forEach((entry, index) => {
+        if (index > 0) {
+            lines.push("");
+        }
+        lines.push(...buildServerTable(entry.name, entry.config));
+    });
 
     lines.push(CODEX_CONFIG_MANAGED_END);
     return lines.join("\n");
 }
 
 /**
- * Merge the Lens Studio managed block into an existing `.codex/config.toml`.
+ * Merge the Multiple MCP servers block into an existing `.codex/config.toml`.
  * Returns null if the file contains malformed managed markers.
  */
 export function mergeCodexConfig(
     existingContent: string | null,
-    serverName: string,
-    serverConfig: McpServerConfig
+    entries: McpServerEntry[]
 ): string | null {
-    const managedBlock = buildManagedCodexConfig(serverName, serverConfig);
-
     if (!existingContent || existingContent.trim().length === 0) {
-        return managedBlock + "\n";
+        return buildManagedCodexConfig(entries) + "\n";
     }
 
     const startIndex = existingContent.indexOf(CODEX_CONFIG_MANAGED_START);
     const endIndex = existingContent.indexOf(CODEX_CONFIG_MANAGED_END);
 
     if (startIndex === -1 && endIndex === -1) {
+        const safeEntries = entries.filter(entry => !hasServerTable(existingContent, entry.name));
+        if (safeEntries.length === 0) {
+            return existingContent;
+        }
+
         let merged = existingContent;
         if (!merged.endsWith("\n")) {
             merged += "\n";
         }
-        merged += "\n" + managedBlock + "\n";
+        merged += "\n" + buildManagedCodexConfig(safeEntries) + "\n";
         return merged;
     }
 
@@ -81,6 +74,11 @@ export function mergeCodexConfig(
 
     const before = existingContent.slice(0, startIndex);
     const after = existingContent.slice(endIndex + CODEX_CONFIG_MANAGED_END.length);
+
+    // Preserve the developer's out-of-region tables; the managed region is ours.
+    const managedBlock = buildManagedCodexConfig(
+        entries.filter(entry => !hasServerTable(before + after, entry.name))
+    );
 
     let merged = before;
     if (merged.length > 0 && !merged.endsWith("\n")) {
@@ -97,4 +95,29 @@ export function mergeCodexConfig(
     }
 
     return merged;
+}
+
+/** Build the TOML table for a single MCP server entry. */
+function buildServerTable(serverName: string, serverConfig: McpServerConfig): string[] {
+    const lines = [
+        `[mcp_servers.${serverName}]`,
+        `url = "${escapeTomlString(serverConfig.url)}"`,
+    ];
+
+    const authorization = serverConfig.headers?.Authorization ?? "";
+    if (authorization.length > 0) {
+        lines.push(
+            `http_headers = { Authorization = "${escapeTomlString(authorization)}" }`
+        );
+    }
+    // TODO(snapcloud-allowlist): "writes" for supabase if removing read_only
+    lines.push(`default_tools_approval_mode = "approve"`);
+
+    return lines;
+}
+
+function hasServerTable(content: string, serverName: string): boolean {
+    const escaped = serverName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const header = new RegExp(`^\\s*\\[\\s*mcp_servers\\s*\\.\\s*["']?${escaped}["']?\\s*\\]\\s*(#.*)?$`);
+    return content.split(/\r?\n/).some(line => header.test(line));
 }

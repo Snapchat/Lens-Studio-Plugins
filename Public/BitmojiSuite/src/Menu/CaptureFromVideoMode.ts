@@ -39,7 +39,7 @@ export class CaptureFromVideoMode {
         const layout: Ui.BoxLayout = this.menuTemplate.createLayout();
 
         //@ts-ignore
-        const selectCharacterWidget = this.selectCharacterPage.create(this.stackedWidget, () => {this.stackedWidget?.currentIndex = 0}, goToGalleryPage);
+        const selectCharacterWidget = this.selectCharacterPage.create(this.stackedWidget, () => {this.stackedWidget.currentIndex = 0}, goToGalleryPage);
 
         this.stackedWidget.addWidget(widget);
         this.stackedWidget.addWidget(selectCharacterWidget);
